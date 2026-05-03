@@ -1,0 +1,300 @@
+/* =====================================================
+   Entourage page (fan-only) — your groups of friends
+   that go to concerts together, with shared ticketing.
+   ===================================================== */
+
+.entourage-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 26px;
+}
+
+.entourage-header__main { max-width: 620px; }
+
+.entourage-header__heading {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 36px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    margin: 0 0 6px;
+}
+
+.entourage-header__subtitle {
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.65);
+    margin: 0;
+}
+
+.entourage-header__create {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 18px;
+    background: #FFFFFF;
+    color: #02040C;
+    border: none;
+    border-radius: 999px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.entourage-header__create:hover {
+    background: #F0F0F0;
+    transform: translateY(-1px);
+}
+
+.entourage-header__create svg { width: 16px; height: 16px; }
+
+.entourage-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+    margin-bottom: 36px;
+}
+
+.entourage-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 20px 22px 22px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+}
+
+.entourage-card__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.entourage-card__name {
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 0.02em;
+    margin: 0 0 4px;
+}
+
+.entourage-card__role {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.entourage-card__role--admin { color: #FFD75A; }
+
+.entourage-card__balance {
+    text-align: right;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.entourage-card__balance strong {
+    display: block;
+    font-size: 18px;
+    font-weight: 700;
+    color: #FFFFFF;
+    font-variant-numeric: tabular-nums;
+}
+
+.entourage-card__members {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.entourage-card__avatars {
+    display: flex;
+}
+
+.entourage-card__avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    background-color: #1a1a1a;
+    border: 2px solid #060B1A;
+    margin-left: -8px;
+}
+
+.entourage-card__avatar:first-child { margin-left: 0; }
+
+.entourage-card__count {
+    margin-left: 12px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 500;
+}
+
+.entourage-card__count strong {
+    color: #FFFFFF;
+    font-weight: 700;
+}
+
+.entourage-card__upcoming {
+    background: rgba(67, 196, 122, 0.08);
+    border: 1px solid rgba(67, 196, 122, 0.25);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 12px;
+}
+
+.entourage-card__upcoming-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #43C47A;
+    display: block;
+    margin-bottom: 3px;
+}
+
+.entourage-card__upcoming strong {
+    font-weight: 700;
+    color: #FFFFFF;
+}
+
+.entourage-card__settings {
+    list-style: none;
+    margin: 0 0 14px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.entourage-card__settings li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.entourage-card__settings .key {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.entourage-card__settings .value {
+    color: #FFFFFF;
+    font-weight: 500;
+}
+
+.entourage-card__actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.entourage-card__btn {
+    flex: 1 1 0;
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.32);
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.entourage-card__btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: #FFFFFF;
+}
+
+.entourage-card__btn--primary {
+    background: #FFFFFF;
+    color: #02040C;
+    border-color: #FFFFFF;
+}
+
+.entourage-card__btn--primary:hover { background: #F0F0F0; }
+
+/* Pending invitations row */
+.entourage-pending {
+    background: rgba(255, 191, 0, 0.08);
+    border: 1px solid rgba(255, 191, 0, 0.32);
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 28px;
+}
+
+.entourage-pending__heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #FFD75A;
+    margin: 0 0 8px;
+}
+
+.entourage-pending__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.entourage-pending__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+}
+
+.entourage-pending__item-text strong { font-weight: 700; }
+
+.entourage-pending__actions { display: flex; gap: 8px; }
+
+.entourage-pending__btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: transparent;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.entourage-pending__btn--accept {
+    background: #43C47A;
+    border-color: #43C47A;
+    color: #02040C;
+}
+
+@media (max-width: 900px) {
+    .entourage-grid { grid-template-columns: 1fr; }
+    .entourage-header__create { width: 100%; justify-content: center; }
+}

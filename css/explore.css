@@ -1,0 +1,193 @@
+/* =====================================================
+   Explore Page (Fan feed)
+   Single-column feed of friends + followed artists/venues.
+   ===================================================== */
+
+.explore-header {
+    margin: 0 auto 24px;
+    max-width: 720px;
+}
+
+.explore-heading {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 36px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    margin: 0 0 6px;
+}
+
+.explore-subtitle {
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0 0 18px;
+    max-width: 620px;
+}
+
+/* Filter tabs above the feed */
+.explore-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.explore-tab {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    padding: 7px 14px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.explore-tab:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.32);
+}
+
+.explore-tab.is-active {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #FFFFFF;
+}
+
+/* ---------- Feed ---------- */
+.explore-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.explore-post {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 16px 18px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+}
+
+.explore-post__head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.explore-post__avatar {
+    display: block;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: #1a1a1a;
+    flex-shrink: 0;
+}
+
+.explore-post__byline {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.explore-post__author {
+    font-size: 14px;
+    font-weight: 600;
+    color: #FFFFFF;
+    text-decoration: none;
+    letter-spacing: 0.01em;
+}
+
+.explore-post__author:hover {
+    text-decoration: underline;
+}
+
+.explore-post__source {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 999px;
+    width: fit-content;
+}
+
+.explore-post__source--friend {
+    background: rgba(67, 196, 122, 0.18);
+    color: #43C47A;
+}
+
+.explore-post__source--artist {
+    background: rgba(255, 191, 0, 0.16);
+    color: #FFD75A;
+}
+
+.explore-post__source--venue {
+    background: rgba(56, 134, 252, 0.18);
+    color: #6FA9FF;
+}
+
+.explore-post__time {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    flex-shrink: 0;
+}
+
+.explore-post__text {
+    font-size: 14px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0 0 12px;
+    word-wrap: break-word;
+}
+
+.explore-post__image {
+    aspect-ratio: 16 / 10;
+    border-radius: 10px;
+    background-color: #1a1a1a;
+    margin-bottom: 12px;
+}
+
+.explore-post__actions {
+    display: flex;
+    gap: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.explore-post__action {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.75);
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.explore-post__action:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #FFFFFF;
+}
+
+.explore-post__heart {
+    color: #FF6B82;
+    margin-right: 2px;
+}
+
+@media (max-width: 700px) {
+    .explore-heading { font-size: 28px; }
+    .explore-post { padding: 14px; }
+}

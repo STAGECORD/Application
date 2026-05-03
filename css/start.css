@@ -1,0 +1,725 @@
+/* =====================================================
+   STAGECORD Beta — start / landing page
+   Standalone styling, doesn't share the in-app sidebar.
+   ===================================================== */
+
+.start-body {
+    /* Same faded-blue → black palette as the in-app body in main.css, so the
+       marketing surface flows seamlessly into the application. */
+    background:
+        radial-gradient(ellipse 110% 70% at 50% -10%, rgba(56, 134, 252, 0.22) 0%, transparent 60%),
+        linear-gradient(180deg, #0B1A38 0%, #060B1A 55%, #02040C 100%);
+    background-attachment: fixed;
+    background-color: #02040C;
+    color: #F1F1F4;
+    min-height: 100vh;
+    font-family: 'Outfit', sans-serif;
+}
+
+.start-body * { box-sizing: border-box; }
+
+/* ---------- Topbar ---------- */
+.start-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 40px;
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+.start-topbar__logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.start-topbar__logo .logo {
+    margin: 0;
+    line-height: 1;
+    font-size: 22px;
+    text-transform: uppercase;
+    color: #FFFFFF;
+}
+
+.start-topbar__beta {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #0B0B0F;
+    background: linear-gradient(90deg, #FFD75A 0%, #FFAA3B 100%);
+    padding: 4px 9px;
+    border-radius: 999px;
+}
+
+.start-topbar__links {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+.start-topbar__link {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.start-topbar__link:hover { color: #FFFFFF; }
+
+.start-topbar__link--cta {
+    color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 999px;
+    padding: 7px 14px;
+    font-weight: 600;
+}
+
+.start-topbar__link--cta:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: #FFFFFF;
+}
+
+/* ---------- Main ---------- */
+.start-main {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 40px 80px;
+}
+
+/* ---------- Hero ---------- */
+.start-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: 56px;
+    align-items: center;
+    padding: 60px 0 80px;
+}
+
+.start-hero__inner {
+    min-width: 0;
+}
+
+.start-hero__eyebrow {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #FFD75A;
+    background: rgba(255, 215, 90, 0.1);
+    padding: 5px 11px;
+    border-radius: 999px;
+    margin-bottom: 22px;
+}
+
+.start-hero__title {
+    font-family: 'Outfit', sans-serif;
+    font-size: clamp(40px, 6vw, 78px);
+    font-weight: 700;
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+    margin: 0 0 22px;
+    color: #FFFFFF;
+}
+
+.start-hero__title-accent {
+    background: linear-gradient(90deg, #6FA9FF 0%, #FFD75A 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.start-hero__subtitle {
+    font-size: 17px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.72);
+    max-width: 540px;
+    margin: 0 0 28px;
+}
+
+.start-hero__cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 36px;
+}
+
+.start-hero__pillars {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.start-hero__pillars li::before {
+    content: "▸";
+    color: #6FA9FF;
+    margin-right: 9px;
+    font-weight: 700;
+}
+
+.start-hero__pillars strong {
+    color: #FFFFFF;
+    font-weight: 700;
+}
+
+/* Hero artwork — four staggered tiles using existing concert photos */
+.start-hero__art {
+    position: relative;
+    height: 520px;
+    min-width: 0;
+}
+
+.start-hero__art-tile {
+    position: absolute;
+    border-radius: 18px;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+.start-hero__art-tile--a {
+    top: 0;
+    left: 8%;
+    width: 46%;
+    height: 58%;
+    background-image:
+        linear-gradient(180deg, rgba(0,0,0,0.05), rgba(0,0,0,0.4)),
+        url('../assets/images/artists/jokesmith-johnson-cover.png');
+    transform: rotate(-3deg);
+}
+
+.start-hero__art-tile--b {
+    top: 12%;
+    right: 0;
+    width: 44%;
+    height: 50%;
+    background-image:
+        linear-gradient(180deg, rgba(0,0,0,0.05), rgba(0,0,0,0.4)),
+        url('../assets/images/artists/rust-cover.png');
+    transform: rotate(4deg);
+}
+
+.start-hero__art-tile--c {
+    bottom: 0;
+    left: 0;
+    width: 42%;
+    height: 42%;
+    background-image:
+        linear-gradient(180deg, rgba(0,0,0,0.05), rgba(0,0,0,0.4)),
+        url('../assets/images/artists/jeremy-freedom-cover.png');
+    transform: rotate(2deg);
+}
+
+.start-hero__art-tile--d {
+    bottom: 6%;
+    right: 8%;
+    width: 40%;
+    height: 38%;
+    background-image:
+        linear-gradient(180deg, rgba(0,0,0,0.05), rgba(0,0,0,0.4)),
+        url('../assets/images/artists/julie-andersen-profile.png');
+    transform: rotate(-2deg);
+}
+
+/* ---------- CTA buttons ---------- */
+.start-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 13px 22px;
+    border-radius: 999px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: background 0.18s ease, border-color 0.18s ease, transform 0.15s ease;
+}
+
+.start-cta--primary {
+    background: #FFFFFF;
+    color: #0B0B0F;
+}
+
+.start-cta--primary:hover {
+    background: #F0F0F0;
+    transform: translateY(-1px);
+}
+
+.start-cta--ghost {
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #FFFFFF;
+    background: transparent;
+}
+
+.start-cta--ghost:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: #FFFFFF;
+}
+
+.start-cta--block {
+    width: 100%;
+    padding: 14px 22px;
+}
+
+.start-cta.is-success {
+    background: rgba(67, 196, 122, 0.18);
+    color: #43C47A;
+    border-color: rgba(67, 196, 122, 0.55);
+}
+
+/* ---------- Two-column panels (waitlist + signin) ---------- */
+.start-panels {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-bottom: 80px;
+}
+
+.start-panel {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 22px;
+    padding: 32px;
+    backdrop-filter: blur(8px);
+}
+
+.start-panel--signin {
+    background:
+        linear-gradient(180deg, rgba(56, 134, 252, 0.12), rgba(56, 134, 252, 0.04)),
+        rgba(255, 255, 255, 0.04);
+    border-color: rgba(111, 169, 255, 0.35);
+}
+
+.start-panel__head { margin-bottom: 22px; }
+
+.start-panel__tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.08);
+    padding: 4px 10px;
+    border-radius: 999px;
+    margin-bottom: 12px;
+}
+
+.start-panel__tag--invite {
+    background: rgba(67, 196, 122, 0.18);
+    color: #43C47A;
+}
+
+.start-panel__title {
+    margin: 0 0 8px;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #FFFFFF;
+}
+
+.start-panel__subtitle {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+/* ---------- Waitlist live counter ---------- */
+.start-counter {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+    padding: 14px 18px;
+    background: rgba(67, 196, 122, 0.1);
+    border: 1px solid rgba(67, 196, 122, 0.32);
+    border-radius: 12px;
+}
+
+.start-counter__pulse {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #43C47A;
+    box-shadow: 0 0 0 0 rgba(67, 196, 122, 0.7);
+    animation: start-counter-pulse 1.8s ease-out infinite;
+    flex-shrink: 0;
+    transform: translateY(-2px);
+}
+
+@keyframes start-counter-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(67, 196, 122, 0.55); }
+    70%  { box-shadow: 0 0 0 10px rgba(67, 196, 122, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(67, 196, 122, 0); }
+}
+
+.start-counter__number {
+    font-family: 'Outfit', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #FFFFFF;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+}
+
+.start-counter__label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* ---------- Forms ---------- */
+.start-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.start-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.start-field__label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.start-field__hint {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: none;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.start-field input[type="email"],
+.start-field input[type="text"],
+.start-field input[type="password"] {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.start-field input::placeholder {
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.start-field input:focus {
+    outline: none;
+    border-color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.start-field--check {
+    flex-direction: row;
+    align-items: center;
+    gap: 9px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.78);
+}
+
+.start-field--check input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #FFFFFF;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+/* Role grid for waitlist */
+.start-roles {
+    border: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.start-roles legend {
+    margin-bottom: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.start-roles__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.start-role {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.start-role:hover {
+    background: rgba(255, 255, 255, 0.09);
+    border-color: rgba(255, 255, 255, 0.32);
+}
+
+.start-role input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.start-role:has(input:checked) {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: #FFFFFF;
+    color: #FFFFFF;
+}
+
+.start-form__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.start-form__link {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.55);
+    text-decoration: none;
+}
+
+.start-form__link:hover {
+    color: #FFFFFF;
+    text-decoration: underline;
+}
+
+.start-form__footnote {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.55);
+    margin: 6px 0 0;
+    text-align: center;
+}
+
+.start-form__footnote a {
+    color: #FFD75A;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.start-form__footnote a:hover { text-decoration: underline; }
+
+/* ---------- Features section ---------- */
+.start-features { margin-bottom: 80px; }
+
+.start-features__heading {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #FFFFFF;
+    margin: 0 0 24px;
+    text-align: center;
+}
+
+.start-features__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.start-feature {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 24px;
+}
+
+.start-feature__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: rgba(111, 169, 255, 0.16);
+    color: #6FA9FF;
+    font-size: 18px;
+    margin-bottom: 14px;
+}
+
+.start-feature h4 {
+    margin: 0 0 8px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #FFFFFF;
+}
+
+.start-feature p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+/* ---------- FAQ ---------- */
+.start-faq {
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.start-faq__heading {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #FFFFFF;
+    margin: 0 0 16px;
+    text-align: center;
+}
+
+.start-faq__item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    padding: 0;
+    overflow: hidden;
+}
+
+.start-faq__item summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 16px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #FFFFFF;
+    position: relative;
+}
+
+.start-faq__item summary::-webkit-details-marker { display: none; }
+
+.start-faq__item summary::after {
+    content: "+";
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.6);
+    transition: transform 0.2s ease;
+}
+
+.start-faq__item[open] summary::after {
+    transform: translateY(-50%) rotate(45deg);
+}
+
+.start-faq__item p {
+    padding: 0 20px 18px;
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* ---------- Footer ---------- */
+.start-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin-top: 40px;
+}
+
+.start-footer__inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 24px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.start-footer__brand {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.start-footer__brand span {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.start-footer__nav {
+    display: flex;
+    gap: 22px;
+    font-size: 12px;
+}
+
+.start-footer__nav a {
+    color: rgba(255, 255, 255, 0.55);
+    text-decoration: none;
+}
+
+.start-footer__nav a:hover { color: #FFFFFF; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 980px) {
+    .start-hero {
+        grid-template-columns: 1fr;
+        gap: 40px;
+        padding: 30px 0 40px;
+    }
+    .start-hero__art { height: 360px; }
+    .start-panels { grid-template-columns: 1fr; }
+    .start-features__grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+    .start-topbar { padding: 18px 22px; }
+    .start-topbar__links { gap: 14px; }
+    .start-topbar__link:not(.start-topbar__link--cta) { display: none; }
+    .start-main { padding: 0 22px 60px; }
+    .start-hero__title { font-size: 42px; }
+    .start-roles__grid { grid-template-columns: repeat(2, 1fr); }
+    .start-features__grid { grid-template-columns: 1fr; }
+    .start-footer__inner { padding: 18px 22px; }
+}

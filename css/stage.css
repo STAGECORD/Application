@@ -1,0 +1,2340 @@
+/* ============================================================
+   Stage admin pages — Filming, Brand, Label
+   ============================================================
+   Shared layout primitives for the company-side admin views:
+   page header, filter bar, wide project card with tab grid +
+   numeric panel + action stack, team row, create-card.
+   Used by /licensor/, /sponsor/, /manager/ when viewing-as
+   the corresponding Stage account.
+*/
+
+/* ----------------------------------------
+   Page header — big project title + role
+   ---------------------------------------- */
+.stage-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin: 24px 0 18px;
+}
+
+.stage-page-header__title {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 48px;
+    line-height: 1;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+.stage-page-header__title em {
+    font-style: normal;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 0.55em;
+    margin-left: 14px;
+    letter-spacing: 0.04em;
+}
+
+.stage-page-header__title strong {
+    font-weight: 700;
+    color: #FFFFFF;
+}
+
+/* ----------------------------------------
+   Filter bar — horizontal row of dropdowns
+   and search fields above the project list.
+   ---------------------------------------- */
+.stage-filters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+    align-items: end;
+}
+
+.stage-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.stage-filter__label {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.stage-filter__control {
+    height: 36px;
+    padding: 0 12px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 6px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    line-height: 1;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease;
+}
+
+.stage-filter__control:focus {
+    outline: none;
+    border-color: rgba(74, 144, 226, 0.7);
+}
+
+.stage-filter__control::placeholder {
+    color: rgba(255, 255, 255, 0.35);
+}
+
+select.stage-filter__control {
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, rgba(255,255,255,0.7) 50%),
+                      linear-gradient(-45deg, transparent 50%, rgba(255,255,255,0.7) 50%);
+    background-position: calc(100% - 16px) center, calc(100% - 11px) center;
+    background-size: 5px 5px;
+    background-repeat: no-repeat;
+    padding-right: 30px;
+}
+
+.stage-filter--search .stage-filter__control {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'><circle cx='11' cy='11' r='7' stroke='rgba(255,255,255,0.5)' stroke-width='2'/><path d='M16 16l4 4' stroke='rgba(255,255,255,0.5)' stroke-width='2' stroke-linecap='round'/></svg>");
+    background-position: calc(100% - 8px) center;
+    background-size: 14px;
+    background-repeat: no-repeat;
+    padding-right: 30px;
+}
+
+/* ----------------------------------------
+   Project card — wide horizontal row
+   ---------------------------------------- */
+.stage-project-card {
+    display: grid;
+    grid-template-columns: 130px 1fr auto auto;
+    gap: 22px;
+    padding: 18px 22px;
+    background: #000000;
+    border: 1px solid #555555;
+    border-radius: 12px;
+    margin-bottom: 18px;
+    color: #FFFFFF;
+    align-items: stretch;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+}
+
+.stage-project-card:hover {
+    border-color: rgba(74, 144, 226, 0.4);
+}
+
+.stage-project-card.is-active {
+    border-color: #4A90E2;
+    box-shadow: 0 0 0 1px #4A90E2;
+}
+
+.stage-project-card__cover {
+    width: 130px;
+    height: 130px;
+    border-radius: 8px;
+    background-color: #1a1a1a;
+    background-size: cover;
+    background-position: center;
+    flex-shrink: 0;
+}
+
+.stage-project-card__meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 24px;
+    align-content: start;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.85);
+    min-width: 0;
+}
+
+.stage-project-card__meta-item {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.stage-project-card__meta-label {
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-right: 4px;
+}
+
+/* ----------------------------------------
+   Tab grid — 4×4 button grid showing project
+   sub-sections. Click toggles is-active; in
+   fase 1 the content panel is a placeholder.
+   ---------------------------------------- */
+.stage-project-card__tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 92px);
+    grid-auto-rows: 22px;
+    gap: 8px;
+    align-content: start;
+}
+
+.stage-project-card__tab {
+    height: 22px;
+    padding: 0 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 4px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.stage-project-card__tab:hover {
+    background: rgba(74, 144, 226, 0.18);
+    border-color: rgba(74, 144, 226, 0.5);
+}
+
+.stage-project-card__tab.is-active {
+    background: rgba(74, 144, 226, 0.32);
+    border-color: #4A90E2;
+}
+
+/* ----------------------------------------
+   Right side: numeric panel + action stack
+   ---------------------------------------- */
+.stage-project-card__side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    min-width: 180px;
+}
+
+.stage-stat-list {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 2px 12px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.stage-stat-list__label {
+    font-weight: 700;
+    color: #FFFFFF;
+    text-align: right;
+}
+
+.stage-stat-list__value {
+    text-align: right;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.stage-stat-list__value--good { color: #00A911; font-weight: 700; }
+.stage-stat-list__value--bad  { color: #FF6A55; font-weight: 700; }
+
+.stage-action-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 160px;
+    margin-top: auto;
+}
+
+.stage-action-btn {
+    height: 24px;
+    padding: 0 12px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 4px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    white-space: nowrap;
+}
+
+.stage-action-btn:hover {
+    background: rgba(74, 144, 226, 0.18);
+    border-color: rgba(74, 144, 226, 0.5);
+}
+
+.stage-action-btn--primary {
+    background: rgba(67, 196, 122, 0.2);
+    border-color: #43C47A;
+    color: #43C47A;
+}
+
+.stage-action-btn--primary:hover {
+    background: rgba(67, 196, 122, 0.32);
+}
+
+/* ----------------------------------------
+   Team row — appears under the active card
+   showing project staff (Director, Producer,
+   Booking, A&R, PR etc.)
+   ---------------------------------------- */
+.stage-team-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px 28px;
+    padding: 14px 22px 18px;
+    margin-top: -16px;
+    margin-bottom: 18px;
+    background: #000000;
+    border: 1px solid #555555;
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    color: #FFFFFF;
+}
+
+.stage-team-row.is-hidden { display: none; }
+
+.stage-team-member {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.stage-team-member__avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    background-color: #2a2a2a;
+    flex-shrink: 0;
+}
+
+.stage-team-member__main {
+    min-width: 0;
+}
+
+.stage-team-member__role {
+    font-weight: 700;
+    color: #FFFFFF;
+}
+
+.stage-team-member__name {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.stage-team-member__phone {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.55);
+    margin-top: 1px;
+}
+
+/* ----------------------------------------
+   "Create" giant button at end of list
+   ---------------------------------------- */
+.stage-create-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 130px;
+    width: 100%;
+    padding: 18px 22px;
+    background: #000000;
+    border: 1px solid #555555;
+    border-radius: 12px;
+    margin-top: 8px;
+    color: #FFFFFF;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.stage-create-card:hover {
+    border-color: #4A90E2;
+    background: rgba(74, 144, 226, 0.05);
+}
+
+.stage-create-card__plus {
+    font-size: 36px;
+    font-weight: 300;
+    line-height: 1;
+}
+
+.stage-create-card__label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* ----------------------------------------
+   Tab placeholder panel — shown below the
+   active card when a tab is selected. fase 1
+   shows just a stub message; tab content
+   wiring lands in fase 4.
+   ---------------------------------------- */
+.stage-tab-panel {
+    padding: 18px 22px;
+    margin-top: -16px;
+    margin-bottom: 18px;
+    background: rgba(74, 144, 226, 0.05);
+    border: 1px solid rgba(74, 144, 226, 0.3);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    color: rgba(255, 255, 255, 0.8);
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.stage-tab-panel__title {
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-bottom: 4px;
+}
+
+.stage-tab-panel.is-hidden { display: none; }
+
+/* ----------------------------------------
+   Label Stage roster — staff card grid
+   ---------------------------------------- */
+.stage-roster {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+/* Reserve scroll-space below the last row of staff cards so any card —
+   even the bottom-right Filippa Sand — can be scrolled to the top of the
+   viewport, leaving full room below for its expanded panel above the
+   fixed player bar. 100vh guarantees the bottom-row cards are reachable. */
+body:has(.stage-roster) .main-content {
+    padding-bottom: 100vh;
+}
+
+/* ----------------------------------------
+   Resources page — pool of company emails,
+   onboarding status, link to assigned profile.
+   Visible for Filming / Brand / Label Stage.
+   ---------------------------------------- */
+.resources-summary {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.resources-summary__stat {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.resources-summary__count {
+    font-weight: 700;
+    font-size: 18px;
+    color: #FFFFFF;
+}
+
+.resources-summary__count--warn { color: #FFC400; }
+.resources-summary__count--good { color: #43C47A; }
+
+.resources-section {
+    margin-bottom: 28px;
+}
+
+.resources-section__title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0 0 12px;
+}
+
+.resources-section__title--warn { color: #FFC400; }
+
+.resources-table {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0;
+    background: #000000;
+    border: 1px solid #555555;
+    border-radius: 12px;
+    overflow: hidden;
+    font-family: 'Outfit', sans-serif;
+}
+
+/* Visual divider lines between columns so the 7-column structure is
+   clear and content doesn't appear to bleed across. */
+.resources-table__td:not(:last-child),
+.resources-table__th:not(:last-child) {
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.resources-table__head,
+.resources-table__row {
+    display: contents;
+}
+
+.resources-table__th {
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.04);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.resources-table__td {
+    padding: 13px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.85);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.resources-table__row:hover .resources-table__td {
+    background: rgba(74, 144, 226, 0.05);
+}
+
+.resources-table__row:last-child .resources-table__td {
+    border-bottom: none;
+}
+
+.resources-table__email {
+    color: #FFFFFF;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.resources-table__name-cell {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.resources-table__avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    background-color: #2a2a2a;
+    flex-shrink: 0;
+}
+
+.resources-table__name {
+    color: #FFFFFF;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.resources-table__name--empty {
+    color: rgba(255, 255, 255, 0.35);
+    font-style: italic;
+}
+
+.resources-pill {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 10px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.resources-pill--common      { background: rgba(74, 144, 226, 0.15); border: 1px solid rgba(74, 144, 226, 0.5); color: #4A90E2; }
+.resources-pill--non-common  { background: rgba(255, 196, 0, 0.12);  border: 1px solid rgba(255, 196, 0, 0.45); color: #FFC400; }
+.resources-pill--available   { background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.25); color: rgba(255, 255, 255, 0.75); }
+.resources-pill--pending     { background: rgba(255, 196, 0, 0.12);  border: 1px solid rgba(255, 196, 0, 0.45); color: #FFC400; }
+.resources-pill--active      { background: rgba(67, 196, 122, 0.12); border: 1px solid rgba(67, 196, 122, 0.45); color: #43C47A; }
+.resources-pill--inactive    { background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.18); color: rgba(255, 255, 255, 0.4); }
+
+.resources-table__profile {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #FFFFFF;
+    text-decoration: none;
+    overflow: hidden;
+    min-width: 0;
+}
+
+.resources-table__profile-meta {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+    min-width: 0;
+}
+
+.resources-table__profile-role {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.resources-table__profile-name {
+    font-size: 13px;
+    color: #FFFFFF;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.resources-table__profile--none {
+    color: rgba(255, 255, 255, 0.35);
+    font-style: italic;
+}
+
+.resources-table__date {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.resources-table__action {
+    height: 28px;
+    padding: 0 12px;
+    border-radius: 6px;
+    background: rgba(74, 144, 226, 0.12);
+    border: 1px solid rgba(74, 144, 226, 0.4);
+    color: #FFFFFF;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    line-height: 1;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.resources-table__action:hover {
+    background: rgba(74, 144, 226, 0.32);
+    border-color: #4A90E2;
+}
+
+.resources-table__action--ghost {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.resources-table__action--ghost:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #FFFFFF;
+}
+
+.resources-table__action--warn {
+    background: rgba(255, 196, 0, 0.12);
+    border-color: rgba(255, 196, 0, 0.5);
+    color: #FFC400;
+}
+
+.resources-table__action--warn:hover {
+    background: rgba(255, 196, 0, 0.24);
+}
+
+/* Add resource modal */
+.resources-add-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.resources-add-form__field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.resources-add-form__type {
+    display: flex;
+    gap: 8px;
+}
+
+.resources-add-form__type-btn {
+    flex: 1 1 0;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 8px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.resources-add-form__type-btn:hover {
+    background: rgba(74, 144, 226, 0.1);
+}
+
+.resources-add-form__type-btn.is-active {
+    background: rgba(74, 144, 226, 0.18);
+    border-color: #4A90E2;
+}
+
+.resources-add-form__type-btn-title {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+
+.resources-add-form__type-btn-hint {
+    display: block;
+    font-size: 11px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* ----------------------------------------
+   Create profile modal — multi-step form
+   for creating new A&R/Manager/PR profiles
+   ---------------------------------------- */
+.create-profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.create-profile-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.create-profile-section__label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.create-profile-section__hint {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.45);
+    line-height: 1.4;
+}
+
+.create-profile-section__required {
+    color: #FF6A55;
+    margin-left: 2px;
+}
+
+.chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.chip {
+    padding: 7px 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+    white-space: nowrap;
+}
+
+.chip:hover {
+    background: rgba(74, 144, 226, 0.12);
+    border-color: rgba(74, 144, 226, 0.5);
+}
+
+.chip.is-active {
+    background: rgba(74, 144, 226, 0.22);
+    border-color: #4A90E2;
+}
+
+.chip--remove {
+    padding-right: 8px;
+}
+
+.chip--remove::after {
+    content: '×';
+    margin-left: 6px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.chip--remove:hover::after {
+    color: #FFFFFF;
+}
+
+.avatar-picker {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+    gap: 8px;
+}
+
+.avatar-picker__option {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    background-color: #2a2a2a;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+    padding: 0;
+}
+
+.avatar-picker__option:hover {
+    transform: scale(1.05);
+    border-color: rgba(74, 144, 226, 0.5);
+}
+
+.avatar-picker__option.is-selected {
+    border-color: #4A90E2;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.3);
+}
+
+.create-profile-multiselect {
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.create-profile-multiselect__option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 4px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-family: 'Outfit', sans-serif;
+}
+
+.create-profile-multiselect__option:hover {
+    background: rgba(74, 144, 226, 0.08);
+}
+
+.create-profile-multiselect__option input {
+    margin: 0;
+    accent-color: #4A90E2;
+}
+
+.create-profile-multiselect__name {
+    font-size: 13px;
+    color: #FFFFFF;
+    font-weight: 600;
+}
+
+.create-profile-multiselect__meta {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.55);
+    margin-left: auto;
+}
+
+.create-profile-empty {
+    color: rgba(255, 255, 255, 0.45);
+    font-style: italic;
+    font-size: 12px;
+    padding: 8px 4px;
+}
+
+.create-profile-summary {
+    padding: 12px 14px;
+    background: rgba(74, 144, 226, 0.08);
+    border: 1px solid rgba(74, 144, 226, 0.4);
+    border-radius: 8px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.create-profile-summary code {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: #FFC400;
+}
+
+/* ----------------------------------------
+   Unassigned-artists warning banner
+   ---------------------------------------- */
+.stage-warning-banner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    margin-bottom: 18px;
+    background: rgba(255, 56, 56, 0.08);
+    border: 1px solid #FF3838;
+    border-radius: 10px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+}
+
+.stage-warning-banner.is-hidden { display: none; }
+
+.stage-warning-banner__icon {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 56, 56, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #FF3838;
+    font-weight: 700;
+}
+
+.stage-warning-banner__main {
+    flex: 1;
+    min-width: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.stage-warning-banner__main strong {
+    color: #FF6A55;
+    font-weight: 700;
+}
+
+.stage-warning-banner__cta {
+    padding: 8px 16px;
+    background: rgba(255, 56, 56, 0.12);
+    border: 1px solid #FF3838;
+    border-radius: 6px;
+    color: #FF6A55;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease;
+}
+
+.stage-warning-banner__cta:hover {
+    background: rgba(255, 56, 56, 0.22);
+    color: #FFFFFF;
+}
+
+/* Unassigned artists list inside the assign-now modal */
+.unassigned-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.unassigned-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 8px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+}
+
+.unassigned-row__main {
+    flex: 1;
+    min-width: 0;
+}
+
+.unassigned-row__name {
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    line-height: 1.2;
+}
+
+.unassigned-row__meta {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 2px;
+}
+
+.unassigned-row__signed {
+    font-size: 11px;
+    color: rgba(255, 196, 0, 0.85);
+    font-weight: 600;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.unassigned-row__assign-btn {
+    padding: 8px 14px;
+    background: rgba(74, 144, 226, 0.18);
+    border: 1px solid #4A90E2;
+    border-radius: 6px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s ease;
+}
+
+.unassigned-row__assign-btn:hover {
+    background: rgba(74, 144, 226, 0.32);
+}
+
+/* ----------------------------------------
+   Hierarchy markers on staff cards — senior
+   avatar in junior-card corner, "+ N reports"
+   badge on cards that have juniors under them.
+   Only rendered on /manager/ (Label Stage admin
+   view), never on artist-facing pages.
+   ---------------------------------------- */
+.stage-roster__senior {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 6px 3px 4px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    pointer-events: none;
+}
+
+.stage-roster__senior-avatar {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    background-color: #2a2a2a;
+}
+
+.stage-roster__senior-name {
+    font-family: 'Outfit', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.75);
+    white-space: nowrap;
+}
+
+.stage-roster__reports-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    padding: 3px 8px;
+    background: rgba(74, 144, 226, 0.22);
+    border: 1px solid #4A90E2;
+    border-radius: 999px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    pointer-events: none;
+}
+
+/* Genre-focus tags shown on A&R cards (between count and expanded panel).
+   Indicates which genres this A&R has most experience with — used by the
+   future auto-suggest when signing a new artist matches an A&R's genre. */
+.stage-roster__genres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    justify-content: center;
+    margin-top: 4px;
+    padding: 0 4px;
+}
+
+.stage-roster__genre-chip {
+    padding: 2px 6px;
+    background: rgba(255, 138, 200, 0.12);
+    border: 1px solid rgba(255, 138, 200, 0.5);
+    border-radius: 3px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #FF8AC8;
+    white-space: nowrap;
+    line-height: 1.4;
+}
+
+/* ----------------------------------------
+   Acting-as banner — shown at the top of any
+   page when an A&R/Manager is impersonating
+   an artist they're assigned to. Persistent
+   reminder + Exit button to clear state.
+   ---------------------------------------- */
+.acting-as-banner {
+    position: fixed;
+    top: 74px;
+    left: 126px;
+    right: 0;
+    z-index: 9998;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 24px;
+    background: linear-gradient(90deg, rgba(255, 196, 0, 0.18) 0%, rgba(255, 196, 0, 0.08) 100%);
+    border-bottom: 2px solid #FFC400;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+}
+
+.acting-as-banner__icon {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 196, 0, 0.22);
+    border: 1px solid #FFC400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFC400;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.acting-as-banner__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    background-color: #2a2a2a;
+    border: 2px solid #FFC400;
+    flex-shrink: 0;
+}
+
+.acting-as-banner__main {
+    flex: 1;
+    min-width: 0;
+    line-height: 1.4;
+}
+
+.acting-as-banner__role {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #FFC400;
+}
+
+.acting-as-banner__text {
+    font-size: 13px;
+    color: #FFFFFF;
+}
+
+.acting-as-banner__text strong {
+    font-weight: 700;
+    color: #FFFFFF;
+}
+
+.acting-as-banner__exit {
+    padding: 8px 14px;
+    background: transparent;
+    border: 1px solid #FFC400;
+    border-radius: 6px;
+    color: #FFC400;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.acting-as-banner__exit:hover {
+    background: #FFC400;
+    color: #02040C;
+}
+
+/* When the banner is present, push the main content down so it doesn't
+   sit underneath the banner (which is fixed). The banner is ~62px tall
+   plus 12px breathing room — push by 80px so the artist cover starts
+   well below the banner. */
+body[data-acting-as] .main-content {
+    padding-top: 80px;
+}
+
+/* Subtle yellow ring around the page when in acting-as mode, as an
+   additional visual reminder. */
+body[data-acting-as]::after {
+    content: '';
+    position: fixed;
+    inset: 74px 0 0 126px;
+    border: 2px solid rgba(255, 196, 0, 0.4);
+    border-top: none;
+    pointer-events: none;
+    z-index: 9997;
+}
+
+/* ----------------------------------------
+   Activity feed on artist page — demonstrates
+   action attribution. Posts/actions made by
+   an A&R/Manager (acting as the artist) show
+   a small attribution badge that only the
+   artist owner sees.
+   ---------------------------------------- */
+.activity-feed {
+    margin: 30px 0;
+    padding: 20px 24px;
+    background: #000000;
+    border: 1px solid #555555;
+    border-radius: 14px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+}
+
+.activity-feed__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.activity-feed__title {
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #FFFFFF;
+    margin: 0;
+}
+
+.activity-feed__count {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.55);
+    font-weight: 400;
+    margin-left: 6px;
+}
+
+.activity-feed__post-btn {
+    padding: 8px 14px;
+    background: rgba(255, 196, 0, 0.18);
+    border: 1px solid #FFC400;
+    border-radius: 6px;
+    color: #FFC400;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.activity-feed__post-btn:hover {
+    background: #FFC400;
+    color: #02040C;
+}
+
+.activity-feed__compose {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px;
+    margin-bottom: 16px;
+    background: rgba(255, 196, 0, 0.05);
+    border: 1px solid rgba(255, 196, 0, 0.4);
+    border-radius: 8px;
+}
+
+.activity-feed__compose.is-hidden { display: none; }
+
+.activity-feed__compose textarea {
+    width: 100%;
+    min-height: 70px;
+    padding: 10px 12px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 6px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+.activity-feed__compose-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.activity-feed__list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.activity-post {
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+}
+
+.activity-post__head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.activity-post__icon {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(74, 144, 226, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+
+.activity-post__author {
+    font-size: 13px;
+    font-weight: 700;
+    color: #FFFFFF;
+}
+
+.activity-post__time {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-left: auto;
+}
+
+.activity-post__body {
+    font-size: 13px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+}
+
+/* Attribution badge — only visible to the artist owner. Indicates this
+   action was performed by an A&R/Manager acting on behalf of the artist. */
+.activity-post__attribution {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 8px 10px;
+    background: rgba(255, 196, 0, 0.08);
+    border: 1px dashed rgba(255, 196, 0, 0.5);
+    border-radius: 6px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.activity-post__attribution-icon {
+    flex-shrink: 0;
+    color: #FFC400;
+    font-weight: 700;
+}
+
+.activity-post__attribution-text strong {
+    color: #FFC400;
+    font-weight: 700;
+}
+
+.activity-post__attribution-hint {
+    margin-left: auto;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.45);
+    font-style: italic;
+    white-space: nowrap;
+}
+
+/* ----------------------------------------
+   Economy page (Label Stage) — KPIs, revenue
+   breakdown, top artists, recent payouts.
+   ---------------------------------------- */
+.economy-period {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 22px;
+}
+
+.economy-period__label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.economy-period__pill {
+    display: inline-flex;
+    align-items: center;
+    height: 30px;
+    padding: 0 14px;
+    background: rgba(74, 144, 226, 0.18);
+    border: 1px solid #4A90E2;
+    border-radius: 999px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.economy-period__pill.is-active {
+    background: #4A90E2;
+}
+
+.economy-period__pill:hover {
+    background: rgba(74, 144, 226, 0.32);
+}
+
+.economy-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    margin-bottom: 28px;
+}
+
+.economy-kpi {
+    padding: 18px 20px;
+    background: #000000;
+    border: 1px solid #555555;
+    border-radius: 12px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+}
+
+.economy-kpi__label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+    margin-bottom: 8px;
+}
+
+.economy-kpi__value {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+    color: #FFFFFF;
+}
+
+.economy-kpi__currency {
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.55);
+    margin-left: 6px;
+}
+
+.economy-kpi__delta {
+    margin-top: 8px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.economy-kpi__delta--up   { color: #43C47A; }
+.economy-kpi__delta--down { color: #FF6A55; }
+
+.economy-kpi--accent {
+    background: linear-gradient(135deg, rgba(74, 144, 226, 0.12) 0%, rgba(74, 144, 226, 0.04) 100%);
+    border-color: #4A90E2;
+}
+
+/* Two-column section: revenue breakdown + top artists side by side */
+.economy-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 24px;
+    margin-bottom: 28px;
+}
+
+@media (max-width: 1100px) {
+    .economy-grid { grid-template-columns: 1fr; }
+}
+
+.economy-card {
+    padding: 22px 24px;
+    background: #000000;
+    border: 1px solid #555555;
+    border-radius: 14px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+}
+
+.economy-card__title {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    margin: 0 0 6px;
+}
+
+.economy-card__hint {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0 0 18px;
+    line-height: 1.5;
+}
+
+/* Revenue-by-source rows */
+.revenue-source {
+    margin-bottom: 14px;
+}
+
+.revenue-source:last-child { margin-bottom: 0; }
+
+.revenue-source__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 6px;
+}
+
+.revenue-source__name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #FFFFFF;
+}
+
+.revenue-source__amount {
+    font-size: 13px;
+    font-weight: 700;
+    color: #FFFFFF;
+}
+
+.revenue-source__amount-meta {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-left: 6px;
+    font-weight: 400;
+}
+
+.revenue-source__bar {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.revenue-source__bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.revenue-source--streams   .revenue-source__bar-fill { background: #4A90E2; }
+.revenue-source--sales     .revenue-source__bar-fill { background: #43C47A; }
+.revenue-source--covers    .revenue-source__bar-fill { background: #FF8AC8; }
+.revenue-source--brands    .revenue-source__bar-fill { background: #FFC400; }
+.revenue-source--concerts  .revenue-source__bar-fill { background: #A370F0; }
+.revenue-source--sync      .revenue-source__bar-fill { background: #7DD3C0; }
+
+/* Top artists table */
+.top-artists-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.top-artist-row {
+    display: grid;
+    grid-template-columns: 28px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    font-family: 'Outfit', sans-serif;
+}
+
+.top-artist-row__rank {
+    font-size: 13px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+}
+
+.top-artist-row__name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #FFFFFF;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.top-artist-row__meta {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.top-artist-row__amount {
+    font-size: 13px;
+    font-weight: 700;
+    color: #43C47A;
+    white-space: nowrap;
+}
+
+/* Recent payouts list */
+.payout-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-family: 'Outfit', sans-serif;
+}
+
+.payout-row:last-child { border-bottom: none; }
+
+.payout-row__date {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.payout-row__main {
+    min-width: 0;
+}
+
+.payout-row__artist {
+    font-size: 13px;
+    font-weight: 700;
+    color: #FFFFFF;
+}
+
+.payout-row__source {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.payout-row__amount {
+    font-size: 13px;
+    font-weight: 700;
+    color: #FFFFFF;
+    white-space: nowrap;
+}
+
+.payout-row__status {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 10px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.payout-row__status--paid    { background: rgba(67, 196, 122, 0.15); border: 1px solid rgba(67, 196, 122, 0.5); color: #43C47A; }
+.payout-row__status--pending { background: rgba(255, 196, 0, 0.12);  border: 1px solid rgba(255, 196, 0, 0.5);  color: #FFC400; }
+
+.stage-roster__card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 10px 18px;
+    background: #000000;
+    border: 1px solid #555555;
+    border-radius: 12px;
+    color: #FFFFFF;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+    font-family: 'Outfit', sans-serif;
+    text-align: center;
+    position: relative;
+}
+
+.stage-roster__card:hover {
+    border-color: rgba(74, 144, 226, 0.4);
+}
+
+.stage-roster__card.is-active {
+    border-color: #4A90E2;
+    box-shadow: 0 0 0 1px #4A90E2;
+}
+
+.stage-roster__role {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.stage-roster__avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    background-color: #2a2a2a;
+}
+
+.stage-roster__name {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    line-height: 1;
+}
+
+.stage-roster__name-first {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+}
+
+.stage-roster__name-last {
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.stage-roster__count {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 2px;
+}
+
+.stage-roster__card.is-active .stage-roster__count {
+    color: #4A90E2;
+}
+
+/* Expanded panel under the active card showing the staff member's
+   artist roster. Sits below the card via absolute positioning. */
+.stage-roster__expanded {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    padding: 12px 10px 14px;
+    background: #000000;
+    border: 1px solid #555555;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 5;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+    max-height: 280px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.stage-roster__card:not(.is-active) .stage-roster__expanded { display: none; }
+
+.stage-roster__artist-name {
+    display: block;
+    width: 100%;
+    padding: 6px 4px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.85);
+    text-align: center;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.stage-roster__artist-name:hover {
+    background: rgba(74, 144, 226, 0.18);
+    border-color: rgba(74, 144, 226, 0.5);
+    color: #FFFFFF;
+}
+
+.stage-roster__empty {
+    font-size: 10px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+    text-align: center;
+    padding: 8px 4px;
+    font-style: italic;
+}
+
+/* ----------------------------------------
+   Contract modal — shown when clicking an
+   artist in the staff card expanded panel.
+   Displays contract dates, agreement, status
+   plus a "Reassign to another A&R" action.
+   ---------------------------------------- */
+.contract-modal__body {
+    padding: 4px 0 8px;
+}
+
+.contract-modal__header-block {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.contract-modal__avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    background-color: #2a2a2a;
+    flex-shrink: 0;
+}
+
+.contract-modal__title-block {
+    min-width: 0;
+}
+
+.contract-modal__artist-name {
+    font-family: 'Outfit', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.1;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.contract-modal__artist-meta {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 2px;
+}
+
+.contract-modal__field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 24px;
+    margin-bottom: 14px;
+}
+
+.contract-modal__field-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 2px;
+}
+
+.contract-modal__field-value {
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #FFFFFF;
+}
+
+.contract-modal__field-value--good { color: #43C47A; }
+.contract-modal__field-value--warn { color: #FFC400; }
+.contract-modal__field-value--bad  { color: #FF6A55; }
+
+.contract-modal__assigned-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    background: rgba(74, 144, 226, 0.06);
+    border: 1px solid rgba(74, 144, 226, 0.3);
+    border-radius: 8px;
+}
+
+.contract-modal__assigned-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+    flex-shrink: 0;
+}
+
+.contract-modal__assigned-name {
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #FFFFFF;
+}
+
+/* Reassign step — list of staff to choose from */
+.reassign-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+    max-height: 380px;
+    overflow-y: auto;
+    padding: 4px;
+}
+
+.reassign-staff {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 8px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.reassign-staff:hover {
+    background: rgba(74, 144, 226, 0.12);
+    border-color: #4A90E2;
+}
+
+.reassign-staff__avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    background-color: #2a2a2a;
+    flex-shrink: 0;
+}
+
+.reassign-staff__main {
+    min-width: 0;
+}
+
+.reassign-staff__role {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.reassign-staff__name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #FFFFFF;
+    line-height: 1.2;
+}
+
+.reassign-staff__count {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.reassign-confirm-banner {
+    padding: 14px 16px;
+    background: rgba(67, 196, 122, 0.1);
+    border: 1px solid rgba(67, 196, 122, 0.4);
+    border-radius: 8px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 16px;
+}
+
+.reassign-confirm-banner strong {
+    color: #43C47A;
+}
+
+/* ----------------------------------------
+   Contract modal — wider variant with internal
+   scroll so royalty + rights tables don't push
+   the modal past the viewport. Aligned to top
+   of overlay (below the fixed 74px topbar) so
+   the modal header is always visible.
+   ---------------------------------------- */
+.release-modal-overlay:has(.release-modal--contract) {
+    align-items: flex-start;
+    padding-top: 90px;
+}
+
+.release-modal.release-modal--contract {
+    max-width: 640px;
+    width: 92vw;
+    max-height: calc(100vh - 114px);
+}
+
+.release-modal.release-modal--contract .release-modal__body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+/* ----------------------------------------
+   Royalties + rights inside the contract modal
+   ---------------------------------------- */
+.contract-section {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.contract-section__title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0 0 10px;
+}
+
+.contract-section__hint {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.45);
+    margin: 0 0 12px;
+    line-height: 1.4;
+}
+
+.contract-section__type-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    background: rgba(74, 144, 226, 0.15);
+    border: 1px solid rgba(74, 144, 226, 0.5);
+    border-radius: 999px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #4A90E2;
+    margin-left: 8px;
+}
+
+/* Royalties stacked-bar rows */
+.royalty-row {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.royalty-row__source {
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: #FFFFFF;
+}
+
+.royalty-row__bar {
+    display: flex;
+    height: 22px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.royalty-segment {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #FFFFFF;
+    white-space: nowrap;
+    overflow: hidden;
+    padding: 0 4px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+}
+
+.royalty-segment--artist     { background: #FF8AC8; color: #1a0010; }
+.royalty-segment--label      { background: #4A90E2; }
+.royalty-segment--producer   { background: #FFC400; color: #1a1100; }
+.royalty-segment--songwriter { background: #43C47A; color: #00170a; }
+.royalty-segment--manager    { background: #A370F0; }
+.royalty-segment--publisher  { background: #7DD3C0; color: #001a16; }
+
+.royalty-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    margin-top: 10px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.royalty-legend__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.royalty-legend__swatch {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+}
+
+/* Rights two-column grid */
+.rights-grid {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 6px 16px;
+}
+
+.rights-grid__label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: #FFFFFF;
+    line-height: 1.5;
+}
+
+.rights-grid__value {
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.5;
+}
+
+/* ----------------------------------------
+   Filter row that includes a trailing CTA button
+   (e.g. "Create A&R profile" on Label Stage)
+   ---------------------------------------- */
+/* When paired with a CTA tile, align filter row to the same 7-column
+   track as the .stage-roster grid below (same gap), so filter labels
+   sit exactly above their matching staff card columns. */
+.stage-filters--with-cta {
+    grid-template-columns: repeat(7, 1fr);
+    gap: 14px;
+    align-items: stretch;
+}
+
+.stage-filter-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 100%;
+    padding: 10px;
+    background: #000000;
+    border: 1px solid #555555;
+    border-radius: 10px;
+    color: #FFFFFF;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    transition: border-color 0.15s ease;
+    align-self: stretch;
+}
+
+.stage-filter-cta:hover {
+    border-color: #4A90E2;
+}
+
+.stage-filter-cta__plus {
+    font-size: 28px;
+    font-weight: 300;
+    line-height: 1;
+}
+
+.stage-filter-cta__label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.3;
+}
+
+/* ----------------------------------------
+   A&R artist card — compact horizontal row
+   used on /ar/ to show the artists assigned
+   to the logged-in A&R. Click navigates to
+   the artist profile (with impersonation
+   indicator coming in fase 3).
+   ---------------------------------------- */
+.ar-page-intro {
+    color: rgba(255, 255, 255, 0.7);
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0 0 24px;
+    max-width: 720px;
+}
+
+.ar-artist-card {
+    display: grid;
+    grid-template-columns: 130px 1fr auto auto;
+    gap: 22px;
+    padding: 18px 22px;
+    background: #000000;
+    border: 1px solid #555555;
+    border-radius: 12px;
+    margin-bottom: 14px;
+    color: #FFFFFF;
+    align-items: center;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+    text-decoration: none;
+    font-family: 'Outfit', sans-serif;
+}
+
+.ar-artist-card:hover {
+    border-color: #4A90E2;
+}
+
+.ar-artist-card__cover {
+    width: 130px;
+    height: 130px;
+    border-radius: 8px;
+    background-color: #1a1a1a;
+    background-size: cover;
+    background-position: center;
+}
+
+.ar-artist-card__main {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.ar-artist-card__name {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+}
+
+.ar-artist-card__meta {
+    font-size: 13px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.ar-artist-card__meta-line {
+    display: block;
+}
+
+.ar-artist-card__meta-label {
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-right: 4px;
+}
+
+.ar-artist-card__earnings {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 2px 12px;
+    font-size: 12px;
+    line-height: 1.5;
+    align-self: center;
+}
+
+.ar-artist-card__earnings-label {
+    font-weight: 700;
+    color: #FFFFFF;
+    text-align: right;
+}
+
+.ar-artist-card__earnings-value {
+    text-align: right;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.ar-artist-card__cta {
+    align-self: center;
+}

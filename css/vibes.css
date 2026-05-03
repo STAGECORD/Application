@@ -1,0 +1,182 @@
+/* ===========================================================================
+   Vibes — music-specific engagement (≠ generic ♥ Likes)
+   ===========================================================================
+   The PDF distinguishes "Vibes = Music likes" from generic likes:
+   ♥ Likes stays on text posts and comments; Vibes (audio-bar icon, cyan)
+   appear on music content — concert photos, songs, cover videos, live
+   performance posts. Hovering or pressing animates the bars in a wave.
+*/
+
+.vibe-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(125, 211, 192, 0.08);
+    border: 1px solid rgba(125, 211, 192, 0.32);
+    color: rgba(255, 255, 255, 0.85);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+    user-select: none;
+}
+
+.vibe-btn:hover {
+    border-color: #7DD3C0;
+    color: #FFFFFF;
+}
+
+.vibe-btn[aria-pressed="true"] {
+    background: rgba(125, 211, 192, 0.22);
+    border-color: #7DD3C0;
+    color: #FFFFFF;
+}
+
+.vibe-btn[aria-pressed="true"]:hover {
+    background: rgba(125, 211, 192, 0.32);
+}
+
+/* Three-bar audio icon. Each bar animates independently when the button
+   is pressed or hovered — a quick "soundwave" pulse to signal the
+   music-engagement nature of the action. */
+.vibe-btn__icon {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 2px;
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.vibe-btn__bar {
+    width: 3px;
+    background: currentColor;
+    border-radius: 1px;
+    transform-origin: bottom;
+    transition: height 0.25s ease;
+}
+
+.vibe-btn__bar:nth-child(1) { height: 5px; }
+.vibe-btn__bar:nth-child(2) { height: 10px; }
+.vibe-btn__bar:nth-child(3) { height: 7px; }
+.vibe-btn__bar:nth-child(4) { height: 12px; }
+
+.vibe-btn:hover .vibe-btn__bar,
+.vibe-btn[aria-pressed="true"] .vibe-btn__bar {
+    animation: vibeWave 0.9s ease-in-out infinite;
+}
+
+.vibe-btn:hover .vibe-btn__bar:nth-child(1),
+.vibe-btn[aria-pressed="true"] .vibe-btn__bar:nth-child(1) { animation-delay: 0s; }
+
+.vibe-btn:hover .vibe-btn__bar:nth-child(2),
+.vibe-btn[aria-pressed="true"] .vibe-btn__bar:nth-child(2) { animation-delay: 0.1s; }
+
+.vibe-btn:hover .vibe-btn__bar:nth-child(3),
+.vibe-btn[aria-pressed="true"] .vibe-btn__bar:nth-child(3) { animation-delay: 0.2s; }
+
+.vibe-btn:hover .vibe-btn__bar:nth-child(4),
+.vibe-btn[aria-pressed="true"] .vibe-btn__bar:nth-child(4) { animation-delay: 0.3s; }
+
+@keyframes vibeWave {
+    0%, 100% { height: 5px; }
+    50%      { height: 12px; }
+}
+
+/* On click, briefly enlarge to confirm the action. */
+.vibe-btn.is-bumping { transform: scale(1.08); }
+
+/* Variants */
+.vibe-btn--compact {
+    font-size: 11px;
+    padding: 3px 8px;
+    gap: 4px;
+}
+
+.vibe-btn--compact .vibe-btn__icon { width: 12px; height: 12px; }
+
+.vibe-btn--large {
+    font-size: 14px;
+    padding: 9px 18px;
+    gap: 8px;
+    font-weight: 700;
+}
+
+.vibe-btn--large .vibe-btn__icon { width: 18px; height: 18px; }
+.vibe-btn--large .vibe-btn__bar { width: 4px; }
+.vibe-btn--large .vibe-btn__bar:nth-child(1) { height: 6px; }
+.vibe-btn--large .vibe-btn__bar:nth-child(2) { height: 14px; }
+.vibe-btn--large .vibe-btn__bar:nth-child(3) { height: 9px; }
+.vibe-btn--large .vibe-btn__bar:nth-child(4) { height: 16px; }
+
+@keyframes vibeWaveLarge {
+    0%, 100% { height: 6px; }
+    50%      { height: 16px; }
+}
+
+.vibe-btn--large:hover .vibe-btn__bar,
+.vibe-btn--large[aria-pressed="true"] .vibe-btn__bar {
+    animation: vibeWaveLarge 0.9s ease-in-out infinite;
+}
+
+/* Floating overlay variant for photos — fully opaque chip pinned to
+   the top-right corner of an image card. */
+.vibe-btn--overlay {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.55);
+    border-color: rgba(125, 211, 192, 0.5);
+    backdrop-filter: blur(8px);
+    color: rgba(255, 255, 255, 0.92);
+    z-index: 2;
+}
+
+.vibe-btn--overlay[aria-pressed="true"] {
+    background: rgba(125, 211, 192, 0.85);
+    color: #0a1f1a;
+    border-color: #7DD3C0;
+}
+
+/* Small badge to mark a vibes-supported area in the help/legend */
+.vibes-legend {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(125, 211, 192, 0.85);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.vibes-legend__icon {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 2px;
+    width: 12px;
+    height: 12px;
+}
+
+.vibes-legend__bar {
+    width: 2px;
+    background: currentColor;
+    border-radius: 1px;
+}
+
+.vibes-legend__bar:nth-child(1) { height: 4px; }
+.vibes-legend__bar:nth-child(2) { height: 8px; }
+.vibes-legend__bar:nth-child(3) { height: 6px; }
+.vibes-legend__bar:nth-child(4) { height: 10px; }
+
+/* Inline-row container for the prominent song-page Vibes button + legend */
+.song-vibe-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 10px 0 4px;
+}

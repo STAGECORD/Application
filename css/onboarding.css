@@ -1,0 +1,315 @@
+/* ===========================================================================
+   5-step onboarding wizard
+   ===========================================================================
+   The PDF concept: walk new users through 5 setup steps so all roles
+   (artist, venue, company, fan, accounting) are covered. Each step is
+   skippable — most users will only need 1-2 of them.
+*/
+
+.onboard-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1500;
+    padding: 24px;
+}
+
+.onboard-overlay.open { display: flex; }
+
+.onboard-modal {
+    width: 100%;
+    max-width: 720px;
+    max-height: 90vh;
+    background: linear-gradient(160deg, #181818 0%, #0E0E0E 100%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.onboard-modal__head {
+    padding: 24px 28px 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.onboard-modal__progress {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.onboard-step-dot {
+    flex: 1 1 auto;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+}
+
+.onboard-step-dot.is-done::after,
+.onboard-step-dot.is-active::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, #4A90E2, #7DD3C0);
+    border-radius: 2px;
+}
+
+.onboard-step-dot.is-active::after {
+    animation: onboardPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes onboardPulse {
+    0%, 100% { opacity: 0.6; }
+    50%      { opacity: 1; }
+}
+
+.onboard-modal__step-tag {
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.onboard-modal__title {
+    margin: 4px 0 6px;
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.15;
+    color: #FFFFFF;
+}
+
+.onboard-modal__subtitle {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.onboard-modal__body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 22px 28px 24px;
+}
+
+.onboard-modal__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 28px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.25);
+}
+
+.onboard-modal__foot-info {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.onboard-modal__foot-actions {
+    display: inline-flex;
+    gap: 10px;
+}
+
+.onboard-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 9px 18px;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.onboard-btn:hover { border-color: #FFFFFF; background: rgba(255, 255, 255, 0.06); }
+
+.onboard-btn--primary {
+    background: linear-gradient(135deg, #4A90E2, #7DD3C0);
+    border-color: transparent;
+    color: #021024;
+    font-weight: 800;
+}
+
+.onboard-btn--primary:hover { background: linear-gradient(135deg, #5AA0F2, #8DDDC8); }
+
+.onboard-btn--ghost {
+    border-color: transparent;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.onboard-btn--ghost:hover { color: #FFFFFF; background: rgba(255, 255, 255, 0.05); }
+
+/* Role-card grid for step 1 (role choice) */
+.onboard-role-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+}
+
+.onboard-role {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    padding: 14px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: left;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+}
+
+.onboard-role:hover {
+    border-color: rgba(74, 144, 226, 0.5);
+    background: rgba(74, 144, 226, 0.06);
+}
+
+.onboard-role.is-selected {
+    border-color: #4A90E2;
+    background: rgba(74, 144, 226, 0.12);
+}
+
+.onboard-role__icon {
+    font-size: 26px;
+    line-height: 1;
+}
+
+.onboard-role__name {
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.onboard-role__desc {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.4;
+}
+
+/* Form fields */
+.onboard-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.onboard-field__label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.onboard-field__input,
+.onboard-field__select,
+.onboard-field__textarea {
+    background: #1f1f1f;
+    border: 1px solid #2f2f2f;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    padding: 9px 12px;
+    border-radius: 7px;
+}
+
+.onboard-field__input:focus,
+.onboard-field__select:focus,
+.onboard-field__textarea:focus {
+    outline: none;
+    border-color: #4A90E2;
+}
+
+.onboard-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+/* Step skip link */
+.onboard-skip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 14px auto 0;
+    background: transparent;
+    border: 1px dashed rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.55);
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    padding: 5px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+.onboard-skip:hover { color: #FFFFFF; border-color: #FFFFFF; }
+
+/* Final celebration step */
+.onboard-celebrate {
+    text-align: center;
+    padding: 14px 0;
+}
+
+.onboard-celebrate__icon {
+    font-size: 60px;
+    line-height: 1;
+    margin-bottom: 12px;
+}
+
+.onboard-celebrate__title {
+    font-size: 26px;
+    font-weight: 800;
+    margin: 0 0 8px;
+}
+
+.onboard-celebrate__desc {
+    margin: 0 auto;
+    max-width: 460px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.onboard-summary {
+    margin-top: 18px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 12px 14px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 12px;
+}
+
+.onboard-summary__row {
+    display: flex;
+    justify-content: space-between;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.onboard-summary__row strong { color: #FFFFFF; }
+
+.onboard-summary__row--skipped { color: rgba(255, 255, 255, 0.35); font-style: italic; }
+
+@media (max-width: 600px) {
+    .onboard-row { grid-template-columns: 1fr; }
+    .onboard-modal__title { font-size: 22px; }
+}

@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAGECORD - Now Playing</title>
+    <link rel="stylesheet" href="../../css/sidebar.css">
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/logo.css">
+    <link rel="stylesheet" href="../../css/topbar.css">
+    <link rel="stylesheet" href="../../css/artist.css">
+    <link rel="stylesheet" href="../../css/streaming.css">
+    <link rel="stylesheet" href="../../css/song.css">
+    <link rel="stylesheet" href="../../css/vibes.css">
+</head>
+<body>
+    <!-- Left Sidebar (reused; user-mode logic in app.js handles per-mode visibility) -->
+    <aside class="sidebar" data-sidebar></aside>
+
+    <!-- Top Bar with Now Playing pill + MUSIC STAGE label -->
+    <header class="topbar">
+        <div class="logo-container">
+            <a href="../../index.html" class="logo-link">
+                <h1 class="logo">
+                    <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
+                </h1>
+            </a>
+        </div>
+
+        <a href="#" class="topbar-now-playing" id="topbarNowPlaying" data-help="Now playing: Det aktuelle track. Klik for at åbne afspilleren.">
+            <span class="topbar-now-playing__cover" id="topbarNpCover" style="background-image: url('../../assets/images/artists/jeremy-freedom-cover.png');"></span>
+            <span class="topbar-now-playing__label">Now playing</span>
+            <span class="topbar-now-playing__separator">·</span>
+            <span class="topbar-now-playing__track" id="topbarNpTrack">Jeremy Freedom — Freedom</span>
+        </a>
+
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Search Artists, Concerts, Venues, Friends and much more" aria-label="Search"/>
+            <svg class="search-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/>
+                <path d="M18 18L24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </div>
+
+        <span class="topbar-stage-label">
+            <span class="topbar-stage-label__primary">MUSIC</span>
+            <span class="topbar-stage-label__secondary">STAGE</span>
+        </span>
+
+        <button type="button" class="help-button" aria-label="Help" aria-pressed="false" data-help="Hjælpeknap.">
+            <span class="help-mark">?</span>
+        </button>
+    </header>
+
+    <!-- Main -->
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <!-- Stage: artists circles + integrated player controls + song titles + progress -->
+            <section class="song-stage" data-help="Stage: Det aktuelle track i midten, med forrige/næste tracks som overlappende cirkler. Klik en cirkel for at hoppe til det track.">
+                <button type="button" class="song-stage__minimize" id="songMinimizeBtn" data-help="Minimize: Skjul afspilleren ned i en bar i bunden af siden, så du kan se andet indhold mens sangen spiller.">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>Minimize</span>
+                </button>
+                <h2 class="song-stage__heading">Artists</h2>
+
+                <div class="song-stage__circles" id="songCircles">
+                    <!-- 7 circles: slots -3..3. Slots ±3 are off-screen buffer
+                         that get recycled in/out during slide transitions.
+                         Each circle wraps a disc (scaled + tinted) plus a
+                         non-scaling artist label and PAST/NEXT badge. -->
+                    <div class="song-circle" data-slot="-3"><div class="song-circle__disc"></div><div class="song-circle__artist"><strong>Jeremy</strong><span>Freedom</span></div><span class="song-circle__role"></span></div>
+                    <div class="song-circle" data-slot="-2"><div class="song-circle__disc"></div><div class="song-circle__artist"><strong>Jeremy</strong><span>Freedom</span></div><span class="song-circle__role"></span></div>
+                    <div class="song-circle" data-slot="-1"><div class="song-circle__disc"></div><div class="song-circle__artist"><strong>Jeremy</strong><span>Freedom</span></div><span class="song-circle__role"></span></div>
+                    <div class="song-circle" data-slot="0"><div class="song-circle__disc"></div><div class="song-circle__artist"><strong>Jeremy</strong><span>Freedom</span></div><span class="song-circle__role"></span></div>
+                    <div class="song-circle" data-slot="1"><div class="song-circle__disc"></div><div class="song-circle__artist"><strong>Jeremy</strong><span>Freedom</span></div><span class="song-circle__role"></span></div>
+                    <div class="song-circle" data-slot="2"><div class="song-circle__disc"></div><div class="song-circle__artist"><strong>Jeremy</strong><span>Freedom</span></div><span class="song-circle__role"></span></div>
+                    <div class="song-circle" data-slot="3"><div class="song-circle__disc"></div><div class="song-circle__artist"><strong>Jeremy</strong><span>Freedom</span></div><span class="song-circle__role"></span></div>
+
+                    <!-- Side controls: shuffle / repeat, vertically centered with the circles -->
+                    <button type="button" class="song-side-btn song-stage__shuffle" aria-label="Shuffle" data-help="Shuffle: Spil tracks i tilfældig rækkefølge.">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <button type="button" class="song-side-btn song-stage__repeat" aria-label="Repeat" data-help="Repeat: Gentag samme track eller hele albummet.">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+
+                    <!-- Prev / next as direction arrows on the past / next discs.
+                         These are the actual prev/next track controls — clicking
+                         them slides the carousel like the PAST/NEXT pills used to. -->
+                    <button type="button" class="song-arrow song-arrow--prev" id="songPrevBtn" aria-label="Previous track" data-help="Forrige track.">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <span class="song-arrow__label">Past</span>
+                    </button>
+                    <button type="button" class="song-arrow song-arrow--next" id="songNextBtn" aria-label="Next track" data-help="Næste track.">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <span class="song-arrow__label">Next</span>
+                    </button>
+
+                    <!-- Play indicator — just a triangle / pause bars overlaid on
+                         the centre disc. The entire centre disc is the click
+                         target (see CSS below). -->
+                    <span class="song-stage__play-glyph" id="songPlayGlyph" data-playing="true" aria-hidden="true">
+                        <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                        <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+                    </span>
+                </div>
+
+                <div class="song-stage__titles">
+                    <span class="song-title-cell song-title-cell--far">Churching</span>
+                    <span class="song-title-cell">Harlem Ghetto</span>
+                    <span class="song-title-cell song-title-cell--current">Freedom</span>
+                    <span class="song-title-cell">More Than That</span>
+                    <span class="song-title-cell song-title-cell--far">Hijack</span>
+                </div>
+
+                <div class="song-progress" data-help="Progress: Aktuel position i sangen. Klik på baren for at scrub.">
+                    <span class="song-progress__time">0:34</span>
+                    <div class="song-progress__bar" id="songProgressBar"><div class="song-progress__fill" id="songProgressFill"></div></div>
+                    <span class="song-progress__time song-progress__time--end">3:37</span>
+                </div>
+
+                <!-- Vibes — music-specific engagement (≠ ♥ Likes used on text posts) -->
+                <div class="song-vibe-row">
+                    <button type="button" class="vibe-btn vibe-btn--large" data-engagement="vibes" data-vibe-id="song-freedom" aria-pressed="false" data-help="Vibe denne sang: Det officielle music-engagement metric. Adskilt fra generelle ♥ likes som bruges på tekst-opslag og kommentarer. Vibes-tællingen indgår i streaming-algoritmens anbefalinger og 'Paying it forward'-eksponering mellem artister i samme genre-gruppe.">
+                        <span class="vibe-btn__icon" aria-hidden="true">
+                            <span class="vibe-btn__bar"></span>
+                            <span class="vibe-btn__bar"></span>
+                            <span class="vibe-btn__bar"></span>
+                            <span class="vibe-btn__bar"></span>
+                        </span>
+                        <span class="vibe-btn__count" data-vibe-count>431K</span>
+                        <span class="vibe-btn__label">Vibes</span>
+                    </button>
+                    <span class="vibes-legend" data-help="Vibes vs Likes: Vibes (audio-bar ikon) er music-engagement — bruges på sange, koncerter, covers. ♥ Likes bruges på tekst-opslag og kommentarer. Tællingerne er separate metrics.">
+                        <span class="vibes-legend__icon" aria-hidden="true">
+                            <span class="vibes-legend__bar"></span>
+                            <span class="vibes-legend__bar"></span>
+                            <span class="vibes-legend__bar"></span>
+                            <span class="vibes-legend__bar"></span>
+                        </span>
+                        Music engagement
+                    </span>
+                </div>
+            </section>
+
+            <!-- Stem toggles -->
+            <section class="song-stems" data-help="Stems: Slå dele af mixet til/fra. Tilgængelige stems afhænger af hvad kunstneren har uploadet — inaktive er mørke, ikke-uploadede har strikethrough.">
+                <header class="song-stems__head">
+                    <h3 class="song-stems__heading">Stems · mix it your way</h3>
+                    <span class="song-stems__hint">5 of 5 stems available · turn off what you don't want to hear</span>
+                </header>
+
+                <div class="song-stems__list">
+                    <label class="song-stem">
+                        <input type="checkbox" data-stem="vocals" checked>
+                        <svg class="song-stem__icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.93V21h2v-3.07A7 7 0 0 0 19 11h-2z"/></svg>
+                        <span>Vocals</span>
+                    </label>
+
+                    <label class="song-stem">
+                        <input type="checkbox" data-stem="guitar" checked>
+                        <svg class="song-stem__icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3l-2 2-3 3-2 2-2 2-2 2-2 2-3 3 1 1 3-3 2-2 2-2 2-2 2-2 3-3 2-2-1-1zm-7 7a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/></svg>
+                        <span>Guitar</span>
+                    </label>
+
+                    <label class="song-stem">
+                        <input type="checkbox" data-stem="bass" checked>
+                        <svg class="song-stem__icon" viewBox="0 0 24 24" fill="currentColor"><path d="M3 12c0-4 3-7 7-7s7 3 7 7-3 7-7 7-7-3-7-7zm14 0a4 4 0 1 0-8 0 4 4 0 0 0 8 0zM10 8v8M14 10v4"/></svg>
+                        <span>Bass</span>
+                    </label>
+
+                    <label class="song-stem">
+                        <input type="checkbox" data-stem="drums" checked>
+                        <svg class="song-stem__icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>
+                        <span>Drums</span>
+                    </label>
+
+                    <label class="song-stem">
+                        <input type="checkbox" data-stem="piano" checked>
+                        <svg class="song-stem__icon" viewBox="0 0 24 24" fill="currentColor"><path d="M3 4v16h18V4H3zm6 14H5V6h2v9h2v3zm6 0h-4v-3h2V6h2v9h2v3zm4 0h-2v-3h-2V6h2v9h2v3z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+                        <span>Piano</span>
+                    </label>
+
+                    <span class="song-stem song-stem--unavailable" aria-disabled="true" title="The artist hasn't uploaded a synth stem for this track">
+                        <svg class="song-stem__icon" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="8" width="18" height="10" rx="2" stroke="currentColor" fill="none" stroke-width="1.5"/><circle cx="7" cy="13" r="1"/><circle cx="11" cy="13" r="1"/><circle cx="15" cy="13" r="1"/><circle cx="19" cy="13" r="1"/></svg>
+                        Synth · not uploaded
+                    </span>
+                </div>
+            </section>
+
+            <!-- Lyrics & music sheet (left) + Covers & tutorials (right) -->
+            <section class="song-lyrics" data-help="Lyrics og fan-bidrag for det aktuelle track — chord-positioner over tekstlinjerne, og en liste af covers og tutorials uploadet af fans og artister.">
+                <div class="song-lyrics__col song-lyrics__col--text">
+                    <h3 class="song-lyrics__heading">Lyrics &amp; music sheet</h3>
+                    <pre class="song-lyrics__sheet"><span class="song-lyrics__chord">C#m            A                E              B</span>
+<span class="song-lyrics__line">THROUGH THE CRACKS, I GLIMPSE THE SKY SO BLUE,</span>
+<span class="song-lyrics__chord">C#m              A              E              B</span>
+<span class="song-lyrics__line">WITH EVERY STEP, I'M CLOSER TO BREAKING THROUGH,</span>
+<span class="song-lyrics__chord">C#m                  A          E              B</span>
+<span class="song-lyrics__line">NO LONGER BOUND BY WALLS THAT HOLD ME TIGHT,</span>
+<span class="song-lyrics__chord">F#m            B            E             C#m</span>
+<span class="song-lyrics__line">I'M FINDING FREEDOM IN THE MORNING LIGHT.</span>
+
+<span class="song-lyrics__chord">A                  E              B           C#m</span>
+<span class="song-lyrics__line">SO TAKE MY HAND AND WALK WITH ME A WHILE,</span>
+<span class="song-lyrics__chord">A              E              B</span>
+<span class="song-lyrics__line">EVERY MILE I'VE WALKED HAS BEEN WORTHWHILE,</span>
+<span class="song-lyrics__chord">A              E                  B               C#m</span>
+<span class="song-lyrics__line">THE CAGES OPEN, THE BIRDS BEGIN TO SING,</span>
+<span class="song-lyrics__chord">A           B           E</span>
+<span class="song-lyrics__line">FREEDOM IS THE ONLY THING.</span></pre>
+                </div>
+
+                <div class="song-lyrics__col song-lyrics__col--covers">
+                    <header class="song-covers__head">
+                        <h3 class="song-lyrics__heading">Covers &amp; tutorials</h3>
+                        <span class="song-covers__count">5 uploaded</span>
+                    </header>
+                    <ul class="song-covers__list">
+
+                        <li><a href="#" class="song-cover">
+                            <span class="song-cover__thumb" style="background-image: url('../../assets/images/artists/lola-young-event.jpg');">
+                                <span class="song-cover__badge song-cover__badge--cover">Cover</span>
+                                <span class="song-cover__duration">3:14</span>
+                            </span>
+                            <div class="song-cover__main">
+                                <span class="song-cover__title">Freedom — acoustic cover</span>
+                                <span class="song-cover__meta">
+                                    <span class="song-cover__avatar" style="background-image: url('../../assets/images/artists/placeholder-female-6.png');"></span>
+                                    <span class="auto-name">Anchi Humifuku</span>
+                                    <span class="song-cover__plays">· 412K</span>
+                                </span>
+                            </div>
+                        </a></li>
+
+                        <li><a href="#" class="song-cover">
+                            <span class="song-cover__thumb" style="background-image: url('../../assets/images/artists/mellow-event.jpg');">
+                                <span class="song-cover__badge song-cover__badge--dance">Dance</span>
+                                <span class="song-cover__duration">2:30</span>
+                            </span>
+                            <div class="song-cover__main">
+                                <span class="song-cover__title">Freedom #DanceChallenge</span>
+                                <span class="song-cover__meta">
+                                    <span class="song-cover__avatar" style="background-image: url('../../assets/images/artists/placeholder-female-6.png');"></span>
+                                    <span class="auto-name">Liva Mai</span>
+                                    <span class="song-cover__plays">· 1.2M</span>
+                                </span>
+                            </div>
+                        </a></li>
+
+                        <li><a href="#" class="song-cover">
+                            <span class="song-cover__thumb" style="background-image: url('../../assets/images/artists/rust-cover.png');">
+                                <span class="song-cover__badge song-cover__badge--tutorial">Tutorial</span>
+                                <span class="song-cover__duration">6:42</span>
+                            </span>
+                            <div class="song-cover__main">
+                                <span class="song-cover__title">How to play "Freedom" — guitar tutorial</span>
+                                <span class="song-cover__meta">
+                                    <span class="song-cover__avatar" style="background-image: url('../../assets/images/artists/placeholder-male-6.png');"></span>
+                                    <span class="auto-name">Tobias Krogh</span>
+                                    <span class="song-cover__plays">· 84K</span>
+                                </span>
+                            </div>
+                        </a></li>
+
+                        <li><a href="#" class="song-cover">
+                            <span class="song-cover__thumb" style="background-image: url('../../assets/images/artists/jokesmith-johnson-post-3.png');">
+                                <span class="song-cover__badge song-cover__badge--tutorial">Tutorial</span>
+                                <span class="song-cover__duration">8:12</span>
+                            </span>
+                            <div class="song-cover__main">
+                                <span class="song-cover__title">Piano arrangement walkthrough</span>
+                                <span class="song-cover__meta">
+                                    <span class="song-cover__avatar" style="background-image: url('../../assets/images/artists/placeholder-male-4.png');"></span>
+                                    <span class="auto-name">Frederik Holm</span>
+                                    <span class="song-cover__plays">· 32K</span>
+                                </span>
+                            </div>
+                        </a></li>
+
+                        <li><a href="#" class="song-cover">
+                            <span class="song-cover__thumb" style="background-image: url('../../assets/images/artists/mike-andersen-event.jpg');">
+                                <span class="song-cover__badge song-cover__badge--cover">Cover</span>
+                                <span class="song-cover__duration">2:48</span>
+                            </span>
+                            <div class="song-cover__main">
+                                <span class="song-cover__title">Freedom — bedroom session</span>
+                                <span class="song-cover__meta">
+                                    <span class="song-cover__avatar" style="background-image: url('../../assets/images/artists/placeholder-female-6.png');"></span>
+                                    <span class="auto-name">Maya Thompson</span>
+                                    <span class="song-cover__plays">· 218K</span>
+                                </span>
+                            </div>
+                        </a></li>
+
+                    </ul>
+                    <a href="#" class="song-covers__view-all">View all 28 covers &amp; tutorials →</a>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- ============ Minimized bottom-bar player ============
+         Hidden by default. Shown when the user clicks Minimize on the
+         song stage; the song content gets a "song-page--minimized"
+         body class that hides the rest of the page. -->
+    <div class="streaming-player streaming-player--song" id="songMiniBar" hidden data-help="Mini-player: Sangen forsætter at spille, og du kan navigere rundt i appen. Klik expand-pilen for at åbne afspilleren igen.">
+        <div class="streaming-player__cover" id="miniBarCover" style="background-image: url('../../assets/images/artists/jeremy-freedom-cover.png');"></div>
+        <div class="streaming-player__main">
+            <div class="streaming-player__title" id="miniBarTitle">Freedom</div>
+            <div class="streaming-player__byline auto-name">Jeremy Freedom</div>
+        </div>
+
+        <div class="streaming-player__controls">
+            <button type="button" class="streaming-player__btn" id="miniBarPrev" aria-label="Previous track">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 17V7l-9 5 9 5zM5 7h2v10H5z"/></svg>
+            </button>
+            <button type="button" class="streaming-player__btn streaming-player__btn--play" id="miniBarPlayBtn" aria-label="Pause" data-playing="true">
+                <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+            </button>
+            <button type="button" class="streaming-player__btn" id="miniBarNext" aria-label="Next track">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M5 7v10l9-5-9-5zm12 0h2v10h-2z"/></svg>
+            </button>
+        </div>
+
+        <div class="streaming-player__progress">
+            <span class="streaming-player__time">0:34</span>
+            <div class="streaming-player__bar"><div class="streaming-player__bar-fill"></div></div>
+            <span class="streaming-player__time">3:37</span>
+        </div>
+
+        <button type="button" class="streaming-player__btn streaming-player__expand" id="songExpandBtn" aria-label="Expand player" data-help="Expand: Åbn den fulde afspiller-side igen.">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M6 15l6-6 6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+    </div>
+
+    <script src="../../js/core.js"></script>
+    <script src="../../js/modes.js"></script>
+    <script src="../../js/sidebar.js"></script>
+    <script src="../../js/topbar-widgets.js"></script>
+    <script src="../../js/stage-badge.js"></script>
+    <script src="../../js/acting-as-service.js"></script>
+    <script src="../../js/stage-cards.js"></script>
+    <script src="../../js/stage-label.js"></script>
+    <script src="../../js/stage-resources.js"></script>
+    <script src="../../js/stage-economy.js"></script>
+    <script src="../../js/settings.js"></script>
+    <script src="../../js/activity-feed.js"></script>
+    <script src="../../js/app.js"></script>
+    <script>
+    (function() {
+        // Track catalog — center starts at index 2 ("Freedom").
+        // Past/future tracks beyond the visible 5 are buffered so prev/next
+        // animations can slide them in instead of popping.
+        const COVER = '../../assets/images/artists/jeremy-freedom-cover.png';
+        const COVER_ALT = '../../assets/images/artists/jeremy-freedom-profile.png';
+        const TRACKS = [
+            { id: 'cracks-in-stone', title: 'Cracks In Stone', cover: COVER_ALT },
+            { id: 'silent-sky',      title: 'Silent Sky',      cover: COVER_ALT },
+            { id: 'churching',       title: 'Churching',       cover: COVER },
+            { id: 'harlem-ghetto',   title: 'Harlem Ghetto',   cover: COVER },
+            { id: 'freedom',         title: 'Freedom',         cover: COVER },
+            { id: 'more-than-that',  title: 'More Than That',  cover: COVER },
+            { id: 'hijack',          title: 'Hijack',          cover: COVER },
+            { id: 'open-window',     title: 'Open Window',     cover: COVER_ALT },
+            { id: 'morning-light',   title: 'Morning Light',   cover: COVER_ALT }
+        ];
+
+        let centerIdx = TRACKS.findIndex(function(t) { return t.id === 'freedom'; });
+        let animating = false;
+
+        const circles = Array.from(document.querySelectorAll('#songCircles .song-circle'));
+        const titles = Array.from(document.querySelectorAll('.song-stage__titles .song-title-cell'));
+        const playGlyph = document.getElementById('songPlayGlyph');
+        const prevBtn = document.getElementById('songPrevBtn');
+        const nextBtn = document.getElementById('songNextBtn');
+        const progressBar = document.getElementById('songProgressBar');
+        const progressFill = document.getElementById('songProgressFill');
+        const npTrack = document.getElementById('topbarNpTrack');
+
+        function trackAt(idx) { return TRACKS[idx] || null; }
+
+        function paintCircle(circle) {
+            const slot = parseInt(circle.dataset.slot, 10);
+            const t = trackAt(centerIdx + slot);
+            const disc = circle.querySelector('.song-circle__disc');
+            if (!disc) return;
+            disc.style.backgroundImage = t ? "url('" + t.cover + "')" : '';
+        }
+
+        function paintAll() {
+            circles.forEach(paintCircle);
+        }
+
+        function paintTitles() {
+            titles.forEach(function(el, i) {
+                const slot = i - 2;                       // titles go from -2..2 left to right
+                const t = trackAt(centerIdx + slot);
+                if (!t) {
+                    el.textContent = '';
+                    el.classList.add('song-title-cell--far');
+                    el.classList.remove('song-title-cell--current');
+                    return;
+                }
+                el.textContent = t.title;
+                el.classList.toggle('song-title-cell--current', slot === 0);
+                el.classList.toggle('song-title-cell--far', Math.abs(slot) === 2);
+            });
+        }
+
+        function paintNowPlaying() {
+            const t = trackAt(centerIdx);
+            if (t && npTrack) npTrack.textContent = 'Jeremy Freedom — ' + t.title;
+        }
+
+        // Slide one position. dir = -1 (next, content moves left) or +1 (prev).
+        function slide(dir) {
+            if (animating) return;
+            // Bounds: don't slide past the edges of the catalog.
+            const targetIdx = centerIdx - dir;
+            if (targetIdx < 0 || targetIdx >= TRACKS.length) return;
+
+            animating = true;
+
+            // Shift every circle's slot by `dir`. CSS transitions take care
+            // of the actual translate/scale/opacity animation.
+            circles.forEach(function(c) {
+                c.dataset.slot = parseInt(c.dataset.slot, 10) + dir;
+            });
+            centerIdx -= dir;
+
+            // Wait until the slide animation is mostly done, then update the
+            // titles + now-playing label to keep them in sync with the cover
+            // landing in the center.
+            setTimeout(function() {
+                paintTitles();
+                paintNowPlaying();
+                if (typeof persistTrack === 'function') persistTrack();
+            }, 260);
+
+            // Recycle the circle that's now off-screen on the far side, so the
+            // user has a fresh buffer for the next click.
+            setTimeout(function() {
+                const recycleFromSlot = dir < 0 ? -4 : 4;
+                const recycleToSlot   = dir < 0 ?  3 : -3;
+                circles.forEach(function(c) {
+                    if (parseInt(c.dataset.slot, 10) === recycleFromSlot) {
+                        const disc = c.querySelector('.song-circle__disc');
+                        c.style.transition = 'none';
+                        if (disc) disc.style.transition = 'none';
+                        c.dataset.slot = String(recycleToSlot);
+                        paintCircle(c);
+                        // Force a reflow before re-enabling transitions, otherwise
+                        // the browser folds the slot/transition changes together.
+                        // eslint-disable-next-line no-unused-expressions
+                        c.offsetHeight;
+                        c.style.transition = '';
+                        if (disc) disc.style.transition = '';
+                    }
+                });
+                animating = false;
+            }, 600);
+        }
+
+        // Initial paint (slot 0 already starts at the right index).
+        paintAll();
+        paintTitles();
+        paintNowPlaying();
+
+        // Wire buttons
+        if (nextBtn) nextBtn.addEventListener('click', function() { slide(-1); });
+        if (prevBtn) prevBtn.addEventListener('click', function() { slide(1); });
+
+        // Click any circle → animate towards it one step at a time. Adjacent
+        // clicks are a single slide; far clicks chain a few slides so the
+        // user always sees the smooth transition.
+        circles.forEach(function(c) {
+            c.addEventListener('click', function() {
+                const slot = parseInt(c.dataset.slot, 10);
+                if (slot === 0 || Math.abs(slot) > 2) return;
+                const dir = slot > 0 ? -1 : 1;
+                let steps = Math.abs(slot);
+                function chain() {
+                    if (steps === 0) return;
+                    steps--;
+                    slide(dir);
+                    if (steps > 0) setTimeout(chain, 620);
+                }
+                chain();
+            });
+        });
+
+        // Toggle play/pause when the centre disc is clicked. The glyph
+        // (triangle / pause bars) updates via its data-playing attribute.
+        function togglePlay() {
+            if (!playGlyph) return;
+            const playing = playGlyph.dataset.playing === 'true';
+            playGlyph.dataset.playing = playing ? 'false' : 'true';
+            try { localStorage.setItem('stagecord:isPlaying', playGlyph.dataset.playing); } catch (e) {}
+        }
+        circles.forEach(function(c) {
+            c.addEventListener('click', function(e) {
+                if (parseInt(c.dataset.slot, 10) === 0) {
+                    e.stopPropagation();
+                    togglePlay();
+                }
+            }, true);   // capture phase so it fires before the slide handler
+        });
+
+        // Click the progress bar to scrub.
+        if (progressBar && progressFill) {
+            progressBar.addEventListener('click', function(e) {
+                const rect = progressBar.getBoundingClientRect();
+                const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                progressFill.style.width = (pct * 100).toFixed(1) + '%';
+            });
+        }
+
+        // Minimize ↔ expand. Toggles a body class that hides the song
+        // surfaces, and toggles the bottom mini-player's hidden attribute.
+        const minimizeBtn = document.getElementById('songMinimizeBtn');
+        const expandBtn   = document.getElementById('songExpandBtn');
+        const miniBar     = document.getElementById('songMiniBar');
+        const miniPlayBtn = document.getElementById('miniBarPlayBtn');
+        const miniPrev    = document.getElementById('miniBarPrev');
+        const miniNext    = document.getElementById('miniBarNext');
+        const miniBarTitle = document.getElementById('miniBarTitle');
+
+        // Persist current track to localStorage so the global mini-bar
+        // (injected on other pages by app.js) can show it.
+        function persistTrack() {
+            const t = trackAt(centerIdx);
+            if (!t) return;
+            try {
+                localStorage.setItem('stagecord:nowPlaying', JSON.stringify({
+                    id: t.id,
+                    title: t.title,
+                    artist: 'Jeremy Freedom',
+                    cover: t.cover,
+                    duration: '3:37'
+                }));
+                localStorage.setItem('stagecord:isPlaying',
+                    playGlyph && playGlyph.dataset.playing === 'true' ? 'true' : 'false');
+            } catch (e) { /* private mode — ignore */ }
+        }
+        persistTrack();   // initial state on page load
+
+        function setMinimized(min) {
+            if (min) {
+                // Save current playback state so the global mini-bar on the
+                // destination page can pick it up, then navigate back to
+                // wherever the user came from (last search page, etc.).
+                persistTrack();
+                let returnUrl = null;
+                try { returnUrl = sessionStorage.getItem('stagecord:songReturnUrl'); } catch (e) {}
+                if (returnUrl) {
+                    window.location.href = returnUrl;
+                } else {
+                    // No prior page — fall back to the streaming/discover hub.
+                    window.location.href = '../index.html';
+                }
+                return;
+            }
+            // Expanding — handled below if user comes from a global bar.
+            document.body.classList.remove('song-page--minimized');
+            if (miniBar) miniBar.hidden = true;
+        }
+        if (minimizeBtn) minimizeBtn.addEventListener('click', function() { setMinimized(true); });
+        if (expandBtn)   expandBtn.addEventListener('click',   function() { setMinimized(false); });
+
+        // Mini-bar controls mirror the full-page controls.
+        if (miniPlayBtn) {
+            miniPlayBtn.addEventListener('click', function() {
+                togglePlay();
+                miniPlayBtn.dataset.playing = playGlyph.dataset.playing;
+            });
+        }
+        if (miniPrev) miniPrev.addEventListener('click', function() {
+            slide(1);
+            setTimeout(function() {
+                const t = trackAt(centerIdx);
+                if (t && miniBarTitle) miniBarTitle.textContent = t.title;
+            }, 260);
+        });
+        if (miniNext) miniNext.addEventListener('click', function() {
+            slide(-1);
+            setTimeout(function() {
+                const t = trackAt(centerIdx);
+                if (t && miniBarTitle) miniBarTitle.textContent = t.title;
+            }, 260);
+        });
+    })();
+    </script>
+</body>
+</html>

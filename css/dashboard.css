@@ -1,0 +1,715 @@
+/* =====================================================
+   Shared dashboard patterns — used across the new
+   sidebar destinations (Overview, Sales, Calendar etc.)
+   ===================================================== */
+
+/* Match the artist profile's tighter top spacing */
+.main-content { padding-top: 88px; }
+
+/* ---------- Page header ---------- */
+.page-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+}
+
+.page-header__title {
+    margin: 0;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 40px;
+    line-height: 50px;
+    text-transform: uppercase;
+    color: #FFFFFF;
+}
+
+.page-header__sub {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    color: #B1B1B1;
+}
+
+.page-header__actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.page-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: #FFFFFF;
+    color: #000000;
+    border: none;
+    border-radius: 8px;
+    font: 700 12px/1 'Outfit', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.15s ease;
+}
+
+.page-btn:hover { background: #E6E6E6; }
+.page-btn svg { width: 14px; height: 14px; }
+
+.page-btn--ghost {
+    background: transparent;
+    border: 1px solid #797979;
+    color: #FFFFFF;
+}
+
+.page-btn--ghost:hover { border-color: #FFFFFF; background: rgba(255, 255, 255, 0.06); }
+
+/* ---------- KPI cards ---------- */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+    margin-bottom: 28px;
+}
+
+.kpi-card {
+    padding: 18px 20px;
+    background: #000000;
+    border: 1px solid #797979;
+    border-radius: 12px;
+    color: #FFFFFF;
+}
+
+.kpi-card__label {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #B1B1B1;
+    margin-bottom: 10px;
+}
+
+.kpi-card__value {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 28px;
+    line-height: 32px;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    margin-bottom: 6px;
+}
+
+.kpi-card__delta {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    line-height: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.kpi-card__delta--up   { color: #00A911; }
+.kpi-card__delta--down { color: #ff4d4d; }
+.kpi-card__delta--flat { color: #B1B1B1; }
+
+/* ---------- Section block ---------- */
+.dash-section { margin-bottom: 32px; }
+
+.dash-section__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+.dash-section__title {
+    margin: 0;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 30px;
+    text-transform: uppercase;
+    color: #FFFFFF;
+}
+
+.dash-section__link {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #FFFFFF;
+    text-decoration: none;
+    padding: 6px 12px;
+    border: 1px solid #797979;
+    border-radius: 8px;
+}
+
+.dash-section__link:hover { border-color: #FFFFFF; background: rgba(255, 255, 255, 0.06); }
+
+/* ---------- Activity / list rows ---------- */
+.list-card {
+    background: #000000;
+    border: 1px solid #797979;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.list-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border-bottom: 1px solid #2a2a2a;
+}
+
+.list-row:last-child { border-bottom: none; }
+
+.list-row__icon {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #FFFFFF;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.list-row__avatar {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+}
+
+.list-row__main { flex: 1 1 auto; min-width: 0; }
+
+.list-row__name {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 18px;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    margin-bottom: 2px;
+}
+
+.list-row__meta {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 16px;
+    color: #B1B1B1;
+}
+
+.list-row__time {
+    flex-shrink: 0;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    font-size: 11px;
+    line-height: 14px;
+    color: #B1B1B1;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.list-row__amount {
+    flex-shrink: 0;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 18px;
+    color: #00A911;
+}
+
+.list-row__amount--neg { color: #ff4d4d; }
+
+/* Status pill */
+.pill {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 10px;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.pill--green   { background: rgba(0, 169, 17, 0.18);   color: #00A911; }
+.pill--blue    { background: rgba(74, 144, 226, 0.18); color: #4A90E2; }
+.pill--amber   { background: rgba(243, 156, 18, 0.22); color: #f39c12; }
+.pill--red     { background: rgba(255, 77, 77, 0.18);  color: #ff4d4d; }
+.pill--grey    { background: rgba(255, 255, 255, 0.08); color: #B1B1B1; }
+
+/* ============================================================
+   Event RSVP — Going / Maybe / Not going + social proof
+   Injected into .cal-event cards on the calendar page.
+   ============================================================ */
+.rsvp {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.rsvp__btn {
+    flex: 1;
+    padding: 7px 8px;
+    border: 1px solid #797979;
+    border-radius: 6px;
+    background: transparent;
+    color: #B1B1B1;
+    cursor: pointer;
+    font: 700 10px/1 'Outfit', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.rsvp__btn:hover {
+    border-color: #FFFFFF;
+    color: #FFFFFF;
+}
+
+.rsvp__btn.is-selected[data-rsvp="going"] {
+    background: #00A911;
+    border-color: #00A911;
+    color: #FFFFFF;
+}
+
+.rsvp__btn.is-selected[data-rsvp="maybe"] {
+    background: #f39c12;
+    border-color: #f39c12;
+    color: #FFFFFF;
+}
+
+.rsvp__btn.is-selected[data-rsvp="not"] {
+    background: #555;
+    border-color: #555;
+    color: #B1B1B1;
+}
+
+.rsvp-proof {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    font: 700 10px/1 'Outfit', sans-serif;
+    color: #B1B1B1;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.rsvp-proof__avatars {
+    display: inline-flex;
+    flex-shrink: 0;
+}
+
+.rsvp-proof__avatar {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #181818;
+    margin-left: -6px;
+    background-size: cover;
+    background-position: center;
+}
+
+.rsvp-proof__avatar:first-child { margin-left: 0; }
+
+.rsvp-proof__count strong {
+    color: #FFFFFF;
+    font-weight: 700;
+}
+
+/* Layout — cal-event needs to grow vertically when RSVP injected */
+.cal-event {
+    grid-template-rows: auto auto !important;
+    align-items: start !important;
+}
+
+.cal-event__date { align-self: start; padding-top: 4px; }
+
+/* ============================================================
+   Suggested artists / People you may know — horizontal carousel
+   ============================================================ */
+.suggest-grid {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 8px;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+}
+
+.suggest-grid::-webkit-scrollbar { height: 6px; }
+.suggest-grid::-webkit-scrollbar-track { background: transparent; }
+.suggest-grid::-webkit-scrollbar-thumb { background: #555; border-radius: 3px; }
+
+.suggest-card {
+    flex: 0 0 220px;
+    padding: 22px 16px 18px;
+    background: #000000;
+    border: 1px solid #797979;
+    border-radius: 14px;
+    color: #FFFFFF;
+    text-align: center;
+    scroll-snap-align: start;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.suggest-card:hover {
+    border-color: #FFFFFF;
+    transform: translateY(-2px);
+}
+
+.suggest-card__avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    margin: 0 auto 14px;
+    background-size: cover;
+    background-position: center;
+}
+
+.suggest-card__name {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-weight: 700;
+    font-size: 13px;
+    line-height: 18px;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    margin-bottom: 4px;
+}
+
+.suggest-card__role {
+    font-weight: 700;
+    font-size: 10px;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #4A90E2;
+    margin-bottom: 6px;
+}
+
+.suggest-card__reason {
+    font-weight: 400;
+    font-size: 11px;
+    line-height: 14px;
+    color: #B1B1B1;
+    margin-bottom: 12px;
+    min-height: 28px;
+}
+
+.suggest-card__followers {
+    font-weight: 700;
+    font-size: 11px;
+    line-height: 1;
+    color: #FFFFFF;
+    margin-bottom: 14px;
+}
+
+.suggest-card__followers small {
+    font-weight: 400;
+    color: #B1B1B1;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-left: 4px;
+}
+
+.suggest-card__follow {
+    width: 100%;
+    padding: 9px 14px;
+    background: #FFFFFF;
+    color: #000000;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font: 700 11px/1 'Outfit', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.suggest-card__follow:hover { background: #E6E6E6; }
+
+.suggest-card__follow.is-following {
+    background: transparent;
+    border: 1px solid #FFFFFF;
+    color: #FFFFFF;
+}
+
+.suggest-card__follow.is-following:hover {
+    border-color: #ff4d4d;
+    color: #ff4d4d;
+    background: rgba(255, 77, 77, 0.08);
+}
+
+/* ============================================================
+   Stories / Now ribbon — horizontal carousel of live + new
+   stories from followed artists. 24h ephemeral content.
+   ============================================================ */
+.stories-ribbon {
+    margin-bottom: 28px;
+}
+
+.stories-track {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 4px 0 8px;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+}
+
+.stories-track::-webkit-scrollbar { height: 6px; }
+.stories-track::-webkit-scrollbar-track { background: transparent; }
+.stories-track::-webkit-scrollbar-thumb { background: #555; border-radius: 3px; }
+
+.story-bubble {
+    flex: 0 0 auto;
+    width: 80px;
+    cursor: pointer;
+    text-align: center;
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: inherit;
+    scroll-snap-align: start;
+    transition: transform 0.15s ease;
+}
+
+.story-bubble:hover { transform: translateY(-2px); }
+
+.story-bubble__ring {
+    width: 76px;
+    height: 76px;
+    margin: 0 auto 6px;
+    border-radius: 50%;
+    padding: 3px;
+    background: linear-gradient(135deg, #4A90E2, #9B59B6);
+    transition: background 0.15s ease;
+}
+
+.story-bubble--live .story-bubble__ring {
+    background: linear-gradient(135deg, #ff4d4d, #f39c12);
+    animation: storyLivePulse 1.6s ease-in-out infinite;
+}
+
+.story-bubble--seen .story-bubble__ring {
+    background: #555;
+}
+
+@keyframes storyLivePulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.5); }
+    50%      { box-shadow: 0 0 0 6px rgba(255, 77, 77, 0); }
+}
+
+.story-bubble__avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: #000;
+    background-size: cover;
+    background-position: center;
+    border: 2px solid #242424;
+    position: relative;
+}
+
+.story-bubble--live .story-bubble__avatar::after {
+    content: "LIVE";
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 2px 6px;
+    background: #ff4d4d;
+    color: #FFFFFF;
+    font: 700 8px/1 'Outfit', sans-serif;
+    letter-spacing: 0.5px;
+    border-radius: 999px;
+    border: 2px solid #242424;
+}
+
+.story-bubble__name {
+    display: block;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 10px;
+    line-height: 12px;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0 4px;
+}
+
+.story-bubble--seen .story-bubble__name { color: #B1B1B1; }
+
+/* Fullscreen story viewer */
+.story-viewer {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 11050;
+    display: none;
+    flex-direction: column;
+}
+
+.story-viewer.is-open { display: flex; }
+
+.story-viewer__progress {
+    display: flex;
+    gap: 4px;
+    padding: 14px 16px 8px;
+}
+
+.story-viewer__bar {
+    flex: 1;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.story-viewer__bar-fill {
+    height: 100%;
+    width: 0%;
+    background: #FFFFFF;
+}
+
+.story-viewer__bar.is-complete .story-viewer__bar-fill { width: 100%; }
+
+.story-viewer__bar.is-active .story-viewer__bar-fill {
+    animation: storyAdvance 5s linear forwards;
+}
+
+@keyframes storyAdvance {
+    from { width: 0%; }
+    to   { width: 100%; }
+}
+
+.story-viewer__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 16px 14px;
+    color: #FFFFFF;
+}
+
+.story-viewer__avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    flex-shrink: 0;
+}
+
+.story-viewer__main { flex: 1 1 auto; min-width: 0; }
+
+.story-viewer__name {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    line-height: 1;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.story-viewer__time {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    font-size: 11px;
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.story-viewer__close {
+    background: transparent;
+    border: none;
+    color: #FFFFFF;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 4px 12px;
+    border-radius: 6px;
+}
+
+.story-viewer__close:hover { background: rgba(255, 255, 255, 0.1); }
+
+.story-viewer__stage {
+    flex: 1 1 auto;
+    background-color: #000;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+    cursor: pointer;
+}
+
+.story-viewer__caption {
+    position: absolute;
+    bottom: 32px;
+    left: 16px;
+    right: 16px;
+    padding: 14px 18px;
+    background: rgba(0, 0, 0, 0.55);
+    border-radius: 12px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    text-align: center;
+}
+
+.story-viewer__caption-title {
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 22px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.story-viewer__caption-body {
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 18px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.story-viewer__nav-prev,
+.story-viewer__nav-next {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 40%;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.story-viewer__nav-prev { left: 0; }
+.story-viewer__nav-next { right: 0; }

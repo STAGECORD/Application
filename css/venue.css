@@ -1,0 +1,700 @@
+/* =====================================================
+   Venue Page
+   Cover with center-overlaid logo + tagline, address,
+   stats. Program list with concert cards.
+   ===================================================== */
+
+/* Calendar event-marker palette for this venue. Picked to match the
+   blue stage-lighting in RUST's cover photo. Each venue can override
+   these via inline style on <body> or a per-venue stylesheet. */
+body {
+    --event-color-deep:        #052046;
+    --event-color-bright:      #3074E0;
+    --event-color-deep-hover:  #0A3275;
+    --event-color-bright-hover:#5895EE;
+    --event-color-glow:        rgba(56, 134, 252, 0.85);
+}
+
+/* ---------- Cover variant ---------- */
+.venue-cover {
+    height: 480px;
+    /* Concert crowd background — replace with venue-specific photo when available */
+    background-image:
+        linear-gradient(180deg, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0.55) 100%),
+        url('../assets/images/artists/rust-cover.png');
+}
+
+/* Bottom row: identity (name + address) + stats */
+.venue-cover__bottom {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.venue-cover__identity {
+    display: flex;
+    align-items: baseline;
+    gap: 22px;
+    flex-wrap: wrap;
+    min-width: 0;
+}
+
+.venue-cover__name {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 64px;
+    line-height: 1;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+.venue-cover__address {
+    font-style: normal;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 1.18;
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ---------- About section ---------- */
+.venue-about__tagline {
+    margin: -4px 0 14px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    color: #FFFFFF;
+    opacity: 0.85;
+}
+
+/* ---------- Visitor photos ---------- */
+.venue-photos {
+    margin: 26px 0 32px;
+}
+
+.venue-photos__header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+}
+
+.venue-photos__heading {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    margin: 0;
+}
+
+.venue-photos__note {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.55);
+    font-style: italic;
+}
+
+.venue-photos__grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+}
+
+.venue-photo-tile {
+    display: block;
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+    background-color: #1a1a1a;
+    overflow: hidden;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.venue-photo-tile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.venue-photos__more {
+    display: inline-block;
+    margin-top: 12px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.venue-photos__more:hover {
+    color: #FFFFFF;
+}
+
+@media (max-width: 1100px) {
+    .venue-photos__grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (max-width: 700px) {
+    .venue-photos__grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ---------- Program ---------- */
+.venue-program {
+    margin-top: 32px;
+}
+
+.venue-program__heading {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    margin: 0 0 16px;
+}
+
+.venue-program__list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* Concert card */
+.venue-concert {
+    display: grid;
+    grid-template-columns: 132px 1fr 220px;
+    gap: 18px;
+    align-items: stretch;
+    padding: 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    color: #FFFFFF;
+}
+
+.venue-concert--purchased {
+    border-color: rgba(67, 196, 122, 0.55);
+    box-shadow: 0 0 0 1px rgba(67, 196, 122, 0.25) inset;
+}
+
+.venue-concert__poster {
+    width: 132px;
+    height: 132px;
+    border-radius: 10px;
+    background-color: #1a1a1a;
+    flex-shrink: 0;
+}
+
+.venue-concert__main {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.venue-concert__header {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.venue-concert__name {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+}
+
+.venue-concert__country {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.venue-concert__meta {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 18px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.venue-concert__meta li {
+    display: inline-flex;
+    gap: 6px;
+    align-items: baseline;
+}
+
+.venue-concert__meta .key {
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 11px;
+}
+
+.venue-concert__meta .value {
+    font-weight: 500;
+    color: #FFFFFF;
+}
+
+.venue-concert__description {
+    margin: 4px 0 0;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.75);
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Right side: artist link + buttons */
+.venue-concert__side {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+    justify-content: flex-start;
+}
+
+.venue-concert__artist {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #FFFFFF;
+    padding: 4px 6px;
+    border-radius: 8px;
+    transition: background 0.15s ease;
+}
+
+.venue-concert__artist:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.venue-concert__artist-portrait {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #1a1a1a;
+    flex-shrink: 0;
+}
+
+.venue-concert__artist-name {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.venue-concert__cta {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.venue-concert__cta--soldout,
+.venue-concert__cta--purchased {
+    cursor: default;
+}
+
+.venue-concert__cta--soldout {
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.venue-concert__cta--purchased {
+    background: rgba(67, 196, 122, 0.18);
+    color: #43C47A;
+    border: 1px solid rgba(67, 196, 122, 0.55);
+}
+
+/* Without the Buy Tickets button on the left, push the remaining cluster
+   (Merch + Pitch) to the right edge of the cover. */
+.venue-cover .artist-cover__top {
+    justify-content: flex-end;
+}
+
+/* ---------- Cover top-right cluster: Merch + Pitch stacked ---------- */
+.venue-cover__top-right {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+/* ---------- Pitch submission modal ---------- */
+.pitch-submit-modal {
+    width: min(720px, 96vw);
+    max-width: none;            /* override .modal's 620px cap */
+    max-height: 90vh;
+    padding: 0;                 /* let header/body/footer manage their own padding */
+    background: #1a1a1a;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 18px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.pitch-submit-modal .modal__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 22px 24px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.pitch-submit-modal__title {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: 0.02em;
+    margin: 0 0 4px;
+}
+
+.pitch-submit-modal__subtitle {
+    font-size: 12px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.65);
+    margin: 0;
+    max-width: 520px;
+}
+
+.pitch-submit-modal__body {
+    padding: 18px 24px 8px;
+    overflow-y: auto;
+    flex: 1 1 auto;
+}
+
+.pitch-submit__step {
+    margin-bottom: 22px;
+}
+
+.pitch-submit__step-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    margin: 0 0 8px;
+}
+
+.pitch-submit__step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(67, 196, 122, 0.18);
+    color: #43C47A;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.pitch-submit__optional {
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.pitch-submit__hint {
+    font-size: 12px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0 0 10px;
+}
+
+/* Open dates list */
+.pitch-submit-dates {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.pitch-submit-date {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.pitch-submit-date:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.07);
+}
+
+.pitch-submit-date:has(input:checked) {
+    border-color: #43C47A;
+    background: rgba(67, 196, 122, 0.12);
+}
+
+.pitch-submit-date input[type="radio"] {
+    accent-color: #43C47A;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.pitch-submit-date__main {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.pitch-submit-date__weekday {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: rgba(255, 255, 255, 0.55);
+    font-weight: 600;
+}
+
+.pitch-submit-date__date {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.pitch-submit-date__badge {
+    display: inline-block;
+    margin-top: 4px;
+    padding: 3px 9px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.85);
+    align-self: flex-start;
+}
+
+.pitch-submit-date__badge--openmic {
+    background: rgba(255, 191, 0, 0.16);
+    color: #FFD75A;
+}
+
+.pitch-submit-date__doors {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.55);
+    white-space: nowrap;
+}
+
+/* Catalog list */
+.pitch-submit-catalog {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.pitch-submit-track {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.pitch-submit-track:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.07);
+}
+
+.pitch-submit-track:has(input:checked) {
+    border-color: #43C47A;
+    background: rgba(67, 196, 122, 0.1);
+}
+
+.pitch-submit-track input[type="checkbox"] {
+    accent-color: #43C47A;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.pitch-submit-track__cover {
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    background-color: #1a1a1a;
+    flex-shrink: 0;
+}
+
+.pitch-submit-track__main {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+}
+
+.pitch-submit-track__title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #FFFFFF;
+}
+
+.pitch-submit-track__meta {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+/* Message */
+.pitch-submit__message {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    line-height: 1.55;
+    padding: 10px 12px;
+    resize: vertical;
+    min-height: 90px;
+    box-sizing: border-box;
+}
+
+.pitch-submit__message:focus {
+    outline: none;
+    border-color: #43C47A;
+}
+
+/* Attachments */
+.pitch-submit-attachments {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.pitch-submit-attach {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px dashed rgba(255, 255, 255, 0.25);
+    border-radius: 999px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.pitch-submit-attach:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.pitch-submit-attach__plus {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* Fee */
+.pitch-submit-fee {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.pitch-submit-fee__option {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #FFFFFF;
+    cursor: pointer;
+}
+
+.pitch-submit-fee__option input[type="radio"] {
+    accent-color: #43C47A;
+    width: 14px;
+    height: 14px;
+    margin: 0;
+}
+
+/* Modal footer */
+.pitch-submit-modal__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 14px 24px 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.pitch-submit-modal__footer .wide-btn {
+    flex: 0 0 auto;
+    min-width: 130px;
+}
+
+/* ---------- Responsive: stack concert card on narrow screens ---------- */
+@media (max-width: 900px) {
+    .venue-concert {
+        grid-template-columns: 100px 1fr;
+        grid-template-areas:
+            "poster main"
+            "side   side";
+    }
+    .venue-concert__poster { grid-area: poster; width: 100px; height: 100px; }
+    .venue-concert__main   { grid-area: main; }
+    .venue-concert__side   { grid-area: side; flex-direction: row; flex-wrap: wrap; }
+    .venue-concert__cta    { width: auto; flex: 1 1 160px; }
+}
+
+@media (max-width: 700px) {
+    .venue-cover { height: 420px; }
+    .venue-cover__name { font-size: 44px; }
+    .venue-cover__address { font-size: 16px; }
+}

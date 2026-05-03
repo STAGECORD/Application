@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAGECORD - RUST</title>
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/logo.css">
+    <link rel="stylesheet" href="../css/topbar.css">
+    <link rel="stylesheet" href="../css/artist.css">
+    <link rel="stylesheet" href="../css/venue.css">
+    <link rel="stylesheet" href="../css/pitch-modals.css">
+</head>
+<body data-pitch-active="true">
+    <!-- Left Sidebar Navigation -->
+    <aside class="sidebar" data-sidebar></aside>
+
+    <!-- Top Bar -->
+    <header class="topbar">
+        <div class="logo-container" data-help="STAGECORD PRO-logoet. Klik for at vende tilbage til forsiden.">
+            <a href="../index.html" class="logo-link">
+                <h1 class="logo">
+                    <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
+                </h1>
+            </a>
+        </div>
+
+        <div class="search-bar" data-help="Søgebar: Find artister, koncerter, spillesteder, venner og mere.">
+            <input
+                type="text"
+                class="search-input"
+                placeholder="Search Artists, Concerts, Venues, Friends and much more"
+                aria-label="Search"
+            />
+            <svg class="search-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/>
+                <path d="M18 18L24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </div>
+
+        <span class="topbar-stage-label" data-help="Sidetype-label: Markerer at du er på et venue/spillested-side.">
+            <span class="topbar-stage-label__primary">VENUE</span>
+            <span class="topbar-stage-label__secondary">STAGE</span>
+        </span>
+
+        <button type="button" class="help-button" aria-label="Help" aria-pressed="false" data-help="Hjælpeknap: Klik for at aktivere hjælpetilstand.">
+            <span class="help-mark">?</span>
+        </button>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <!-- ============ Venue Cover ============ -->
+            <section class="artist-cover venue-cover" data-help="Venue cover: Hero-sektion med spillestedets navn, adresse, stats og links til billet- og merchandise-køb.">
+                <div class="artist-cover__top">
+                    <div class="venue-cover__top-right">
+                        <button type="button" class="artist-cta artist-cta--merch" data-help="Buy Merchandise: Køb t-shirts, plakater og andre items fra spillestedet.">
+                            <svg class="artist-cta__icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M16 4l-2 2-2 2-2-2-2-2-5 3 2 4h2v9h10v-9h2l2-4-5-3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                            </svg>
+                            <span>Buy Merchandise</span>
+                        </button>
+
+                        <button type="button" class="artist-cta artist-cta--pitch requires-pitch-active" id="openPitchSubmitBtn" data-modes="artist" data-help="Pitch: Send en optrædens-anmodning til dette spillested. Vælg en åben dato fra venuets kalender, vedhæft sange fra dit katalog og skriv en personlig besked.">
+                            <svg class="artist-cta__icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M3 12l5-5v3h13v4H8v3l-5-5z" fill="currentColor"/>
+                            </svg>
+                            <span>Pitch</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="venue-cover__bottom">
+                    <div class="venue-cover__identity">
+                        <h1 class="venue-cover__name">RUST</h1>
+                        <address class="venue-cover__address">
+                            <span>Guldbergsgade 8</span>
+                            <span>2200 København N</span>
+                        </address>
+                    </div>
+
+                    <div class="artist-cover__stats venue-cover__stats" data-help="Venue-stats: Følgere og daglige besøgende.">
+                        <span class="artist-cover__stat"><span class="artist-cover__stat-value">51K</span><span class="artist-cover__stat-label">Followers</span></span>
+                        <span class="artist-cover__stat"><span class="artist-cover__stat-value">1,5K</span><span class="artist-cover__stat-label">Daily Visitor</span></span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ About ============ -->
+            <section class="artist-bio venue-about" data-help="About: Kort beskrivelse af spillestedet — historie og hvad der gør det særligt.">
+                <h2 class="artist-bio__heading">About</h2>
+                <p class="venue-about__tagline">Where Music and Culture Collide in Copenhagen</p>
+                <div class="artist-bio__content">
+                    <p class="artist-bio__text" title="Click to expand" role="button" tabindex="0" aria-expanded="false" data-help="About-teksten er foldet sammen — klik for at se hele beskrivelsen.">Nestled in the heart of Copenhagen's vibrant Nørrebro district, RUST stands as an iconic symbol of creativity, community, and cultural diversity. Since its inception, this legendary venue has served as a hub for emerging artists, seasoned performers, and passionate music enthusiasts alike. Originally founded in 1989, RUST has undergone several transformations throughout the years, evolving from a humble student-run café to a dynamic multi-purpose space that encompasses a concert hall, nightclub, and cultural center. Its rich history and unwavering commitment to fostering artistic expression have solidified its status as a cornerstone of Copenhagen's live music scene. At RUST, music knows no boundaries. From indie rock to electronic beats, hip-hop to folk, the venue boasts a diverse lineup of local and international acts, providing a platform for artists from all walks of life to showcase their talent and connect with audiences on a deeper level.…</p>
+                </div>
+            </section>
+
+            <!-- ============ Events / Concerts calendar ============ -->
+            <section class="artist-calendar" data-help="Event-kalender: Markerede dage er koncerter på spillestedet — scroll til siden for at se alle planlagte events. Klik for detaljer og billet-køb.">
+                <h2 class="artist-calendar__heading">Events / Concerts</h2>
+
+                <div class="artist-calendar__row">
+                    <button type="button" class="artist-calendar__day artist-calendar__day--event"
+                        data-event-date="Saturday, 2 November"
+                        data-event-venue="RUST, Copenhagen"
+                        data-event-time="Doors 19:30 · Show 20:30"
+                        data-event-description="MIKE — alt-rap headline night. Doors 19:30, show 20:30. Age limit 18 years."
+                        data-event-ticket-price="195 DKK"
+                        data-event-viewer-price="79 DKK"
+                        data-event-tickets-available="true">
+                        <span class="artist-calendar__date">2 Nov.</span>
+                        <span class="artist-calendar__weekday">Saturday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">3 Nov.</span>
+                        <span class="artist-calendar__weekday">Sunday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">4 Nov.</span>
+                        <span class="artist-calendar__weekday">Monday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">5 Nov.</span>
+                        <span class="artist-calendar__weekday">Tuesday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day artist-calendar__day--event"
+                        data-event-date="Wednesday, 6 November"
+                        data-event-venue="RUST, Copenhagen"
+                        data-event-time="Doors 19:30 · Show 20:30"
+                        data-event-description="Lola Young — soul-pop solo show. Age limit 18 years."
+                        data-event-ticket-price="245 DKK"
+                        data-event-viewer-price="89 DKK"
+                        data-event-tickets-available="false">
+                        <span class="artist-calendar__date">6 Nov.</span>
+                        <span class="artist-calendar__weekday">Wednesday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">7 Nov.</span>
+                        <span class="artist-calendar__weekday">Thursday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">8 Nov.</span>
+                        <span class="artist-calendar__weekday">Friday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day artist-calendar__day--event"
+                        data-event-date="Saturday, 9 November"
+                        data-event-venue="RUST, Copenhagen"
+                        data-event-time="Doors 19:30 · Show 20:30"
+                        data-event-description="KEBU — Finnish synthwave live performance. Age limit 18 years."
+                        data-event-ticket-price="220 DKK"
+                        data-event-viewer-price="79 DKK"
+                        data-event-tickets-available="true">
+                        <span class="artist-calendar__date">9 Nov.</span>
+                        <span class="artist-calendar__weekday">Saturday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day artist-calendar__day--event"
+                        data-event-date="Sunday, 10 November"
+                        data-event-venue="RUST, Copenhagen"
+                        data-event-time="Doors 19:30 · Show 20:30"
+                        data-event-description="Jonathan Roy — Canadian indie-folk evening. Age limit 18 years."
+                        data-event-ticket-price="210 DKK"
+                        data-event-viewer-price="79 DKK"
+                        data-event-tickets-available="true">
+                        <span class="artist-calendar__date">10 Nov.</span>
+                        <span class="artist-calendar__weekday">Sunday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">11 Nov.</span>
+                        <span class="artist-calendar__weekday">Monday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">12 Nov.</span>
+                        <span class="artist-calendar__weekday">Tuesday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">13 Nov.</span>
+                        <span class="artist-calendar__weekday">Wed.</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">14 Nov.</span>
+                        <span class="artist-calendar__weekday">Thursday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">15 Nov.</span>
+                        <span class="artist-calendar__weekday">Friday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">16 Nov.</span>
+                        <span class="artist-calendar__weekday">Saturday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">17 Nov.</span>
+                        <span class="artist-calendar__weekday">Sunday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">18 Nov.</span>
+                        <span class="artist-calendar__weekday">Monday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">19 Nov.</span>
+                        <span class="artist-calendar__weekday">Tuesday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">20 Nov.</span>
+                        <span class="artist-calendar__weekday">Wed.</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">21 Nov.</span>
+                        <span class="artist-calendar__weekday">Thursday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">22 Nov.</span>
+                        <span class="artist-calendar__weekday">Friday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day artist-calendar__day--event"
+                        data-event-date="Saturday, 23 November"
+                        data-event-venue="RUST, Copenhagen"
+                        data-event-time="Doors 19:30 · Show 20:30"
+                        data-event-description="MELLOW — Danish hip-hop / rap. Age limit 18 years."
+                        data-event-ticket-price="195 DKK"
+                        data-event-viewer-price="69 DKK"
+                        data-event-tickets-available="true">
+                        <span class="artist-calendar__date">23 Nov.</span>
+                        <span class="artist-calendar__weekday">Saturday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">24 Nov.</span>
+                        <span class="artist-calendar__weekday">Sunday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">25 Nov.</span>
+                        <span class="artist-calendar__weekday">Monday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">26 Nov.</span>
+                        <span class="artist-calendar__weekday">Tuesday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">27 Nov.</span>
+                        <span class="artist-calendar__weekday">Wed.</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day artist-calendar__day--event"
+                        data-event-date="Thursday, 28 November"
+                        data-event-venue="RUST, Copenhagen"
+                        data-event-time="Doors 19:30 · Show 20:30"
+                        data-event-description="Nick Sander — Danish singer-songwriter. Age limit 18 years."
+                        data-event-ticket-price="185 DKK"
+                        data-event-viewer-price="69 DKK"
+                        data-event-tickets-available="true">
+                        <span class="artist-calendar__date">28 Nov.</span>
+                        <span class="artist-calendar__weekday">Thursday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">29 Nov.</span>
+                        <span class="artist-calendar__weekday">Friday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">30 Nov.</span>
+                        <span class="artist-calendar__weekday">Saturday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">1 Dec.</span>
+                        <span class="artist-calendar__weekday">Sunday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">2 Dec.</span>
+                        <span class="artist-calendar__weekday">Monday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">3 Dec.</span>
+                        <span class="artist-calendar__weekday">Tuesday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">4 Dec.</span>
+                        <span class="artist-calendar__weekday">Wed.</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">5 Dec.</span>
+                        <span class="artist-calendar__weekday">Thursday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day artist-calendar__day--event"
+                        data-event-date="Friday, 6 December"
+                        data-event-venue="RUST, Copenhagen"
+                        data-event-time="Doors 19:30 · Show 20:30"
+                        data-event-description="GIRLI — alt-pop. Age limit 18 years."
+                        data-event-ticket-price="225 DKK"
+                        data-event-viewer-price="89 DKK"
+                        data-event-tickets-available="true">
+                        <span class="artist-calendar__date">6 Dec.</span>
+                        <span class="artist-calendar__weekday">Friday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">7 Dec.</span>
+                        <span class="artist-calendar__weekday">Saturday</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- ============ Photos from visitors ============ -->
+            <section class="venue-photos" data-help="Visitor photos: Billeder taget af besøgende på spillestedet og delt offentligt. Billeder der kun er delt blandt venner vises ikke her.">
+                <header class="venue-photos__header">
+                    <h2 class="venue-photos__heading">Photos from visitors</h2>
+                    <span class="venue-photos__note" data-help="Kun billeder hvor uploaderen har valgt 'Public' synlighed vises her. Billeder delt 'Friends only' indekseres ikke offentligt på venue-siden.">Public posts only · friends-only photos are hidden</span>
+                </header>
+                <div class="venue-photos__grid">
+                    <a class="venue-photo-tile" href="#" style="background: url('../assets/images/artists/nick-sander-event.jpg') center/cover;" aria-label="Photo from a visitor"></a>
+                    <a class="venue-photo-tile" href="#" style="background: url('../assets/images/artists/jonathan-roy-event.png') center/cover;" aria-label="Photo from a visitor"></a>
+                    <a class="venue-photo-tile" href="#" style="background: url('../assets/images/artists/mellow-event.jpg') center/cover;" aria-label="Photo from a visitor"></a>
+                    <a class="venue-photo-tile" href="#" style="background: url('../assets/images/artists/mike-andersen-event.jpg') center/cover;" aria-label="Photo from a visitor"></a>
+                    <a class="venue-photo-tile" href="#" style="background: url('../assets/images/artists/girli-event.jpg') center/cover;" aria-label="Photo from a visitor"></a>
+                    <a class="venue-photo-tile" href="#" style="background: url('../assets/images/artists/jokesmith-johnson-post-3.png') center/cover;" aria-label="Photo from a visitor"></a>
+                    <a class="venue-photo-tile" href="#" style="background: url('../assets/images/artists/jeremy-freedom-cover.png') center/cover;" aria-label="Photo from a visitor"></a>
+                    <a class="venue-photo-tile" href="#" style="background: url('../assets/images/artists/jokesmith-johnson-post-1.png') center/cover;" aria-label="Photo from a visitor"></a>
+                    <a class="venue-photo-tile" href="#" style="background: url('../assets/images/artists/girli-event.jpg') center/cover;" aria-label="Photo from a visitor"></a>
+                    <a class="venue-photo-tile" href="#" style="background: url('../assets/images/artists/rust-cover.png') center/cover;" aria-label="Photo from a visitor"></a>
+                    <a class="venue-photo-tile" href="#" style="background: url('../assets/images/artists/jokesmith-johnson-post-1.png') center/cover;" aria-label="Photo from a visitor"></a>
+                    <a class="venue-photo-tile" href="#" style="background: url('../assets/images/artists/jokesmith-johnson-post-3.png') center/cover;" aria-label="Photo from a visitor"></a>
+                </div>
+                <a href="../photos/index.html" class="venue-photos__more">View all visitor photos →</a>
+            </section>
+
+            <!-- ============ Program ============ -->
+            <section class="venue-program" data-help="Program: Kommende koncerter på spillestedet med plakater, doors/show-tider, aldersgrænser og billet-køb.">
+                <h2 class="venue-program__heading">Program</h2>
+                <div class="venue-program__list">
+
+                    <!-- MIKE -->
+                    <article class="venue-concert" data-help="Koncert-kort. Klik 'Buy Tickets for Concert' for at åbne billet-modal.">
+                        <div class="venue-concert__poster" style="background: url('../assets/images/artists/mike-andersen-event.jpg') center/cover;"></div>
+                        <div class="venue-concert__main">
+                            <header class="venue-concert__header">
+                                <span class="venue-concert__name auto-name">MIKE</span>
+                                <span class="venue-concert__country">(United States of America)</span>
+                            </header>
+                            <ul class="venue-concert__meta">
+                                <li><span class="key">DOORS:</span><span class="value">19:30</span></li>
+                                <li><span class="key">CONCERT START:</span><span class="value">20:30</span></li>
+                                <li><span class="key">AGE LIMIT:</span><span class="value">18 YEARS</span></li>
+                                <li><span class="key">DATE:</span><span class="value">02.11.2024</span></li>
+                            </ul>
+                            <p class="venue-concert__description">MIKE is an alt-rap mainstay. The 24-year-old artist's evasion is evident in both his calm demeanor and measured exposition. He is known for introspective, deep rhymes that explore grief, family, and identity, and bolster cool, understated, mid-Atlantic releases. MIKE's latest release, Burning Desire, is his largest to date; both in length, but even more artistically — with collaborations that go beyond his typical circle.</p>
+                        </div>
+                        <div class="venue-concert__side">
+                            <a href="../artist/index.html?id=mike" class="venue-concert__artist">
+                                <span class="venue-concert__artist-portrait" style="background: url('../assets/images/artists/mike-andersen-profile.png') center/cover;"></span>
+                                <span class="venue-concert__artist-name auto-name">MIKE ANDERSEN</span>
+                            </a>
+                            <button type="button" class="wide-btn wide-btn--accept venue-concert__cta"
+                                data-event-date="Saturday, 2 November"
+                                data-event-venue="RUST, Copenhagen"
+                                data-event-time="Doors 19:30 · Show 20:30"
+                                data-event-description="MIKE — alt-rap headline night. Age limit 18 years."
+                                data-event-ticket-price="195 DKK"
+                                data-event-viewer-price="79 DKK"
+                                data-event-tickets-available="true">Buy Tickets for Concert</button>
+                            <button type="button" class="wide-btn venue-concert__cta"
+                                data-event-date="Saturday, 2 November"
+                                data-event-venue="RUST, Copenhagen"
+                                data-event-time="Doors 19:30 · Show 20:30"
+                                data-event-description="MIKE — alt-rap headline night. Online viewer pass."
+                                data-event-ticket-price="195 DKK"
+                                data-event-viewer-price="79 DKK"
+                                data-event-tickets-available="true">Buy Online Concert Pass</button>
+                        </div>
+                    </article>
+
+                    <!-- LOLA YOUNG -->
+                    <article class="venue-concert">
+                        <div class="venue-concert__poster" style="background: url('../assets/images/artists/lola-young-event.jpg') center/cover;"></div>
+                        <div class="venue-concert__main">
+                            <header class="venue-concert__header">
+                                <span class="venue-concert__name auto-name">LOLA YOUNG</span>
+                                <span class="venue-concert__country">(United Kingdom)</span>
+                            </header>
+                            <ul class="venue-concert__meta">
+                                <li><span class="key">DOORS:</span><span class="value">19:30</span></li>
+                                <li><span class="key">CONCERT START:</span><span class="value">20:30</span></li>
+                                <li><span class="key">AGE LIMIT:</span><span class="value">18 YEARS</span></li>
+                                <li><span class="key">DATE:</span><span class="value">06.11.2024</span></li>
+                            </ul>
+                            <p class="venue-concert__description">Uncompromising and with a true artistic vision — 20-year-old Lola Young has the potential, spirit and individuality to become Britain's and Europe's next great talent. "My music is of the different parts of me and how I function," explains Lola. In this way, she breaks with categorisation — each beat and melody has its own meaning and intention. As a lyricist, Lola allows you into her world, creating elaborate scenes with the tenderness and intimacy of a folk artist, while managing to maintain the sharpness and attitude of a rapper.</p>
+                        </div>
+                        <div class="venue-concert__side">
+                            <a href="../artist/index.html?id=lola-young" class="venue-concert__artist">
+                                <span class="venue-concert__artist-portrait" style="background: url('../assets/images/artists/lola-young-profile.jpg') center/cover;"></span>
+                                <span class="venue-concert__artist-name auto-name">LOLA YOUNG</span>
+                            </a>
+                            <button type="button" class="wide-btn venue-concert__cta venue-concert__cta--soldout" disabled>Sold Out</button>
+                            <button type="button" class="wide-btn venue-concert__cta"
+                                data-event-date="Wednesday, 6 November"
+                                data-event-venue="RUST, Copenhagen"
+                                data-event-time="Doors 19:30 · Show 20:30"
+                                data-event-description="Lola Young — soul-pop solo show. Online viewer pass available."
+                                data-event-ticket-price="245 DKK"
+                                data-event-viewer-price="89 DKK"
+                                data-event-tickets-available="false">Buy Online Concert Pass</button>
+                        </div>
+                    </article>
+
+                    <!-- KEBU -->
+                    <article class="venue-concert">
+                        <div class="venue-concert__poster" style="background: url('../assets/images/artists/kebu-event.jpg') center/cover;"></div>
+                        <div class="venue-concert__main">
+                            <header class="venue-concert__header">
+                                <span class="venue-concert__name auto-name">KEBU</span>
+                                <span class="venue-concert__country">(Finland)</span>
+                            </header>
+                            <ul class="venue-concert__meta">
+                                <li><span class="key">DOORS:</span><span class="value">19:30</span></li>
+                                <li><span class="key">CONCERT START:</span><span class="value">20:30</span></li>
+                                <li><span class="key">AGE LIMIT:</span><span class="value">18 YEARS</span></li>
+                                <li><span class="key">DATE:</span><span class="value">09.11.2024</span></li>
+                            </ul>
+                            <p class="venue-concert__description">Kebu is a composer and artist from Finland who creates instrumental and melodic electronic music, influenced by the kind made in the 70s and 80s. His music is not only character-led by skillful handling of analog synthesizers, but also by an audience captivating live performance — his YouTube channel has attracted over 100 million views and fans from all over the world. Kebu has already built up an impressive experience from touring Europe.</p>
+                        </div>
+                        <div class="venue-concert__side">
+                            <a href="../artist/index.html?id=kebu" class="venue-concert__artist">
+                                <span class="venue-concert__artist-portrait" style="background: url('../assets/images/artists/kebu-profile.jpg') center/cover;"></span>
+                                <span class="venue-concert__artist-name auto-name">KEBU</span>
+                            </a>
+                            <button type="button" class="wide-btn wide-btn--accept venue-concert__cta"
+                                data-event-date="Saturday, 9 November"
+                                data-event-venue="RUST, Copenhagen"
+                                data-event-time="Doors 19:30 · Show 20:30"
+                                data-event-description="KEBU — Finnish synthwave live performance."
+                                data-event-ticket-price="220 DKK"
+                                data-event-viewer-price="79 DKK"
+                                data-event-tickets-available="true">Buy Tickets for Concert</button>
+                            <button type="button" class="wide-btn venue-concert__cta"
+                                data-event-date="Saturday, 9 November"
+                                data-event-venue="RUST, Copenhagen"
+                                data-event-time="Doors 19:30 · Show 20:30"
+                                data-event-description="KEBU — Finnish synthwave live performance. Online pass."
+                                data-event-ticket-price="220 DKK"
+                                data-event-viewer-price="79 DKK"
+                                data-event-tickets-available="true">Buy Online Concert Pass</button>
+                        </div>
+                    </article>
+
+                    <!-- JONATHAN ROY -->
+                    <article class="venue-concert">
+                        <div class="venue-concert__poster" style="background: url('../assets/images/artists/jonathan-roy-event.png') center/cover;"></div>
+                        <div class="venue-concert__main">
+                            <header class="venue-concert__header">
+                                <span class="venue-concert__name auto-name">JONATHAN ROY</span>
+                                <span class="venue-concert__country">(Canada)</span>
+                            </header>
+                            <ul class="venue-concert__meta">
+                                <li><span class="key">DOORS:</span><span class="value">19:30</span></li>
+                                <li><span class="key">CONCERT START:</span><span class="value">20:30</span></li>
+                                <li><span class="key">AGE LIMIT:</span><span class="value">18 YEARS</span></li>
+                                <li><span class="key">DATE:</span><span class="value">10.11.2024</span></li>
+                            </ul>
+                            <p class="venue-concert__description">Following the same commitment to raw authenticity that fueled 2021's My Lullaby, Montreal-born artist Jonathan Roy has further honed his singular alt-pop sound on Life Distortions. His fullest expression yet of his evolution as both a person and artist. While still featuring the strong hooks and melodies that made his music so popular in the early years of his career, the sonic terrain of this album is truer to Jonathan than anything else he's done to date. Jonathan tapped Juno award-winning Canadian producer Brian Howes for this album.</p>
+                        </div>
+                        <div class="venue-concert__side">
+                            <a href="../artist/index.html?id=jonathan-roy" class="venue-concert__artist">
+                                <span class="venue-concert__artist-portrait" style="background: url('../assets/images/artists/jonathan-roy-profile.png') center/cover;"></span>
+                                <span class="venue-concert__artist-name auto-name">JONATHAN ROY</span>
+                            </a>
+                            <button type="button" class="wide-btn wide-btn--accept venue-concert__cta"
+                                data-event-date="Sunday, 10 November"
+                                data-event-venue="RUST, Copenhagen"
+                                data-event-time="Doors 19:30 · Show 20:30"
+                                data-event-description="Jonathan Roy — Canadian indie-folk evening."
+                                data-event-ticket-price="210 DKK"
+                                data-event-viewer-price="79 DKK"
+                                data-event-tickets-available="true">Buy Tickets for Concert</button>
+                            <button type="button" class="wide-btn venue-concert__cta"
+                                data-event-date="Sunday, 10 November"
+                                data-event-venue="RUST, Copenhagen"
+                                data-event-time="Doors 19:30 · Show 20:30"
+                                data-event-description="Jonathan Roy — Canadian indie-folk evening. Online pass."
+                                data-event-ticket-price="210 DKK"
+                                data-event-viewer-price="79 DKK"
+                                data-event-tickets-available="true">Buy Online Concert Pass</button>
+                        </div>
+                    </article>
+
+                    <!-- MELLOW (Purchased) -->
+                    <article class="venue-concert venue-concert--purchased">
+                        <div class="venue-concert__poster" style="background: url('../assets/images/artists/mellow-event.jpg') center/cover;"></div>
+                        <div class="venue-concert__main">
+                            <header class="venue-concert__header">
+                                <span class="venue-concert__name auto-name">MELLOW</span>
+                                <span class="venue-concert__country">(Denmark)</span>
+                            </header>
+                            <ul class="venue-concert__meta">
+                                <li><span class="key">DOORS:</span><span class="value">19:30</span></li>
+                                <li><span class="key">CONCERT START:</span><span class="value">20:30</span></li>
+                                <li><span class="key">AGE LIMIT:</span><span class="value">18 YEARS</span></li>
+                                <li><span class="key">DATE:</span><span class="value">23.11.2024</span></li>
+                            </ul>
+                            <p class="venue-concert__description">With 31,000 monthly listeners on Spotify alone, Mellow storms forward as a breath of fresh air to the established Danish music scene. He takes inspiration from the classic British mix of prime rap, garage beats and banter in the creation of his musical universe. In collaboration with his producer and DJ Deusic, his high-energy music reaches far beyond the edge of the stage and transforms the audience from listeners to partygoers. From an early age, Mellow has acquired experience in performing live through the rap collective Affilærd and it clearly shines through in his solo concerts, where his ability to grab the audience and break the wall between the stage and the audience creates a fantastic concert atmosphere.</p>
+                        </div>
+                        <div class="venue-concert__side">
+                            <a href="../artist/index.html?id=mellow" class="venue-concert__artist">
+                                <span class="venue-concert__artist-portrait" style="background: url('../assets/images/artists/mellow-profile.jpg') center/cover;"></span>
+                                <span class="venue-concert__artist-name auto-name">MELLOW</span>
+                            </a>
+                            <button type="button" class="wide-btn venue-concert__cta venue-concert__cta--purchased" disabled>
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="14" height="14">
+                                    <path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <span>Purchased (Entourage)</span>
+                            </button>
+                            <button type="button" class="wide-btn venue-concert__cta"
+                                data-event-date="Saturday, 23 November"
+                                data-event-venue="RUST, Copenhagen"
+                                data-event-time="Doors 19:30 · Show 20:30"
+                                data-event-description="MELLOW — Danish hip-hop / rap. Online pass."
+                                data-event-ticket-price="195 DKK"
+                                data-event-viewer-price="69 DKK"
+                                data-event-tickets-available="true">Buy Online Concert Pass</button>
+                        </div>
+                    </article>
+
+                    <!-- NICK SANDER -->
+                    <article class="venue-concert">
+                        <div class="venue-concert__poster" style="background: url('../assets/images/artists/nick-sander-event.jpg') center/cover;"></div>
+                        <div class="venue-concert__main">
+                            <header class="venue-concert__header">
+                                <span class="venue-concert__name auto-name">NICK SANDER</span>
+                                <span class="venue-concert__country">(Denmark)</span>
+                            </header>
+                            <ul class="venue-concert__meta">
+                                <li><span class="key">DOORS:</span><span class="value">19:30</span></li>
+                                <li><span class="key">CONCERT START:</span><span class="value">20:30</span></li>
+                                <li><span class="key">AGE LIMIT:</span><span class="value">18 YEARS</span></li>
+                                <li><span class="key">DATE:</span><span class="value">28.11.2024</span></li>
+                            </ul>
+                            <p class="venue-concert__description">Nick Sander was raised in a musically oriented family, and he therefore became a multi-instrumentalist, singer and songwriter at an early age. He soon found out that he wanted to be a solo artist one day. The relentless and hard work of mastering different instruments, writing and composing his own songs paid off when he signed his first music deal with the Danish recording, production and management company Juicy Hothouse at the age of 18. A few years later, Nick Sander then became part of the record company "Danish Music Records", but after two years this collaboration also broke up.</p>
+                        </div>
+                        <div class="venue-concert__side">
+                            <a href="../artist/index.html?id=nick-sander" class="venue-concert__artist">
+                                <span class="venue-concert__artist-portrait" style="background: url('../assets/images/artists/nick-sander-profile.jpg') center/cover;"></span>
+                                <span class="venue-concert__artist-name auto-name">NICK SANDER</span>
+                            </a>
+                            <button type="button" class="wide-btn wide-btn--accept venue-concert__cta"
+                                data-event-date="Thursday, 28 November"
+                                data-event-venue="RUST, Copenhagen"
+                                data-event-time="Doors 19:30 · Show 20:30"
+                                data-event-description="Nick Sander — Danish singer-songwriter."
+                                data-event-ticket-price="185 DKK"
+                                data-event-viewer-price="69 DKK"
+                                data-event-tickets-available="true">Buy Tickets for Concert</button>
+                            <button type="button" class="wide-btn venue-concert__cta"
+                                data-event-date="Thursday, 28 November"
+                                data-event-venue="RUST, Copenhagen"
+                                data-event-time="Doors 19:30 · Show 20:30"
+                                data-event-description="Nick Sander — Danish singer-songwriter. Online pass."
+                                data-event-ticket-price="185 DKK"
+                                data-event-viewer-price="69 DKK"
+                                data-event-tickets-available="true">Buy Online Concert Pass</button>
+                        </div>
+                    </article>
+
+                    <!-- GIRLI -->
+                    <article class="venue-concert">
+                        <div class="venue-concert__poster" style="background: url('../assets/images/artists/girli-event.jpg') center/cover;"></div>
+                        <div class="venue-concert__main">
+                            <header class="venue-concert__header">
+                                <span class="venue-concert__name auto-name">GIRLI</span>
+                                <span class="venue-concert__country">(United Kingdom)</span>
+                            </header>
+                            <ul class="venue-concert__meta">
+                                <li><span class="key">DOORS:</span><span class="value">19:30</span></li>
+                                <li><span class="key">CONCERT START:</span><span class="value">20:30</span></li>
+                                <li><span class="key">AGE LIMIT:</span><span class="value">18 YEARS</span></li>
+                                <li><span class="key">DATE:</span><span class="value">06.12.2024</span></li>
+                            </ul>
+                            <p class="venue-concert__description">"I still have my fierily-and-wild side, but I like that I can be more vulnerable in my music. With this album, I'm showing more of myself than ever before, and it's a really wonderful feeling." Alt-pop rebel Girli describes her forthcoming album 'Matriarchy' as her most "thoughtful" and "vulnerable" work to date. "I chose it as the album title because that word means many things to me. The matriarchy of being a queer woman in love with another."</p>
+                        </div>
+                        <div class="venue-concert__side">
+                            <a href="../artist/index.html?id=girli" class="venue-concert__artist">
+                                <span class="venue-concert__artist-portrait" style="background: url('../assets/images/artists/girli-profile.jpg') center/cover;"></span>
+                                <span class="venue-concert__artist-name auto-name">GIRLI</span>
+                            </a>
+                            <button type="button" class="wide-btn wide-btn--accept venue-concert__cta"
+                                data-event-date="Friday, 6 December"
+                                data-event-venue="RUST, Copenhagen"
+                                data-event-time="Doors 19:30 · Show 20:30"
+                                data-event-description="GIRLI — alt-pop. Age limit 18 years."
+                                data-event-ticket-price="225 DKK"
+                                data-event-viewer-price="89 DKK"
+                                data-event-tickets-available="true">Buy Tickets for Concert</button>
+                            <button type="button" class="wide-btn venue-concert__cta"
+                                data-event-date="Friday, 6 December"
+                                data-event-venue="RUST, Copenhagen"
+                                data-event-time="Doors 19:30 · Show 20:30"
+                                data-event-description="GIRLI — alt-pop. Online pass."
+                                data-event-ticket-price="225 DKK"
+                                data-event-viewer-price="89 DKK"
+                                data-event-tickets-available="true">Buy Online Concert Pass</button>
+                        </div>
+                    </article>
+
+                </div>
+            </section>
+
+            <footer class="artist-account-footer" data-help="Datoen hvor venue-profilen blev oprettet på STAGECORD PRO.">
+                Account created: 14 March 2017
+            </footer>
+
+        </div>
+    </main>
+
+    <!-- ============ Event details modal (reused from artist page) ============ -->
+    <div class="modal-overlay" id="eventModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="eventModalDate">
+        <div class="modal event-modal">
+            <header class="modal__header">
+                <div class="event-modal__title">
+                    <span class="event-modal__date" id="eventModalDate">Date</span>
+                    <span class="event-modal__venue" id="eventModalVenue">Venue</span>
+                </div>
+                <button type="button" class="modal__close" aria-label="Close" data-close-modal>&times;</button>
+            </header>
+
+            <div class="event-modal__body">
+                <div class="event-modal__time" id="eventModalTime"></div>
+                <p class="event-modal__description" id="eventModalDescription"></p>
+            </div>
+
+            <div class="event-modal__options">
+                <div class="event-modal__option" id="eventModalTicketOption">
+                    <div class="event-modal__option-label">Concert ticket</div>
+                    <div class="event-modal__option-price" id="eventModalTicketPrice">— DKK</div>
+                    <button type="button" class="wide-btn wide-btn--accept" id="eventModalTicketBtn">Buy ticket</button>
+                    <p class="event-modal__option-note">Includes physical entry with a personal QR-code.</p>
+                </div>
+
+                <div class="event-modal__option" id="eventModalViewerOption">
+                    <div class="event-modal__option-label">Online viewer access</div>
+                    <div class="event-modal__option-price" id="eventModalViewerPrice">— DKK</div>
+                    <button type="button" class="wide-btn wide-btn--buy" id="eventModalViewerBtn">Buy online access</button>
+                    <p class="event-modal__option-note">Stream the show live from any device — cheaper alternative when tickets are sold out.</p>
+                </div>
+            </div>
+
+            <div class="event-modal__entourage">
+                <h3 class="event-modal__entourage-title">Buy for your entourage</h3>
+                <p class="event-modal__entourage-note">
+                    If your entourage has approved group ticket purchases, you can buy for
+                    everyone at once. Each member is charged their own share and the ticket
+                    appears in their purchased-tickets list.
+                </p>
+                <div class="event-modal__entourage-row">
+                    <select class="event-modal__entourage-select" id="eventModalEntouragePick" aria-label="Select entourage">
+                        <option value="">Select your entourage…</option>
+                        <option value="brooklyn" data-members="4">Brooklyn Crew · 4 members</option>
+                        <option value="comedy" data-members="6">Comedy Connoisseurs · 6 members</option>
+                        <option value="studio" data-members="3">Studio Squad · 3 members</option>
+                        <option value="duo" data-members="2">Tour Duo · 2 members</option>
+                        <option value="warehouse" data-members="9">Warehouse Friends · 9 members</option>
+                    </select>
+                    <div class="event-modal__entourage-total" id="eventModalEntourageTotal">— DKK</div>
+                </div>
+                <button type="button" class="wide-btn wide-btn--accept" id="eventModalEntourageBtn" disabled>Buy for entourage</button>
+            </div>
+
+            <div class="event-modal__owner">
+                <h3 class="event-modal__owner-title">Already own a ticket?</h3>
+                <p class="event-modal__owner-note">
+                    If you can't attend, you can convert your ticket to online viewer access or
+                    list it for resale to another fan — as long as the QR-code on your ticket
+                    hasn't been scanned at the venue.
+                </p>
+                <div class="event-modal__owner-actions">
+                    <button type="button" class="wide-btn" id="eventModalConvertBtn">Convert to online access</button>
+                    <button type="button" class="wide-btn" id="eventModalSellBtn">Sell my ticket</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ Pitch submission modal (artist visiting venue) ============ -->
+    <div class="modal-overlay" id="pitchSubmitModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="pitchSubmitModalTitle">
+        <div class="modal pitch-submit-modal">
+            <header class="modal__header">
+                <div>
+                    <h2 class="pitch-submit-modal__title" id="pitchSubmitModalTitle">Pitch to RUST</h2>
+                    <p class="pitch-submit-modal__subtitle">Pick an open slot, attach material from your catalog, and tell the venue why you'd be a great fit.</p>
+                </div>
+                <button type="button" class="modal__close" aria-label="Close" data-close-pitch-modal>&times;</button>
+            </header>
+
+            <div class="pitch-submit-modal__body">
+                <!-- Step 1 — open dates -->
+                <section class="pitch-submit__step">
+                    <h3 class="pitch-submit__step-title"><span class="pitch-submit__step-num">1</span> Choose an open date</h3>
+                    <p class="pitch-submit__hint">Available concert nights and Open Mic slots from RUST's calendar. Open Mic nights show which genre is welcome.</p>
+                    <div class="pitch-submit-dates" role="radiogroup" aria-label="Available pitch dates">
+                        <label class="pitch-submit-date">
+                            <input type="radio" name="pitchDate" value="2024-11-08">
+                            <div class="pitch-submit-date__main">
+                                <span class="pitch-submit-date__weekday">Friday</span>
+                                <span class="pitch-submit-date__date">8 November 2024</span>
+                                <span class="pitch-submit-date__badge pitch-submit-date__badge--openmic">Open Mic Night · All genres</span>
+                            </div>
+                            <span class="pitch-submit-date__doors">Doors 19:30 · Stage 20:30</span>
+                        </label>
+                        <label class="pitch-submit-date">
+                            <input type="radio" name="pitchDate" value="2024-11-13">
+                            <div class="pitch-submit-date__main">
+                                <span class="pitch-submit-date__weekday">Wednesday</span>
+                                <span class="pitch-submit-date__date">13 November 2024</span>
+                                <span class="pitch-submit-date__badge">Concert · Indie / Alt-pop</span>
+                            </div>
+                            <span class="pitch-submit-date__doors">Doors 19:30 · Stage 20:30</span>
+                        </label>
+                        <label class="pitch-submit-date">
+                            <input type="radio" name="pitchDate" value="2024-11-14">
+                            <div class="pitch-submit-date__main">
+                                <span class="pitch-submit-date__weekday">Thursday</span>
+                                <span class="pitch-submit-date__date">14 November 2024</span>
+                                <span class="pitch-submit-date__badge pitch-submit-date__badge--openmic">Open Mic Night · Comedy / Spoken word</span>
+                            </div>
+                            <span class="pitch-submit-date__doors">Doors 19:30 · Stage 20:30</span>
+                        </label>
+                        <label class="pitch-submit-date">
+                            <input type="radio" name="pitchDate" value="2024-11-15">
+                            <div class="pitch-submit-date__main">
+                                <span class="pitch-submit-date__weekday">Friday</span>
+                                <span class="pitch-submit-date__date">15 November 2024</span>
+                                <span class="pitch-submit-date__badge">Concert · Hip-hop / R&amp;B</span>
+                            </div>
+                            <span class="pitch-submit-date__doors">Doors 19:30 · Stage 20:30</span>
+                        </label>
+                        <label class="pitch-submit-date">
+                            <input type="radio" name="pitchDate" value="2024-11-22">
+                            <div class="pitch-submit-date__main">
+                                <span class="pitch-submit-date__weekday">Friday</span>
+                                <span class="pitch-submit-date__date">22 November 2024</span>
+                                <span class="pitch-submit-date__badge">Concert · Open genre</span>
+                            </div>
+                            <span class="pitch-submit-date__doors">Doors 19:30 · Stage 20:30</span>
+                        </label>
+                        <label class="pitch-submit-date">
+                            <input type="radio" name="pitchDate" value="2024-11-29">
+                            <div class="pitch-submit-date__main">
+                                <span class="pitch-submit-date__weekday">Friday</span>
+                                <span class="pitch-submit-date__date">29 November 2024</span>
+                                <span class="pitch-submit-date__badge pitch-submit-date__badge--openmic">Open Mic Night · All genres</span>
+                            </div>
+                            <span class="pitch-submit-date__doors">Doors 19:30 · Stage 20:30</span>
+                        </label>
+                    </div>
+                </section>
+
+                <!-- Step 2 — pick songs from your catalog -->
+                <section class="pitch-submit__step">
+                    <h3 class="pitch-submit__step-title"><span class="pitch-submit__step-num">2</span> Pick songs from your catalog</h3>
+                    <p class="pitch-submit__hint">Select up to 5 tracks the venue should preview. Pulled from your own catalog.</p>
+                    <ul class="pitch-submit-catalog">
+                        <li><label class="pitch-submit-track">
+                            <input type="checkbox" value="jokes-on-me-live">
+                            <span class="pitch-submit-track__cover" style="background: url('../assets/images/artists/jokesmith-johnson-project-1.png') center/cover;"></span>
+                            <div class="pitch-submit-track__main">
+                                <span class="pitch-submit-track__title">Jokes On Me — Live at Apollo</span>
+                                <span class="pitch-submit-track__meta">Stand-up · 8:42 · 2024</span>
+                            </div>
+                        </label></li>
+                        <li><label class="pitch-submit-track">
+                            <input type="checkbox" value="manhattan-rain">
+                            <span class="pitch-submit-track__cover" style="background: url('../assets/images/artists/jokesmith-johnson-project-2.png') center/cover;"></span>
+                            <div class="pitch-submit-track__main">
+                                <span class="pitch-submit-track__title">Manhattan Rain</span>
+                                <span class="pitch-submit-track__meta">Single · 3:48 · 2023</span>
+                            </div>
+                        </label></li>
+                        <li><label class="pitch-submit-track">
+                            <input type="checkbox" value="behind-the-curtain">
+                            <span class="pitch-submit-track__cover" style="background: url('../assets/images/artists/jokesmith-johnson-project-3.png') center/cover;"></span>
+                            <div class="pitch-submit-track__main">
+                                <span class="pitch-submit-track__title">Behind The Curtain — opening monologue</span>
+                                <span class="pitch-submit-track__meta">Podcast clip · 4:11 · 2024</span>
+                            </div>
+                        </label></li>
+                        <li><label class="pitch-submit-track">
+                            <input type="checkbox" value="brooklyn-air">
+                            <span class="pitch-submit-track__cover" style="background: url('../assets/images/artists/jokesmith-johnson-post-1.png') center/cover;"></span>
+                            <div class="pitch-submit-track__main">
+                                <span class="pitch-submit-track__title">Brooklyn Air (acoustic)</span>
+                                <span class="pitch-submit-track__meta">Demo · 3:12 · 2024</span>
+                            </div>
+                        </label></li>
+                        <li><label class="pitch-submit-track">
+                            <input type="checkbox" value="late-night-set">
+                            <span class="pitch-submit-track__cover" style="background: url('../assets/images/artists/jokesmith-johnson-post-3.png') center/cover;"></span>
+                            <div class="pitch-submit-track__main">
+                                <span class="pitch-submit-track__title">Late Night Cellar — full set</span>
+                                <span class="pitch-submit-track__meta">Stand-up · 41:08 · 2024</span>
+                            </div>
+                        </label></li>
+                    </ul>
+                </section>
+
+                <!-- Step 3 — message -->
+                <section class="pitch-submit__step">
+                    <h3 class="pitch-submit__step-title"><span class="pitch-submit__step-num">3</span> Personal message</h3>
+                    <textarea class="pitch-submit__message" rows="4" placeholder="Tell the venue why you'd be a great fit, what your set looks like, and anything they should know about your show…"></textarea>
+                </section>
+
+                <!-- Step 4 — attachments -->
+                <section class="pitch-submit__step">
+                    <h3 class="pitch-submit__step-title"><span class="pitch-submit__step-num">4</span> Attachments <span class="pitch-submit__optional">(optional)</span></h3>
+                    <p class="pitch-submit__hint">Add the materials the venue will need to plan your set.</p>
+                    <div class="pitch-submit-attachments">
+                        <button type="button" class="pitch-submit-attach" data-open-setlist-builder data-help="Set-list builder: Vælg fra dine registered songs (allerede udgivne) og tilføj uudgivne sange manuelt. Programmet udregner totalvarighed og hjælper dig med at strukturere settet."><span class="pitch-submit-attach__plus">+</span> <span data-setlist-attach-label>Set list</span></button>
+                        <button type="button" class="pitch-submit-attach"><span class="pitch-submit-attach__plus">+</span> Dressing room rider</button>
+                        <button type="button" class="pitch-submit-attach"><span class="pitch-submit-attach__plus">+</span> Tech rider</button>
+                        <button type="button" class="pitch-submit-attach"><span class="pitch-submit-attach__plus">+</span> Poster file</button>
+                    </div>
+                </section>
+
+                <!-- Step 5 — collab fee preference -->
+                <section class="pitch-submit__step">
+                    <h3 class="pitch-submit__step-title"><span class="pitch-submit__step-num">5</span> Proposed fee</h3>
+                    <p class="pitch-submit__hint">RUST accepts Fixed rate, Pay/% of sales, and Free performance pitches.</p>
+                    <div class="pitch-submit-fee">
+                        <label class="pitch-submit-fee__option"><input type="radio" name="pitchFee" value="percent" checked> Pay/% of sales</label>
+                        <label class="pitch-submit-fee__option"><input type="radio" name="pitchFee" value="fixed"> Fixed rate (USD)</label>
+                        <label class="pitch-submit-fee__option"><input type="radio" name="pitchFee" value="free"> Free performance</label>
+                    </div>
+                </section>
+            </div>
+
+            <footer class="pitch-submit-modal__footer">
+                <button type="button" class="wide-btn" data-close-pitch-modal>Cancel</button>
+                <button type="button" class="wide-btn wide-btn--accept" id="pitchSubmitConfirmBtn">Submit pitch</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ===== Set-list builder modal — pick from registered songs + add unreleased ===== -->
+    <div class="release-modal-overlay" id="setlistBuilderModal" data-setlist-builder-modal aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="release-modal release-modal--setlist">
+            <header class="release-modal__header">
+                <h2 class="release-modal__title">Build your set list</h2>
+                <button type="button" class="release-modal__close" data-close-setlist aria-label="Close" data-help="Luk set-list-builderen. Dine valg gemmes automatisk.">&times;</button>
+            </header>
+
+            <div class="release-modal__body release-modal__body--setlist">
+                <p class="setlist-intro" data-help="Set-list: Sammensæt dine sange til koncerten. Tjek registered songs af i listen, eller skriv en uudgivet sang manuelt. Brug pilene til at omarrangere — det er rækkefølgen som venuet og dit live-publikum vil opleve.">Vælg sange fra dit katalog eller tilføj uudgivne titler. Træk eller brug pilene for at omarrangere — den endelige rækkefølge vises i pitchet til venuet.</p>
+
+                <!-- Selected set list (ordered) -->
+                <section class="setlist-section" data-help="Aktiv set-list: De sange der er medtaget, i den rækkefølge du vil spille dem live. Total varighed beregnes automatisk.">
+                    <header class="setlist-section__head">
+                        <h3 class="setlist-section__title">Set list <span class="setlist-section__meta" data-setlist-meta>0 songs · 0:00</span></h3>
+                    </header>
+                    <ol class="setlist-active" data-setlist-active></ol>
+                    <p class="setlist-empty" data-setlist-empty hidden data-help="Tom set-list: Tilføj sange fra dit katalog nedenfor eller skriv en uudgivet titel — så bygger settet sig her.">Ingen sange endnu — vælg fra dit katalog eller tilføj en uudgivet sang nedenfor.</p>
+                </section>
+
+                <!-- Registered songs (toggle in/out) -->
+                <section class="setlist-section" data-help="Registered songs: Sange der er udgivet og registreret hos rettighedsorganisationer. Tjek af for at inkludere; tjek igen for at fjerne.">
+                    <header class="setlist-section__head">
+                        <h3 class="setlist-section__title">Registered songs</h3>
+                    </header>
+                    <ul class="setlist-catalog" data-setlist-catalog></ul>
+                </section>
+
+                <!-- Unreleased / custom additions -->
+                <section class="setlist-section" data-help="Uudgivne sange: Skriv titler på sange der ikke er registreret endnu — cover-sange, demoer eller helt nye numre. Disse markeres som ★ Unreleased i listen.">
+                    <header class="setlist-section__head">
+                        <h3 class="setlist-section__title">Add unreleased song</h3>
+                    </header>
+                    <form class="setlist-add-row" data-setlist-add-form>
+                        <input type="text" class="setlist-add-row__name" data-setlist-add-name placeholder="Sangtitel — f.eks. 'Late Cellar Set' (cover) eller 'Brooklyn Air'">
+                        <input type="text" class="setlist-add-row__duration" data-setlist-add-duration placeholder="m:ss" maxlength="5">
+                        <label class="setlist-add-row__cover">
+                            <input type="checkbox" data-setlist-add-cover>
+                            <span>Cover</span>
+                        </label>
+                        <button type="submit" class="setlist-add-row__btn" data-help="Tilføj uudgiven sang: Indsætter sangen sidst i set-listen med varigheden du har angivet (m:ss).">+ Add</button>
+                    </form>
+                </section>
+            </div>
+
+            <footer class="release-modal__actions">
+                <button type="button" class="release-modal__btn" data-close-setlist>Cancel</button>
+                <button type="button" class="release-modal__btn release-modal__btn--primary" data-save-setlist>Save set list</button>
+            </footer>
+        </div>
+    </div>
+
+    <script src="../js/core.js"></script>
+    <script src="../js/modes.js"></script>
+    <script src="../js/sidebar.js"></script>
+    <script src="../js/topbar-widgets.js"></script>
+    <script src="../js/stage-badge.js"></script>
+    <script src="../js/acting-as-service.js"></script>
+    <script src="../js/stage-cards.js"></script>
+    <script src="../js/stage-label.js"></script>
+    <script src="../js/stage-resources.js"></script>
+    <script src="../js/stage-economy.js"></script>
+    <script src="../js/settings.js"></script>
+    <script src="../js/activity-feed.js"></script>
+    <script src="../js/app.js"></script>
+    <script>
+    // Wire concert-card CTAs to the existing event modal — clicking either ticket
+    // button on a venue-concert opens the same modal as the calendar dots.
+    (function() {
+        document.querySelectorAll('.venue-concert__cta[data-event-date]').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const day = document.querySelector('.artist-calendar__day--event[data-event-date="' + btn.dataset.eventDate + '"]');
+                (day || btn).dispatchEvent(new MouseEvent('click', { bubbles: true }));
+            });
+        });
+    })();
+
+    // Wire the pitch-submit modal: open from the venue cover's Pitch button,
+    // close from header X / Cancel / Esc, and show a brief confirmation on
+    // submit before closing.
+    (function() {
+        const overlay = document.getElementById('pitchSubmitModal');
+        const openBtn = document.getElementById('openPitchSubmitBtn');
+        const submitBtn = document.getElementById('pitchSubmitConfirmBtn');
+        if (!overlay || !openBtn) return;
+
+        function open() {
+            overlay.classList.add('open');
+            overlay.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+        function close() {
+            overlay.classList.remove('open');
+            overlay.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+
+        openBtn.addEventListener('click', open);
+        overlay.querySelectorAll('[data-close-pitch-modal]').forEach(function(b) {
+            b.addEventListener('click', close);
+        });
+        overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) close();
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && overlay.classList.contains('open')) close();
+        });
+
+        if (submitBtn) {
+            submitBtn.addEventListener('click', function() {
+                const original = submitBtn.textContent;
+                submitBtn.textContent = 'Pitch sent ✓';
+                submitBtn.disabled = true;
+                setTimeout(function() {
+                    close();
+                    submitBtn.textContent = original;
+                    submitBtn.disabled = false;
+                }, 1400);
+            });
+        }
+    })();
+    </script>
+</body>
+</html>

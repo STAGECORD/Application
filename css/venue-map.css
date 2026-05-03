@@ -1,0 +1,383 @@
+/* ===========================================================================
+   Venue map + Friend finder — interactive festival/concert layout
+   ===========================================================================
+   PDF concept: when at a venue or festival, fans see a live map showing
+   stages, tents, food trucks, exits, first-aid, and the live positions
+   of friends in their entourage (color-coded). Each user can toggle
+   their visibility on/off.
+*/
+
+.release-modal.release-modal--venue-map {
+    max-width: 1100px;
+    width: 96vw;
+    max-height: 95vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.venue-map__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 22px;
+    border-bottom: 1px solid #2a2a2a;
+    flex-wrap: wrap;
+}
+
+.venue-map__title {
+    margin: 0;
+    font-family: 'Outfit', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #FFFFFF;
+}
+
+.venue-map__title-meta {
+    margin-left: 8px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.55);
+    font-weight: 500;
+}
+
+.venue-map__legend {
+    display: inline-flex;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.venue-map__legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.65);
+    font-family: 'Outfit', sans-serif;
+}
+
+.venue-map__legend-icon {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    color: #FFFFFF;
+    font-weight: 700;
+}
+
+/* Toggle bar — hide own location, show/hide categories */
+.venue-map__controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    background: rgba(255, 255, 255, 0.025);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    flex-wrap: wrap;
+}
+
+.venue-map__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.75);
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.venue-map__toggle:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #FFFFFF;
+}
+
+.venue-map__toggle.is-on {
+    background: rgba(74, 144, 226, 0.18);
+    border-color: #4A90E2;
+    color: #FFFFFF;
+}
+
+.venue-map__toggle--invisible.is-on {
+    background: rgba(255, 106, 85, 0.18);
+    border-color: #FF6A55;
+    color: #FF6A55;
+}
+
+.venue-map__toggle-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.venue-map__toggle.is-on .venue-map__toggle-dot {
+    background: #43C47A;
+}
+
+.venue-map__toggle--invisible.is-on .venue-map__toggle-dot {
+    background: #FF6A55;
+}
+
+/* Map canvas area */
+.venue-map__canvas-wrap {
+    flex: 1 1 auto;
+    overflow: hidden;
+    background: linear-gradient(135deg, #0E1A0E 0%, #161E16 100%);
+    position: relative;
+}
+
+.venue-map__canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 460px;
+}
+
+/* SVG element styles */
+.vm-ground { fill: #1F2E1F; }
+.vm-grass {
+    fill: rgba(67, 196, 122, 0.06);
+    stroke: rgba(67, 196, 122, 0.18);
+    stroke-width: 1;
+}
+.vm-path {
+    stroke: rgba(255, 255, 255, 0.1);
+    stroke-width: 18;
+    fill: none;
+    stroke-linecap: round;
+}
+
+.vm-stage {
+    fill: rgba(255, 196, 0, 0.18);
+    stroke: #FFC400;
+    stroke-width: 2;
+    rx: 8;
+}
+.vm-stage-label {
+    fill: #FFC400;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    text-anchor: middle;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.vm-foodtruck { fill: rgba(255, 138, 200, 0.7); stroke: #FF8AC8; stroke-width: 1.5; }
+.vm-bar       { fill: rgba(74, 144, 226, 0.7); stroke: #4A90E2; stroke-width: 1.5; }
+.vm-toilet    { fill: rgba(125, 211, 192, 0.7); stroke: #7DD3C0; stroke-width: 1.5; }
+.vm-firstaid  { fill: rgba(255, 106, 85, 0.85); stroke: #FF6A55; stroke-width: 1.5; }
+.vm-security  { fill: rgba(255, 196, 0, 0.85); stroke: #FFC400; stroke-width: 1.5; }
+.vm-exit      { fill: rgba(255, 255, 255, 0.85); stroke: #FFFFFF; stroke-width: 1.5; }
+
+.vm-icon-label {
+    fill: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 8px;
+    text-anchor: middle;
+    pointer-events: none;
+}
+
+.vm-tent {
+    fill: rgba(125, 211, 192, 0.32);
+    stroke: rgba(125, 211, 192, 0.6);
+    stroke-width: 1;
+}
+
+.vm-tent-area {
+    fill: rgba(125, 211, 192, 0.05);
+    stroke: rgba(125, 211, 192, 0.32);
+    stroke-width: 1;
+    stroke-dasharray: 4 4;
+}
+.vm-tent-area-label {
+    fill: rgba(125, 211, 192, 0.85);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    text-anchor: middle;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+/* Friend dots — colored by entourage group */
+.vm-friend {
+    cursor: pointer;
+}
+
+.vm-friend__halo {
+    fill: currentColor;
+    opacity: 0.18;
+    animation: vmPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes vmPulse {
+    0%, 100% { transform: scale(1); opacity: 0.18; }
+    50%      { transform: scale(1.6); opacity: 0; }
+}
+
+.vm-friend__dot {
+    fill: currentColor;
+    stroke: #FFFFFF;
+    stroke-width: 1.5;
+}
+
+.vm-friend__label {
+    fill: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 9px;
+    text-anchor: middle;
+    pointer-events: none;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* "You are here" marker — slightly bigger + arrow */
+.vm-you {
+    color: #FFFFFF;
+}
+
+.vm-you .vm-friend__dot {
+    fill: #FFFFFF;
+    stroke: #4A90E2;
+    stroke-width: 2.5;
+    r: 8;
+}
+
+.vm-you-label {
+    fill: #4A90E2;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 10px;
+    text-anchor: middle;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+/* When invisible mode is on, dim the user marker */
+.is-invisible .vm-you .vm-friend__dot {
+    fill: rgba(255, 255, 255, 0.18);
+    stroke: rgba(255, 106, 85, 0.5);
+    stroke-dasharray: 3 3;
+}
+.is-invisible .vm-you-label {
+    fill: rgba(255, 106, 85, 0.7);
+}
+
+/* Hide categories when toggled off */
+.venue-map__canvas:not(.show-foodtrucks) .vm-foodtruck-group { display: none; }
+.venue-map__canvas:not(.show-toilets)    .vm-toilet-group    { display: none; }
+.venue-map__canvas:not(.show-firstaid)   .vm-firstaid-group  { display: none; }
+.venue-map__canvas:not(.show-security)   .vm-security-group  { display: none; }
+.venue-map__canvas:not(.show-tents)      .vm-tents-group     { display: none; }
+.venue-map__canvas:not(.show-friends)    .vm-friends-group   { display: none; }
+
+/* Side panel — entourage roster */
+.venue-map__body {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+    min-height: 460px;
+}
+
+.venue-map__roster {
+    background: rgba(0, 0, 0, 0.3);
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    overflow-y: auto;
+    padding: 14px 16px;
+}
+
+.venue-map__roster-title {
+    margin: 0 0 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.venue-map__entourage {
+    margin-bottom: 14px;
+}
+
+.venue-map__entourage-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    color: #FFFFFF;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.venue-map__entourage-color {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.venue-map__roster-member {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 8px;
+    background: rgba(255, 255, 255, 0.025);
+    border-radius: 8px;
+    margin-bottom: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.venue-map__roster-member:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.venue-map__roster-member.is-self {
+    background: rgba(74, 144, 226, 0.12);
+    border: 1px solid rgba(74, 144, 226, 0.3);
+}
+
+.venue-map__roster-avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    flex-shrink: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.venue-map__roster-name {
+    flex: 1 1 auto;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 600;
+}
+
+.venue-map__roster-status {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.45);
+    font-weight: 500;
+}
+
+.venue-map__roster-status--hidden { color: #FF6A55; }
+
+@media (max-width: 720px) {
+    .venue-map__body { grid-template-columns: 1fr; }
+    .venue-map__roster { border-left: none; border-top: 1px solid rgba(255, 255, 255, 0.08); max-height: 200px; }
+}

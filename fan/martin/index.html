@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAGECORD - Martin Ruthkjær</title>
+    <link rel="stylesheet" href="../../css/sidebar.css">
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/logo.css">
+    <link rel="stylesheet" href="../../css/topbar.css">
+    <link rel="stylesheet" href="../../css/fan.css">
+</head>
+<body>
+    <!-- Left Sidebar Navigation -->
+    <aside class="sidebar" data-sidebar></aside>
+
+    <!-- Top Bar -->
+    <header class="topbar">
+        <!-- Logo (left) -->
+        <div class="logo-container" data-help="STAGECORD PRO-logoet. Klik for at vende tilbage til forsiden uanset hvor du er i platformen.">
+            <a href="../../index.html" class="logo-link">
+                <h1 class="logo">
+                    <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
+                </h1>
+            </a>
+        </div>
+
+        <!-- Search bar (middle) -->
+        <div class="search-bar" data-help="Søgebar: Find artister, koncerter, spillesteder, venner og alt andet på platformen. Skriv mindst 2 tegn for at se forslag.">
+            <input
+                type="text"
+                class="search-input"
+                placeholder="Search Artists, Concerts, Venues, Friends and much more"
+                aria-label="Search"
+            />
+            <svg class="search-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/>
+                <path d="M18 18L24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </div>
+
+        <!-- Help button (right) -->
+        <button type="button" class="help-button" aria-label="Help" aria-pressed="false" data-help="Hjælpeknap: Klik for at aktivere hjælpetilstand. Derefter kan du klikke på et vilkårligt element for at se en forklaring. Tryk Esc eller klik ? igen for at slukke.">
+            <span class="help-mark">?</span>
+        </button>
+    </header>
+
+    <!-- Main Content Area -->
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <!-- ============ Cover banner — visitor view (no edit buttons) ============ -->
+            <section class="fan-cover" style="background-image: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.55) 100%), url('../../assets/images/artists/jokesmith-johnson-post-1.png');" data-help="Du ser denne profil som besøgende. Klik 'Add friend' for at sende en venskabs-anmodning.">
+                <div class="fan-cover__top-actions">
+                    <button type="button" class="fan-cover__friend-btn" aria-pressed="false" data-help="Send venskabs-anmodning til Martin. Når han accepterer, bliver I venner og kan se hinandens aktivitet.">
+                        <span class="fan-cover__friend-icon">+</span>
+                        <span class="fan-cover__friend-label">Add friend</span>
+                    </button>
+                    <button type="button" class="profile-kebab" data-profile-kebab data-profile-name="Martin Ruthkjær" aria-label="More options" data-help="Mere: Mute, blokér eller rapportér Martin. Mute skjuler hans content uden at han ved det; blokering bryder forbindelsen helt; report sender til STAGECORD's moderation-team.">
+                        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+                    </button>
+                </div>
+                <div class="fan-cover__avatar" style="background: url('../../assets/images/artists/placeholder-male-7.png') center/cover"></div>
+
+                <div class="fan-cover__identity">
+                    <h1 class="fan-cover__name auto-name">Martin Ruthkjær</h1>
+                </div>
+
+                <div class="fan-cover__stats" data-help="Martins sociale stats.">
+                    <div class="fan-stat"><span class="fan-stat__value">874</span><span class="fan-stat__label">Friends</span></div>
+                    <div class="fan-stat"><span class="fan-stat__value">112</span><span class="fan-stat__label">Concerts</span></div>
+                    <div class="fan-stat"><span class="fan-stat__value">63</span><span class="fan-stat__label">Posts</span></div>
+                    <div class="fan-stat"><span class="fan-stat__value">241</span><span class="fan-stat__label">Following</span></div>
+                </div>
+            </section>
+
+            <!-- ============ Profile header (bio only — visitor view) ============ -->
+            <section class="fan-header">
+                <div class="fan-header__main">
+                    <p class="fan-header__bio">Festival fanatic from Copenhagen. Front row at every gig that matters. Currently chasing the perfect bassline.</p>
+                </div>
+            </section>
+
+            <!-- ============ My upcoming tickets ============ -->
+            <section class="fan-section" data-help="De koncerter og events du har købt billet til. Klik for at se billetten med QR-kode.">
+                <header class="fan-section__header">
+                    <h2 class="fan-section__title">My upcoming tickets</h2>
+                    <a href="#" class="fan-section__view-all">View all →</a>
+                </header>
+                <div class="fan-tickets__row">
+                    <article class="fan-ticket">
+                        <div class="fan-ticket__date">Sat, 9 Nov · 19:30</div>
+                        <div class="fan-ticket__artist">Jokesmith Johnson</div>
+                        <div class="fan-ticket__venue">Hammerstein Ballroom, NYC</div>
+                        <div class="fan-ticket__qr"></div>
+                        <div class="fan-ticket__type">Concert ticket · Seat A14</div>
+                    </article>
+                    <article class="fan-ticket">
+                        <div class="fan-ticket__date">Sat, 23 Nov · 20:00</div>
+                        <div class="fan-ticket__artist">Jokesmith Johnson</div>
+                        <div class="fan-ticket__venue">Royal Albert Hall, London</div>
+                        <div class="fan-ticket__qr"></div>
+                        <div class="fan-ticket__type">Concert ticket · Box 4</div>
+                    </article>
+                    <article class="fan-ticket">
+                        <div class="fan-ticket__date">Wed, 6 Nov · 21:30</div>
+                        <div class="fan-ticket__artist">Jokesmith Johnson</div>
+                        <div class="fan-ticket__venue">Comedy Cellar, Brooklyn</div>
+                        <div class="fan-ticket__qr"></div>
+                        <div class="fan-ticket__type">Online viewer access</div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- ============ My entourages ============ -->
+            <section class="fan-section" data-help="De entourage-grupper du er medlem af — gruppe-køb af billetter går igennem en af disse.">
+                <header class="fan-section__header">
+                    <h2 class="fan-section__title">My entourages</h2>
+                    <a href="#" class="fan-section__view-all">Manage →</a>
+                </header>
+                <div class="fan-entourages__row">
+                    <article class="fan-entourage">
+                        <div class="fan-entourage__name">Brooklyn Crew</div>
+                        <div class="fan-entourage__count">4 members · Group buying enabled</div>
+                        <div class="fan-entourage__avatars">
+                            <span style="background: url('../../assets/images/artists/placeholder-female-4.png') center/cover;"></span>
+                            <span style="background: url('../../assets/images/artists/placeholder-male-7.png') center/cover;"></span>
+                            <span style="background: url('../../assets/images/artists/placeholder-female-2.png') center/cover;"></span>
+                            <span style="background: url('../../assets/images/artists/placeholder-female-6.png') center/cover;"></span>
+                        </div>
+                    </article>
+                    <article class="fan-entourage">
+                        <div class="fan-entourage__name">Comedy Connoisseurs</div>
+                        <div class="fan-entourage__count">6 members · Group buying enabled</div>
+                        <div class="fan-entourage__avatars">
+                            <span style="background: url('../../assets/images/artists/placeholder-male-5.png') center/cover;"></span>
+                            <span style="background: url('../../assets/images/artists/placeholder-male-6.png') center/cover;"></span>
+                            <span style="background: url('../../assets/images/artists/placeholder-male-6.png') center/cover;"></span>
+                            <span style="background: url('../../assets/images/artists/placeholder-female-6.png') center/cover;"></span>
+                        </div>
+                    </article>
+                    <article class="fan-entourage">
+                        <div class="fan-entourage__name">Studio Squad</div>
+                        <div class="fan-entourage__count">3 members · Group buying enabled</div>
+                        <div class="fan-entourage__avatars">
+                            <span style="background: url('../../assets/images/artists/placeholder-female-4.png') center/cover;"></span>
+                            <span style="background: url('../../assets/images/artists/placeholder-male-2.png') center/cover;"></span>
+                            <span style="background: url('../../assets/images/artists/placeholder-male-4.png') center/cover;"></span>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- ============ Friends ============ -->
+            <section class="fan-section" data-help="Dine venner på platformen — klik på en for at besøge deres profil.">
+                <header class="fan-section__header">
+                    <h2 class="fan-section__title">Friends</h2>
+                    <a href="#" class="fan-section__view-all">See all 312 →</a>
+                </header>
+                <div class="fan-friends">
+                    <a class="fan-friend" href="#"><span class="fan-friend__avatar" style="background: url('../../assets/images/artists/placeholder-female-5.png') center/cover;"></span><span class="fan-friend__name auto-name">Line Rasmussen</span></a>
+                    <a class="fan-friend" href="#"><span class="fan-friend__avatar" style="background: url('../../assets/images/artists/placeholder-male-5.png') center/cover;"></span><span class="fan-friend__name auto-name">Matt Samuel</span></a>
+                    <a class="fan-friend" href="#"><span class="fan-friend__avatar" style="background: url('../../assets/images/artists/placeholder-male-3.png') center/cover;"></span><span class="fan-friend__name auto-name">Joakim Nielsen</span></a>
+                    <a class="fan-friend" href="#"><span class="fan-friend__avatar" style="background: url('../../assets/images/artists/placeholder-female-5.png') center/cover;"></span><span class="fan-friend__name auto-name">Tara Park</span></a>
+                    <a class="fan-friend" href="#"><span class="fan-friend__avatar" style="background: url('../../assets/images/artists/placeholder-male-1.png') center/cover;"></span><span class="fan-friend__name auto-name">Mike Shritslerz</span></a>
+                    <a class="fan-friend" href="#"><span class="fan-friend__avatar" style="background: url('../../assets/images/artists/placeholder-female-6.png') center/cover;"></span><span class="fan-friend__name auto-name">Anchi Humifuku</span></a>
+                    <a class="fan-friend" href="#"><span class="fan-friend__avatar" style="background: url('../../assets/images/artists/placeholder-female-6.png') center/cover;"></span><span class="fan-friend__name auto-name">Maya Thompson</span></a>
+                    <a class="fan-friend" href="#"><span class="fan-friend__avatar" style="background: url('../../assets/images/artists/placeholder-male-6.png') center/cover;"></span><span class="fan-friend__name auto-name">Winston Sinclair</span></a>
+                    <a class="fan-friend" href="#"><span class="fan-friend__avatar" style="background: url('../../assets/images/artists/placeholder-male-4.png') center/cover;"></span><span class="fan-friend__name auto-name">Malik Johnson</span></a>
+                    <a class="fan-friend" href="#"><span class="fan-friend__avatar" style="background: url('../../assets/images/artists/placeholder-female-5.png') center/cover;"></span><span class="fan-friend__name auto-name">Sophie Brown</span></a>
+                </div>
+            </section>
+
+            <!-- ============ Photo album ============ -->
+            <section class="fan-section" data-help="Dine egne billeder — fra koncerter, festivaler og hverdagen. Klik for at åbne hele galleriet.">
+                <header class="fan-section__header">
+                    <h2 class="fan-section__title"><a href="../../photos/index.html" style="color:inherit;text-decoration:none;">Photo album</a></h2>
+                    <a href="../../photos/index.html" class="fan-section__view-all">View all →</a>
+                </header>
+                <div class="fan-photos__row">
+                    <a class="fan-photo-tile" href="../../photos/index.html" style="background: url('../../assets/images/artists/placeholder-female-4.png') center/cover;"></a>
+                    <a class="fan-photo-tile" href="../../photos/index.html" style="background: url('../../assets/images/artists/placeholder-female-4.png') center/cover;"></a>
+                    <a class="fan-photo-tile" href="../../photos/index.html" style="background: url('../../assets/images/artists/placeholder-female-2.png') center/cover;"></a>
+                    <a class="fan-photo-tile" href="../../photos/index.html" style="background: url('../../assets/images/artists/placeholder-male-1.png') center/cover;"></a>
+                    <a class="fan-photo-tile" href="../../photos/index.html" style="background: url('../../assets/images/artists/placeholder-female-6.png') center/cover;"></a>
+                    <a class="fan-photo-tile" href="../../photos/index.html" style="background: url('../../assets/images/artists/placeholder-female-2.png') center/cover;"></a>
+                    <a class="fan-photo-tile" href="../../photos/index.html" style="background: url('../../assets/images/artists/placeholder-male-4.png') center/cover;"></a>
+                </div>
+            </section>
+
+            <!-- ============ Account creation footer ============ -->
+            <footer class="fan-account-footer" data-help="Datoen hvor profilen blev oprettet på STAGECORD PRO.">
+                Account created: 12 January 2018
+            </footer>
+
+        </div>
+    </main>
+
+    <!-- ===== Block / Mute / Report modal (shared) ===== -->
+    <div class="report-modal-overlay" id="reportModal" data-report-modal aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="report-modal">
+            <header class="report-modal__header">
+                <h2 class="report-modal__title" id="reportModalTitle">Block user</h2>
+                <button type="button" class="report-modal__close" data-close-report aria-label="Close">&times;</button>
+            </header>
+            <div class="report-modal__body">
+                <p class="report-modal__intro" id="reportModalIntro"></p>
+                <fieldset class="report-modal__reasons" id="reportModalReasons" hidden>
+                    <legend class="report-modal__reasons-legend">Why are you reporting this profile?</legend>
+                    <label class="report-modal__reason"><input type="radio" name="reportReason" value="spam"><span><strong>Spam or fake account</strong><small>Bots, impersonation, or repeated unsolicited messages.</small></span></label>
+                    <label class="report-modal__reason"><input type="radio" name="reportReason" value="harassment"><span><strong>Harassment or hate speech</strong><small>Targeted abuse, threats, or content promoting hate.</small></span></label>
+                    <label class="report-modal__reason"><input type="radio" name="reportReason" value="inappropriate"><span><strong>Inappropriate content</strong><small>Explicit, violent or unsuitable for the platform.</small></span></label>
+                    <label class="report-modal__reason"><input type="radio" name="reportReason" value="copyright"><span><strong>Copyright infringement</strong><small>Using your music, lyrics, or visuals without permission.</small></span></label>
+                    <label class="report-modal__reason"><input type="radio" name="reportReason" value="other"><span><strong>Other</strong><small>Doesn't fit the categories above.</small></span></label>
+                </fieldset>
+                <textarea class="report-modal__comment" id="reportModalComment" placeholder="Add an optional note for the moderation team…" rows="3" hidden></textarea>
+            </div>
+            <footer class="report-modal__actions">
+                <button type="button" class="report-modal__btn" data-close-report>Cancel</button>
+                <button type="button" class="report-modal__btn report-modal__btn--primary" id="reportConfirmBtn">Confirm</button>
+            </footer>
+        </div>
+    </div>
+
+    <script src="../../js/core.js"></script>
+    <script src="../../js/modes.js"></script>
+    <script src="../../js/sidebar.js"></script>
+    <script src="../../js/topbar-widgets.js"></script>
+    <script src="../../js/stage-badge.js"></script>
+    <script src="../../js/acting-as-service.js"></script>
+    <script src="../../js/stage-cards.js"></script>
+    <script src="../../js/stage-label.js"></script>
+    <script src="../../js/stage-resources.js"></script>
+    <script src="../../js/stage-economy.js"></script>
+    <script src="../../js/settings.js"></script>
+    <script src="../../js/activity-feed.js"></script>
+    <script src="../../js/app.js"></script>
+</body>
+</html>

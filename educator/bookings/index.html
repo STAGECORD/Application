@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAGECORD — Bookings</title>
+    <link rel="stylesheet" href="../../css/sidebar.css">
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/logo.css">
+    <link rel="stylesheet" href="../../css/topbar.css">
+    <link rel="stylesheet" href="../../css/educator.css">
+    <link rel="stylesheet" href="../../css/stage.css">
+</head>
+<body>
+    <aside class="sidebar" data-sidebar></aside>
+
+    <header class="topbar">
+        <div class="logo-container">
+            <a href="../../index.html" class="logo-link">
+                <h1 class="logo"><span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span></h1>
+            </a>
+        </div>
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Search Artists, Concerts, Venues, Friends and much more" aria-label="Search"/>
+            <svg class="search-icon" viewBox="0 0 28 28" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/><path d="M18 18L24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <button type="button" class="help-button" aria-label="Help" aria-pressed="false" data-help="Help button: Click to enter help mode, then click any element with a help-cursor to see what it does. Press Esc or click the help button again to exit."><span class="help-mark">?</span></button>
+    </header>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <header class="stage-page-header">
+                <h1 class="stage-page-header__title">Bookings</h1>
+            </header>
+
+            <p class="ar-page-intro" data-help="Bookings page: Manage all your lessons here. Pending requests need your accept/decline. Upcoming lessons are confirmed and on the calendar. Past lessons let you log notes and assign follow-up videos.">
+                Manage all your lesson bookings — pending requests, upcoming sessions, and past lesson history.
+            </p>
+
+            <nav class="bookings-tabs" role="tablist" data-help="Switch between Pending requests (need your action), Upcoming (confirmed lessons), and Past (completed lessons).">
+                <button type="button" class="bookings-tab is-active" data-bookings-tab="pending">Pending <span class="bookings-tab__count">3</span></button>
+                <button type="button" class="bookings-tab" data-bookings-tab="upcoming">Upcoming</button>
+                <button type="button" class="bookings-tab" data-bookings-tab="past">Past</button>
+            </nav>
+
+            <!-- ===== Pending requests panel ===== -->
+            <section class="bookings-section" data-bookings-panel="pending">
+                <div class="booking-row" data-help="Pending: Maja Steen requested a 60-min mixing lesson on May 12 at 14:00. Accept to confirm and add to your calendar; Decline to reject with a reason.">
+                    <div class="booking-row__date">
+                        <div class="booking-row__date-day">12</div>
+                        <div class="booking-row__date-month">May</div>
+                    </div>
+                    <div class="booking-row__avatar" style="background-image: url('../../assets/images/artists/placeholder-female-2.png');"></div>
+                    <div class="booking-row__main">
+                        <div class="booking-row__name auto-name">Maja Steen</div>
+                        <div class="booking-row__topic">Mixing — vocals sit too far back on new single</div>
+                        <div class="booking-row__time">14:00 · 60 min · Online (screen-share)</div>
+                    </div>
+                    <div class="booking-row__price">650 DKK</div>
+                    <div class="booking-row__actions">
+                        <button type="button" class="booking-action booking-action--accept">Accept</button>
+                        <button type="button" class="booking-action booking-action--decline">Decline</button>
+                    </div>
+                </div>
+
+                <div class="booking-row" data-help="Pending: Frederik Holm requested a 90-min deep-dive on May 15 at 17:00. He wants to work on mastering his EP for streaming.">
+                    <div class="booking-row__date">
+                        <div class="booking-row__date-day">15</div>
+                        <div class="booking-row__date-month">May</div>
+                    </div>
+                    <div class="booking-row__avatar" style="background-image: url('../../assets/images/artists/placeholder-male-3.png');"></div>
+                    <div class="booking-row__main">
+                        <div class="booking-row__name auto-name">Frederik Holm</div>
+                        <div class="booking-row__topic">Mastering EP for streaming — LUFS targets &amp; loudness</div>
+                        <div class="booking-row__time">17:00 · 90 min · In-person · Vesterbro studio</div>
+                    </div>
+                    <div class="booking-row__price">920 DKK</div>
+                    <div class="booking-row__actions">
+                        <button type="button" class="booking-action booking-action--accept">Accept</button>
+                        <button type="button" class="booking-action booking-action--decline">Decline</button>
+                    </div>
+                </div>
+
+                <div class="booking-row" data-help="Pending: New student Andrea Lyng requested a free 15-min intro call before signing up for a 10-lesson package.">
+                    <div class="booking-row__date">
+                        <div class="booking-row__date-day">10</div>
+                        <div class="booking-row__date-month">May</div>
+                    </div>
+                    <div class="booking-row__avatar" style="background-image: url('../../assets/images/artists/placeholder-female-5.png');"></div>
+                    <div class="booking-row__main">
+                        <div class="booking-row__name auto-name">Andrea Lyng</div>
+                        <div class="booking-row__topic">15-min intro call — considering 10-lesson package</div>
+                        <div class="booking-row__time">11:00 · 15 min · Online · Free intro</div>
+                    </div>
+                    <div class="booking-row__price">Free</div>
+                    <div class="booking-row__actions">
+                        <button type="button" class="booking-action booking-action--accept">Accept</button>
+                        <button type="button" class="booking-action booking-action--decline">Decline</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== Upcoming panel (hidden initially) ===== -->
+            <section class="bookings-section" data-bookings-panel="upcoming" hidden>
+                <div class="booking-row" data-help="Upcoming: Confirmed lesson with Iris Korn — beat-making fundamentals, Logic Pro X.">
+                    <div class="booking-row__date">
+                        <div class="booking-row__date-day">06</div>
+                        <div class="booking-row__date-month">May</div>
+                    </div>
+                    <div class="booking-row__avatar" style="background-image: url('../../assets/images/artists/placeholder-female-4.png');"></div>
+                    <div class="booking-row__main">
+                        <div class="booking-row__name auto-name">Iris Korn</div>
+                        <div class="booking-row__topic">Beat-making fundamentals — Logic Pro X stock plugins</div>
+                        <div class="booking-row__time">Tomorrow · 19:00 · 60 min · Online</div>
+                    </div>
+                    <div class="booking-row__price">650 DKK</div>
+                    <div class="booking-row__actions">
+                        <button type="button" class="booking-action booking-action--ghost">Open lesson notes</button>
+                    </div>
+                </div>
+
+                <div class="booking-row" data-help="Upcoming: Recurring weekly slot with Niko Drift, ongoing 10-lesson package (lesson 6 of 10).">
+                    <div class="booking-row__date">
+                        <div class="booking-row__date-day">08</div>
+                        <div class="booking-row__date-month">May</div>
+                    </div>
+                    <div class="booking-row__avatar" style="background-image: url('../../assets/images/artists/placeholder-male-4.png');"></div>
+                    <div class="booking-row__main">
+                        <div class="booking-row__name auto-name">Niko Drift</div>
+                        <div class="booking-row__topic">Vocal recording — DI vs mic in untreated rooms (Lesson 6/10)</div>
+                        <div class="booking-row__time">Fri · 18:00 · 60 min · In-person · Vesterbro studio</div>
+                    </div>
+                    <div class="booking-row__price">Package</div>
+                    <div class="booking-row__actions">
+                        <button type="button" class="booking-action booking-action--ghost">Open lesson notes</button>
+                    </div>
+                </div>
+
+                <div class="booking-row" data-help="Upcoming: Group cohort session — week 3 of 8, working on stereo imaging across the whole cohort's tracks.">
+                    <div class="booking-row__date">
+                        <div class="booking-row__date-day">13</div>
+                        <div class="booking-row__date-month">May</div>
+                    </div>
+                    <div class="booking-row__avatar" style="background-image: url('../../assets/images/artists/placeholder-male-5.png');"></div>
+                    <div class="booking-row__main">
+                        <div class="booking-row__name">Group cohort · Spring 2026</div>
+                        <div class="booking-row__topic">Week 3 — Stereo imaging &amp; spatial mixing techniques</div>
+                        <div class="booking-row__time">Tue · 19:00 · 90 min · Online · 4 students</div>
+                    </div>
+                    <div class="booking-row__price">Cohort</div>
+                    <div class="booking-row__actions">
+                        <button type="button" class="booking-action booking-action--ghost">Open lesson notes</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== Past panel (hidden initially) ===== -->
+            <section class="bookings-section" data-bookings-panel="past" hidden>
+                <div class="booking-row" data-help="Past: Maja Steen — completed 8th of 10 lessons. Notes saved, follow-up videos assigned.">
+                    <div class="booking-row__date">
+                        <div class="booking-row__date-day">28</div>
+                        <div class="booking-row__date-month">Apr</div>
+                    </div>
+                    <div class="booking-row__avatar" style="background-image: url('../../assets/images/artists/placeholder-female-2.png');"></div>
+                    <div class="booking-row__main">
+                        <div class="booking-row__name auto-name">Maja Steen</div>
+                        <div class="booking-row__topic">EQ &amp; compression on lead vocal — 5-band parametric walkthrough</div>
+                        <div class="booking-row__time">Apr 28 · 60 min · Completed</div>
+                    </div>
+                    <div class="booking-row__price">650 DKK</div>
+                    <div class="booking-row__actions">
+                        <button type="button" class="booking-action booking-action--ghost">View notes</button>
+                    </div>
+                </div>
+
+                <div class="booking-row" data-help="Past: Frederik Holm — finished his 12-lesson package with a polished EP.">
+                    <div class="booking-row__date">
+                        <div class="booking-row__date-day">22</div>
+                        <div class="booking-row__date-month">Apr</div>
+                    </div>
+                    <div class="booking-row__avatar" style="background-image: url('../../assets/images/artists/placeholder-male-3.png');"></div>
+                    <div class="booking-row__main">
+                        <div class="booking-row__name auto-name">Frederik Holm</div>
+                        <div class="booking-row__topic">Final mix review — full EP playback &amp; tightening</div>
+                        <div class="booking-row__time">Apr 22 · 90 min · Completed (lesson 12 of 12)</div>
+                    </div>
+                    <div class="booking-row__price">Package</div>
+                    <div class="booking-row__actions">
+                        <button type="button" class="booking-action booking-action--ghost">View notes</button>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script src="../../js/core.js"></script>
+    <script src="../../js/modes.js"></script>
+    <script src="../../js/sidebar.js"></script>
+    <script src="../../js/topbar-widgets.js"></script>
+    <script src="../../js/stage-badge.js"></script>
+    <script src="../../js/acting-as-service.js"></script>
+    <script src="../../js/stage-cards.js"></script>
+    <script src="../../js/stage-label.js"></script>
+    <script src="../../js/stage-resources.js"></script>
+    <script src="../../js/stage-economy.js"></script>
+    <script src="../../js/settings.js"></script>
+    <script src="../../js/activity-feed.js"></script>
+    <script src="../../js/educator.js"></script>
+    <script src="../../js/app.js"></script>
+    <script>
+    // Tab switching for Pending/Upcoming/Past
+    document.addEventListener('click', function(e) {
+        const tab = e.target.closest('[data-bookings-tab]');
+        if (!tab) return;
+        if (typeof helpActive !== 'undefined' && helpActive) return;
+        const id = tab.getAttribute('data-bookings-tab');
+        document.querySelectorAll('[data-bookings-tab]').forEach(function(t) {
+            t.classList.toggle('is-active', t === tab);
+        });
+        document.querySelectorAll('[data-bookings-panel]').forEach(function(p) {
+            p.hidden = p.getAttribute('data-bookings-panel') !== id;
+        });
+    });
+    </script>
+</body>
+</html>

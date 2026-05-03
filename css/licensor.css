@@ -1,0 +1,407 @@
+/* =====================================================
+   Media Licensor catalog & license dashboard
+   Browse artist catalog, configure license parameters,
+   see live price, manage active licenses.
+   ===================================================== */
+
+/* Two-column layout: catalog list + license configurator */
+.licensor-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    gap: 22px;
+    margin-bottom: 36px;
+}
+
+@media (max-width: 1100px) {
+    .licensor-layout { grid-template-columns: 1fr; }
+}
+
+/* Search + filter bar */
+.licensor-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.licensor-search {
+    flex: 1 1 280px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    padding: 10px 16px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+}
+
+.licensor-search:focus { outline: none; border-color: #FFFFFF; }
+
+.licensor-toolbar select {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    padding: 10px 14px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+/* Catalog rows */
+.licensor-catalog {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.licensor-track {
+    display: grid;
+    grid-template-columns: 56px minmax(0, 2fr) minmax(0, 1.2fr) minmax(0, 1fr) auto;
+    gap: 14px;
+    align-items: center;
+    padding: 14px 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.licensor-track:hover { background: rgba(255, 255, 255, 0.04); }
+.licensor-track.is-selected {
+    background: rgba(111, 169, 255, 0.12);
+    border-left: 3px solid #6FA9FF;
+    padding-left: 15px;
+}
+.licensor-track:last-child { border-bottom: 0; }
+
+.licensor-track__cover {
+    width: 56px;
+    height: 56px;
+    border-radius: 8px;
+    background-size: cover;
+    background-position: center;
+    background-color: #1a1a1a;
+}
+
+.licensor-track__title {
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 2px;
+}
+
+.licensor-track__artist {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.licensor-track__meta {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.licensor-track__price {
+    text-align: right;
+}
+
+.licensor-track__price-value {
+    font-weight: 700;
+    font-size: 14px;
+    color: #43C47A;
+    font-variant-numeric: tabular-nums;
+}
+
+.licensor-track__price-from {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.licensor-track__chip {
+    display: inline-block;
+    padding: 3px 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-right: 4px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* License configurator (right column) */
+.licensor-configurator {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 22px 24px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    position: sticky;
+    top: 90px;
+    align-self: start;
+}
+
+.licensor-configurator__title {
+    font-weight: 700;
+    font-size: 16px;
+    margin: 0 0 4px;
+}
+
+.licensor-configurator__sub {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0 0 18px;
+}
+
+.licensor-configurator__step {
+    margin-bottom: 16px;
+}
+
+.licensor-configurator__label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+    display: block;
+    margin-bottom: 6px;
+}
+
+.licensor-configurator__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.licensor-configurator__chip {
+    position: relative;
+    display: inline-flex;
+    padding: 7px 13px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #FFFFFF;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.licensor-configurator__chip:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.32);
+}
+
+.licensor-configurator__chip input[type="radio"],
+.licensor-configurator__chip input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.licensor-configurator__chip:has(input:checked) {
+    background: rgba(111, 169, 255, 0.18);
+    border-color: #6FA9FF;
+}
+
+.licensor-configurator__quote {
+    background: rgba(67, 196, 122, 0.1);
+    border: 1px solid rgba(67, 196, 122, 0.32);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin: 18px 0 14px;
+}
+
+.licensor-configurator__quote-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #43C47A;
+    margin-bottom: 4px;
+}
+
+.licensor-configurator__quote-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #43C47A;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+}
+
+.licensor-configurator__quote-meta {
+    margin-top: 6px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.licensor-configurator__actions {
+    display: flex;
+    gap: 8px;
+}
+
+.licensor-configurator__actions button { flex: 1 1 0; }
+
+.licensor-configurator__empty {
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 12px;
+    line-height: 1.5;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px dashed rgba(255, 255, 255, 0.18);
+    border-radius: 10px;
+    padding: 14px 16px;
+    text-align: center;
+}
+
+/* Active licenses table */
+.licensor-licenses {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.licensor-license-row {
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1.5fr) minmax(0, 1.2fr) minmax(0, 0.9fr) minmax(0, 0.9fr) auto;
+    gap: 14px;
+    align-items: center;
+    padding: 14px 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+}
+
+.licensor-license-row--head {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.licensor-license-row:last-child { border-bottom: 0; }
+
+/* ===========================================================================
+   Project-grouping — bundle multiple licenses under one production
+   =========================================================================== */
+.licensor-projects {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 14px;
+}
+
+.licensor-project {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.licensor-project__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.licensor-project__main { min-width: 0; flex: 1 1 auto; }
+
+.licensor-project__client {
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.licensor-project__title {
+    margin: 4px 0 4px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #FFFFFF;
+    line-height: 1.3;
+}
+
+.licensor-project__meta {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.4;
+}
+
+.licensor-project__status {
+    font-family: 'Outfit', sans-serif;
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 4px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.licensor-project__status--active {
+    background: rgba(255, 196, 0, 0.18);
+    color: #FFC400;
+}
+
+.licensor-project__status--done {
+    background: rgba(125, 211, 192, 0.18);
+    color: #7DD3C0;
+}
+
+.licensor-project__status--pending {
+    background: rgba(163, 112, 240, 0.18);
+    color: #A370F0;
+}
+
+.licensor-project__tracks {
+    list-style: none;
+    margin: 0;
+    padding: 8px 0 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.licensor-project__tracks li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.78);
+    line-height: 1.4;
+}
+
+.licensor-project__tracks li strong {
+    margin-left: auto;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+}
+
+.licensor-project__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}

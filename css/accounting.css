@@ -1,0 +1,361 @@
+/* ===========================================================================
+   PRO connections (KODA / Performex / Gramex) + Tax-ready accounting
+   ===========================================================================
+   PDF concept: Danish artists connect to KODA, Performex and Gramex via
+   STAGECORD; royalties auto-import monthly. The accounting module then
+   bundles all income (royalties, ticket sales, sponsorships, licensing)
+   into tax-categorized buckets ready for the year-end report.
+*/
+
+/* ---------- PRO connections ---------- */
+.pro-connections {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.pro-card {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.pro-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--pro-color, #43C47A) 0%, transparent 60%);
+    opacity: 0.05;
+    pointer-events: none;
+}
+
+.pro-card__head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 1;
+}
+
+.pro-card__logo {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: var(--pro-color, #43C47A);
+    color: #FFFFFF;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    flex-shrink: 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.pro-card__main { min-width: 0; flex: 1 1 auto; }
+
+.pro-card__name {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: #FFFFFF;
+    line-height: 1.2;
+}
+
+.pro-card__type {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.55);
+    margin-top: 2px;
+}
+
+.pro-card__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 3px 8px;
+    border-radius: 999px;
+    z-index: 1;
+}
+
+.pro-card__status--connected {
+    background: rgba(67, 196, 122, 0.18);
+    color: #43C47A;
+}
+
+.pro-card__status--disconnected {
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.45);
+    border: 1px dashed rgba(255, 255, 255, 0.18);
+}
+
+.pro-card__status--syncing {
+    background: rgba(255, 196, 0, 0.18);
+    color: #FFC400;
+}
+
+.pro-card__status::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.pro-card__status--connected::before {
+    animation: proPulse 2s ease-in-out infinite;
+}
+
+@keyframes proPulse {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.4; }
+}
+
+.pro-card__stats {
+    display: flex;
+    gap: 14px;
+    z-index: 1;
+}
+
+.pro-card__stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1 1 auto;
+}
+
+.pro-card__stat-label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.pro-card__stat-value {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    color: #FFFFFF;
+    line-height: 1.1;
+}
+
+.pro-card__sync {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 10px;
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 7px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.65);
+    z-index: 1;
+}
+
+.pro-card__sync strong { color: #FFFFFF; font-weight: 700; }
+
+.pro-card__btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 7px 14px;
+    border-radius: 7px;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.pro-card__btn:hover {
+    border-color: var(--pro-color, #FFFFFF);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.pro-card__btn--connect {
+    background: var(--pro-color, #43C47A);
+    border-color: var(--pro-color, #43C47A);
+    color: #02040C;
+    font-weight: 800;
+}
+
+.pro-card__btn--connect:hover {
+    filter: brightness(1.1);
+}
+
+/* ---------- Tax-ready accounting ---------- */
+.tax-section {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 18px 20px;
+}
+
+.tax-section__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.tax-section__title {
+    margin: 0;
+    font-family: 'Outfit', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tax-section__title-icon { color: #FFC400; }
+
+.tax-section__period {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.tax-section__period strong { color: #FFFFFF; font-weight: 700; }
+
+.tax-buckets {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.tax-bucket {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 12px 14px;
+    position: relative;
+}
+
+.tax-bucket__cat {
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--bucket-color, #FFFFFF);
+}
+
+.tax-bucket__amount {
+    margin-top: 4px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    color: #FFFFFF;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+}
+
+.tax-bucket__hint {
+    margin-top: 4px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.55);
+    line-height: 1.4;
+}
+
+.tax-bucket__bar {
+    margin-top: 8px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.tax-bucket__bar-fill {
+    height: 100%;
+    background: var(--bucket-color, #FFFFFF);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+}
+
+/* Threshold/alert styling */
+.tax-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 14px;
+}
+
+.tax-alert--info {
+    background: rgba(74, 144, 226, 0.08);
+    border: 1px solid rgba(74, 144, 226, 0.32);
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.tax-alert--warning {
+    background: rgba(255, 196, 0, 0.08);
+    border: 1px solid rgba(255, 196, 0, 0.4);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.tax-alert__icon {
+    flex-shrink: 0;
+    font-size: 18px;
+    line-height: 1;
+}
+
+.tax-alert strong { color: #FFFFFF; font-weight: 700; }
+
+/* Action row */
+.tax-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.tax-action-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.tax-action-btn:hover { border-color: #FFFFFF; background: rgba(255, 255, 255, 0.05); }
+
+.tax-action-btn--primary {
+    background: #FFC400;
+    color: #1a1500;
+    border-color: #FFC400;
+    font-weight: 800;
+}
+
+.tax-action-btn--primary:hover {
+    background: #FFD940;
+    border-color: #FFD940;
+}
+
+@media (max-width: 720px) {
+    .pro-card__stats { flex-direction: column; gap: 10px; }
+}

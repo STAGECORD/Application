@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAGECORD - Pitch (RUST)</title>
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/logo.css">
+    <link rel="stylesheet" href="../css/topbar.css">
+    <link rel="stylesheet" href="../css/artist.css">
+    <link rel="stylesheet" href="../css/venue.css">
+    <link rel="stylesheet" href="../css/pitch.css">
+    <link rel="stylesheet" href="../css/pitch-modals.css">
+</head>
+<body>
+    <!-- Left Sidebar Navigation -->
+    <aside class="sidebar" data-sidebar></aside>
+
+    <!-- Top Bar -->
+    <header class="topbar">
+        <div class="logo-container">
+            <a href="../index.html" class="logo-link">
+                <h1 class="logo">
+                    <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
+                </h1>
+            </a>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Search Artists, Concerts, Venues, Friends and much more" aria-label="Search"/>
+            <svg class="search-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/>
+                <path d="M18 18L24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </div>
+
+        <span class="topbar-stage-label">
+            <span class="topbar-stage-label__primary">VENUE</span>
+            <span class="topbar-stage-label__secondary">STAGE</span>
+        </span>
+
+        <button type="button" class="help-button" aria-label="Help" aria-pressed="false" data-help="Hjælpeknap.">
+            <span class="help-mark">?</span>
+        </button>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <h1 class="pitch-heading">Pitch</h1>
+
+            <!-- ============ Events / Concerts calendar (existing 16-day strip) ============ -->
+            <section class="artist-calendar" data-help="Event-kalender: Datoer hvor venuet allerede er booked. Bruges som reference når du ser pitches.">
+                <div class="artist-calendar__row">
+                    <button type="button" class="artist-calendar__day artist-calendar__day--event"><span class="artist-calendar__date">2 Nov.</span><span class="artist-calendar__weekday">Saturday</span></button>
+                    <button type="button" class="artist-calendar__day"><span class="artist-calendar__date">3 Nov.</span><span class="artist-calendar__weekday">Sunday</span></button>
+                    <button type="button" class="artist-calendar__day"><span class="artist-calendar__date">4 Nov.</span><span class="artist-calendar__weekday">Monday</span></button>
+                    <button type="button" class="artist-calendar__day"><span class="artist-calendar__date">5 Nov.</span><span class="artist-calendar__weekday">Tuesday</span></button>
+                    <button type="button" class="artist-calendar__day artist-calendar__day--event"><span class="artist-calendar__date">6 Nov.</span><span class="artist-calendar__weekday">Wednesday</span></button>
+                    <button type="button" class="artist-calendar__day"><span class="artist-calendar__date">7 Nov.</span><span class="artist-calendar__weekday">Thursday</span></button>
+                    <button type="button" class="artist-calendar__day"><span class="artist-calendar__date">8 Nov.</span><span class="artist-calendar__weekday">Friday</span></button>
+                    <button type="button" class="artist-calendar__day artist-calendar__day--event"><span class="artist-calendar__date">9 Nov.</span><span class="artist-calendar__weekday">Saturday</span></button>
+                    <button type="button" class="artist-calendar__day artist-calendar__day--event"><span class="artist-calendar__date">10 Nov.</span><span class="artist-calendar__weekday">Sunday</span></button>
+                    <button type="button" class="artist-calendar__day"><span class="artist-calendar__date">11 Nov.</span><span class="artist-calendar__weekday">Monday</span></button>
+                    <button type="button" class="artist-calendar__day"><span class="artist-calendar__date">12 Nov.</span><span class="artist-calendar__weekday">Tuesday</span></button>
+                    <button type="button" class="artist-calendar__day"><span class="artist-calendar__date">13 Nov.</span><span class="artist-calendar__weekday">Wed.</span></button>
+                    <button type="button" class="artist-calendar__day"><span class="artist-calendar__date">14 Nov.</span><span class="artist-calendar__weekday">Thursday</span></button>
+                    <button type="button" class="artist-calendar__day"><span class="artist-calendar__date">15 Nov.</span><span class="artist-calendar__weekday">Friday</span></button>
+                    <button type="button" class="artist-calendar__day"><span class="artist-calendar__date">16 Nov.</span><span class="artist-calendar__weekday">Saturday</span></button>
+                    <button type="button" class="artist-calendar__day"><span class="artist-calendar__date">17 Nov.</span><span class="artist-calendar__weekday">Sunday</span></button>
+                </div>
+            </section>
+
+            <!-- ============ Settings / Specs grid ============ -->
+            <section class="pitch-specs" data-help="Pitch-vilkår: Definér dine standard-vilkår for hvilke pitches du vil modtage. Artister kan se dette inden de pitcher.">
+                <div class="pitch-specs__col">
+                    <h3 class="pitch-specs__title">Collab fee options</h3>
+                    <ul class="pitch-checks">
+                        <li><input type="checkbox" id="cfeeFixed" checked><label for="cfeeFixed">Fixed rate</label></li>
+                        <li><input type="checkbox" id="cfeePay" checked><label for="cfeePay">Pay/% of sales</label></li>
+                        <li><input type="checkbox" id="cfeeFree" checked><label for="cfeeFree">Free performance</label></li>
+                        <li><input type="checkbox" id="cfeeUser"><label for="cfeeUser">User specific</label></li>
+                    </ul>
+                </div>
+
+                <div class="pitch-specs__col">
+                    <h3 class="pitch-specs__title">Address</h3>
+                    <ul class="pitch-specs__list">
+                        <li><span class="value">Guldbergsgade 8<br>2200 København N</span></li>
+                        <li><span class="key">Venue type</span><span class="value">Music venue</span></li>
+                        <li><span class="key">Bars</span><span class="value">1</span></li>
+                    </ul>
+                </div>
+
+                <div class="pitch-specs__col">
+                    <h3 class="pitch-specs__title">Capacity</h3>
+                    <ul class="pitch-specs__list">
+                        <li><span class="key">Seatings</span><span class="value">30</span></li>
+                        <li><span class="key">Max capacity</span><span class="value">120</span></li>
+                        <li><span class="key">Online seating</span><span class="value">Max 500</span></li>
+                        <li><span class="key">Online sponsor</span><span class="value">Open (50/50 split)</span></li>
+                    </ul>
+                </div>
+
+                <div class="pitch-specs__col">
+                    <h3 class="pitch-specs__title">Backstage</h3>
+                    <ul class="pitch-specs__list">
+                        <li><span class="key">Dressing room rider</span><span class="value">Max 300 USD</span></li>
+                        <li><span class="key">Dressing room capacity</span><span class="value">10 people</span></li>
+                        <li><span class="key">Ticket range</span><span class="value">$20 – 100 USD</span></li>
+                    </ul>
+                </div>
+
+                <div class="pitch-specs__col">
+                    <h3 class="pitch-specs__title">Equipment</h3>
+                    <div class="pitch-equipment">
+                        <div class="pitch-equipment__row">
+                            <span class="pitch-chip">Tech Rider</span>
+                            <span class="pitch-chip">Mainfear</span>
+                            <span class="pitch-chip">Venue Spec</span>
+                        </div>
+                        <div class="pitch-equipment__row">
+                            <span class="pitch-chip">Sound</span>
+                            <span class="pitch-chip">Microphones</span>
+                        </div>
+                        <div class="pitch-equipment__row">
+                            <span class="pitch-chip">Lights</span>
+                            <span class="pitch-chip">DJ Gear</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pitch-specs__col">
+                    <h3 class="pitch-specs__title">Available / Open dates</h3>
+                    <div class="pitch-mini-cal">
+                        <div class="pitch-mini-cal__grid">
+                            <span class="pitch-mini-cal__weekday">M</span>
+                            <span class="pitch-mini-cal__weekday">T</span>
+                            <span class="pitch-mini-cal__weekday">W</span>
+                            <span class="pitch-mini-cal__weekday">T</span>
+                            <span class="pitch-mini-cal__weekday">F</span>
+                            <span class="pitch-mini-cal__weekday">S</span>
+                            <span class="pitch-mini-cal__weekday">S</span>
+                            <!-- Week 1 -->
+                            <span class="pitch-mini-cal__day">28</span>
+                            <span class="pitch-mini-cal__day">29</span>
+                            <span class="pitch-mini-cal__day">30</span>
+                            <span class="pitch-mini-cal__day">31</span>
+                            <span class="pitch-mini-cal__day">1</span>
+                            <span class="pitch-mini-cal__day pitch-mini-cal__day--booked">2</span>
+                            <span class="pitch-mini-cal__day">3</span>
+                            <!-- Week 2 -->
+                            <span class="pitch-mini-cal__day">4</span>
+                            <span class="pitch-mini-cal__day">5</span>
+                            <span class="pitch-mini-cal__day pitch-mini-cal__day--booked">6</span>
+                            <span class="pitch-mini-cal__day">7</span>
+                            <span class="pitch-mini-cal__day pitch-mini-cal__day--open">8</span>
+                            <span class="pitch-mini-cal__day pitch-mini-cal__day--booked">9</span>
+                            <span class="pitch-mini-cal__day pitch-mini-cal__day--booked">10</span>
+                            <!-- Week 3 -->
+                            <span class="pitch-mini-cal__day">11</span>
+                            <span class="pitch-mini-cal__day">12</span>
+                            <span class="pitch-mini-cal__day pitch-mini-cal__day--open">13</span>
+                            <span class="pitch-mini-cal__day pitch-mini-cal__day--open">14</span>
+                            <span class="pitch-mini-cal__day pitch-mini-cal__day--open">15</span>
+                            <span class="pitch-mini-cal__day pitch-mini-cal__day--open">16</span>
+                            <span class="pitch-mini-cal__day">17</span>
+                            <!-- Week 4 -->
+                            <span class="pitch-mini-cal__day">18</span>
+                            <span class="pitch-mini-cal__day">19</span>
+                            <span class="pitch-mini-cal__day">20</span>
+                            <span class="pitch-mini-cal__day">21</span>
+                            <span class="pitch-mini-cal__day pitch-mini-cal__day--open">22</span>
+                            <span class="pitch-mini-cal__day pitch-mini-cal__day--open">23</span>
+                            <span class="pitch-mini-cal__day pitch-mini-cal__day--open">24</span>
+                            <!-- Week 5 -->
+                            <span class="pitch-mini-cal__day">25</span>
+                            <span class="pitch-mini-cal__day">26</span>
+                            <span class="pitch-mini-cal__day">27</span>
+                            <span class="pitch-mini-cal__day pitch-mini-cal__day--open">28</span>
+                            <span class="pitch-mini-cal__day pitch-mini-cal__day--open">29</span>
+                            <span class="pitch-mini-cal__day pitch-mini-cal__day--open">30</span>
+                            <span class="pitch-mini-cal__day">1</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ Pitch requests list ============ -->
+            <header class="pitch-list__header" aria-hidden="true">
+                <span>Request by</span>
+                <span>Collab fee</span>
+                <span>Project name</span>
+                <span>Followers</span>
+                <span></span>
+                <span>Files</span>
+                <span>Royalties / Fees</span>
+                <span>Approve collab</span>
+            </header>
+
+            <div class="pitch-list">
+
+                <!-- Rathcire — 50% -->
+                <article class="pitch-request" data-help="Pitch fra artist. Gennemgå besked, vedhæftede filer og royaltie-vilkår, og klik en handling.">
+                    <div class="pitch-request__artist">
+                        <span class="pitch-request__portrait" style="background: url('../assets/images/artists/placeholder-male-1.png') center/cover;"></span>
+                        <span class="pitch-request__name auto-name">Rathcire</span>
+                    </div>
+                    <div class="pitch-request__fee">50%</div>
+                    <div class="pitch-request__project">Backseat Love</div>
+                    <div class="pitch-request__followers">13,548</div>
+                    <div class="pitch-request__message">
+                        <span class="pitch-request__message-label">Message</span>
+                        <p class="pitch-request__message-text">I hope this message finds you in great spirits. My name is Bathsheba, and I'm writing to you with excitement and anticipation about the possibility of pitching to perform at your wonderful venue. Having heard so many fantastic things about RUST, I couldn't help but feel drawn to the idea of sharing my music with your audience. Your venue's reputation for fostering a warm…</p>
+                    </div>
+                    <div class="pitch-request__chips pitch-request__chips--files">
+                        <span class="pitch-chip">Dressing Room Rider</span>
+                        <span class="pitch-chip">Set list</span>
+                        <span class="pitch-chip">MP3</span>
+                        <span class="pitch-chip">Dates</span>
+                    </div>
+                    <div class="pitch-request__chips pitch-request__chips--royalties">
+                        <span class="pitch-chip">Sponsor</span>
+                        <span class="pitch-chip">Online seating</span>
+                        <span class="pitch-chip">Merchandise</span>
+                        <span class="pitch-chip">Ticket price</span>
+                        <span class="pitch-request__poster-label">Poster cover</span>
+                        <span class="pitch-chip">Poster file</span>
+                    </div>
+                    <div class="pitch-request__actions">
+                        <button type="button" class="pitch-action pitch-action--accept">Accept terms &amp; conditions</button>
+                        <button type="button" class="pitch-action">Negotiate terms &amp; conditions</button>
+                        <button type="button" class="pitch-action pitch-action--dismiss">Dismiss Request</button>
+                    </div>
+                </article>
+
+                <!-- URO — 50% -->
+                <article class="pitch-request">
+                    <div class="pitch-request__artist">
+                        <span class="pitch-request__portrait" style="background: url('../assets/images/artists/placeholder-male-2.png') center/cover;"></span>
+                        <span class="pitch-request__name auto-name">URO</span>
+                    </div>
+                    <div class="pitch-request__fee">50%</div>
+                    <div class="pitch-request__project">Cykelhjelm</div>
+                    <div class="pitch-request__followers">157,954</div>
+                    <div class="pitch-request__message">
+                        <span class="pitch-request__message-label">Message</span>
+                        <p class="pitch-request__message-text">My name is URO, and I am a musician eager to bring my artistry to your esteemed venue. I've heard fantastic things about the atmosphere and audience at RUST, and I believe it would be the perfect setting for an unforgettable concert experience. I am reaching out to express my interest in booking a concert at your venue. I specialize in Pop/R&amp;B music, and I am confident that my performance would resonate with your patrons.</p>
+                    </div>
+                    <div class="pitch-request__chips pitch-request__chips--files">
+                        <span class="pitch-chip">Dressing Room Rider</span>
+                        <span class="pitch-chip">Set list</span>
+                        <span class="pitch-chip">MP3</span>
+                        <span class="pitch-chip">Dates</span>
+                    </div>
+                    <div class="pitch-request__chips pitch-request__chips--royalties">
+                        <span class="pitch-chip">Sponsor</span>
+                        <span class="pitch-chip">Online seating</span>
+                        <span class="pitch-chip">Merchandise</span>
+                        <span class="pitch-chip">Ticket price</span>
+                        <span class="pitch-request__poster-label">Poster cover</span>
+                        <span class="pitch-chip">Poster file</span>
+                    </div>
+                    <div class="pitch-request__actions">
+                        <button type="button" class="pitch-action pitch-action--accept">Accept terms &amp; conditions</button>
+                        <button type="button" class="pitch-action">Negotiate terms &amp; conditions</button>
+                        <button type="button" class="pitch-action pitch-action--dismiss">Dismiss Request</button>
+                    </div>
+                </article>
+
+                <!-- Aria Summers — 40% -->
+                <article class="pitch-request">
+                    <div class="pitch-request__artist">
+                        <span class="pitch-request__portrait" style="background: url('../assets/images/artists/placeholder-female-1.png') center/cover;"></span>
+                        <span class="pitch-request__name auto-name">Aria Summers</span>
+                    </div>
+                    <div class="pitch-request__fee">40%</div>
+                    <div class="pitch-request__project">Last Voice</div>
+                    <div class="pitch-request__followers">29,363</div>
+                    <div class="pitch-request__message">
+                        <span class="pitch-request__message-label">Message</span>
+                        <p class="pitch-request__message-text">With a voice that echoes the warmth of a summer breeze and the depth of an ocean's depths, Aria Summers is a storyteller whose songs paint vivid portraits of life's highs and lows. Raised in the heartland, Declan found solace and inspiration in the rolling hills and open skies of his upbringing, channeling his experiences into heartfelt lyrics and soul-stirring melodies. Influenced by the likes of Bob Dylan and Johnny Cash, Aria's vocal style elegantly defies categorization.</p>
+                    </div>
+                    <div class="pitch-request__chips pitch-request__chips--files">
+                        <span class="pitch-chip">Dressing Room Rider</span>
+                        <span class="pitch-chip">Set list</span>
+                        <span class="pitch-chip">MP3</span>
+                        <span class="pitch-chip">Dates</span>
+                    </div>
+                    <div class="pitch-request__chips pitch-request__chips--royalties">
+                        <span class="pitch-chip">Sponsor</span>
+                        <span class="pitch-chip">Online seating</span>
+                        <span class="pitch-chip">Merchandise</span>
+                        <span class="pitch-chip">Ticket price</span>
+                        <span class="pitch-request__poster-label">Poster cover</span>
+                        <span class="pitch-chip">Poster file</span>
+                    </div>
+                    <div class="pitch-request__actions">
+                        <button type="button" class="pitch-action pitch-action--accept">Accept terms &amp; conditions</button>
+                        <button type="button" class="pitch-action">Negotiate terms &amp; conditions</button>
+                        <button type="button" class="pitch-action pitch-action--dismiss">Dismiss Request</button>
+                    </div>
+                </article>
+
+                <!-- Declan Rivers — $1,000 USD -->
+                <article class="pitch-request">
+                    <div class="pitch-request__artist">
+                        <span class="pitch-request__portrait" style="background: url('../assets/images/artists/placeholder-male-3.png') center/cover;"></span>
+                        <span class="pitch-request__name auto-name">Declan Rivers</span>
+                    </div>
+                    <div class="pitch-request__fee">$1,000 USD</div>
+                    <div class="pitch-request__project">Up High</div>
+                    <div class="pitch-request__followers">5,932</div>
+                    <div class="pitch-request__message">
+                        <span class="pitch-request__message-label">Message</span>
+                        <p class="pitch-request__message-text">A troubadour with a voice as rugged as the mountains and as tender as a whispered promise, Declan Rivers is a storyteller whose songs paint vivid portraits of life's highs and lows. Raised in the heartland, Declan found solace and inspiration in the rolling hills and open skies of his upbringing, channeling his experiences into heartfelt lyrics and soul-stirring melodies. Influenced by the likes of Bob Dylan and Johnny Cash, Declan's music defies easy categorization.</p>
+                    </div>
+                    <div class="pitch-request__chips pitch-request__chips--files">
+                        <span class="pitch-chip">Dressing Room Rider</span>
+                        <span class="pitch-chip">Set list</span>
+                        <span class="pitch-chip">MP3</span>
+                        <span class="pitch-chip">Dates</span>
+                    </div>
+                    <div class="pitch-request__chips pitch-request__chips--royalties">
+                        <span class="pitch-chip">Sponsor</span>
+                        <span class="pitch-chip">Online seating</span>
+                        <span class="pitch-chip">Merchandise</span>
+                        <span class="pitch-chip">Ticket price</span>
+                        <span class="pitch-request__poster-label">Poster cover</span>
+                        <span class="pitch-chip">Poster file</span>
+                    </div>
+                    <div class="pitch-request__actions">
+                        <button type="button" class="pitch-action pitch-action--accept">Accept terms &amp; conditions</button>
+                        <button type="button" class="pitch-action">Negotiate terms &amp; conditions</button>
+                        <button type="button" class="pitch-action pitch-action--dismiss">Dismiss Request</button>
+                    </div>
+                </article>
+
+                <!-- Harmony Eclipse — 50% -->
+                <article class="pitch-request">
+                    <div class="pitch-request__artist">
+                        <span class="pitch-request__portrait" style="background: url('../assets/images/artists/placeholder-female-2.png') center/cover;"></span>
+                        <span class="pitch-request__name auto-name">Harmony Eclipse</span>
+                    </div>
+                    <div class="pitch-request__fee">50%</div>
+                    <div class="pitch-request__project">Tune</div>
+                    <div class="pitch-request__followers">50,723</div>
+                    <div class="pitch-request__message">
+                        <span class="pitch-request__message-label">Message</span>
+                        <p class="pitch-request__message-text">Warm greetings from Harmony Eclipse! As we sit here, enveloped in the melody of our latest composition, we couldn't help but feel compelled to reach out to you. We hope this message finds you basking in the joy that only music can bring, and perhaps even humming along to your favorite tunes. We are [Female Singer's Name] and [Male Singer's Name], the voices behind Harmony Eclipse, and we're writing to you with hearts full of anticipation and a shared dream of lighting up the stage at your venue.</p>
+                    </div>
+                    <div class="pitch-request__chips pitch-request__chips--files">
+                        <span class="pitch-chip">Dressing Room Rider</span>
+                        <span class="pitch-chip">Set list</span>
+                        <span class="pitch-chip">MP3</span>
+                        <span class="pitch-chip">Dates</span>
+                    </div>
+                    <div class="pitch-request__chips pitch-request__chips--royalties">
+                        <span class="pitch-chip">Sponsor</span>
+                        <span class="pitch-chip">Online seating</span>
+                        <span class="pitch-chip">Merchandise</span>
+                        <span class="pitch-chip">Ticket price</span>
+                        <span class="pitch-request__poster-label">Poster cover</span>
+                        <span class="pitch-chip">Poster file</span>
+                    </div>
+                    <div class="pitch-request__actions">
+                        <button type="button" class="pitch-action pitch-action--accept">Accept terms &amp; conditions</button>
+                        <button type="button" class="pitch-action">Negotiate terms &amp; conditions</button>
+                        <button type="button" class="pitch-action pitch-action--dismiss">Dismiss Request</button>
+                    </div>
+                </article>
+
+                <!-- Blazze — Free performance -->
+                <article class="pitch-request">
+                    <div class="pitch-request__artist">
+                        <span class="pitch-request__portrait" style="background: url('../assets/images/artists/placeholder-male-4.png') center/cover;"></span>
+                        <span class="pitch-request__name auto-name">Blazze</span>
+                    </div>
+                    <div class="pitch-request__fee pitch-request__fee--free">Free Performance</div>
+                    <div class="pitch-request__project">Last Round</div>
+                    <div class="pitch-request__followers">2,743</div>
+                    <div class="pitch-request__message">
+                        <span class="pitch-request__message-label">Message</span>
+                        <p class="pitch-request__message-text">I hope this message finds you all vibing high and ready to set the stage on fire, because Blazze Mic is ready to bring the heat to your iconic venue! My name is Blazze Mic, and I'm not just your average rapper — I'm a storyteller, a wordsmith, and a lyrical firestarter. I've been soaking in the buzz about the electric energy and legendary performances at Venue RUST, and I've got to say, I'm itching to leave my mark on that stage. From that moment I grip that mic, I'm on a mission to connect with the crowd, to share my truth.</p>
+                    </div>
+                    <div class="pitch-request__chips pitch-request__chips--files">
+                        <span class="pitch-chip">Dressing Room Rider</span>
+                        <span class="pitch-chip">Set list</span>
+                        <span class="pitch-chip">MP3</span>
+                        <span class="pitch-chip">Dates</span>
+                    </div>
+                    <div class="pitch-request__chips pitch-request__chips--royalties">
+                        <span class="pitch-chip">Sponsor</span>
+                        <span class="pitch-chip">Online seating</span>
+                        <span class="pitch-chip">Merchandise</span>
+                        <span class="pitch-chip">Ticket price</span>
+                        <span class="pitch-request__poster-label">Poster cover</span>
+                        <span class="pitch-chip">Poster file</span>
+                    </div>
+                    <div class="pitch-request__actions">
+                        <button type="button" class="pitch-action pitch-action--accept">Accept terms &amp; conditions</button>
+                        <button type="button" class="pitch-action">Negotiate terms &amp; conditions</button>
+                        <button type="button" class="pitch-action pitch-action--dismiss">Dismiss Request</button>
+                    </div>
+                </article>
+
+                <!-- Diamond Flow — 50% -->
+                <article class="pitch-request">
+                    <div class="pitch-request__artist">
+                        <span class="pitch-request__portrait" style="background: url('../assets/images/artists/placeholder-female-3.png') center/cover;"></span>
+                        <span class="pitch-request__name auto-name">Diamond Flow</span>
+                    </div>
+                    <div class="pitch-request__fee">50%</div>
+                    <div class="pitch-request__project">Sweetest Ass</div>
+                    <div class="pitch-request__followers">7,121</div>
+                    <div class="pitch-request__message">
+                        <span class="pitch-request__message-label">Message</span>
+                        <p class="pitch-request__message-text">My name is Diamond Flow, and I'm a rising female rapper with a passion for delivering electrifying performances. I've been hearing incredible things about the vibrant energy and enthusiastic crowds at Venue RUST, and I believe my unique style and infectious beats would be a perfect match for your venue. I bring a dynamic blend of fierce lyrics, catchy hooks, and unstoppable energy to the stage, guaranteed to get the crowd moving and grooving. From empowering anthems to introspective hits.</p>
+                    </div>
+                    <div class="pitch-request__chips pitch-request__chips--files">
+                        <span class="pitch-chip">Dressing Room Rider</span>
+                        <span class="pitch-chip">Set list</span>
+                        <span class="pitch-chip">MP3</span>
+                        <span class="pitch-chip">Dates</span>
+                    </div>
+                    <div class="pitch-request__chips pitch-request__chips--royalties">
+                        <span class="pitch-chip">Sponsor</span>
+                        <span class="pitch-chip">Online seating</span>
+                        <span class="pitch-chip">Merchandise</span>
+                        <span class="pitch-chip">Ticket price</span>
+                        <span class="pitch-request__poster-label">Poster cover</span>
+                        <span class="pitch-chip">Poster file</span>
+                    </div>
+                    <div class="pitch-request__actions">
+                        <button type="button" class="pitch-action pitch-action--accept">Accept terms &amp; conditions</button>
+                        <button type="button" class="pitch-action">Negotiate terms &amp; conditions</button>
+                        <button type="button" class="pitch-action pitch-action--dismiss">Dismiss Request</button>
+                    </div>
+                </article>
+
+                <!-- Thunderbolt Fury — $5,000 USD -->
+                <article class="pitch-request">
+                    <div class="pitch-request__artist">
+                        <span class="pitch-request__portrait" style="background: url('../assets/images/artists/placeholder-male-5.png') center/cover;"></span>
+                        <span class="pitch-request__name auto-name">Thunderbolt Fury</span>
+                    </div>
+                    <div class="pitch-request__fee">$5,000 USD</div>
+                    <div class="pitch-request__project">Lightning Strikes</div>
+                    <div class="pitch-request__followers">8,891</div>
+                    <div class="pitch-request__message">
+                        <span class="pitch-request__message-label">Message</span>
+                        <p class="pitch-request__message-text">Thunderbolt Fury is storming into town! I'm Beej, the lead guitarist and frontman of Thunderbolt Fury, and we're itching to tear up the stage at your awesome venue. We've heard rave reviews about the electrifying atmosphere and killer sound system at your spot, and we know our high-energy performance would be a perfect fit for your crowd. We're ready to unleash our blend of classic rock anthems and original tunes that'll have your audience rocking out from the first chord to the last.</p>
+                    </div>
+                    <div class="pitch-request__chips pitch-request__chips--files">
+                        <span class="pitch-chip">Dressing Room Rider</span>
+                        <span class="pitch-chip">Set list</span>
+                        <span class="pitch-chip">MP3</span>
+                        <span class="pitch-chip">Dates</span>
+                    </div>
+                    <div class="pitch-request__chips pitch-request__chips--royalties">
+                        <span class="pitch-chip">Sponsor</span>
+                        <span class="pitch-chip">Online seating</span>
+                        <span class="pitch-chip">Merchandise</span>
+                        <span class="pitch-chip">Ticket price</span>
+                        <span class="pitch-request__poster-label">Poster cover</span>
+                        <span class="pitch-chip">Poster file</span>
+                    </div>
+                    <div class="pitch-request__actions">
+                        <button type="button" class="pitch-action pitch-action--accept">Accept terms &amp; conditions</button>
+                        <button type="button" class="pitch-action">Negotiate terms &amp; conditions</button>
+                        <button type="button" class="pitch-action pitch-action--dismiss">Dismiss Request</button>
+                    </div>
+                </article>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- ===== Set-list viewer modal — opens when the venue clicks a Set list chip ===== -->
+    <div class="release-modal-overlay" id="setlistViewerModal" data-setlist-viewer-modal aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="release-modal release-modal--setlist">
+            <header class="release-modal__header">
+                <h2 class="release-modal__title" data-setlist-viewer-title>Set list</h2>
+                <button type="button" class="release-modal__close" data-close-setlist-viewer aria-label="Close" data-help="Luk set-list-viewer.">&times;</button>
+            </header>
+            <div class="release-modal__body release-modal__body--setlist">
+                <p class="setlist-intro" data-help="Set-list-viewer: Read-only visning af de sange artisten har valgt at spille. Brug Quick-play til at høre 30 sek af hver registreret sang.">Foreslået rækkefølge for koncerten. Klik <em>Quick-play</em> ved en registered song for at høre 30 sek.</p>
+                <ol class="setlist-active setlist-active--readonly" data-setlist-viewer-list></ol>
+                <p class="setlist-meta-row" data-setlist-viewer-meta data-help="Total spilletid og antal sange — hjælper jer som venue med at planlægge backstage og support-acts.">— · 0 songs · 0:00</p>
+            </div>
+            <footer class="release-modal__actions">
+                <button type="button" class="release-modal__btn" data-close-setlist-viewer>Close</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ===== Auto-poster preview modal — generated when venue accepts a pitch ===== -->
+    <div class="release-modal-overlay" id="posterModal" data-poster-modal aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="release-modal release-modal--poster">
+            <header class="release-modal__header">
+                <h2 class="release-modal__title">Auto-generated poster</h2>
+                <button type="button" class="release-modal__close" data-close-poster aria-label="Close" data-help="Luk plakat-preview. Pitchet bliver markeret som accepteret uanset om du downloader plakaten.">&times;</button>
+            </header>
+            <div class="release-modal__body">
+                <p class="poster-intro" data-help="Auto-poster: Når et pitch accepteres genererer platformen automatisk en social media-plakat med dit venue-logo, artistens navn + billede, dato og koncert-detaljer. Klar til at deles direkte på Instagram, Facebook og X.">Pitchet er accepteret ✓ — her er en social media-plakat klar til deling. Justér detaljer under, eller download / del som den er.</p>
+
+                <div class="poster-preview" data-help="Plakat-preview: Skift dato, set-tid og live record-badge i kontrollerne nedenfor — preview opdateres straks. Gem som .png eller del direkte til Instagram, Facebook og X.">
+                    <div class="poster-card" data-poster-card>
+                        <div class="poster-card__bg" data-poster-bg></div>
+                        <div class="poster-card__overlay"></div>
+                        <div class="poster-card__head">
+                            <span class="poster-card__venue-tag">LIVE AT</span>
+                            <span class="poster-card__venue-name" data-poster-venue>RUST</span>
+                        </div>
+                        <div class="poster-card__body">
+                            <span class="poster-card__feat">FEATURING</span>
+                            <h2 class="poster-card__artist" data-poster-artist>Artist</h2>
+                            <span class="poster-card__project" data-poster-project>Project</span>
+                        </div>
+                        <div class="poster-card__foot">
+                            <div class="poster-card__date">
+                                <span class="poster-card__day" data-poster-day>—</span>
+                                <span class="poster-card__month" data-poster-month>—</span>
+                            </div>
+                            <div class="poster-card__details">
+                                <span class="poster-card__time" data-poster-time>Doors 19:00 · Show 20:30</span>
+                                <span class="poster-card__live" data-poster-live hidden>★ LIVE-RECORDED</span>
+                                <span class="poster-card__address" data-poster-address>Guldbergsgade 8 · 2200 København</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="poster-controls">
+                    <label class="poster-controls__field" data-help="Koncertdato: Den dato venuet og artisten er enige om. Auto-fyldt fra venue-kalenderen ved den første ledige plads efter accept.">
+                        <span>Date</span>
+                        <input type="date" data-poster-input-date>
+                    </label>
+                    <label class="poster-controls__field" data-help="Door-tid: Hvornår dørene åbner.">
+                        <span>Doors open</span>
+                        <input type="time" data-poster-input-doors value="19:00">
+                    </label>
+                    <label class="poster-controls__field" data-help="Show-tid: Hvornår artisten går på scenen.">
+                        <span>Show start</span>
+                        <input type="time" data-poster-input-show value="20:30">
+                    </label>
+                    <label class="poster-controls__check" data-help="Live-recorded: Markerer plakaten med et badge så fans ved at koncerten streames eller optages og kan ses online bagefter.">
+                        <input type="checkbox" data-poster-input-live>
+                        <span>Live-recorded / streamed</span>
+                    </label>
+                </div>
+            </div>
+            <footer class="release-modal__actions">
+                <button type="button" class="release-modal__btn" data-close-poster>Close</button>
+                <button type="button" class="release-modal__btn" data-poster-share data-help="Del plakat-preview til Instagram, Facebook eller X. Auto-tagger artist og venue.">Share to social</button>
+                <button type="button" class="release-modal__btn release-modal__btn--primary" data-poster-download data-help="Download plakat som .png-fil i 1080×1080 (square) format — egnet til Instagram-feed.">Download .png</button>
+            </footer>
+        </div>
+    </div>
+
+    <script src="../js/core.js"></script>
+    <script src="../js/modes.js"></script>
+    <script src="../js/sidebar.js"></script>
+    <script src="../js/topbar-widgets.js"></script>
+    <script src="../js/stage-badge.js"></script>
+    <script src="../js/acting-as-service.js"></script>
+    <script src="../js/stage-cards.js"></script>
+    <script src="../js/stage-label.js"></script>
+    <script src="../js/stage-resources.js"></script>
+    <script src="../js/stage-economy.js"></script>
+    <script src="../js/settings.js"></script>
+    <script src="../js/activity-feed.js"></script>
+    <script src="../js/app.js"></script>
+</body>
+</html>

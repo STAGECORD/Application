@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAGECORD PRO — Label Stage</title>
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/logo.css">
+    <link rel="stylesheet" href="../css/topbar.css">
+    <link rel="stylesheet" href="../css/stage.css">
+</head>
+<body>
+    <aside class="sidebar" data-sidebar></aside>
+
+    <header class="topbar">
+        <div class="logo-container">
+            <a href="../index.html" class="logo-link">
+                <h1 class="logo"><span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span><span class="logo-pro">PRO</span></h1>
+            </a>
+        </div>
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Search Artists, Concerts, Venues, Friends and much more" aria-label="Search"/>
+            <svg class="search-icon" viewBox="0 0 28 28" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/><path d="M18 18L24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <button type="button" class="help-button" aria-label="Help" aria-pressed="false" data-help="Help button."><span class="help-mark">?</span></button>
+    </header>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <header class="stage-page-header">
+                <h1 class="stage-page-header__title">A&amp;R / Manager / PR</h1>
+            </header>
+
+            <section class="stage-filters stage-filters--with-cta" data-help="Filter your team by country, city, genre, or find specific people. Use 'Create A&R profile' to onboard a new staff member.">
+                <label class="stage-filter">
+                    <span class="stage-filter__label">Select country</span>
+                    <select class="stage-filter__control">
+                        <option>Denmark</option>
+                        <option>Sweden</option>
+                        <option>Norway</option>
+                        <option>UK</option>
+                        <option>USA</option>
+                    </select>
+                </label>
+                <label class="stage-filter">
+                    <span class="stage-filter__label">Select city</span>
+                    <select class="stage-filter__control">
+                        <option>All cities</option>
+                        <option>Copenhagen</option>
+                        <option>Aarhus</option>
+                        <option>Stockholm</option>
+                        <option>Oslo</option>
+                    </select>
+                </label>
+                <label class="stage-filter">
+                    <span class="stage-filter__label">Select genre</span>
+                    <select class="stage-filter__control">
+                        <option>All</option>
+                        <option>Pop</option>
+                        <option>Hip Hop</option>
+                        <option>R&amp;B / Soul</option>
+                        <option>Rock</option>
+                        <option>Electronic</option>
+                    </select>
+                </label>
+                <label class="stage-filter stage-filter--search">
+                    <span class="stage-filter__label">Search artist</span>
+                    <input type="text" class="stage-filter__control"/>
+                </label>
+                <label class="stage-filter stage-filter--search">
+                    <span class="stage-filter__label">Search A&amp;R</span>
+                    <input type="text" class="stage-filter__control"/>
+                </label>
+                <label class="stage-filter">
+                    <span class="stage-filter__label">Sort by</span>
+                    <select class="stage-filter__control">
+                        <option>Most artists</option>
+                        <option>Name (A→Z)</option>
+                        <option>Role</option>
+                        <option>Recent activity</option>
+                    </select>
+                </label>
+                <button type="button" class="stage-filter-cta" data-help="Create a new A&R, manager, or PR profile for the label.">
+                    <span class="stage-filter-cta__plus">+</span>
+                    <span class="stage-filter-cta__label">Create A&amp;R profile</span>
+                </button>
+            </section>
+
+            <div class="stage-roster" data-stage-roster></div>
+
+        </div>
+    </main>
+
+    <script src="../js/core.js"></script>
+    <script src="../js/modes.js"></script>
+    <script src="../js/sidebar.js"></script>
+    <script src="../js/topbar-widgets.js"></script>
+    <script src="../js/stage-badge.js"></script>
+    <script src="../js/acting-as-service.js"></script>
+    <script src="../js/stage-cards.js"></script>
+    <script src="../js/stage-label.js"></script>
+    <script src="../js/stage-resources.js"></script>
+    <script src="../js/stage-economy.js"></script>
+    <script src="../js/settings.js"></script>
+    <script src="../js/activity-feed.js"></script>
+    <script src="../js/app.js"></script>
+</body>
+</html>

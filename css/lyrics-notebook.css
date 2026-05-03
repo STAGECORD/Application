@@ -1,0 +1,1210 @@
+/* ===========================================================================
+   Lyrics & Notes notebook + Activity log + Book of Rhymes + Save-unused
+   ===========================================================================
+   Extracted from project-card.css. All styles related to the Notes &
+   Lyrics modal flow — the notebook itself, the Activity log shown via
+   the Log pill, the per-user Book of Rhymes library, and the dialog
+   for saving unused sections after Main Lyrics is finalized.
+*/
+
+/* ===========================================================================
+   Activity log modal — opened from the Log pill on each project card.
+   Shows a chronological feed of every action taken by every team member.
+   =========================================================================== */
+.release-modal.release-modal--log { max-width: 600px; }
+
+.project-log__intro {
+    margin: 0 0 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.project-log__filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.project-log__filter-pill {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.7);
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+.project-log__filter-pill:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #FFFFFF;
+}
+
+.project-log__filter-pill.is-active {
+    background: rgba(74, 144, 226, 0.16);
+    border-color: #4A90E2;
+    color: #FFFFFF;
+}
+
+.project-log__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 420px;
+    overflow-y: auto;
+}
+
+.project-log__item {
+    display: grid;
+    grid-template-columns: 32px 1fr auto;
+    gap: 12px;
+    align-items: start;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+}
+
+.project-log__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    background-color: rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
+}
+
+.project-log__main { min-width: 0; }
+
+.project-log__line {
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    color: #FFFFFF;
+    line-height: 1.4;
+}
+
+.project-log__line strong { font-weight: 700; }
+
+.project-log__detail {
+    margin-top: 2px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+.project-log__time {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.45);
+    white-space: nowrap;
+    padding-top: 2px;
+}
+
+.project-log__empty {
+    margin: 0;
+    padding: 24px 12px;
+    text-align: center;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.project-log__action-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-right: 6px;
+    vertical-align: 1px;
+}
+
+.project-log__action-tag--upload   { background: rgba(74, 144, 226, 0.18); color: #6AA9F0; }
+.project-log__action-tag--remove   { background: rgba(255, 106, 85, 0.18); color: #FF6A55; }
+.project-log__action-tag--restore  { background: rgba(67, 196, 122, 0.18); color: #43C47A; }
+.project-log__action-tag--save     { background: rgba(255, 196, 0, 0.18);  color: #FFC400; }
+.project-log__action-tag--approve  { background: rgba(67, 196, 122, 0.18); color: #43C47A; }
+.project-log__action-tag--rename   { background: rgba(176, 132, 224, 0.18); color: #B084E0; }
+.project-log__action-tag--lyrics   { background: rgba(255, 138, 200, 0.18); color: #FF8AC8; }
+
+/* ===========================================================================
+   Lyrics & Notes notebook — opened from the Notes & Lyrics pill on each
+   project card. One notebook per team member, structured into reorderable
+   song sections (Intro, Verse, Chorus, etc.) with per-word rhyme color
+   marking and an automatic rhyme suggestion engine.
+   =========================================================================== */
+.release-modal.release-modal--lyrics {
+    max-width: 760px;
+    width: 92vw;
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.release-modal__body--lyrics {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding-top: 14px;
+}
+
+/* Member tabs across the top of the notebook. The active tab corresponds
+   to whose notebook the user is currently reading or editing. */
+.lyrics-tabs {
+    display: flex;
+    gap: 6px;
+    padding: 12px 24px 0;
+    border-bottom: 1px solid #2a2a2a;
+    overflow-x: auto;
+}
+
+.lyrics-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: rgba(255, 255, 255, 0.6);
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 12px 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.lyrics-tab:hover { color: #FFFFFF; }
+
+.lyrics-tab.is-active {
+    color: #FFFFFF;
+    border-bottom-color: #4A90E2;
+}
+
+.lyrics-tab__avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    background-color: rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
+}
+
+.lyrics-tab__own {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: rgba(74, 144, 226, 0.22);
+    color: #6AA9F0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 4px;
+}
+
+/* Toolbar containing the add-section dropdown + rhyme palette + clear colors. */
+.lyrics-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    padding: 14px 24px;
+    border-bottom: 1px solid #2a2a2a;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.lyrics-toolbar__group {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.lyrics-toolbar__label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.lyrics-toolbar__select,
+.lyrics-toolbar__custom {
+    background: #1f1f1f;
+    border: 1px solid #2f2f2f;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    min-width: 130px;
+}
+
+.lyrics-toolbar__btn {
+    background: rgba(74, 144, 226, 0.16);
+    border: 1px solid #4A90E2;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.lyrics-toolbar__btn:hover { background: #4A90E2; }
+
+.lyrics-toolbar__btn--ghost {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.lyrics-toolbar__btn--ghost:hover {
+    border-color: #FF6A55;
+    color: #FF6A55;
+    background: transparent;
+}
+
+/* Rhyme color palette — eight color swatches the user clicks to enter
+   "paint mode". The active swatch is outlined; clicking a word in any
+   section then applies that color (or removes it if the same color is
+   already on the word). */
+.lyrics-palette {
+    display: inline-flex;
+    gap: 6px;
+}
+
+.lyrics-palette__swatch {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    padding: 0;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4) inset;
+}
+
+.lyrics-palette__swatch:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.lyrics-palette__swatch.is-active {
+    border-color: #FFFFFF;
+    transform: scale(1.1);
+}
+
+/* "+ Add color" button at the end of the palette — generates a new
+   visually distinct color and appends it to the project's palette. */
+.lyrics-palette__add {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1px dashed rgba(255, 255, 255, 0.4);
+    background: transparent;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.lyrics-palette__add:hover {
+    border-color: #FFFFFF;
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Floating settings popover for the lyrics modal — toggles like rhyme
+   confirmation. Anchored to the Settings button in the toolbar. */
+.lyrics-settings-popover {
+    position: fixed;
+    z-index: 1500;
+    background: #1a1a1a;
+    border: 1px solid #353535;
+    border-radius: 10px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+    padding: 14px 16px;
+    max-width: 360px;
+    font-family: 'Outfit', sans-serif;
+}
+
+.lyrics-settings-popover__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.lyrics-settings-popover__title {
+    font-weight: 700;
+    font-size: 13px;
+    color: #FFFFFF;
+}
+
+.lyrics-settings-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+    align-items: start;
+    cursor: pointer;
+    padding: 8px 0;
+}
+
+.lyrics-settings-row input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
+    accent-color: #4A90E2;
+    cursor: pointer;
+}
+
+.lyrics-settings-row strong {
+    display: block;
+    font-size: 13px;
+    color: #FFFFFF;
+    font-weight: 600;
+}
+
+.lyrics-settings-row span {
+    display: block;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.55);
+    line-height: 1.4;
+    margin-top: 2px;
+}
+
+/* Mode hint at the top of the body — switches text when paint mode is on. */
+.lyrics-mode-hint {
+    margin: 0 0 14px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.lyrics-mode-hint.is-painting {
+    color: #FFFFFF;
+}
+
+.lyrics-mode-hint.is-painting strong { color: inherit; }
+
+/* Sections list — each section is a draggable card. */
+.lyrics-sections {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    counter-reset: lyrics-section;
+}
+
+.lyrics-empty {
+    margin: 30px 0;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.lyrics-empty em { color: #FFFFFF; font-style: normal; font-weight: 600; }
+
+.lyrics-section {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    transition: border-color 0.15s ease;
+}
+
+.lyrics-section.is-dragging { opacity: 0.4; }
+
+.lyrics-section.is-drop-target { border-color: #4A90E2; }
+
+.lyrics-section__head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.lyrics-section__drag {
+    cursor: grab;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 18px;
+    line-height: 1;
+    padding: 4px 6px;
+    border-radius: 4px;
+}
+
+.lyrics-section__drag:hover { color: #FFFFFF; background: rgba(255, 255, 255, 0.05); }
+
+.lyrics-section__drag:active { cursor: grabbing; }
+
+.lyrics-section__type {
+    background: #1f1f1f;
+    border: 1px solid #2f2f2f;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 5px;
+    min-width: 120px;
+}
+
+.lyrics-section__custom-name {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 5px;
+    width: 140px;
+}
+
+.lyrics-section__head-spacer { flex: 1 1 auto; }
+
+.lyrics-section__action {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.7);
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.lyrics-section__action:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #FFFFFF;
+}
+
+.lyrics-section__action--delete {
+    border-color: rgba(255, 106, 85, 0.5);
+    color: #FF6A55;
+    display: none;
+}
+
+/* Delete is only revealed when the master Edit toggle in the modal
+   header is on — prevents accidental section deletion. */
+.release-modal--lyrics.is-editing .lyrics-section__action--delete {
+    display: inline-flex;
+}
+
+.lyrics-section__action--delete:hover {
+    background: #FF6A55;
+    color: #FFFFFF;
+    border-color: #FF6A55;
+}
+
+.lyrics-section__body {
+    padding: 12px 16px 14px;
+}
+
+/* View mode: lyrics rendered as clickable colored word spans. */
+.lyrics-section__view {
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.92);
+    min-height: 22px;
+    cursor: text;
+}
+
+.lyrics-line {
+    margin: 0;
+    display: block;
+    min-height: 1em;
+}
+
+.lyrics-line--empty { color: rgba(255, 255, 255, 0.3); font-style: italic; }
+
+.word {
+    display: inline;
+    cursor: pointer;
+    border-radius: 3px;
+    padding: 0 1px;
+    transition: background-color 0.1s ease;
+}
+
+.word:hover { background: rgba(255, 255, 255, 0.08); }
+
+.word.has-rhyme {
+    border-bottom: 2px solid currentColor;
+    font-weight: 600;
+}
+
+.word.is-selected-rhyme {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+/* Edit mode: textarea for raw text editing. */
+.lyrics-section__editor {
+    width: 100%;
+    background: #0f0f0f;
+    border: 1px solid #2f2f2f;
+    border-radius: 8px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    line-height: 1.7;
+    padding: 10px 12px;
+    resize: vertical;
+    min-height: 120px;
+}
+
+.lyrics-section__editor:focus {
+    outline: none;
+    border-color: #4A90E2;
+}
+
+/* Inline inspiration strip — shows a random unrelated next-line suggestion
+   under the active textarea. → key cycles to a new suggestion when the
+   cursor is at end-of-text; Tab inserts the suggestion as a new line. */
+.lyrics-suggestion-strip {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: rgba(74, 144, 226, 0.06);
+    border: 1px dashed rgba(74, 144, 226, 0.32);
+    border-radius: 6px;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+}
+
+.lyrics-suggestion-strip.is-active { display: flex; }
+
+.lyrics-suggestion-label {
+    color: rgba(74, 144, 226, 0.85);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 10px;
+    flex-shrink: 0;
+}
+
+.lyrics-suggestion-text {
+    flex: 1 1 200px;
+    color: rgba(255, 255, 255, 0.7);
+    font-style: italic;
+    line-height: 1.5;
+    cursor: pointer;
+}
+
+.lyrics-suggestion-text:hover { color: #FFFFFF; }
+
+.lyrics-suggestion-actions {
+    display: inline-flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.lyrics-suggestion-btn {
+    background: transparent;
+    border: 1px solid rgba(74, 144, 226, 0.4);
+    color: #6AA9F0;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.lyrics-suggestion-btn:hover {
+    background: #4A90E2;
+    color: #FFFFFF;
+    border-color: #4A90E2;
+}
+
+.lyrics-suggestion-btn kbd {
+    font-family: 'Outfit', monospace;
+    font-size: 10px;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    padding: 0 4px;
+    border-radius: 3px;
+    color: #FFFFFF;
+}
+
+.lyrics-section__placeholder {
+    color: rgba(255, 255, 255, 0.3);
+    font-style: italic;
+}
+
+/* Floating rhyme suggestion popover. Appears next to a clicked word when
+   no paint color is active. */
+.lyrics-rhyme-popover {
+    position: fixed;
+    z-index: 1500;
+    background: #1a1a1a;
+    border: 1px solid #353535;
+    border-radius: 10px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+    padding: 12px 14px;
+    max-width: 340px;
+    font-family: 'Outfit', sans-serif;
+}
+
+.lyrics-rhyme-popover__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.lyrics-rhyme-popover__title {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.lyrics-rhyme-popover__title strong {
+    color: #FFFFFF;
+    font-weight: 700;
+}
+
+.lyrics-rhyme-popover__close {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 18px;
+    line-height: 1;
+    padding: 0 4px;
+    cursor: pointer;
+}
+
+.lyrics-rhyme-popover__close:hover { color: #FFFFFF; }
+
+.lyrics-rhyme-popover__body {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.lyrics-rhyme-suggestion {
+    background: rgba(74, 144, 226, 0.12);
+    border: 1px solid rgba(74, 144, 226, 0.4);
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    padding: 4px 9px;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+.lyrics-rhyme-suggestion:hover {
+    background: #4A90E2;
+    border-color: #4A90E2;
+}
+
+.lyrics-rhyme-popover__hint {
+    margin: 0;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.4);
+    line-height: 1.4;
+}
+
+.lyrics-rhyme-popover__none {
+    margin: 0;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+}
+
+/* Scrollbar styling for the lyrics body so the long notebook stays clean. */
+.release-modal__body--lyrics::-webkit-scrollbar { width: 8px; }
+.release-modal__body--lyrics::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 4px;
+}
+
+@media (max-width: 720px) {
+    .lyrics-toolbar { flex-direction: column; gap: 12px; }
+    .lyrics-section__head { flex-wrap: wrap; }
+}
+
+/* Main Lyrics tab — visually distinct (gold accent, star icon) since it's
+   the curated/canonical version assembled from team members' notebooks. */
+.lyrics-tab--main {
+    color: rgba(255, 196, 0, 0.85);
+    border-left: 1px solid rgba(255, 255, 255, 0.06);
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+    padding-left: 14px;
+    padding-right: 14px;
+}
+
+.lyrics-tab--main:hover { color: #FFC400; }
+
+.lyrics-tab--main.is-active {
+    color: #FFC400;
+    border-bottom-color: #FFC400;
+}
+
+.lyrics-tab--main::before {
+    content: '★';
+    margin-right: 2px;
+}
+
+/* "→ Main" button on each member section, copies that section into Main. */
+.lyrics-section__action--to-main {
+    border-color: rgba(255, 196, 0, 0.55);
+    color: #FFC400;
+}
+
+.lyrics-section__action--to-main:hover {
+    background: #FFC400;
+    color: #0a0a0a;
+    border-color: #FFC400;
+}
+
+/* Attribution chip on Main Lyrics sections — shows which member's notebook
+   the section was sourced from. */
+.lyrics-section__source {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+    padding: 3px 9px 3px 4px;
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.lyrics-section__source-avatar {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    background-color: rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+}
+
+.lyrics-section__source-orig { color: rgba(255, 255, 255, 0.45); }
+
+/* Main Lyrics finalize banner — sits above the sections list when viewing
+   Main; flips to "approved" state once finalized. */
+.lyrics-main-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    border-radius: 10px;
+    background: rgba(255, 196, 0, 0.06);
+    border: 1px solid rgba(255, 196, 0, 0.32);
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.lyrics-main-banner.is-finalized {
+    background: rgba(67, 196, 122, 0.08);
+    border-color: rgba(67, 196, 122, 0.5);
+}
+
+.lyrics-main-banner__main { line-height: 1.5; }
+
+.lyrics-main-banner__main strong { color: #FFFFFF; }
+
+.lyrics-main-banner__actions {
+    display: inline-flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.lyrics-main-banner__btn {
+    background: #FFC400;
+    border: 1px solid #FFC400;
+    color: #0a0a0a;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.lyrics-main-banner__btn:hover { background: #FFD840; }
+
+.lyrics-main-banner__btn--ghost {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.22);
+    color: #FFFFFF;
+}
+
+.lyrics-main-banner__btn--ghost:hover {
+    border-color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.lyrics-main-banner__btn--unlock {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+}
+
+.lyrics-main-banner__btn--unlock:hover {
+    color: #FFFFFF;
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* When Main is finalized, lock down editor controls visually. */
+.lyrics-section.is-locked .lyrics-section__action,
+.lyrics-section.is-locked .lyrics-section__drag,
+.lyrics-section.is-locked .lyrics-section__type,
+.lyrics-section.is-locked .lyrics-section__custom-name {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+/* ===========================================================================
+   Book of Rhymes modal — private text library per user.
+   =========================================================================== */
+.release-modal.release-modal--bor {
+    max-width: 760px;
+    width: 92vw;
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.release-modal__body--bor {
+    flex: 1 1 auto;
+    overflow-y: auto;
+}
+
+.bor-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    padding: 14px 24px;
+    border-bottom: 1px solid #2a2a2a;
+    background: rgba(255, 255, 255, 0.02);
+    align-items: flex-start;
+}
+
+.bor-toolbar__group {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.bor-toolbar__group--right { margin-left: auto; }
+
+.bor-toolbar__label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.bor-toolbar__select {
+    background: #1f1f1f;
+    border: 1px solid #2f2f2f;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    min-width: 130px;
+}
+
+.bor-mode-tag {
+    background: rgba(74, 144, 226, 0.18);
+    color: #6AA9F0;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.bor-mode-tag.is-picker {
+    background: rgba(255, 196, 0, 0.18);
+    color: #FFC400;
+}
+
+/* Mood filter pills row */
+.bor-mood-filter {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    max-width: 460px;
+}
+
+.bor-mood-pill {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.7);
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.bor-mood-pill:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #FFFFFF;
+}
+
+.bor-mood-pill.is-active {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: currentColor;
+}
+
+.bor-mood-pill__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.bor-intro {
+    margin: 14px 24px 12px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.bor-list {
+    list-style: none;
+    margin: 0;
+    padding: 0 24px 14px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 10px;
+}
+
+.bor-empty {
+    margin: 30px 24px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.bor-empty em { color: #FFFFFF; font-style: normal; font-weight: 600; }
+
+.bor-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+}
+
+.bor-card:hover { border-color: rgba(255, 255, 255, 0.3); }
+
+.bor-card.is-pickable:hover { border-color: #FFC400; }
+
+.bor-card__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.bor-card__type {
+    background: rgba(74, 144, 226, 0.18);
+    color: #6AA9F0;
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+
+.bor-card__mood {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.bor-card__mood-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+}
+
+.bor-card__content {
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.92);
+    white-space: pre-wrap;
+    max-height: 6em;
+    overflow: hidden;
+    position: relative;
+}
+
+.bor-card__source {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.bor-card__delete {
+    background: transparent;
+    border: 1px solid rgba(255, 106, 85, 0.4);
+    color: #FF6A55;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.bor-card__delete:hover {
+    background: #FF6A55;
+    color: #FFFFFF;
+}
+
+/* ===========================================================================
+   Save-unused dialog — pick mood per unused section.
+   =========================================================================== */
+.release-modal.release-modal--save-unused {
+    max-width: 720px;
+    width: 92vw;
+}
+
+.save-unused__intro {
+    margin: 0 0 14px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.save-unused__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 460px;
+    overflow-y: auto;
+}
+
+.save-unused__empty {
+    margin: 24px 0;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 13px;
+}
+
+.save-unused__item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.save-unused__head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.save-unused__check {
+    width: 18px;
+    height: 18px;
+    accent-color: #FFC400;
+    cursor: pointer;
+}
+
+.save-unused__type {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    color: #FFFFFF;
+    font-size: 13px;
+}
+
+.save-unused__head-spacer { flex: 1 1 auto; }
+
+.save-unused__mood-select {
+    background: #1f1f1f;
+    border: 1px solid #2f2f2f;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    padding: 5px 8px;
+    border-radius: 6px;
+    min-width: 160px;
+}
+
+.save-unused__preview {
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.75);
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 6px;
+    padding: 8px 10px;
+    white-space: pre-wrap;
+    max-height: 5em;
+    overflow: hidden;
+}
+

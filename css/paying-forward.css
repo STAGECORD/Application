@@ -1,0 +1,171 @@
+/* ===========================================================================
+   Paying it forward — 5% fanbase exposure between genre-group artists
+   ===========================================================================
+   PDF concept: artists with the same primary genre form an exposure
+   group. 5% of each member's fanbase is shared with the others — the
+   percentage scales up if listeners engage and down if they skip,
+   making the system self-balancing toward quality.
+*/
+
+.paying-forward {
+    background: linear-gradient(135deg, rgba(74, 144, 226, 0.04) 0%, rgba(125, 211, 192, 0.04) 100%);
+    border: 1px solid rgba(74, 144, 226, 0.22);
+    border-radius: 14px;
+    padding: 18px 20px;
+}
+
+.paying-forward__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.paying-forward__title {
+    margin: 0;
+    font-family: 'Outfit', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #FFFFFF;
+}
+
+.paying-forward__title-icon {
+    display: inline-block;
+    margin-right: 8px;
+    color: #6AA9F0;
+    font-size: 22px;
+    transform: translateY(2px);
+}
+
+.paying-forward__total {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.paying-forward__total strong {
+    color: #6AA9F0;
+    font-weight: 800;
+    font-size: 14px;
+}
+
+.paying-forward__intro {
+    margin: 0 0 14px;
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.paying-forward__intro strong {
+    color: #FFFFFF;
+    font-weight: 700;
+}
+
+.paying-forward__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 10px;
+}
+
+.paying-forward__card {
+    display: grid;
+    grid-template-columns: 44px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 10px 14px;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.paying-forward__card:hover {
+    border-color: rgba(74, 144, 226, 0.35);
+    background: rgba(74, 144, 226, 0.04);
+}
+
+.paying-forward__card--self {
+    background: rgba(74, 144, 226, 0.1);
+    border-color: rgba(74, 144, 226, 0.45);
+}
+
+.paying-forward__avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    flex-shrink: 0;
+}
+
+.paying-forward__main { min-width: 0; }
+
+.paying-forward__name {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    color: #FFFFFF;
+    font-size: 14px;
+    line-height: 1.3;
+}
+
+.paying-forward__role {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.55);
+    line-height: 1.4;
+    margin-top: 2px;
+}
+
+.paying-forward__exchange {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    text-align: right;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.78);
+    font-family: 'Outfit', sans-serif;
+}
+
+.paying-forward__exchange strong {
+    color: #FFFFFF;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}
+
+.paying-forward__in { color: #6AA9F0; }
+.paying-forward__out { color: rgba(255, 255, 255, 0.55); font-size: 11px; }
+
+.paying-forward__rate {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 999px;
+}
+
+.paying-forward__rate--up {
+    background: rgba(67, 196, 122, 0.18);
+    color: #43C47A;
+}
+
+.paying-forward__rate--down {
+    background: rgba(255, 106, 85, 0.18);
+    color: #FF6A55;
+}
+
+.paying-forward__foot {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.55);
+    line-height: 1.5;
+}
+
+.paying-forward__foot strong { color: #FFFFFF; }
+
+@media (max-width: 600px) {
+    .paying-forward__card { grid-template-columns: 36px 1fr; row-gap: 8px; }
+    .paying-forward__exchange { grid-column: 1 / -1; align-items: flex-start; text-align: left; }
+}

@@ -1,0 +1,516 @@
+/* ===========================================================================
+   Sheet Music tool
+   ===========================================================================
+   Extracted from project-card.css. The drag-and-drop staff-builder that
+   reads Main Lyrics and lets the user place notes per word — tempo,
+   time signature, key, and the simplified treble-clef visual.
+*/
+
+/* ===========================================================================
+   Sheet Music modal — places notes on Main Lyrics with tempo / time / key.
+   =========================================================================== */
+.release-modal.release-modal--sheet {
+    max-width: 940px;
+    width: 94vw;
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.release-modal__body--sheet {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 14px 24px 18px;
+}
+
+/* Sheet toolbar — tempo, time, key, autofill, clear. */
+.sheet-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    padding: 14px 24px;
+    border-bottom: 1px solid #2a2a2a;
+    background: rgba(255, 255, 255, 0.02);
+    align-items: center;
+}
+
+.sheet-toolbar__field {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sheet-toolbar__field--right { margin-left: auto; }
+
+.sheet-toolbar__label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.sheet-toolbar__input {
+    background: #1f1f1f;
+    border: 1px solid #2f2f2f;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 6px;
+    min-width: 90px;
+}
+
+input.sheet-toolbar__input { width: 76px; }
+
+.sheet-toolbar__unit {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.sheet-toolbar__btn {
+    background: rgba(74, 144, 226, 0.16);
+    border: 1px solid #4A90E2;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.sheet-toolbar__btn:hover { background: #4A90E2; }
+
+.sheet-toolbar__btn--ghost {
+    background: transparent;
+    border-color: rgba(255, 106, 85, 0.5);
+    color: #FF6A55;
+}
+
+.sheet-toolbar__btn--ghost:hover {
+    background: #FF6A55;
+    color: #FFFFFF;
+    border-color: #FF6A55;
+}
+
+.sheet-intro {
+    margin: 0 0 14px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.5;
+}
+
+.sheet-intro strong { color: #FFFFFF; font-weight: 700; }
+
+/* Drag palette — duration shapes the user can drag onto the staff. */
+.sheet-note-palette {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    margin-bottom: 18px;
+    background: rgba(74, 144, 226, 0.06);
+    border: 1px dashed rgba(74, 144, 226, 0.35);
+    border-radius: 10px;
+    flex-wrap: wrap;
+}
+
+.sheet-note-palette__label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.55);
+    margin-right: 6px;
+}
+
+.sheet-note-palette__item {
+    width: 38px;
+    height: 38px;
+    border: 1px solid rgba(74, 144, 226, 0.55);
+    background: rgba(74, 144, 226, 0.14);
+    color: #FFFFFF;
+    border-radius: 7px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Outfit', serif;
+    font-size: 22px;
+    line-height: 1;
+    cursor: grab;
+    user-select: none;
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.sheet-note-palette__item:hover {
+    background: rgba(74, 144, 226, 0.32);
+    transform: translateY(-1px);
+}
+
+.sheet-note-palette__item:active { cursor: grabbing; }
+
+.sheet-note-palette__item.is-dragging { opacity: 0.4; }
+
+.sheet-note-palette__item--rest {
+    border-color: rgba(255, 255, 255, 0.32);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Drop-target highlight on the staff line being hovered during a drag. */
+.sheet-line.is-drop-target {
+    background: rgba(74, 144, 226, 0.1);
+    border-color: rgba(74, 144, 226, 0.55);
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.18);
+}
+
+/* When dragging, suppress hover so the drop hint dominates. */
+body.sheet-is-dragging .sheet-word { pointer-events: none; }
+body.sheet-is-dragging .sheet-staff { cursor: copy; }
+
+/* Live preview line that shows where the pitch will land while dragging. */
+.sheet-drop-preview {
+    position: absolute;
+    pointer-events: none;
+    background: rgba(74, 144, 226, 0.85);
+    height: 2px;
+    border-radius: 1px;
+    z-index: 1;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+
+.sheet-drop-preview__label {
+    position: absolute;
+    background: #4A90E2;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transform: translate(8px, -50%);
+    white-space: nowrap;
+}
+
+.sheet-line { position: relative; }
+
+.sheet-empty {
+    margin: 30px 0;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* Section block — one per Main Lyrics section (Verse 1, Chorus, …). */
+.sheet-section {
+    margin-bottom: 26px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sheet-section:last-child { border-bottom: none; }
+
+.sheet-section__title {
+    margin: 0 0 12px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #FFC400;
+}
+
+.sheet-section__source {
+    margin-left: 8px;
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.45);
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.sheet-line {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 10px 14px 12px;
+    margin-bottom: 8px;
+}
+
+.sheet-staff {
+    display: block;
+    width: 100%;
+    height: 70px;
+    margin-bottom: 8px;
+}
+
+/* Words below the staff — each clickable to set a note. */
+.sheet-words {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: flex-start;
+}
+
+.sheet-word {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: 4px 8px;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.92);
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    line-height: 1.3;
+    min-width: 30px;
+}
+
+.sheet-word:hover {
+    background: rgba(74, 144, 226, 0.1);
+    border-color: rgba(74, 144, 226, 0.4);
+}
+
+.sheet-word.has-note {
+    background: rgba(74, 144, 226, 0.12);
+    border-color: rgba(74, 144, 226, 0.5);
+}
+
+.sheet-word.has-rest {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+}
+
+.sheet-word__pitch {
+    font-size: 10px;
+    font-weight: 700;
+    color: #6AA9F0;
+}
+
+.sheet-word.has-rest .sheet-word__pitch { color: rgba(255,255,255,0.5); }
+
+/* Note picker popover. */
+.sheet-note-popover {
+    position: fixed;
+    z-index: 1500;
+    background: #1a1a1a;
+    border: 1px solid #353535;
+    border-radius: 10px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+    padding: 14px 16px;
+    width: 360px;
+    font-family: 'Outfit', sans-serif;
+}
+
+.sheet-note-popover__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.sheet-note-popover__title {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.sheet-note-popover__title strong { color: #FFFFFF; font-weight: 700; }
+
+.sheet-note-popover__body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sheet-note-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.sheet-note-row__label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.5);
+    width: 60px;
+    flex-shrink: 0;
+}
+
+.sheet-octave-row {
+    display: inline-flex;
+    gap: 4px;
+}
+
+.sheet-octave-btn {
+    background: #1f1f1f;
+    border: 1px solid #2f2f2f;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.sheet-octave-btn:hover { border-color: #4A90E2; }
+
+.sheet-octave-btn.is-active {
+    background: #4A90E2;
+    border-color: #4A90E2;
+}
+
+/* Pitch grid in 2 rows: 7 white + 5 black, in piano order. */
+.sheet-pitch-grid {
+    display: grid;
+    grid-template-rows: auto auto;
+    gap: 4px;
+    flex: 1 1 auto;
+    min-width: 220px;
+}
+
+.sheet-pitch-row {
+    display: flex;
+    gap: 3px;
+}
+
+.sheet-pitch-row--black { padding-left: 16px; }
+
+.sheet-pitch-btn {
+    flex: 1 1 0;
+    background: #FFFFFF;
+    color: #000000;
+    border: 1px solid #333;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 0;
+    border-radius: 4px;
+    cursor: pointer;
+    min-height: 28px;
+}
+
+.sheet-pitch-btn--black {
+    background: #1a1a1a;
+    color: #FFFFFF;
+    border-color: #444;
+}
+
+.sheet-pitch-btn--spacer {
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.sheet-pitch-btn:hover { outline: 2px solid #4A90E2; outline-offset: -1px; }
+
+.sheet-pitch-btn.is-active {
+    background: #4A90E2;
+    color: #FFFFFF;
+    border-color: #4A90E2;
+}
+
+.sheet-pitch-btn--black.is-active {
+    background: #4A90E2;
+    color: #FFFFFF;
+}
+
+.sheet-duration-row {
+    display: inline-flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.sheet-duration-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.8);
+    font-family: 'Outfit', serif;
+    font-size: 13px;
+    padding: 5px 9px;
+    border-radius: 5px;
+    cursor: pointer;
+    min-width: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.sheet-duration-btn small {
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.5);
+    font-family: 'Outfit', sans-serif;
+}
+
+.sheet-duration-btn:hover { border-color: rgba(255, 255, 255, 0.4); }
+
+.sheet-duration-btn.is-active {
+    background: #4A90E2;
+    border-color: #4A90E2;
+    color: #FFFFFF;
+}
+
+.sheet-duration-btn.is-active small { color: rgba(255, 255, 255, 0.8); }
+
+.sheet-note-special {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.7);
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.sheet-note-special:hover { border-color: #FFFFFF; color: #FFFFFF; }
+
+.sheet-note-special--clear {
+    border-color: rgba(255, 106, 85, 0.5);
+    color: #FF6A55;
+}
+
+.sheet-note-special--clear:hover {
+    background: #FF6A55;
+    color: #FFFFFF;
+    border-color: #FF6A55;
+}
+
+/* SVG staff styling. */
+.sheet-staff__line { stroke: rgba(255,255,255,0.45); stroke-width: 1; }
+.sheet-staff__ledger { stroke: rgba(255,255,255,0.45); stroke-width: 1; }
+.sheet-staff__clef {
+    fill: #FFFFFF;
+    font-family: 'Outfit', serif;
+    font-size: 28px;
+    font-weight: 700;
+}
+.sheet-staff__note { fill: #6AA9F0; }
+.sheet-staff__rest {
+    fill: rgba(255,255,255,0.5);
+    font-family: 'Outfit', serif;
+    font-size: 16px;
+    font-weight: 700;
+}
+.sheet-staff__stem { stroke: #6AA9F0; stroke-width: 1.4; }
+.sheet-staff__signature {
+    fill: #FFC400;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+}
+

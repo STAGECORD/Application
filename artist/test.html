@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Artist Test</title>
+    <style>
+        body { background: #242424; color: white; font-family: sans-serif; margin: 0; padding: 40px; }
+        .box { background: #000; border: 1px solid #797979; border-radius: 28px; padding: 40px; height: 300px; }
+        .test-svg { width: 36px; height: 36px; }
+    </style>
+</head>
+<body>
+    <h1>Artist Test (inline CSS)</h1>
+    <p>If you see this with a dark background and a small camera icon below, inline CSS works.</p>
+    <svg class="test-svg" viewBox="0 0 24 24" fill="none">
+        <path d="M9 3L7.5 5H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.5L15 3H9z" stroke="white" stroke-width="2"/>
+        <circle cx="12" cy="13" r="4" stroke="white" stroke-width="2"/>
+    </svg>
+    <div class="box">
+        <h2>Box content</h2>
+        <p>External CSS test:</p>
+        <link rel="stylesheet" href="../css/main.css">
+    </div>
+</body>
+</html>

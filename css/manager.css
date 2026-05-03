@@ -1,0 +1,153 @@
+/* =====================================================
+   Manager / Label dashboard
+   Artist roster + team management + activity log.
+   ===================================================== */
+
+/* Roster table */
+.manager-roster {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.manager-roster__row {
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 0.9fr) minmax(0, 0.9fr) auto;
+    gap: 16px;
+    align-items: center;
+    padding: 14px 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+}
+
+.manager-roster__row--head {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.manager-roster__row:last-child { border-bottom: 0; }
+
+.manager-roster__avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: #1a1a1a;
+    background-size: cover;
+    background-position: center;
+}
+
+.manager-roster__name {
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 2px;
+}
+
+.manager-roster__sub {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.manager-roster__contract,
+.manager-roster__assigned {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.manager-roster__contract strong,
+.manager-roster__assigned strong { color: #FFFFFF; font-weight: 700; }
+
+/* Team grid */
+.manager-team {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+}
+
+.manager-team__card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 16px 18px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+}
+
+.manager-team__head {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.manager-team__avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: #1a1a1a;
+    background-size: cover;
+    background-position: center;
+    flex-shrink: 0;
+}
+
+.manager-team__name {
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 2px;
+}
+
+.manager-team__role {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.manager-team__assigned {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 12px;
+}
+
+.manager-team__assigned strong { color: #FFFFFF; font-weight: 700; }
+
+.manager-team__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.manager-team__chip {
+    display: inline-block;
+    padding: 4px 9px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #FFFFFF;
+}
+
+@media (max-width: 1100px) {
+    .manager-roster__row {
+        grid-template-columns: 44px 1fr auto;
+        grid-template-areas:
+            "avatar name actions"
+            "avatar contract contract"
+            "avatar assigned assigned"
+            "avatar status status";
+    }
+    .manager-roster__avatar { grid-area: avatar; }
+    .manager-roster__name-cell { grid-area: name; }
+    .manager-roster__contract-cell { grid-area: contract; }
+    .manager-roster__assigned-cell { grid-area: assigned; }
+    .manager-roster__status-cell { grid-area: status; }
+    .manager-roster__actions-cell { grid-area: actions; }
+    .manager-roster__row--head { display: none; }
+}

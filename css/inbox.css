@@ -1,0 +1,137 @@
+/* ===========================================================================
+   Inbox page — conversation list + thread view
+   ===========================================================================
+   Extracted from inbox/index.html inline <style> block.
+*/
+
+        .inbox {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 18px;
+            min-height: 600px;
+        }
+        .inbox__list {
+            background: #000000;
+            border: 1px solid #797979;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .inbox__search {
+            padding: 12px 14px;
+            border-bottom: 1px solid #2a2a2a;
+        }
+        .inbox__search input {
+            width: 100%;
+            box-sizing: border-box;
+            background: #1a1a1a;
+            border: 1px solid #797979;
+            border-radius: 8px;
+            color: #FFFFFF;
+            padding: 8px 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 13px;
+        }
+        .inbox__threads { list-style: none; margin: 0; padding: 0; }
+        .inbox__thread {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 14px;
+            cursor: pointer;
+            border-bottom: 1px solid #2a2a2a;
+            transition: background 0.15s ease;
+        }
+        .inbox__thread:hover { background: rgba(255, 255, 255, 0.04); }
+        .inbox__thread.is-active { background: rgba(74, 144, 226, 0.1); border-left: 3px solid #4A90E2; padding-left: 11px; }
+        .inbox__thread-avatar { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; background-size: cover; background-position: center; }
+        .inbox__thread-main { flex: 1 1 auto; min-width: 0; }
+        .inbox__thread-name {
+            display: flex; justify-content: space-between; gap: 8px;
+            font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 13px; line-height: 1; text-transform: uppercase;
+            color: #FFFFFF; margin-bottom: 4px;
+        }
+        .inbox__thread-time { font-weight: 400; font-size: 11px; color: #B1B1B1; flex-shrink: 0; }
+        .inbox__thread-preview {
+            font-family: 'Outfit', sans-serif; font-weight: 400; font-size: 12px; line-height: 16px;
+            color: #B1B1B1; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+        }
+        .inbox__thread.is-unread .inbox__thread-preview { color: #FFFFFF; font-weight: 700; }
+        .inbox__thread-dot { width: 8px; height: 8px; border-radius: 50%; background: #4A90E2; flex-shrink: 0; align-self: center; }
+
+        .inbox__view {
+            display: flex;
+            flex-direction: column;
+            background: #000000;
+            border: 1px solid #797979;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .inbox__view-header {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px 18px; border-bottom: 1px solid #2a2a2a;
+        }
+        .inbox__view-avatar { width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0; background-size: cover; background-position: center; }
+        .inbox__view-name {
+            font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 16px; line-height: 1; text-transform: uppercase; color: #FFFFFF;
+        }
+        .inbox__view-meta { font-family: 'Outfit', sans-serif; font-weight: 400; font-size: 12px; color: #B1B1B1; margin-top: 4px; }
+
+        .inbox__messages {
+            flex: 1 1 auto;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+        }
+        .msg { max-width: 70%; padding: 10px 14px; border-radius: 14px;
+            font-family: 'Outfit', sans-serif; font-size: 13px; line-height: 18px; color: #FFFFFF; }
+        .msg--in  { background: #1a1a1a; border: 1px solid #2a2a2a; align-self: flex-start; border-bottom-left-radius: 4px; }
+        .msg--out { background: #4A90E2; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .msg__time { display: block; margin-top: 4px; font-size: 10px; color: #B1B1B1; text-transform: uppercase; letter-spacing: 0.4px; }
+        .msg--out .msg__time { color: rgba(255, 255, 255, 0.75); }
+        .msg__status {
+            display: block;
+            margin-top: 2px;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        /* Typing indicator — three pulsing dots */
+        .msg-typing { padding: 14px 18px; }
+        .msg-typing__dots { display: inline-flex; gap: 4px; }
+        .msg-typing__dots span {
+            width: 6px;
+            height: 6px;
+            background: #B1B1B1;
+            border-radius: 50%;
+            animation: typingPulse 1.2s ease-in-out infinite;
+        }
+        .msg-typing__dots span:nth-child(2) { animation-delay: 0.2s; }
+        .msg-typing__dots span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typingPulse {
+            0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+            30% { opacity: 1; transform: translateY(-3px); }
+        }
+
+        .inbox__composer {
+            display: flex;
+            gap: 10px;
+            padding: 14px 18px;
+            border-top: 1px solid #2a2a2a;
+        }
+        .inbox__composer input {
+            flex: 1 1 auto;
+            background: #1a1a1a; border: 1px solid #797979; border-radius: 10px; color: #FFFFFF;
+            padding: 10px 14px; font-family: 'Outfit', sans-serif; font-size: 13px;
+        }
+        .inbox__composer button {
+            background: #FFFFFF; color: #000000; border: none; border-radius: 8px; padding: 10px 16px;
+            font: 700 12px/1 'Outfit', sans-serif; text-transform: uppercase; cursor: pointer;
+        }
+
+        @media (max-width: 900px) {
+            .inbox { grid-template-columns: 1fr; }
+        }

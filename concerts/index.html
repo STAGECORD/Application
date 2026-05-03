@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAGECORD - Concerts</title>
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/logo.css">
+    <link rel="stylesheet" href="../css/topbar.css">
+    <link rel="stylesheet" href="../css/concerts.css">
+    <link rel="stylesheet" href="../css/pitch-modals.css">
+    <link rel="stylesheet" href="../css/venue-map.css">
+</head>
+<body>
+    <aside class="sidebar" data-sidebar></aside>
+
+    <header class="topbar">
+        <div class="logo-container">
+            <a href="../index.html" class="logo-link">
+                <h1 class="logo">
+                    <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
+                </h1>
+            </a>
+        </div>
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Search Artists, Concerts, Venues, Friends and much more" aria-label="Search"/>
+            <svg class="search-icon" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/>
+                <path d="M18 18L24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <button type="button" class="help-button" aria-label="Help" aria-pressed="false" data-help="Hjælpeknap.">
+            <span class="help-mark">?</span>
+        </button>
+    </header>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <header class="concerts-header">
+                <h1 class="concerts-header__heading">Concerts</h1>
+                <p class="concerts-header__subtitle">Your tickets, online concert passes and the shows you've been to. Convert physical tickets you can't use to online viewer passes — or list them for resale at face value.</p>
+
+                <nav class="concerts-tabs" role="tablist" aria-label="Filter concerts">
+                    <button type="button" class="concerts-tab is-active" role="tab">All<span class="concerts-tab__badge">8</span></button>
+                    <button type="button" class="concerts-tab" role="tab">Upcoming<span class="concerts-tab__badge">3</span></button>
+                    <button type="button" class="concerts-tab" role="tab">Online passes<span class="concerts-tab__badge">2</span></button>
+                    <button type="button" class="concerts-tab" role="tab">Past shows<span class="concerts-tab__badge">3</span></button>
+                </nav>
+            </header>
+
+            <!-- ============ Upcoming ============ -->
+            <section class="concerts-section">
+                <h2 class="concerts-section__heading">Upcoming</h2>
+                <div class="concerts-list">
+
+                    <article class="concert-ticket" data-help="Billet til kommende koncert. Klik 'View ticket' for at se QR-koden, eller konverter til online pass hvis du ikke kan komme.">
+                        <div class="concert-ticket__poster" style="background: url('../assets/images/artists/jokesmith-johnson-cover.png') center/cover;"></div>
+                        <div class="concert-ticket__main">
+                            <span class="concert-ticket__type concert-ticket__type--physical">Physical ticket · Row B · seat 14</span>
+                            <h3 class="concert-ticket__title">Jokesmith Johnson — Jokes On Me Tour</h3>
+                            <p class="concert-ticket__byline">VEGA Hovedscenen, Copenhagen</p>
+                            <div class="concert-ticket__meta">
+                                <span><strong>14 Aug 2026</strong> · Doors 19:00 · Show 20:00</span>
+                                <span>Paid <strong>450 DKK</strong></span>
+                                <span>+3 in your <strong>Brooklyn Crew</strong> entourage</span>
+                            </div>
+                        </div>
+                        <div class="concert-ticket__side">
+                            <div class="concert-ticket__qr" aria-hidden="true">QR</div>
+                            <button type="button" class="concert-ticket__btn concert-ticket__btn--primary">View ticket</button>
+                            <button type="button" class="concert-ticket__btn" data-open-venue-map="vega" data-help="Venue map: Åbner et interaktivt kort over VEGA der viser scener, food-trucks, exits, første-hjælp og dine venner i Brooklyn Crew entourage med farve-kodede positioner. Live-positioner opdateres mens I er på venuet.">Open venue map</button>
+                            <button type="button" class="concert-ticket__btn">Convert to online</button>
+                        </div>
+                    </article>
+
+                    <article class="concert-ticket">
+                        <div class="concert-ticket__poster" style="background: url('../assets/images/artists/jeremy-freedom-cover.png') center/cover;"></div>
+                        <div class="concert-ticket__main">
+                            <span class="concert-ticket__type concert-ticket__type--physical">Physical ticket · GA standing</span>
+                            <h3 class="concert-ticket__title">Jeremy Freedom — FREEDOM Tour</h3>
+                            <p class="concert-ticket__byline">Mercury Lounge, Brooklyn NYC</p>
+                            <div class="concert-ticket__meta">
+                                <span><strong>22 May 2026</strong> · Doors 18:30</span>
+                                <span>Paid <strong>385 DKK</strong></span>
+                            </div>
+                        </div>
+                        <div class="concert-ticket__side">
+                            <div class="concert-ticket__qr" aria-hidden="true">QR</div>
+                            <button type="button" class="concert-ticket__btn concert-ticket__btn--primary">View ticket</button>
+                            <button type="button" class="concert-ticket__btn">Resell at face value</button>
+                        </div>
+                    </article>
+
+                    <article class="concert-ticket">
+                        <div class="concert-ticket__poster" style="background: url('../assets/images/artists/lola-young-event.jpg') center/cover;"></div>
+                        <div class="concert-ticket__main">
+                            <span class="concert-ticket__type concert-ticket__type--physical">Physical ticket · GA standing</span>
+                            <h3 class="concert-ticket__title">Lola Young — solo show</h3>
+                            <p class="concert-ticket__byline">RUST, Copenhagen</p>
+                            <div class="concert-ticket__meta">
+                                <span><strong>6 Nov 2026</strong> · Doors 19:30 · Show 20:30</span>
+                                <span>Paid <strong>245 DKK</strong></span>
+                                <span>Bought via <strong>Comedy Connoisseurs</strong> entourage</span>
+                            </div>
+                        </div>
+                        <div class="concert-ticket__side">
+                            <div class="concert-ticket__qr" aria-hidden="true">QR</div>
+                            <button type="button" class="concert-ticket__btn concert-ticket__btn--primary">View ticket</button>
+                            <button type="button" class="concert-ticket__btn">Add to Apple Wallet</button>
+                        </div>
+                    </article>
+
+                </div>
+            </section>
+
+            <!-- ============ Online concert passes ============ -->
+            <section class="concerts-section">
+                <h2 class="concerts-section__heading">Online concert passes</h2>
+                <div class="concerts-list">
+
+                    <article class="concert-ticket">
+                        <div class="concert-ticket__poster" style="background: url('../assets/images/artists/jokesmith-johnson-cover.png') center/cover;"></div>
+                        <div class="concert-ticket__main">
+                            <span class="concert-ticket__type concert-ticket__type--online">● Online pass · streaming live now</span>
+                            <h3 class="concert-ticket__title">Late Cellar Set</h3>
+                            <p class="concert-ticket__byline">Jokesmith Johnson · RUST, Copenhagen</p>
+                            <div class="concert-ticket__meta">
+                                <span><strong>On stage now</strong> · 18 min in · ~32 min remaining</span>
+                                <span>Paid <strong>79 DKK</strong></span>
+                            </div>
+                        </div>
+                        <div class="concert-ticket__side">
+                            <a href="#" class="concert-ticket__live-link">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                                Watch live
+                            </a>
+                            <button type="button" class="concert-ticket__btn">Send to TV</button>
+                        </div>
+                    </article>
+
+                    <article class="concert-ticket">
+                        <div class="concert-ticket__poster" style="background: url('../assets/images/artists/kebu-event.jpg') center/cover;"></div>
+                        <div class="concert-ticket__main">
+                            <span class="concert-ticket__type concert-ticket__type--online">Online pass · live in 2h 15min</span>
+                            <h3 class="concert-ticket__title">KEBU — Nordic synthwave live</h3>
+                            <p class="concert-ticket__byline">KEBU · RUST, Copenhagen</p>
+                            <div class="concert-ticket__meta">
+                                <span><strong>Tonight 22:15</strong></span>
+                                <span>Paid <strong>79 DKK</strong></span>
+                            </div>
+                        </div>
+                        <div class="concert-ticket__side">
+                            <button type="button" class="concert-ticket__btn concert-ticket__btn--primary">Set reminder</button>
+                            <button type="button" class="concert-ticket__btn">Add to calendar</button>
+                        </div>
+                    </article>
+
+                </div>
+            </section>
+
+            <!-- ============ Past shows ============ -->
+            <section class="concerts-section">
+                <h2 class="concerts-section__heading">Past shows</h2>
+                <div class="concerts-list">
+
+                    <article class="concert-ticket concert-ticket--past">
+                        <div class="concert-ticket__poster" style="background: url('../assets/images/artists/lola-young-event.jpg') center/cover;"></div>
+                        <div class="concert-ticket__main">
+                            <span class="concert-ticket__type concert-ticket__type--past">Attended · physical</span>
+                            <h3 class="concert-ticket__title">Anchi Humifuku — Northern Lights live</h3>
+                            <p class="concert-ticket__byline">VEGA, Copenhagen</p>
+                            <div class="concert-ticket__meta">
+                                <span><strong>2 March 2026</strong></span>
+                                <span>Posted <strong>3 photos</strong></span>
+                                <span>Liked the encore <strong>Manhattan Rain</strong></span>
+                            </div>
+                        </div>
+                        <div class="concert-ticket__side">
+                            <button type="button" class="concert-ticket__btn">View setlist</button>
+                            <button type="button" class="concert-ticket__btn">Re-watch online</button>
+                        </div>
+                    </article>
+
+                    <article class="concert-ticket concert-ticket--past">
+                        <div class="concert-ticket__poster" style="background: url('../assets/images/artists/jokesmith-johnson-project-1.png') center/cover;"></div>
+                        <div class="concert-ticket__main">
+                            <span class="concert-ticket__type concert-ticket__type--past">Attended · physical</span>
+                            <h3 class="concert-ticket__title">Jokesmith Johnson — Apollo Theatre</h3>
+                            <p class="concert-ticket__byline">Apollo Theatre, London</p>
+                            <div class="concert-ticket__meta">
+                                <span><strong>2 November 2025</strong></span>
+                                <span>Travelled with <strong>Brooklyn Crew</strong></span>
+                            </div>
+                        </div>
+                        <div class="concert-ticket__side">
+                            <button type="button" class="concert-ticket__btn">View setlist</button>
+                            <button type="button" class="concert-ticket__btn">Re-watch online</button>
+                        </div>
+                    </article>
+
+                    <article class="concert-ticket concert-ticket--past">
+                        <div class="concert-ticket__poster" style="background: url('../assets/images/artists/rust-cover.png') center/cover;"></div>
+                        <div class="concert-ticket__main">
+                            <span class="concert-ticket__type concert-ticket__type--past">Watched · online pass</span>
+                            <h3 class="concert-ticket__title">Jeremy Freedom — Mercury Lounge night 1</h3>
+                            <p class="concert-ticket__byline">Mercury Lounge, Brooklyn NYC</p>
+                            <div class="concert-ticket__meta">
+                                <span><strong>4 September 2024</strong></span>
+                                <span>Paid <strong>119 DKK</strong> · online pass</span>
+                            </div>
+                        </div>
+                        <div class="concert-ticket__side">
+                            <button type="button" class="concert-ticket__btn">Re-watch online</button>
+                        </div>
+                    </article>
+
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- ===== Venue map + Friend finder modal ===== -->
+    <div class="release-modal-overlay" id="venueMapModal" data-venue-map-modal aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="release-modal release-modal--venue-map">
+            <header class="release-modal__header">
+                <div>
+                    <h2 class="release-modal__title" data-vm-title>Venue map</h2>
+                    <span class="venue-map__title-meta" data-vm-meta>VEGA · Jokes On Me Tour · 14 Aug</span>
+                </div>
+                <button type="button" class="release-modal__close" data-close-venue-map aria-label="Close" data-help="Luk venue map. Din position deles ikke længere når kortet er lukket.">&times;</button>
+            </header>
+
+            <!-- Toggles for what to show on the map -->
+            <div class="venue-map__controls" data-help="Map-kontroller: Toggle hvad der vises på kortet. Hide my location skjuler din position fra dine entourage-medlemmer; food trucks/toilets/first-aid kan tændes/slukkes for at fokusere på det vigtigste.">
+                <button type="button" class="venue-map__toggle is-on" data-vm-toggle="friends" data-help="Show friends: Vis dine entourage-medlemmer på kortet med farve-kodede dots. Slå fra hvis du vil fokusere på lokation."><span class="venue-map__toggle-dot"></span>Show friends</button>
+                <button type="button" class="venue-map__toggle is-on" data-vm-toggle="foodtrucks" data-help="Food trucks: Pink dots der markerer food-trucks. Klik for at se menu og åbningstider."><span class="venue-map__toggle-dot"></span>Food trucks</button>
+                <button type="button" class="venue-map__toggle is-on" data-vm-toggle="toilets" data-help="Toilets: Cyan dots der markerer toilet-faciliteter."><span class="venue-map__toggle-dot"></span>Toilets</button>
+                <button type="button" class="venue-map__toggle is-on" data-vm-toggle="firstaid" data-help="First-aid: Røde kors-ikoner for første-hjælp-stationer. Vist hele tiden — kan ikke slukkes ved nødstilfælde."><span class="venue-map__toggle-dot"></span>First-aid</button>
+                <button type="button" class="venue-map__toggle" data-vm-toggle="security" data-help="Security: Gule dots der viser security/staff-positioner. Normalt kun synligt for organisatorer; vises også for fans i nødstilfælde."><span class="venue-map__toggle-dot"></span>Security</button>
+                <button type="button" class="venue-map__toggle is-on" data-vm-toggle="tents" data-help="Tents: Cyan-stripet område der viser camping/tent-zonen. Marker dit eget telt for nemt at finde tilbage."><span class="venue-map__toggle-dot"></span>Tents</button>
+                <span style="flex:1 1 auto;"></span>
+                <button type="button" class="venue-map__toggle venue-map__toggle--invisible" data-vm-toggle="invisible" data-help="Hide my location: Når aktiveret, ses din position ikke af nogen i dine entourages — heller ikke staff. Brug hvis du vil have ro et øjeblik. Du kan stadig se andres positioner."><span class="venue-map__toggle-dot"></span>Hide my location</button>
+            </div>
+
+            <!-- Map canvas + roster side panel -->
+            <div class="venue-map__body">
+                <div class="venue-map__canvas-wrap">
+                    <svg class="venue-map__canvas show-friends show-foodtrucks show-toilets show-firstaid show-tents" data-vm-canvas viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"></svg>
+                </div>
+                <aside class="venue-map__roster" data-help="Entourage-roster: Liste af dine entourage-medlemmer på dette venue. Status viser om de er synlige (delt position) eller skjulte. Klik et navn for at zoome til deres position på kortet.">
+                    <h3 class="venue-map__roster-title">Your entourages here</h3>
+                    <div data-vm-roster></div>
+                </aside>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/core.js"></script>
+    <script src="../js/modes.js"></script>
+    <script src="../js/sidebar.js"></script>
+    <script src="../js/topbar-widgets.js"></script>
+    <script src="../js/stage-badge.js"></script>
+    <script src="../js/acting-as-service.js"></script>
+    <script src="../js/stage-cards.js"></script>
+    <script src="../js/stage-label.js"></script>
+    <script src="../js/stage-resources.js"></script>
+    <script src="../js/stage-economy.js"></script>
+    <script src="../js/settings.js"></script>
+    <script src="../js/activity-feed.js"></script>
+    <script src="../js/app.js"></script>
+</body>
+</html>

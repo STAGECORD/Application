@@ -1,0 +1,315 @@
+/* =====================================================
+   Shared dashboard styling for the role-specific home
+   pages — Manager, Sponsor, Media Licensor.
+   ===================================================== */
+
+.role-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 28px;
+    align-items: center;
+    background:
+        linear-gradient(135deg, rgba(56, 134, 252, 0.18) 0%, rgba(56, 134, 252, 0) 60%),
+        rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 22px;
+    padding: 28px 36px;
+    margin-bottom: 30px;
+}
+
+.role-header__main { min-width: 0; }
+
+.role-header__eyebrow {
+    display: inline-block;
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #FFD75A;
+    background: rgba(255, 215, 90, 0.14);
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-bottom: 12px;
+}
+
+.role-header__heading {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: clamp(28px, 3.2vw, 40px);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    color: #FFFFFF;
+    margin: 0 0 8px;
+}
+
+.role-header__subtitle {
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0 0 20px;
+    max-width: 620px;
+}
+
+.role-header__cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.role-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 20px;
+    border-radius: 999px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.role-cta--primary {
+    background: #FFFFFF;
+    color: #02040C;
+}
+
+.role-cta--primary:hover { background: #F0F0F0; transform: translateY(-1px); }
+
+.role-cta--ghost {
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #FFFFFF;
+}
+
+.role-cta--ghost:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: #FFFFFF;
+}
+
+.role-cta svg { width: 16px; height: 16px; }
+
+/* KPI tiles in the header right column */
+.role-header__kpis {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.role-kpi {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 14px 16px;
+}
+
+.role-kpi__label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+    margin-bottom: 4px;
+}
+
+.role-kpi__value {
+    font-family: 'Outfit', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #FFFFFF;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+.role-kpi__delta {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    margin-top: 4px;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.role-kpi__delta--up   { color: #43C47A; }
+.role-kpi__delta--down { color: #FF6B82; }
+
+/* Section heading + view-all link, shared across roles */
+.role-section {
+    margin-bottom: 36px;
+}
+
+.role-section__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.role-section__heading {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    margin: 0;
+}
+
+.role-section__sub {
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.role-section__view-all {
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.role-section__view-all:hover { color: #FFFFFF; }
+
+/* Two-column section layout for activity-feed sidekicks */
+.role-grid--split {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    gap: 22px;
+    margin-bottom: 36px;
+}
+
+@media (max-width: 1100px) {
+    .role-header { grid-template-columns: 1fr; }
+    .role-grid--split { grid-template-columns: 1fr; }
+}
+
+/* ---------- Generic card row used by all three dashboards ---------- */
+.role-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 16px 18px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.role-card:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+/* ---------- Activity feed (used by Manager + Sponsor) ---------- */
+.role-activity {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 18px 20px;
+}
+
+.role-activity__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.role-activity__item {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 10px;
+    align-items: flex-start;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.85);
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.role-activity__list li:last-child .role-activity__item { border-bottom: 0; padding-bottom: 0; }
+
+.role-activity__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(111, 169, 255, 0.16);
+    color: #6FA9FF;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.role-activity__icon--positive { background: rgba(67, 196, 122, 0.18); color: #43C47A; }
+.role-activity__icon--warning  { background: rgba(255, 191, 0, 0.18); color: #FFD75A; }
+
+.role-activity__main strong { color: #FFFFFF; font-weight: 600; }
+
+.role-activity__time {
+    display: block;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.45);
+    margin-top: 3px;
+}
+
+/* ---------- Status pills used in roster / sponsorship rows ---------- */
+.role-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.role-pill--active   { background: rgba(67, 196, 122, 0.18); color: #43C47A; }
+.role-pill--pending  { background: rgba(255, 191, 0, 0.18); color: #FFD75A; }
+.role-pill--expiring { background: rgba(255, 107, 130, 0.18); color: #FF8E96; }
+.role-pill--draft    { background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.65); }
+
+/* ---------- Subtle btn used inside cards ---------- */
+.role-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 8px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.32);
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.role-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: #FFFFFF;
+}
+
+.role-btn--primary {
+    background: #FFFFFF;
+    color: #02040C;
+    border-color: #FFFFFF;
+}
+
+.role-btn--primary:hover { background: #F0F0F0; }

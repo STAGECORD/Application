@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAGECORD - Sales</title>
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/logo.css">
+    <link rel="stylesheet" href="../css/topbar.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/sales.css">
+    <link rel="stylesheet" href="../css/streaming-revenue.css">
+    <link rel="stylesheet" href="../css/accounting.css">
+</head>
+<body>
+    <aside class="sidebar" data-sidebar></aside>
+
+    <header class="topbar">
+        <div class="logo-container"><a href="../index.html" class="logo-link"><h1 class="logo"><span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span></h1></a></div>
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Search Artists, Concerts, Venues, Friends and much more" aria-label="Search"/>
+            <svg class="search-icon" viewBox="0 0 28 28" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/><path d="M18 18L24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <button type="button" class="help-button" aria-label="Help" aria-pressed="false" data-help="Help button: Click to enter help mode, then click any element with a help-cursor to see what it does. Press Esc or click the help button again to exit."><span class="help-mark">?</span></button>
+    </header>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <header class="page-header">
+                <h1 class="page-header__title">Sales</h1>
+                <div class="page-header__actions">
+                    <select class="page-btn page-btn--ghost" id="salesRange">
+                        <option value="7">Last 7 days</option>
+                        <option value="30" selected>Last 30 days</option>
+                        <option value="90">Last 90 days</option>
+                        <option value="365">This year</option>
+                    </select>
+                    <button type="button" class="page-btn">Export CSV</button>
+                </div>
+            </header>
+
+            <section class="revenue-hero" data-help="Total revenue: Summen af alle indtjeningskilder i den valgte periode.">
+                <div class="revenue-hero__main">
+                    <div class="revenue-hero__label" id="revLabel">Total revenue (30d)</div>
+                    <div class="revenue-hero__value" id="revValue">42,650 DKK</div>
+                    <div class="revenue-hero__delta" id="revDelta">▲ +18.3% vs previous 30 days</div>
+                </div>
+                <div class="revenue-hero__cta">
+                    <button type="button" class="page-btn" id="revWithdraw">Withdraw 38,200 DKK</button>
+                    <button type="button" class="page-btn page-btn--ghost">View statement</button>
+                </div>
+            </section>
+
+            <section class="dash-section">
+                <header class="dash-section__header"><h2 class="dash-section__title">Breakdown by source</h2></header>
+                <div class="breakdown" id="salesBreakdown">
+                    <div class="source-card" data-source="streaming"   data-color="#4A90E2"><div class="source-card__row"><span class="source-card__label">Streaming royalties</span><span class="source-card__pct">42%</span></div><div class="source-card__value">17,890 DKK</div><div class="source-card__bar"><div class="source-card__bar-fill" style="width: 42%; background: #4A90E2;"></div></div></div>
+                    <div class="source-card" data-source="tickets"     data-color="#00A911"><div class="source-card__row"><span class="source-card__label">Ticket sales</span><span class="source-card__pct">28%</span></div><div class="source-card__value">11,940 DKK</div><div class="source-card__bar"><div class="source-card__bar-fill" style="width: 28%; background: #00A911;"></div></div></div>
+                    <div class="source-card" data-source="sponsor"     data-color="#f39c12"><div class="source-card__row"><span class="source-card__label">Sponsorships</span><span class="source-card__pct">18%</span></div><div class="source-card__value">7,680 DKK</div><div class="source-card__bar"><div class="source-card__bar-fill" style="width: 18%; background: #f39c12;"></div></div></div>
+                    <div class="source-card" data-source="features"    data-color="#9b59b6"><div class="source-card__row"><span class="source-card__label">Feature purchases</span><span class="source-card__pct">8%</span></div><div class="source-card__value">3,410 DKK</div><div class="source-card__bar"><div class="source-card__bar-fill" style="width: 8%; background: #9b59b6;"></div></div></div>
+                    <div class="source-card" data-source="merch"       data-color="#fc466b"><div class="source-card__row"><span class="source-card__label">Merchandise</span><span class="source-card__pct">3%</span></div><div class="source-card__value">1,280 DKK</div><div class="source-card__bar"><div class="source-card__bar-fill" style="width: 3%; background: #fc466b;"></div></div></div>
+                    <div class="source-card" data-source="derivative"  data-color="#06beb6"><div class="source-card__row"><span class="source-card__label">Derivative royalties</span><span class="source-card__pct">1%</span></div><div class="source-card__value">450 DKK</div><div class="source-card__bar"><div class="source-card__bar-fill" style="width: 1%; background: #06beb6;"></div></div></div>
+                </div>
+            </section>
+
+            <!-- ============ Streaming revenue scenarios — 5 distribution models from PDF ============ -->
+            <section class="dash-section streaming-revenue" data-help="Streaming revenue model: Hvordan en abonnents $10/måned bliver fordelt mellem platform, dig som artist, og evt. tilbageført til lytteren — afhængigt af hvordan de bruger platformen. PDF'en beskrev 5 scenarier; alle 5 er visualiseret nedenfor med pengeflow og eksempel-matematik.">
+                <header class="dash-section__header">
+                    <h2 class="dash-section__title">How subscriber revenue flows</h2>
+                    <a href="#" class="dash-section__link">Full model →</a>
+                </header>
+                <p class="streaming-revenue__intro">Hver abonnent betaler <strong>$10/måned</strong>. Platformen tager 10% (svarende til Spotifys 30%-cut, men reduceret), så <strong>$9</strong> går til distribution. Hvordan de $9 fordeles afhænger af scenariet:</p>
+
+                <div class="streaming-revenue__cards">
+                    <!-- Scenario 1: Proportional split -->
+                    <article class="rev-scenario" style="--rev-color:#4A90E2;" data-help="Scenario 1 (proportional split): Standard-modellen. De $9 fordeles til artister i forhold til hvor mange streams hver artist har fået fra denne lytter i måneden. Ligesom Spotifys nuværende model — populære artister får mere, niche-artister får mindre per stream.">
+                        <span class="rev-scenario__num">1</span>
+                        <div class="rev-scenario__head">
+                            <span class="rev-scenario__tag">Active listener</span>
+                            <h3 class="rev-scenario__title">Proportional · per-stream split</h3>
+                        </div>
+                        <p class="rev-scenario__desc">$9 fordeles mellem alle artister lytteren har streamet, vægtet efter antal streams. Standard for aktive lyttere — samme model som Spotify.</p>
+                        <div class="rev-flow">
+                            <div class="rev-flow__total">Distribution of <span class="rev-flow__total-amount">$9.00</span></div>
+                            <div class="rev-flow__bar">
+                                <div class="rev-flow__seg" style="width:62.3%;background:#4A90E2;">62%</div>
+                                <div class="rev-flow__seg" style="width:24.9%;background:#6AA9F0;">25%</div>
+                                <div class="rev-flow__seg" style="width:9.4%;background:#9DC4F5;"></div>
+                                <div class="rev-flow__seg" style="width:3.1%;background:#C4DCF7;"></div>
+                            </div>
+                            <div class="rev-flow__legend">
+                                <div class="rev-flow__legend-row"><span class="rev-flow__legend-dot" style="background:#4A90E2;"></span><span class="rev-flow__legend-name">Pop Artist (C) · 300 streams</span><span class="rev-flow__legend-amount">$5.61</span></div>
+                                <div class="rev-flow__legend-row"><span class="rev-flow__legend-dot" style="background:#6AA9F0;"></span><span class="rev-flow__legend-name">Pop Artist (D) · 120 streams</span><span class="rev-flow__legend-amount">$2.24</span></div>
+                                <div class="rev-flow__legend-row"><span class="rev-flow__legend-dot" style="background:#9DC4F5;"></span><span class="rev-flow__legend-name">Pop Artist (B) · 45 streams</span><span class="rev-flow__legend-amount">$0.84</span></div>
+                                <div class="rev-flow__legend-row"><span class="rev-flow__legend-dot" style="background:#C4DCF7;"></span><span class="rev-flow__legend-name">Pop Artist (A) + (E) · 16 streams</span><span class="rev-flow__legend-amount">$0.31</span></div>
+                            </div>
+                        </div>
+                        <div class="rev-scenario__example" data-help="Math: 481 streams totalt → $9 / 481 = $0.0187 pr stream. Pop er konkurrence-tungt så raten er lav.">
+                            <strong>481 streams</strong> · $9 / 481 = <strong>$0.0187</strong>/stream
+                        </div>
+                    </article>
+
+                    <!-- Scenario 2: Niche genre boost -->
+                    <article class="rev-scenario" style="--rev-color:#A370F0;" data-help="Scenario 2 (niche genre): Samme proportional split, men i mindre konkurrenceintensive genrer. Når lytteren primært streamer fx Hip Hop og samlede streams er færre, bliver beløbet pr. stream højere — niche-artister tjener mere per lytning.">
+                        <span class="rev-scenario__num">2</span>
+                        <div class="rev-scenario__head">
+                            <span class="rev-scenario__tag" style="--rev-color:#A370F0;">Niche listener</span>
+                            <h3 class="rev-scenario__title">Higher per-stream in niche genres</h3>
+                        </div>
+                        <p class="rev-scenario__desc">Samme proportional model, men når lytteren bruger mest tid på en niche-genre, er stream-puljen mindre — og pr-stream-raten højere. Hjælper niche-artister med at konkurrere.</p>
+                        <div class="rev-flow">
+                            <div class="rev-flow__total">Distribution of <span class="rev-flow__total-amount">$9.00</span></div>
+                            <div class="rev-flow__bar">
+                                <div class="rev-flow__seg" style="width:100%;background:#A370F0;">100%</div>
+                            </div>
+                            <div class="rev-flow__legend">
+                                <div class="rev-flow__legend-row"><span class="rev-flow__legend-dot" style="background:#A370F0;"></span><span class="rev-flow__legend-name">Hip Hop Artist (F) · 250 streams</span><span class="rev-flow__legend-amount">$9.00</span></div>
+                            </div>
+                        </div>
+                        <div class="rev-scenario__example" data-help="Math: 250 streams totalt i Hip Hop niche → $9 / 250 = $0.036 pr stream. Næsten dobbelt så meget per stream som Pop.">
+                            <strong>250 streams</strong> · $9 / 250 = <strong>$0.036</strong>/stream
+                        </div>
+                    </article>
+
+                    <!-- Scenario 3: Inactive listener — top-10 split -->
+                    <article class="rev-scenario" style="--rev-color:#FFC400;" data-help="Scenario 3 (inactive top-10): Lytteren har ikke streamet i 3 måneder men er stadig abonnent. De $9 fordeles ligeligt mellem deres top 10 mest-streamede artister fra de seneste 3 måneder, så ikke aktive lyttere stadig støtter favorit-artister.">
+                        <span class="rev-scenario__num">3</span>
+                        <div class="rev-scenario__head">
+                            <span class="rev-scenario__tag" style="--rev-color:#FFC400;">Inactive · 3 mo</span>
+                            <h3 class="rev-scenario__title">Top-10 equal split</h3>
+                        </div>
+                        <p class="rev-scenario__desc">Lytter har ikke streamet i 3 måneder. $9 fordeles ligeligt mellem deres top 10 artister fra de sidste 3 aktive måneder — favoritter belønnes selv ved pause.</p>
+                        <div class="rev-flow">
+                            <div class="rev-flow__total">Distribution of <span class="rev-flow__total-amount">$9.00</span></div>
+                            <div class="rev-flow__bar">
+                                <div class="rev-flow__seg" style="width:10%;background:#FFC400;">10%</div>
+                                <div class="rev-flow__seg" style="width:10%;background:#FFD24F;">10%</div>
+                                <div class="rev-flow__seg" style="width:10%;background:#FFE066;">10%</div>
+                                <div class="rev-flow__seg" style="width:10%;background:#FFE799;"></div>
+                                <div class="rev-flow__seg" style="width:10%;background:#FFEDB3;"></div>
+                                <div class="rev-flow__seg" style="width:10%;background:#FFF1C7;"></div>
+                                <div class="rev-flow__seg" style="width:10%;background:#FFF6DC;"></div>
+                                <div class="rev-flow__seg" style="width:10%;background:#FFFAEC;"></div>
+                                <div class="rev-flow__seg" style="width:10%;background:#FFFCF4;"></div>
+                                <div class="rev-flow__seg" style="width:10%;background:#FFFEFB;"></div>
+                            </div>
+                            <div class="rev-flow__legend">
+                                <div class="rev-flow__legend-row"><span class="rev-flow__legend-dot" style="background:#FFC400;"></span><span class="rev-flow__legend-name">10 most-streamed artists (past 3 months)</span><span class="rev-flow__legend-amount">$0.90 each</span></div>
+                            </div>
+                        </div>
+                        <div class="rev-scenario__example" data-help="Math: $9 / 10 artister = $0.90 hver. Eksempler på top-10: Jazz Artist (A), Pop Artist (C), Funk Artist (E), Rock Artist (G), Drill Artist (I) osv.">
+                            <strong>$9 / 10 artists</strong> = <strong>$0.90</strong> each (Jazz, Pop, Funk, Rock, Drill, Rap, Indie, EDM, Hip Hop, Pop)
+                        </div>
+                    </article>
+
+                    <!-- Scenario 4: Subscriber refund -->
+                    <article class="rev-scenario" style="--rev-color:#43C47A;" data-help="Scenario 4 (subscriber refund): Lytter er inaktiv i 3 måneder og kan vælge en delvis refund i stedet for at lade pengene fordele. $4 går til platform til drift, $5 går tilbage til lytteren som platform-credit til kommende koncertbilletter eller features.">
+                        <span class="rev-scenario__num">4</span>
+                        <div class="rev-scenario__head">
+                            <span class="rev-scenario__tag" style="--rev-color:#43C47A;">Inactive opt-out</span>
+                            <h3 class="rev-scenario__title">50/50 platform-refund split</h3>
+                        </div>
+                        <p class="rev-scenario__desc">Inaktiv lytter vælger at få $5 tilbage som platform-credit (billetter, features). $4 går til platform-drift. Beholder lytteren som abonnent uden at presse kunstige streams.</p>
+                        <div class="rev-flow">
+                            <div class="rev-flow__total">Distribution of <span class="rev-flow__total-amount">$9.00</span></div>
+                            <div class="rev-flow__bar">
+                                <div class="rev-flow__seg" style="width:55.6%;background:#43C47A;">$5</div>
+                                <div class="rev-flow__seg" style="width:44.4%;background:#7DD3C0;">$4</div>
+                            </div>
+                            <div class="rev-flow__legend">
+                                <div class="rev-flow__legend-row"><span class="rev-flow__legend-dot" style="background:#43C47A;"></span><span class="rev-flow__legend-name">Subscriber credit (tickets / features)</span><span class="rev-flow__legend-amount">$5.00</span></div>
+                                <div class="rev-flow__legend-row"><span class="rev-flow__legend-dot" style="background:#7DD3C0;"></span><span class="rev-flow__legend-name">Platform operations</span><span class="rev-flow__legend-amount">$4.00</span></div>
+                            </div>
+                        </div>
+                        <div class="rev-scenario__example" data-help="Bemærk: $0 går til artister i denne måned. Kun aktive lyttere genererer artist-royalties. Refund-credit kan ikke trækkes ud — kun bruges på platformen.">
+                            <strong>$0 to artists</strong> · refund expires after 6 months unused
+                        </div>
+                    </article>
+
+                    <!-- Scenario 5: Upcoming artist sponsorship -->
+                    <article class="rev-scenario" style="--rev-color:#FF6A55;" data-help="Scenario 5 (sponsor upcoming): Lytter vælger frivilligt at sende 33% af deres månedlige $9 ($3) til upcoming/emerging artister som sponsorat for kommende EP/album. Resten ($6) fordeles via standard proportional model. En måde for lyttere at støtte næste generation.">
+                        <span class="rev-scenario__num">5</span>
+                        <div class="rev-scenario__head">
+                            <span class="rev-scenario__tag" style="--rev-color:#FF6A55;">Sponsor mode</span>
+                            <h3 class="rev-scenario__title">33% to upcoming artists</h3>
+                        </div>
+                        <p class="rev-scenario__desc">Lytter opt-in: $3 (33%) går til 'upcoming artist'-puljen som sponsorat for kommende EPs/albums. De øvrige $6 fordeles via standard proportional model.</p>
+                        <div class="rev-flow">
+                            <div class="rev-flow__total">Distribution of <span class="rev-flow__total-amount">$9.00</span></div>
+                            <div class="rev-flow__bar">
+                                <div class="rev-flow__seg" style="width:66.7%;background:#FF6A55;">$6 normal</div>
+                                <div class="rev-flow__seg" style="width:33.3%;background:#FFB547;">$3 sponsor</div>
+                            </div>
+                            <div class="rev-flow__legend">
+                                <div class="rev-flow__legend-row"><span class="rev-flow__legend-dot" style="background:#FF6A55;"></span><span class="rev-flow__legend-name">Streamed artists (proportional)</span><span class="rev-flow__legend-amount">$6.00</span></div>
+                                <div class="rev-flow__legend-row"><span class="rev-flow__legend-dot" style="background:#FFB547;"></span><span class="rev-flow__legend-name">Upcoming-artist pool</span><span class="rev-flow__legend-amount">$3.00</span></div>
+                            </div>
+                        </div>
+                        <div class="rev-scenario__example" data-help="Sponsor-pulje fordeles til artister med &lt; 10K månedlige lyttere som har opslået en EP/album-kampagne. Hver sponsoreret artist får udbetalingen øremærket til produktion + release-omkostninger.">
+                            <strong>$6 normal split</strong> + <strong>$3</strong> to upcoming artists with active EP campaigns
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- ============ PRO connections — KODA / Performex / Gramex auto-import ============ -->
+            <section class="dash-section" data-help="PRO connections: Forbind dine danske rettigheds-organisationer (KODA, Performex, Gramex) så royalties auto-importeres til Sales-siden hver måned. Du kan koble fra/til når som helst. Hvis du står som forfatter eller medvirkende på en sang får du betaling direkte fra organisationen — STAGECORD aggregerer beløbet ind i dine totaler.">
+                <header class="dash-section__header">
+                    <h2 class="dash-section__title">PRO connections · Royalty auto-import</h2>
+                    <a href="#" class="dash-section__link">Manage all →</a>
+                </header>
+                <p class="section-intro">Forbind dine rettigheds-organisationer en gang — STAGECORD henter dine royalties automatisk månedligt og lægger dem ind i din samlede indtjening.</p>
+
+                <div class="pro-connections">
+                    <article class="pro-card" style="--pro-color:#0E5C2F;" data-help="KODA: Komponist- og tekstforfatter-foreningen. Indsamler royalties for offentlig fremførelse (radio, livestream, koncert) og lader STAGECORD auto-importere månedligt. Forbundet siden: Mar 2024.">
+                        <header class="pro-card__head">
+                            <span class="pro-card__logo" style="background:#0E5C2F;">KO</span>
+                            <div class="pro-card__main">
+                                <div class="pro-card__name">KODA</div>
+                                <div class="pro-card__type">Composers &amp; songwriters</div>
+                            </div>
+                            <span class="pro-card__status pro-card__status--connected">Connected</span>
+                        </header>
+                        <div class="pro-card__stats">
+                            <div class="pro-card__stat" data-help="Pending payout: Royalties optjent men endnu ikke udbetalt. KODA udbetaler hver 3. måned.">
+                                <span class="pro-card__stat-label">Pending</span>
+                                <span class="pro-card__stat-value">8,420 DKK</span>
+                            </div>
+                            <div class="pro-card__stat" data-help="YTD: Sammenlagt udbetalt fra KODA i indeværende år. Bidrager direkte til skattepligtig indkomst.">
+                                <span class="pro-card__stat-label">Year to date</span>
+                                <span class="pro-card__stat-value">42,180 DKK</span>
+                            </div>
+                        </div>
+                        <div class="pro-card__sync" data-help="Sync-status: Hvornår sidste auto-import skete og hvornår næste sker. Manuelt klik 'Sync now' kan trigger en out-of-cycle import hvis nyt er klar.">
+                            <span>Last synced <strong>2 days ago</strong> · next 1 Jun</span>
+                            <button type="button" class="pro-card__btn">Sync now</button>
+                        </div>
+                    </article>
+
+                    <article class="pro-card" style="--pro-color:#7DD3C0;" data-help="Performex: PRO for udøvende kunstnere (sang, instrument). Indsamler royalties når dine optagelser bliver spillet i radio, restaurant, butikker. Auto-importeres månedligt.">
+                        <header class="pro-card__head">
+                            <span class="pro-card__logo" style="background:#7DD3C0;color:#0a1f1a;">PX</span>
+                            <div class="pro-card__main">
+                                <div class="pro-card__name">Performex</div>
+                                <div class="pro-card__type">Performing artists</div>
+                            </div>
+                            <span class="pro-card__status pro-card__status--syncing">Syncing</span>
+                        </header>
+                        <div class="pro-card__stats">
+                            <div class="pro-card__stat" data-help="Pending: Royalties optjent men endnu ikke udbetalt. Performex udbetaler 2× årligt.">
+                                <span class="pro-card__stat-label">Pending</span>
+                                <span class="pro-card__stat-value">3,140 DKK</span>
+                            </div>
+                            <div class="pro-card__stat" data-help="YTD-udbetaling fra Performex.">
+                                <span class="pro-card__stat-label">Year to date</span>
+                                <span class="pro-card__stat-value">12,890 DKK</span>
+                            </div>
+                        </div>
+                        <div class="pro-card__sync">
+                            <span>Sync in progress · 18 of 22 entries imported</span>
+                            <button type="button" class="pro-card__btn">View detail</button>
+                        </div>
+                    </article>
+
+                    <article class="pro-card" style="--pro-color:#43C47A;" data-help="Gramex: PRO for fonogramrettigheder (lydoptagelser). Indsamler royalties for offentlig brug af optagelser. Endnu ikke forbundet — klik Connect for at logge ind med Gramex-NemID.">
+                        <header class="pro-card__head">
+                            <span class="pro-card__logo" style="background:#43C47A;color:#02040C;">GX</span>
+                            <div class="pro-card__main">
+                                <div class="pro-card__name">Gramex</div>
+                                <div class="pro-card__type">Phonogram rights</div>
+                            </div>
+                            <span class="pro-card__status pro-card__status--disconnected">Not connected</span>
+                        </header>
+                        <div class="pro-card__stats">
+                            <div class="pro-card__stat" data-help="Estimat: Beregnet ud fra dine streams og hvor mange af dem der ville udløse Gramex-royalty. Faktisk udbetaling kan være mere eller mindre.">
+                                <span class="pro-card__stat-label">Estimated unclaimed</span>
+                                <span class="pro-card__stat-value">~6,200 DKK</span>
+                            </div>
+                            <div class="pro-card__stat">
+                                <span class="pro-card__stat-label">Last 12 months</span>
+                                <span class="pro-card__stat-value">—</span>
+                            </div>
+                        </div>
+                        <div class="pro-card__sync">
+                            <span>Auto-import unlocks the unclaimed pool</span>
+                            <button type="button" class="pro-card__btn pro-card__btn--connect" data-help="Connect Gramex: Logger dig ind via NemID/MitID og auto-importerer alle dine royalties månedligt. Kan kobles fra når som helst.">Connect</button>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- ============ Tax-ready accounting — categorized for year-end ============ -->
+            <section class="dash-section" data-help="Tax-ready accounting: Alle indtægter (royalties, billet-salg, sponsorater, licensing) bundles automatisk i de rette skatte-kategorier (B-skat, A-skat, moms, hobby). Eksporterbart som SKAT-XML eller PDF til skatteopgørelsen.">
+                <header class="dash-section__header">
+                    <h2 class="dash-section__title">Tax-ready accounting</h2>
+                    <span class="tax-section__period">Period: <strong>YTD 2026</strong> · DK · Selvstændig</span>
+                </header>
+
+                <div class="tax-alert tax-alert--warning" data-help="Moms-tærskel: Når din omsætning passerer 50.000 DKK på 12 måneder skal du momsregistreres. STAGECORD beregner det baseret på dine salg på platformen + manuelt indtastede beløb.">
+                    <span class="tax-alert__icon">⚠</span>
+                    <div>
+                        <strong>Du nærmer dig moms-tærsklen.</strong> Din rullende 12-måneders omsætning er <strong>47,830 DKK</strong> ud af de 50.000 DKK hvor moms-registrering bliver pligt. Forventet overskridelse: <strong>~3 uger</strong>. <a href="#" style="color:#FFC400;font-weight:700;">Forbered moms-registrering →</a>
+                    </div>
+                </div>
+
+                <div class="tax-buckets">
+                    <div class="tax-bucket" style="--bucket-color:#4A90E2;" data-help="Streaming royalties: Indtægter fra Spotify, Apple Music + STAGECORDs platform-puljer. Beskattes som B-indkomst (selvstændig erhvervsdrivende).">
+                        <div class="tax-bucket__cat">B-indkomst · Streaming royalties</div>
+                        <div class="tax-bucket__amount">17,890 DKK</div>
+                        <div class="tax-bucket__hint">42% af YTD income</div>
+                        <div class="tax-bucket__bar"><div class="tax-bucket__bar-fill" style="width:42%;"></div></div>
+                    </div>
+                    <div class="tax-bucket" style="--bucket-color:#00A911;" data-help="Ticket sales: Indtægter fra koncert-billetter og online concert passes. Skattes som B-indkomst. Modsat regulær løn skal du selv afregne moms hvis omsætningen overstiger 50K DKK.">
+                        <div class="tax-bucket__cat">B-indkomst · Ticket sales</div>
+                        <div class="tax-bucket__amount">11,940 DKK</div>
+                        <div class="tax-bucket__hint">28% · momspligtig over 50K</div>
+                        <div class="tax-bucket__bar"><div class="tax-bucket__bar-fill" style="width:28%;"></div></div>
+                    </div>
+                    <div class="tax-bucket" style="--bucket-color:#f39c12;" data-help="Sponsorships: Indtægter fra brand-sponsorater (video pre-roll, stage banner). Skattes som B-indkomst. Sponsorerne har typisk fradragsret så de kræver faktura med moms.">
+                        <div class="tax-bucket__cat">B-indkomst · Sponsorships</div>
+                        <div class="tax-bucket__amount">7,680 DKK</div>
+                        <div class="tax-bucket__hint">18% · invoicing required</div>
+                        <div class="tax-bucket__bar"><div class="tax-bucket__bar-fill" style="width:18%;"></div></div>
+                    </div>
+                    <div class="tax-bucket" style="--bucket-color:#9b59b6;" data-help="License income: Sync-licensing til film/TV/spil/reklame. Skattes som B-indkomst. Som regel én gang pr. kontrakt — ikke løbende.">
+                        <div class="tax-bucket__cat">B-indkomst · License income</div>
+                        <div class="tax-bucket__amount">3,410 DKK</div>
+                        <div class="tax-bucket__hint">8%</div>
+                        <div class="tax-bucket__bar"><div class="tax-bucket__bar-fill" style="width:8%;"></div></div>
+                    </div>
+                    <div class="tax-bucket" style="--bucket-color:#43C47A;" data-help="PRO royalties: Direkte udbetalinger fra KODA, Performex, Gramex. Trækker A-skat og AM-bidrag — du modtager nettobeløbet og PRO indberetter til SKAT på dine vegne.">
+                        <div class="tax-bucket__cat">A-indkomst · PRO royalties</div>
+                        <div class="tax-bucket__amount">450 DKK</div>
+                        <div class="tax-bucket__hint">A-skat already deducted</div>
+                        <div class="tax-bucket__bar"><div class="tax-bucket__bar-fill" style="width:1%;"></div></div>
+                    </div>
+                    <div class="tax-bucket" style="--bucket-color:#fc466b;" data-help="Merch &amp; physical sales: Indtægter fra merchandise. Skattes som B-indkomst. Køb af stof/tryk er fradragsberettiget — sørg for at gemme kvitteringer.">
+                        <div class="tax-bucket__cat">B-indkomst · Merch sales</div>
+                        <div class="tax-bucket__amount">1,280 DKK</div>
+                        <div class="tax-bucket__hint">3% · expenses deductible</div>
+                        <div class="tax-bucket__bar"><div class="tax-bucket__bar-fill" style="width:3%;"></div></div>
+                    </div>
+                </div>
+
+                <div class="tax-alert tax-alert--info" data-help="B-skat estimat: STAGECORD beregner forventet B-skat baseret på dine indtægter, dit fradrag, og din samlede A-indkomst i året. Indbetal kvartalsvis for at undgå rentetillæg.">
+                    <span class="tax-alert__icon">ℹ</span>
+                    <div>
+                        <strong>Estimeret B-skat (Q2)</strong>: Baseret på YTD indkomst + dit fradrag (60.000 DKK), forventer vi en B-skat på <strong>11,840 DKK</strong> for Q2. Næste indbetaling: <strong>20 Sep 2026</strong>. Du kan også vælge månedlige rater for at sprede betalingen.
+                    </div>
+                </div>
+
+                <div class="tax-actions">
+                    <button type="button" class="tax-action-btn" data-help="Eksporter alle indtægts-poster i SKAT's standard XML-format til årsopgørelsen. Inkluderer momsspecificering og kategori-tags.">Export SKAT XML</button>
+                    <button type="button" class="tax-action-btn" data-help="Eksporter en PDF-rapport med alle posteringer, kategoriseret og summeret. Egnet til revisor eller manuel skatteopgørelse.">Export PDF report</button>
+                    <button type="button" class="tax-action-btn" data-help="Sync med dit eksisterende bogføringssystem (e-conomic, Dinero, Billy). One-click eksport hvert kvartal.">Sync with e-conomic</button>
+                    <button type="button" class="tax-action-btn tax-action-btn--primary" data-help="Forbered din årsopgørelse: STAGECORD aggregerer alle årets indtægter i SKAT's TastSelv-felter og auto-udfylder hvor muligt. Endelig kontrol skal stadig gøres af dig.">Prepare year-end</button>
+                </div>
+            </section>
+
+            <section class="dash-section">
+                <header class="dash-section__header">
+                    <h2 class="dash-section__title">Recent transactions</h2>
+                    <a href="#" class="dash-section__link">View all →</a>
+                </header>
+                <div class="list-card">
+                    <div class="list-row">
+                        <div class="list-row__icon"><svg class="nav-icon" width="20" height="15" viewBox="0 0 20 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M19.3359 13.1524H0.195312C0.0878906 13.1524 0 13.2403 0 13.3478V14.7149C0 14.8224 0.0878906 14.9103 0.195312 14.9103H19.3359C19.4434 14.9103 19.5312 14.8224 19.5312 14.7149V13.3478C19.5312 13.2403 19.4434 13.1524 19.3359 13.1524ZM1.31104 10.0958L2.28027 11.0602C2.35596 11.1358 2.48047 11.1358 2.55615 11.0602L8.28613 5.34971L10.6689 7.7252C10.8157 7.87065 11.014 7.95225 11.2207 7.95225C11.4274 7.95225 11.6257 7.87065 11.7725 7.7252L18.2227 1.29941C18.2983 1.22373 18.2983 1.09922 18.2227 1.02354L17.2534 0.0567384C17.2167 0.0203902 17.1671 0 17.1155 0C17.0638 0 17.0142 0.0203902 16.9775 0.0567384L11.2231 5.79404L8.83789 3.41855C8.69109 3.2731 8.49279 3.1915 8.28613 3.1915C8.07948 3.1915 7.88118 3.2731 7.73437 3.41855L1.31104 9.81992C1.29277 9.83795 1.27827 9.85943 1.26838 9.88311C1.25848 9.90679 1.25338 9.9322 1.25338 9.95786C1.25338 9.98353 1.25848 10.0089 1.26838 10.0326C1.27827 10.0563 1.29277 10.0778 1.31104 10.0958Z" fill="currentColor"/>
+</svg></div>
+                        <div class="list-row__main"><div class="list-row__name">Spotify royalty payout</div><div class="list-row__meta">August streams · 3.2M plays</div></div>
+                        <span class="list-row__amount">+8,420 DKK</span>
+                        <span class="list-row__time">6h ago</span>
+                    </div>
+                    <div class="list-row">
+                        <div class="list-row__icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 8h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2zm0 0V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="2"/></svg></div>
+                        <div class="list-row__main"><div class="list-row__name">VEGA · Jokes On Me Tour</div><div class="list-row__meta">132 tickets sold</div></div>
+                        <span class="list-row__amount">+3,540 DKK</span>
+                        <span class="list-row__time">12h ago</span>
+                    </div>
+                    <div class="list-row">
+                        <div class="list-row__avatar" style="background: url('../assets/images/artists/mike-andersen-event.jpg') center/cover;"></div>
+                        <div class="list-row__main"><div class="list-row__name auto-name">Walmart ApS</div><div class="list-row__meta">Behind The Curtain · season 4 sponsorship</div></div>
+                        <span class="list-row__amount">+125,000 DKK</span>
+                        <span class="list-row__time">2d ago</span>
+                    </div>
+                    <div class="list-row">
+                        <div class="list-row__avatar" style="background: url('../assets/images/artists/placeholder-female-1.png') center/cover;"></div>
+                        <div class="list-row__main"><div class="list-row__name auto-name">Liva Mai</div><div class="list-row__meta">Commission payout — dance video for Jokes On Me</div></div>
+                        <span class="list-row__amount list-row__amount--neg">−8,500 DKK</span>
+                        <span class="list-row__time">3d ago</span>
+                    </div>
+                    <div class="list-row">
+                        <div class="list-row__icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+                        <div class="list-row__main"><div class="list-row__name">Open verse · Late Night Sessions</div><div class="list-row__meta">Sold to Anchi Humifuku</div></div>
+                        <span class="list-row__amount">+800 DKK</span>
+                        <span class="list-row__time">4d ago</span>
+                    </div>
+                    <div class="list-row">
+                        <div class="list-row__icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/></svg></div>
+                        <div class="list-row__main"><div class="list-row__name">Merch — Jokes On Me Tee</div><div class="list-row__meta">42 units · POD net margin</div></div>
+                        <span class="list-row__amount">+1,180 DKK</span>
+                        <span class="list-row__time">5d ago</span>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script src="../js/core.js"></script>
+    <script src="../js/modes.js"></script>
+    <script src="../js/sidebar.js"></script>
+    <script src="../js/topbar-widgets.js"></script>
+    <script src="../js/stage-badge.js"></script>
+    <script src="../js/acting-as-service.js"></script>
+    <script src="../js/stage-cards.js"></script>
+    <script src="../js/stage-label.js"></script>
+    <script src="../js/stage-resources.js"></script>
+    <script src="../js/stage-economy.js"></script>
+    <script src="../js/settings.js"></script>
+    <script src="../js/activity-feed.js"></script>
+    <script src="../js/app.js"></script>
+    <script>
+    // ============================================================
+    // Sales — date range filter updates totals and breakdown
+    // ============================================================
+    (function() {
+        // Pre-baked numbers per range. Each range carries: total, withdraw,
+        // delta vs prior period, and the per-source split with absolute DKK.
+        const RANGES = {
+            '7':   { label: 'Last 7 days',   total: 9840,    withdraw: 7600,   delta: '+5.1%',  sources: { streaming: [4100, 41], tickets: [2800, 28], sponsor: [1480, 15], features: [820, 8], merch: [410, 4], derivative: [230, 2] } },
+            '30':  { label: 'Last 30 days',  total: 42650,   withdraw: 38200,  delta: '+18.3%', sources: { streaming: [17890, 42], tickets: [11940, 28], sponsor: [7680, 18], features: [3410, 8], merch: [1280, 3], derivative: [450, 1] } },
+            '90':  { label: 'Last 90 days',  total: 132780,  withdraw: 124400, delta: '+22.4%', sources: { streaming: [55770, 42], tickets: [33490, 25], sponsor: [25400, 19], features: [10620, 8], merch: [5840, 4], derivative: [1660, 2] } },
+            '365': { label: 'This year',     total: 482400,  withdraw: 465100, delta: '+34.8%', sources: { streaming: [192960, 40], tickets: [125400, 26], sponsor: [101300, 21], features: [38600, 8], merch: [19300, 4], derivative: [4840, 1] } }
+        };
+
+        const select   = document.getElementById('salesRange');
+        const labelEl  = document.getElementById('revLabel');
+        const valueEl  = document.getElementById('revValue');
+        const deltaEl  = document.getElementById('revDelta');
+        const wdrawEl  = document.getElementById('revWithdraw');
+        const cards    = document.querySelectorAll('#salesBreakdown .source-card');
+
+        function fmt(n) { return n.toLocaleString('en-US') + ' DKK'; }
+
+        function rangeShortLabel(key) {
+            return ({ '7': '(7d)', '30': '(30d)', '90': '(90d)', '365': '(year)' })[key] || '';
+        }
+
+        function update(key) {
+            const r = RANGES[key];
+            if (!r) return;
+            labelEl.textContent = 'Total revenue ' + rangeShortLabel(key);
+            valueEl.textContent = fmt(r.total);
+            deltaEl.textContent = '▲ ' + r.delta + ' vs previous period';
+            wdrawEl.textContent = 'Withdraw ' + fmt(r.withdraw);
+
+            cards.forEach(function(card) {
+                const src = card.dataset.source;
+                const data = r.sources[src];
+                if (!data) return;
+                const [val, pct] = data;
+                card.querySelector('.source-card__value').textContent = fmt(val);
+                card.querySelector('.source-card__pct').textContent = pct + '%';
+                card.querySelector('.source-card__bar-fill').style.width = pct + '%';
+            });
+        }
+
+        if (select) {
+            select.addEventListener('change', function() { update(select.value); });
+        }
+
+        if (wdrawEl) {
+            wdrawEl.addEventListener('click', function() {
+                if (typeof helpActive !== 'undefined' && helpActive) return;
+                const key = select ? select.value : '30';
+                const r = RANGES[key];
+                wdrawEl.textContent = 'Withdrawing…';
+                wdrawEl.disabled = true;
+                setTimeout(function() {
+                    wdrawEl.textContent = 'Withdrawal sent ✓';
+                    setTimeout(function() {
+                        wdrawEl.disabled = false;
+                        wdrawEl.textContent = 'Withdraw ' + fmt(r.withdraw);
+                    }, 1800);
+                }, 700);
+            });
+        }
+    })();
+    </script>
+</body>
+</html>

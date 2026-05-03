@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAGECORD - Calendar</title>
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/logo.css">
+    <link rel="stylesheet" href="../css/topbar.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/calendar.css">
+</head>
+<body>
+    <aside class="sidebar" data-sidebar></aside>
+
+    <header class="topbar">
+        <div class="logo-container"><a href="../index.html" class="logo-link"><h1 class="logo"><span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span></h1></a></div>
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Search Artists, Concerts, Venues, Friends and much more" aria-label="Search"/>
+            <svg class="search-icon" viewBox="0 0 28 28" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/><path d="M18 18L24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <button type="button" class="help-button" aria-label="Help" aria-pressed="false" data-help="Help button: Click to enter help mode, then click any element with a help-cursor to see what it does. Press Esc or click the help button again to exit."><span class="help-mark">?</span></button>
+    </header>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <header class="page-header">
+                <h1 class="page-header__title">Calendar</h1>
+                <div class="page-header__actions">
+                    <button type="button" class="page-btn"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> New event</button>
+                    <button type="button" class="page-btn page-btn--ghost">Sync to iCal</button>
+                </div>
+            </header>
+
+            <div class="cal-grid">
+                <div class="cal-month" data-help="Månedsoversigt: Hver markeret dag har et event — farven indikerer typen (rød = koncert, blå = studie, grøn = release).">
+                    <header class="cal-month__header">
+                        <h2 class="cal-month__title">November 2024</h2>
+                        <div class="cal-month__nav">
+                            <button type="button" aria-label="Previous month"><svg viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+                            <button type="button" aria-label="Next month"><svg viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+                        </div>
+                    </header>
+
+                    <div class="cal-grid-days">
+                        <div class="cal-dow">Mon</div><div class="cal-dow">Tue</div><div class="cal-dow">Wed</div><div class="cal-dow">Thu</div><div class="cal-dow">Fri</div><div class="cal-dow">Sat</div><div class="cal-dow">Sun</div>
+
+                        <div class="cal-day cal-day--muted"><span class="cal-day__num">28</span></div>
+                        <div class="cal-day cal-day--muted"><span class="cal-day__num">29</span></div>
+                        <div class="cal-day cal-day--muted"><span class="cal-day__num">30</span></div>
+                        <div class="cal-day cal-day--muted"><span class="cal-day__num">31</span></div>
+                        <div class="cal-day"><span class="cal-day__num">1</span></div>
+                        <div class="cal-day"><span class="cal-day__num">2</span></div>
+                        <div class="cal-day cal-day--has-studio"><span class="cal-day__num">3</span><span class="cal-day__dots"><span class="cal-day__dot" style="background:#4A90E2;"></span></span></div>
+
+                        <div class="cal-day"><span class="cal-day__num">4</span></div>
+                        <div class="cal-day cal-day--has-studio"><span class="cal-day__num">5</span><span class="cal-day__dots"><span class="cal-day__dot" style="background:#4A90E2;"></span></span></div>
+                        <div class="cal-day"><span class="cal-day__num">6</span></div>
+                        <div class="cal-day cal-day--has-event"><span class="cal-day__num">7</span><span class="cal-day__dots"><span class="cal-day__dot" style="background:#AA0D0D;"></span></span></div>
+                        <div class="cal-day cal-day--has-event"><span class="cal-day__num">8</span><span class="cal-day__dots"><span class="cal-day__dot" style="background:#AA0D0D;"></span></span></div>
+                        <div class="cal-day cal-day--has-event"><span class="cal-day__num">9</span><span class="cal-day__dots"><span class="cal-day__dot" style="background:#AA0D0D;"></span></span></div>
+                        <div class="cal-day"><span class="cal-day__num">10</span></div>
+
+                        <div class="cal-day"><span class="cal-day__num">11</span></div>
+                        <div class="cal-day cal-day--has-studio"><span class="cal-day__num">12</span><span class="cal-day__dots"><span class="cal-day__dot" style="background:#4A90E2;"></span></span></div>
+                        <div class="cal-day"><span class="cal-day__num">13</span></div>
+                        <div class="cal-day"><span class="cal-day__num">14</span></div>
+                        <div class="cal-day cal-day--has-release"><span class="cal-day__num">15</span><span class="cal-day__dots"><span class="cal-day__dot" style="background:#00A911;"></span></span></div>
+                        <div class="cal-day"><span class="cal-day__num">16</span></div>
+                        <div class="cal-day"><span class="cal-day__num">17</span></div>
+
+                        <div class="cal-day cal-day--today"><span class="cal-day__num">18</span></div>
+                        <div class="cal-day cal-day--has-studio"><span class="cal-day__num">19</span><span class="cal-day__dots"><span class="cal-day__dot" style="background:#4A90E2;"></span></span></div>
+                        <div class="cal-day cal-day--has-studio"><span class="cal-day__num">20</span><span class="cal-day__dots"><span class="cal-day__dot" style="background:#4A90E2;"></span></span></div>
+                        <div class="cal-day cal-day--has-event"><span class="cal-day__num">21</span><span class="cal-day__dots"><span class="cal-day__dot" style="background:#AA0D0D;"></span></span></div>
+                        <div class="cal-day cal-day--has-event"><span class="cal-day__num">22</span><span class="cal-day__dots"><span class="cal-day__dot" style="background:#AA0D0D;"></span><span class="cal-day__dot" style="background:#00A911;"></span></span></div>
+                        <div class="cal-day"><span class="cal-day__num">23</span></div>
+                        <div class="cal-day"><span class="cal-day__num">24</span></div>
+
+                        <div class="cal-day"><span class="cal-day__num">25</span></div>
+                        <div class="cal-day cal-day--has-studio"><span class="cal-day__num">26</span><span class="cal-day__dots"><span class="cal-day__dot" style="background:#4A90E2;"></span></span></div>
+                        <div class="cal-day"><span class="cal-day__num">27</span></div>
+                        <div class="cal-day"><span class="cal-day__num">28</span></div>
+                        <div class="cal-day cal-day--has-event"><span class="cal-day__num">29</span><span class="cal-day__dots"><span class="cal-day__dot" style="background:#AA0D0D;"></span></span></div>
+                        <div class="cal-day cal-day--has-event"><span class="cal-day__num">30</span><span class="cal-day__dots"><span class="cal-day__dot" style="background:#AA0D0D;"></span></span></div>
+                        <div class="cal-day cal-day--muted"><span class="cal-day__num">1</span></div>
+                    </div>
+
+                    <div class="cal-legend">
+                        <span><span class="cal-legend__dot" style="background:#AA0D0D;"></span>Concert</span>
+                        <span><span class="cal-legend__dot" style="background:#4A90E2;"></span>Studio session</span>
+                        <span><span class="cal-legend__dot" style="background:#00A911;"></span>Release</span>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="cal-events__title">Upcoming</h2>
+
+                    <div class="cal-event" data-help="Studie-session med Lars Vognsen — track 4 mixing &amp; vocal redo.">
+                        <div class="cal-event__date"><span class="cal-event__day">19</span><span class="cal-event__month">Nov</span></div>
+                        <div class="cal-event__main">
+                            <div class="cal-event__title">Studio — Sun Studios</div>
+                            <div class="cal-event__meta">14:00 · Track 4 vocals + mix · with Lars Vognsen</div>
+                        </div>
+                    </div>
+
+                    <div class="cal-event">
+                        <div class="cal-event__date"><span class="cal-event__day">21</span><span class="cal-event__month">Nov</span></div>
+                        <div class="cal-event__main">
+                            <div class="cal-event__title">Concert — VEGA</div>
+                            <div class="cal-event__meta">20:00 · Jokes On Me Tour · 1,200 cap · sold out</div>
+                        </div>
+                    </div>
+
+                    <div class="cal-event">
+                        <div class="cal-event__date"><span class="cal-event__day">22</span><span class="cal-event__month">Nov</span></div>
+                        <div class="cal-event__main">
+                            <div class="cal-event__title">Release — "Late Night Sessions"</div>
+                            <div class="cal-event__meta">EP drops 00:00 CET · 5 tracks · feat. Maya Thompson</div>
+                        </div>
+                    </div>
+
+                    <div class="cal-event">
+                        <div class="cal-event__date"><span class="cal-event__day">29</span><span class="cal-event__month">Nov</span></div>
+                        <div class="cal-event__main">
+                            <div class="cal-event__title">Concert — Pumpehuset</div>
+                            <div class="cal-event__meta">20:30 · Jokes On Me Tour · with Anchi Humifuku</div>
+                        </div>
+                    </div>
+
+                    <div class="cal-event">
+                        <div class="cal-event__date"><span class="cal-event__day">3</span><span class="cal-event__month">Dec</span></div>
+                        <div class="cal-event__main">
+                            <div class="cal-event__title">Studio — Track 5 demo</div>
+                            <div class="cal-event__meta">10:00 · with Maya Thompson</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="../js/core.js"></script>
+    <script src="../js/modes.js"></script>
+    <script src="../js/sidebar.js"></script>
+    <script src="../js/topbar-widgets.js"></script>
+    <script src="../js/stage-badge.js"></script>
+    <script src="../js/acting-as-service.js"></script>
+    <script src="../js/stage-cards.js"></script>
+    <script src="../js/stage-label.js"></script>
+    <script src="../js/stage-resources.js"></script>
+    <script src="../js/stage-economy.js"></script>
+    <script src="../js/settings.js"></script>
+    <script src="../js/activity-feed.js"></script>
+    <script src="../js/app.js"></script>
+    <script>
+    // ============================================================
+    // Calendar — month navigation + day click → event panel
+    // ============================================================
+    (function() {
+        // Mock event data per ISO date (YYYY-MM-DD).
+        const EVENTS = {
+            '2024-11-03': [{ type:'studio', title:'Studio — demo session', meta:'10:00 · Sun Studios · solo' }],
+            '2024-11-05': [{ type:'studio', title:'Studio — vocal redo',   meta:'14:00 · Sun Studios · with Maya Thompson' }],
+            '2024-11-07': [{ type:'event',  title:'Concert — Pumpehuset',  meta:'20:30 · Jokes On Me Tour · with Anchi Humifuku' }],
+            '2024-11-08': [{ type:'event',  title:'Concert — Train',       meta:'21:00 · Aarhus · solo show' }],
+            '2024-11-09': [{ type:'event',  title:'Concert — Studenterhuset', meta:'21:00 · Aalborg · solo show' }],
+            '2024-11-12': [{ type:'studio', title:'Studio — track 5 demo', meta:'10:00 · Sun Studios · with Lars Vognsen' }],
+            '2024-11-15': [{ type:'release', title:'Release — single drop', meta:'00:00 CET · Northern Lights feat. Anchi Humifuku' }],
+            '2024-11-19': [{ type:'studio', title:'Studio — Sun Studios',  meta:'14:00 · Track 4 vocals + mix · with Lars Vognsen' }],
+            '2024-11-20': [{ type:'studio', title:'Studio — overdubs',     meta:'13:00 · Sun Studios · solo' }],
+            '2024-11-21': [{ type:'event',  title:'Concert — VEGA',        meta:'20:00 · Jokes On Me Tour · 1,200 cap · sold out' }],
+            '2024-11-22': [
+                { type:'event',   title:'Concert — VEGA night 2',     meta:'20:00 · Jokes On Me Tour · added show' },
+                { type:'release', title:'Release — "Late Night Sessions" EP', meta:'00:00 CET · 5 tracks · feat. Maya Thompson' }
+            ],
+            '2024-11-26': [{ type:'studio', title:'Studio — Track 6 demo', meta:'10:00 · with Tobias Krogh' }],
+            '2024-11-29': [{ type:'event',  title:'Concert — Pumpehuset',  meta:'20:30 · Jokes On Me Tour · with Anchi Humifuku' }],
+            '2024-11-30': [{ type:'event',  title:'Concert — Forum Horsens', meta:'20:00 · Jokes On Me Tour' }],
+
+            '2024-10-15': [{ type:'release', title:'Release — single drop', meta:'"Static In My Head" remix' }],
+            '2024-10-22': [{ type:'event',   title:'Concert — Roskilde Festival warm-up', meta:'19:00' }],
+            '2024-10-28': [{ type:'studio',  title:'Studio — pre-prod session', meta:'10:00 · with Maya Thompson' }],
+
+            '2024-12-03': [{ type:'studio', title:'Studio — Track 5 demo', meta:'10:00 · with Maya Thompson' }],
+            '2024-12-12': [{ type:'event',  title:'Concert — Berlin Astra',meta:'20:00 · European leg' }],
+            '2024-12-15': [{ type:'event',  title:'Concert — Hamburg Knust', meta:'20:00 · European leg' }],
+            '2024-12-20': [{ type:'release', title:'Release — Christmas single', meta:'00:00 CET · "Snow Falls Quietly" feat. Sara Holm' }],
+            '2024-12-31': [{ type:'event',  title:'NYE Show — Forum Copenhagen', meta:'21:00 · headline night with all collaborators' }]
+        };
+
+        const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        const DOW = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+        // Visible month state — start at November 2024 to match the original draft.
+        let viewYear  = 2024;
+        let viewMonth = 10; // 0-indexed (10 = November)
+
+        const titleEl = document.querySelector('.cal-month__title');
+        const grid    = document.querySelector('.cal-grid-days');
+        const upcomingEl = document.querySelector('.cal-events__title');
+        const upcomingContainer = upcomingEl ? upcomingEl.parentElement : null;
+        const navButtons = document.querySelectorAll('.cal-month__nav button');
+
+        function pad(n) { return n < 10 ? '0' + n : '' + n; }
+        function isoDate(y, m, d) { return y + '-' + pad(m + 1) + '-' + pad(d); }
+
+        function dayOfWeekMon(jsDay) {
+            // JS getDay(): 0 = Sun..6 = Sat. We want 0 = Mon..6 = Sun.
+            return (jsDay + 6) % 7;
+        }
+
+        function classForType(type) {
+            if (type === 'event')   return { day: 'cal-day--has-event',   color: '#AA0D0D' };
+            if (type === 'studio')  return { day: 'cal-day--has-studio',  color: '#4A90E2' };
+            if (type === 'release') return { day: 'cal-day--has-release', color: '#00A911' };
+            return { day: '', color: '#FFFFFF' };
+        }
+
+        function renderMonth() {
+            if (!titleEl || !grid) return;
+            titleEl.textContent = MONTH_NAMES[viewMonth] + ' ' + viewYear;
+
+            // Clear and rebuild grid
+            grid.innerHTML = '';
+            DOW.forEach(function(d) {
+                const dow = document.createElement('div');
+                dow.className = 'cal-dow';
+                dow.textContent = d;
+                grid.appendChild(dow);
+            });
+
+            const firstDay = new Date(viewYear, viewMonth, 1);
+            const startOffset = dayOfWeekMon(firstDay.getDay());
+            const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+            const prevMonthDays = new Date(viewYear, viewMonth, 0).getDate();
+            const today = new Date();
+
+            // Trailing days from previous month (muted)
+            for (let i = startOffset; i > 0; i--) {
+                const d = prevMonthDays - i + 1;
+                grid.appendChild(buildDay(d, true, null, null));
+            }
+            // Days in current month
+            for (let d = 1; d <= daysInMonth; d++) {
+                const iso = isoDate(viewYear, viewMonth, d);
+                const isToday = (today.getFullYear() === viewYear && today.getMonth() === viewMonth && today.getDate() === d);
+                grid.appendChild(buildDay(d, false, iso, isToday));
+            }
+            // Leading days from next month (muted) to fill last row
+            const totalCells = grid.children.length - 7; // minus DOW row
+            const trailing = (7 - (totalCells % 7)) % 7;
+            for (let i = 1; i <= trailing; i++) {
+                grid.appendChild(buildDay(i, true, null, null));
+            }
+
+            renderUpcoming();
+        }
+
+        function buildDay(num, muted, iso, isToday) {
+            const cell = document.createElement('div');
+            cell.className = 'cal-day' + (muted ? ' cal-day--muted' : '') + (isToday ? ' cal-day--today' : '');
+            const evs = (iso && EVENTS[iso]) || [];
+            if (evs.length) {
+                const types = {};
+                evs.forEach(function(e) { types[e.type] = true; });
+                if (types.event)   cell.classList.add('cal-day--has-event');
+                if (types.studio)  cell.classList.add('cal-day--has-studio');
+                if (types.release) cell.classList.add('cal-day--has-release');
+            }
+
+            const numEl = document.createElement('span');
+            numEl.className = 'cal-day__num';
+            numEl.textContent = num;
+            cell.appendChild(numEl);
+
+            if (evs.length) {
+                const dots = document.createElement('span');
+                dots.className = 'cal-day__dots';
+                evs.slice(0, 3).forEach(function(e) {
+                    const dot = document.createElement('span');
+                    dot.className = 'cal-day__dot';
+                    dot.style.background = classForType(e.type).color;
+                    dots.appendChild(dot);
+                });
+                cell.appendChild(dots);
+            }
+
+            if (!muted && iso) {
+                cell.dataset.iso = iso;
+                cell.addEventListener('click', function() { showDay(iso); });
+            }
+            return cell;
+        }
+
+        function renderUpcoming(filterIso) {
+            if (!upcomingContainer) return;
+            // Build list of upcoming events (>= today) from EVENTS, sorted by date.
+            const now = new Date();
+            const todayIso = isoDate(now.getFullYear(), now.getMonth(), now.getDate());
+
+            const entries = Object.keys(EVENTS).filter(function(iso) {
+                if (filterIso) return iso === filterIso;
+                return iso >= todayIso;
+            }).sort();
+
+            // Replace everything after the title with new event cards
+            // Remove existing cal-event children
+            Array.from(upcomingContainer.querySelectorAll('.cal-event')).forEach(function(el) { el.remove(); });
+
+            // Update title
+            upcomingEl.textContent = filterIso ? prettyDate(filterIso) : 'Upcoming';
+
+            entries.forEach(function(iso) {
+                EVENTS[iso].forEach(function(ev) {
+                    upcomingContainer.appendChild(buildEvent(iso, ev));
+                });
+            });
+
+            if (!entries.length) {
+                const empty = document.createElement('div');
+                empty.className = 'cal-event';
+                empty.style.opacity = '0.6';
+                empty.innerHTML = '<div class="cal-event__main"><div class="cal-event__title">No events</div><div class="cal-event__meta">Nothing scheduled.</div></div>';
+                upcomingContainer.appendChild(empty);
+            }
+        }
+
+        function buildEvent(iso, ev) {
+            const parts = iso.split('-');
+            const day = parseInt(parts[2], 10);
+            const monthName = MONTH_NAMES[parseInt(parts[1], 10) - 1].slice(0, 3);
+            const wrap = document.createElement('div');
+            wrap.className = 'cal-event';
+            wrap.innerHTML =
+                '<div class="cal-event__date"><span class="cal-event__day">' + day + '</span>' +
+                '<span class="cal-event__month">' + monthName + '</span></div>' +
+                '<div class="cal-event__main">' +
+                    '<div class="cal-event__title">' + ev.title + '</div>' +
+                    '<div class="cal-event__meta">' + ev.meta + '</div>' +
+                '</div>';
+            return wrap;
+        }
+
+        function prettyDate(iso) {
+            const parts = iso.split('-');
+            return MONTH_NAMES[parseInt(parts[1], 10) - 1] + ' ' + parseInt(parts[2], 10) + ', ' + parts[0];
+        }
+
+        function showDay(iso) {
+            renderUpcoming(iso);
+        }
+
+        // Wire up prev/next nav
+        if (navButtons.length >= 2) {
+            navButtons[0].addEventListener('click', function() {
+                viewMonth--;
+                if (viewMonth < 0) { viewMonth = 11; viewYear--; }
+                renderMonth();
+            });
+            navButtons[1].addEventListener('click', function() {
+                viewMonth++;
+                if (viewMonth > 11) { viewMonth = 0; viewYear++; }
+                renderMonth();
+            });
+        }
+
+        renderMonth();
+    })();
+    </script>
+</body>
+</html>

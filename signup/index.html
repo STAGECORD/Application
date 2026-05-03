@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAGECORD - Welcome</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/topbar.css">
+    <link rel="stylesheet" href="../css/signup.css">
+</head>
+<body class="signup-body">
+
+    <!-- Top bar with logo + help-cluster (hint + ? button) -->
+    <header class="signup-topbar">
+        <a href="index.html" class="signup-topbar__logo" data-help="STAGECORD PRO logoet — klikker du på det vender du tilbage til denne forside.">
+            <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
+        </a>
+
+        <div class="signup-help-cluster">
+            <span class="signup-help-hint__text" data-help="Klik på spørgsmålstegnet for at aktivere hjælpe-modus, så kan du klikke på alt og få det forklaret.">click on the question mark to get functions explained</span>
+
+            <button type="button" class="help-button" aria-label="Help" aria-pressed="false" data-help="Hjælpeknappen — klik for at aktivere hjælpe-modus, og klik derefter på et hvilket som helst element for at se en forklaring.">
+                <span class="help-mark">?</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="signup-page">
+
+        <!-- Decorative artwork (left) -->
+        <aside class="signup-art" aria-hidden="true">
+            <div class="signup-art__image signup-art__image--headphones"></div>
+            <div class="signup-art__image signup-art__image--portrait"></div>
+            <div class="signup-art__image signup-art__image--guitar"></div>
+        </aside>
+
+        <!-- Sign-up form (right) -->
+        <section class="signup-form-wrap">
+            <h1 class="signup-welcome">Welcome to <strong>STAGECORD</strong></h1>
+            <p class="signup-subtitle">Join STAGECORD to start connecting with musicians and friends.</p>
+
+            <form class="signup-form" id="signupForm" novalidate>
+                <div class="signup-top-row">
+                    <div class="signup-names-col">
+                        <div class="signup-field" data-help="Dit fornavn — bruges på din profil og når andre tagger dig.">
+                            <label class="signup-field__label" for="signup-forename">Enter your forename<span aria-hidden="true">*</span></label>
+                            <div class="signup-field__input-wrap">
+                                <input id="signup-forename" type="text" name="forename" placeholder="Your forename" autocomplete="given-name" required>
+                                <svg class="signup-field__icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/>
+                                    <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="signup-field" data-help="Dit efternavn.">
+                            <label class="signup-field__label" for="signup-surname">Enter your surname<span aria-hidden="true">*</span></label>
+                            <div class="signup-field__input-wrap">
+                                <input id="signup-surname" type="text" name="surname" placeholder="Your surname" autocomplete="family-name" required>
+                                <svg class="signup-field__icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/>
+                                    <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="signup-field" data-help="Din email-adresse — bruges til login og notifikationer.">
+                            <label class="signup-field__label" for="signup-email">Email<span aria-hidden="true">*</span></label>
+                            <div class="signup-field__input-wrap">
+                                <input id="signup-email" type="email" name="email" placeholder="Enter your email address" autocomplete="email" required>
+                                <svg class="signup-field__icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <rect x="3" y="6" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2"/>
+                                    <path d="M3 8l9 6 9-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="signup-profile" data-help="Vælg et profilbillede — vises overalt på platformen hvor du optræder.">
+                        <span class="signup-field__label">Profile picture</span>
+                        <button type="button" class="signup-profile__btn" id="signupProfileBtn" aria-label="Upload profile picture">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M9 3L7.5 5H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.5L15 3H9z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                                <circle cx="12" cy="13" r="4" stroke="currentColor" stroke-width="1.8"/>
+                            </svg>
+                            <span>Upload</span>
+                            <input type="file" name="avatar" accept="image/*" hidden>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="signup-field" data-help="Vælg et brugernavn — kan være dit fulde navn eller noget unikt.">
+                    <label class="signup-field__label" for="signup-username">Username</label>
+                    <div class="signup-field__input-wrap">
+                        <input id="signup-username" type="text" name="username" placeholder="Create a unique username or just use your full name" autocomplete="username">
+                        <svg class="signup-field__icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M4 7h16M4 12h16M4 17h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="signup-field" data-help="Adgangskoden bruges til at logge ind. Vælg en stærk kode med mindst 8 tegn.">
+                    <label class="signup-field__label" for="signup-password">Password<span aria-hidden="true">*</span></label>
+                    <div class="signup-field__input-wrap">
+                        <input id="signup-password" type="password" name="password" placeholder="Create a strong password" autocomplete="new-password" required>
+                        <svg class="signup-field__icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <rect x="5" y="11" width="14" height="9" rx="2" stroke="currentColor" stroke-width="2"/>
+                            <path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="signup-field" data-help="Skriv adgangskoden igen for at bekræfte.">
+                    <label class="signup-field__label" for="signup-password-confirm">Confirm Password<span aria-hidden="true">*</span></label>
+                    <div class="signup-field__input-wrap">
+                        <input id="signup-password-confirm" type="password" name="passwordConfirm" placeholder="Retype your password" autocomplete="new-password" required>
+                        <svg class="signup-field__icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <rect x="5" y="11" width="14" height="9" rx="2" stroke="currentColor" stroke-width="2"/>
+                            <path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <p class="signup-terms" data-help="Ved at oprette en konto accepterer du STAGECORD's vilkår — link til de fulde vilkår tilføjes senere.">By signing up, you agree to STAGECORD's terms &amp; conditions</p>
+
+                <button type="submit" class="signup-submit">Sign up</button>
+
+                <p class="signup-login">Already have an account? <a href="../login/index.html">Log in</a></p>
+            </form>
+        </section>
+
+    </main>
+
+    <script src="../js/core.js"></script>
+    <script src="../js/modes.js"></script>
+    <script src="../js/sidebar.js"></script>
+    <script src="../js/topbar-widgets.js"></script>
+    <script src="../js/stage-badge.js"></script>
+    <script src="../js/acting-as-service.js"></script>
+    <script src="../js/stage-cards.js"></script>
+    <script src="../js/stage-label.js"></script>
+    <script src="../js/stage-resources.js"></script>
+    <script src="../js/stage-economy.js"></script>
+    <script src="../js/settings.js"></script>
+    <script src="../js/activity-feed.js"></script>
+    <script src="../js/app.js"></script>
+</body>
+</html>

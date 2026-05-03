@@ -1,0 +1,380 @@
+/* =====================================================
+   Pitch Page (Venue mode)
+   Inbound performance requests from artists. Settings
+   grid up top, then a list of pitch requests with
+   message, attachments, fee, and approve actions.
+   ===================================================== */
+
+.pitch-heading {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 36px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    margin: 0 0 18px;
+}
+
+/* ---------- Settings / specs grid ---------- */
+.pitch-specs {
+    display: grid;
+    grid-template-columns: 1.2fr 1.2fr 1fr 1.3fr 1.4fr 1.1fr;
+    gap: 18px;
+    padding: 18px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    margin-bottom: 28px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+}
+
+.pitch-specs__col {
+    min-width: 0;
+}
+
+.pitch-specs__title {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+    margin: 0 0 8px;
+}
+
+.pitch-specs__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.pitch-specs__list li {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.pitch-specs__list .key {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.pitch-specs__list .value {
+    font-weight: 500;
+    color: #FFFFFF;
+}
+
+/* Checkbox list for collab fee options */
+.pitch-checks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.pitch-checks li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pitch-checks input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    accent-color: #43C47A;
+    cursor: pointer;
+    margin: 0;
+}
+
+.pitch-checks label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #FFFFFF;
+    cursor: pointer;
+}
+
+/* Equipment chip rows */
+.pitch-equipment {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.pitch-equipment__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.pitch-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    color: #FFFFFF;
+    white-space: nowrap;
+}
+
+/* Available dates mini calendar */
+.pitch-mini-cal {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.pitch-mini-cal__grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+}
+
+.pitch-mini-cal__weekday {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 9px;
+    padding: 2px 0;
+}
+
+.pitch-mini-cal__day {
+    text-align: center;
+    padding: 4px 0;
+    color: rgba(255, 255, 255, 0.6);
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.pitch-mini-cal__day--open {
+    background: rgba(67, 196, 122, 0.18);
+    color: #43C47A;
+    font-weight: 700;
+}
+
+.pitch-mini-cal__day--booked {
+    color: rgba(255, 80, 80, 0.85);
+    text-decoration: line-through;
+}
+
+/* ---------- Request rows ---------- */
+.pitch-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.pitch-list__header {
+    display: grid;
+    grid-template-columns: 132px 90px 130px 80px 1fr 130px 130px 170px;
+    gap: 12px;
+    padding: 0 14px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.pitch-request {
+    display: grid;
+    grid-template-columns: 132px 90px 130px 80px 1fr 130px 130px 170px;
+    gap: 12px;
+    align-items: start;
+    padding: 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+}
+
+/* Artist column — portrait stacked above name */
+.pitch-request__artist {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+}
+
+.pitch-request__portrait {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    background-color: #1a1a1a;
+}
+
+.pitch-request__name {
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+/* Fee column */
+.pitch-request__fee {
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.02em;
+    color: #43C47A;
+    padding-top: 2px;
+}
+
+.pitch-request__fee--free {
+    color: #43C47A;
+    text-transform: uppercase;
+    font-size: 13px;
+}
+
+/* Project / Followers / Message metadata */
+.pitch-request__project {
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.pitch-request__followers {
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.pitch-request__message {
+    min-width: 0;
+}
+
+.pitch-request__message-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.pitch-request__message-text {
+    font-size: 11px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 6;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Chip group columns (Files, Royalties, Poster) */
+.pitch-request__chips {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.pitch-request__chips .pitch-chip {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+    font-size: 10px;
+    padding: 5px 8px;
+}
+
+.pitch-request__poster-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+    margin-top: 4px;
+}
+
+/* Action buttons column */
+.pitch-request__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.pitch-action {
+    width: 100%;
+    padding: 7px 10px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.pitch-action:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.pitch-action--accept {
+    border-color: #43C47A;
+    color: #43C47A;
+}
+
+.pitch-action--accept:hover {
+    background: rgba(67, 196, 122, 0.14);
+}
+
+.pitch-action--dismiss {
+    border-color: #E55353;
+    color: #E55353;
+}
+
+.pitch-action--dismiss:hover {
+    background: rgba(229, 83, 83, 0.14);
+}
+
+/* Responsive: collapse the grid into a stacked card on narrow screens */
+@media (max-width: 1280px) {
+    .pitch-list__header { display: none; }
+    .pitch-request {
+        grid-template-columns: 110px 1fr;
+        grid-template-areas:
+            "artist  meta"
+            "artist  message"
+            "files   royalties"
+            "poster  actions";
+        column-gap: 14px;
+        row-gap: 12px;
+    }
+    .pitch-request__artist  { grid-area: artist; }
+    .pitch-request__meta    { grid-area: meta; display: flex; flex-direction: column; gap: 4px; }
+    .pitch-request__message { grid-area: message; }
+    .pitch-request__chips--files     { grid-area: files; flex-direction: row; flex-wrap: wrap; }
+    .pitch-request__chips--royalties { grid-area: royalties; flex-direction: row; flex-wrap: wrap; }
+    .pitch-request__chips--poster    { grid-area: poster; flex-direction: row; align-items: center; }
+    .pitch-request__actions          { grid-area: actions; flex-direction: row; flex-wrap: wrap; }
+    .pitch-action { width: auto; flex: 1 1 130px; }
+}
+
+@media (max-width: 1100px) {
+    .pitch-specs {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}

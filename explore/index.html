@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAGECORD - Explore</title>
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/logo.css">
+    <link rel="stylesheet" href="../css/topbar.css">
+    <link rel="stylesheet" href="../css/explore.css">
+    <link rel="stylesheet" href="../css/vibes.css">
+</head>
+<body>
+    <!-- Left Sidebar Navigation -->
+    <aside class="sidebar" data-sidebar></aside>
+
+    <!-- Top Bar -->
+    <header class="topbar">
+        <div class="logo-container">
+            <a href="../index.html" class="logo-link">
+                <h1 class="logo">
+                    <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
+                </h1>
+            </a>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Search Artists, Concerts, Venues, Friends and much more" aria-label="Search"/>
+            <svg class="search-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/>
+                <path d="M18 18L24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </div>
+
+        <button type="button" class="help-button" aria-label="Help" aria-pressed="false" data-help="Hjælpeknap.">
+            <span class="help-mark">?</span>
+        </button>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <header class="explore-header">
+                <h1 class="explore-heading">Explore</h1>
+                <p class="explore-subtitle">Posts from your friends and from the artists and venues you follow. Friends-only posts from people you're not friends with stay hidden.</p>
+
+                <nav class="explore-tabs" role="tablist" aria-label="Filter feed">
+                    <button type="button" class="explore-tab is-active" role="tab" aria-selected="true">All</button>
+                    <button type="button" class="explore-tab" role="tab">Friends</button>
+                    <button type="button" class="explore-tab" role="tab">Artists I follow</button>
+                    <button type="button" class="explore-tab" role="tab">Venues I follow</button>
+                </nav>
+            </header>
+
+            <div class="explore-feed">
+
+                <!-- Post 1 — Friend (Line Rasmussen) -->
+                <article class="explore-post" data-help="Opslag fra en ven. Klik på navnet for at gå til deres fan-profil.">
+                    <header class="explore-post__head">
+                        <a class="explore-post__avatar" href="../fan/martin/index.html" style="background: url('../assets/images/artists/placeholder-female-5.png') center/cover;" aria-label="Line Rasmussen profile"></a>
+                        <div class="explore-post__byline">
+                            <a class="explore-post__author auto-name" href="../fan/martin/index.html">Line Rasmussen</a>
+                            <span class="explore-post__source explore-post__source--friend">Friend</span>
+                        </div>
+                        <span class="explore-post__time">2h ago</span>
+                    </header>
+                    <p class="explore-post__text">Last night at @JokesmithJohnson's set at @VEGA was unreal. The encore choreography came together exactly like we'd practiced — Julie, you absolutely killed it on stage 💃 Already bullying everyone I know into coming to the next one. Tickets through STAGECORD if you're in 🎟️</p>
+                    <div class="explore-post__image" style="background: url('../assets/images/artists/mellow-event.jpg') center/cover;"></div>
+                    <footer class="explore-post__actions">
+                        <button type="button" class="explore-post__action" data-engagement="vibes" data-vibe-id="explore-line-vega" data-vibe-count="384"><span class="explore-post__heart">♥</span> 384</button>
+                        <button type="button" class="explore-post__action">💬 47</button>
+                        <button type="button" class="explore-post__action">↗ Share</button>
+                    </footer>
+                </article>
+
+                <!-- Post 2 — Artist follow (Jokesmith Johnson) -->
+                <article class="explore-post">
+                    <header class="explore-post__head">
+                        <a class="explore-post__avatar" href="../artist/index.html" style="background: url('../assets/images/artists/jokesmith-johnson-cover.png') center/cover;" aria-label="Jokesmith Johnson profile"></a>
+                        <div class="explore-post__byline">
+                            <a class="explore-post__author auto-name" href="../artist/index.html">Jokesmith Johnson</a>
+                            <span class="explore-post__source explore-post__source--artist">Following · Artist</span>
+                        </div>
+                        <span class="explore-post__time">5h ago</span>
+                    </header>
+                    <p class="explore-post__text">Brand new bit dropping in the Friday set at Hammerstein. If you've ever been stuck on a delayed metro with food poisoning, this one's for you — and you should probably also see a doctor. Tickets for the Nov 9 show are 80% sold, link in bio 🎤</p>
+                    <div class="explore-post__image" style="background: url('../assets/images/artists/jokesmith-johnson-post-2.png') center/cover;"></div>
+                    <footer class="explore-post__actions">
+                        <button type="button" class="explore-post__action"><span class="explore-post__heart">♥</span> 12.4K</button>
+                        <button type="button" class="explore-post__action">💬 1.1K</button>
+                        <button type="button" class="explore-post__action">↗ Share</button>
+                    </footer>
+                </article>
+
+                <!-- Post 3 — Venue follow (RUST) -->
+                <article class="explore-post">
+                    <header class="explore-post__head">
+                        <a class="explore-post__avatar" href="../venue/index.html" style="background: url('../assets/images/artists/rust-cover.png') center/cover;" aria-label="RUST venue profile"></a>
+                        <div class="explore-post__byline">
+                            <a class="explore-post__author auto-name" href="../venue/index.html">RUST</a>
+                            <span class="explore-post__source explore-post__source--venue">Following · Venue</span>
+                        </div>
+                        <span class="explore-post__time">8h ago</span>
+                    </header>
+                    <p class="explore-post__text">Open Mic Night next Friday — all genres welcome 🎤 We've got 6 spots open and a couple of local pitches already in. If you're an upcoming artist hit Pitch on our profile to apply. Doors 19:30, free entry for the audience, drinks at the bar 🍻</p>
+                    <div class="explore-post__image" style="background: url('../assets/images/artists/mike-andersen-event.jpg') center/cover;"></div>
+                    <footer class="explore-post__actions">
+                        <button type="button" class="explore-post__action" data-engagement="vibes" data-vibe-id="explore-rust-openmic" data-vibe-count="412"><span class="explore-post__heart">♥</span> 412</button>
+                        <button type="button" class="explore-post__action">💬 23</button>
+                        <button type="button" class="explore-post__action">↗ Share</button>
+                    </footer>
+                </article>
+
+                <!-- Post 4 — Friend (Joakim Nielsen) -->
+                <article class="explore-post">
+                    <header class="explore-post__head">
+                        <a class="explore-post__avatar" href="../fan/martin/index.html" style="background: url('../assets/images/artists/placeholder-male-3.png') center/cover;" aria-label="Joakim Nielsen profile"></a>
+                        <div class="explore-post__byline">
+                            <a class="explore-post__author auto-name" href="../fan/martin/index.html">Joakim Nielsen</a>
+                            <span class="explore-post__source explore-post__source--friend">Friend</span>
+                        </div>
+                        <span class="explore-post__time">11h ago</span>
+                    </header>
+                    <p class="explore-post__text">Got my @MayaThompson tickets for January, anyone else going? Thinking we should put together a little crew before the show. Reply if you're in 🎫</p>
+                    <footer class="explore-post__actions">
+                        <button type="button" class="explore-post__action" data-engagement="vibes" data-vibe-id="explore-joakim-maya" data-vibe-count="38"><span class="explore-post__heart">♥</span> 38</button>
+                        <button type="button" class="explore-post__action">💬 11</button>
+                        <button type="button" class="explore-post__action">↗ Share</button>
+                    </footer>
+                </article>
+
+                <!-- Post 5 — Artist follow (Maya Thompson) -->
+                <article class="explore-post">
+                    <header class="explore-post__head">
+                        <a class="explore-post__avatar" href="../artist/index.html?id=maya-thompson" style="background: url('../assets/images/artists/maya-thompson-profile.png') center/cover;" aria-label="Maya Thompson profile"></a>
+                        <div class="explore-post__byline">
+                            <a class="explore-post__author auto-name" href="../artist/index.html?id=maya-thompson">Maya Thompson</a>
+                            <span class="explore-post__source explore-post__source--artist">Following · Artist</span>
+                        </div>
+                        <span class="explore-post__time">1d ago</span>
+                    </header>
+                    <p class="explore-post__text">Vocal sessions for the new EP wrapped this morning. Engineering with Lars is a masterclass — that man hears things in a track that nobody else does. EP locked for early Q1, first single comes a month before. 💜</p>
+                    <div class="explore-post__image" style="background: url('../assets/images/artists/mellow-event.jpg') center/cover;"></div>
+                    <footer class="explore-post__actions">
+                        <button type="button" class="explore-post__action" data-engagement="vibes" data-vibe-id="explore-maya-ep" data-vibe-count="8200"><span class="explore-post__heart">♥</span> 8.2K</button>
+                        <button type="button" class="explore-post__action">💬 312</button>
+                        <button type="button" class="explore-post__action">↗ Share</button>
+                    </footer>
+                </article>
+
+                <!-- Post 6 — Friend (Matt Samuel) -->
+                <article class="explore-post">
+                    <header class="explore-post__head">
+                        <a class="explore-post__avatar" href="../fan/martin/index.html" style="background: url('../assets/images/artists/placeholder-male-5.png') center/cover;" aria-label="Matt Samuel profile"></a>
+                        <div class="explore-post__byline">
+                            <a class="explore-post__author auto-name" href="../fan/martin/index.html">Matt Samuel</a>
+                            <span class="explore-post__source explore-post__source--friend">Friend</span>
+                        </div>
+                        <span class="explore-post__time">1d ago</span>
+                    </header>
+                    <p class="explore-post__text">First time at @Pumpehuset last night for the Anchi Humifuku show and the place is way bigger than I expected. Wild sound system. Highly recommend if you haven't been — they had two upcoming artists open the night and both were genuinely good.</p>
+                    <footer class="explore-post__actions">
+                        <button type="button" class="explore-post__action" data-engagement="vibes" data-vibe-id="explore-matt-pumpehuset" data-vibe-count="92"><span class="explore-post__heart">♥</span> 92</button>
+                        <button type="button" class="explore-post__action">💬 8</button>
+                        <button type="button" class="explore-post__action">↗ Share</button>
+                    </footer>
+                </article>
+
+                <!-- Post 7 — Artist follow (Jeremy Freedom) -->
+                <article class="explore-post">
+                    <header class="explore-post__head">
+                        <a class="explore-post__avatar" href="../artist/index.html?id=jeremy-freedom" style="background: url('../assets/images/artists/jeremy-freedom-profile.png') center/cover;" aria-label="Jeremy Freedom profile"></a>
+                        <div class="explore-post__byline">
+                            <a class="explore-post__author auto-name" href="../artist/index.html?id=jeremy-freedom">Jeremy Freedom</a>
+                            <span class="explore-post__source explore-post__source--artist">Following · Artist</span>
+                        </div>
+                        <span class="explore-post__time">2d ago</span>
+                    </header>
+                    <p class="explore-post__text">FREEDOM TOUR routing officially live on STAGECORD — 14 cities, three of them fully sold out before we even announced. Brooklyn, Copenhagen and Berlin — see y'all soon 🚐 Online streaming pass is up on the artist page if you're not in any of those.</p>
+                    <div class="explore-post__image" style="background: url('../assets/images/artists/jeremy-online-performance.png') center/cover;"></div>
+                    <footer class="explore-post__actions">
+                        <button type="button" class="explore-post__action"><span class="explore-post__heart">♥</span> 4.7K</button>
+                        <button type="button" class="explore-post__action">💬 218</button>
+                        <button type="button" class="explore-post__action">↗ Share</button>
+                    </footer>
+                </article>
+
+                <!-- Post 8 — Venue follow (RUST again) -->
+                <article class="explore-post">
+                    <header class="explore-post__head">
+                        <a class="explore-post__avatar" href="../venue/index.html" style="background: url('../assets/images/artists/rust-cover.png') center/cover;" aria-label="RUST venue profile"></a>
+                        <div class="explore-post__byline">
+                            <a class="explore-post__author auto-name" href="../venue/index.html">RUST</a>
+                            <span class="explore-post__source explore-post__source--venue">Following · Venue</span>
+                        </div>
+                        <span class="explore-post__time">3d ago</span>
+                    </header>
+                    <p class="explore-post__text">November program is up and we're cooking 🔥 MIKE on the 2nd, Lola Young the 6th, KEBU's synth-wave thing the 9th, and Jonathan Roy closing the first weekend. Single tickets and Online Concert Pass on each event 👇</p>
+                    <footer class="explore-post__actions">
+                        <button type="button" class="explore-post__action"><span class="explore-post__heart">♥</span> 622</button>
+                        <button type="button" class="explore-post__action">💬 41</button>
+                        <button type="button" class="explore-post__action">↗ Share</button>
+                    </footer>
+                </article>
+
+                <!-- Post 9 — Friend (Anchi follower casual) -->
+                <article class="explore-post">
+                    <header class="explore-post__head">
+                        <a class="explore-post__avatar" href="../fan/martin/index.html" style="background: url('../assets/images/artists/placeholder-female-5.png') center/cover;" aria-label="Tara Park profile"></a>
+                        <div class="explore-post__byline">
+                            <a class="explore-post__author auto-name" href="../fan/martin/index.html">Tara Park</a>
+                            <span class="explore-post__source explore-post__source--friend">Friend</span>
+                        </div>
+                        <span class="explore-post__time">3d ago</span>
+                    </header>
+                    <p class="explore-post__text">Quick PSA: I have one extra Jokesmith Johnson ticket for the Saturday show 🎫 Selling at face value through STAGECORD's resale flow because I trust the QR-system more than I trust DMs. Say something if you want first dibs.</p>
+                    <footer class="explore-post__actions">
+                        <button type="button" class="explore-post__action"><span class="explore-post__heart">♥</span> 27</button>
+                        <button type="button" class="explore-post__action">💬 5</button>
+                        <button type="button" class="explore-post__action">↗ Share</button>
+                    </footer>
+                </article>
+
+                <!-- Post 10 — Artist follow (Anchi Humifuku) -->
+                <article class="explore-post">
+                    <header class="explore-post__head">
+                        <a class="explore-post__avatar" href="../artist/index.html?id=anchi-humifuku" style="background: url('../assets/images/artists/placeholder-female-6.png') center/cover;" aria-label="Anchi Humifuku profile"></a>
+                        <div class="explore-post__byline">
+                            <a class="explore-post__author auto-name" href="../artist/index.html?id=anchi-humifuku">Anchi Humifuku</a>
+                            <span class="explore-post__source explore-post__source--artist">Following · Artist</span>
+                        </div>
+                        <span class="explore-post__time">4d ago</span>
+                    </header>
+                    <p class="explore-post__text">The Manhattan Rain remix featuring @MayaThompson is done — mastering with Emilie this week and it'll be on streaming services next month. We've never sat with a track this long, and you can hear it in every layer. Soon. 🌧️</p>
+                    <footer class="explore-post__actions">
+                        <button type="button" class="explore-post__action"><span class="explore-post__heart">♥</span> 6.1K</button>
+                        <button type="button" class="explore-post__action">💬 184</button>
+                        <button type="button" class="explore-post__action">↗ Share</button>
+                    </footer>
+                </article>
+
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/core.js"></script>
+    <script src="../js/modes.js"></script>
+    <script src="../js/sidebar.js"></script>
+    <script src="../js/topbar-widgets.js"></script>
+    <script src="../js/stage-badge.js"></script>
+    <script src="../js/acting-as-service.js"></script>
+    <script src="../js/stage-cards.js"></script>
+    <script src="../js/stage-label.js"></script>
+    <script src="../js/stage-resources.js"></script>
+    <script src="../js/stage-economy.js"></script>
+    <script src="../js/settings.js"></script>
+    <script src="../js/activity-feed.js"></script>
+    <script src="../js/app.js"></script>
+</body>
+</html>

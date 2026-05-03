@@ -1,0 +1,695 @@
+/* ===========================================================================
+   Instrument Exchange — sell instruments + savings goals + community donations
+   ===========================================================================
+   Two-part feature:
+   1. Marketplace for selling/buying physical music instruments. Serial
+      number is mandatory for purchase verification.
+   2. Savings goals — users save up for a specific instrument. Other users
+      can donate small amounts as a "Give it forward" gesture.
+*/
+
+.instruments {
+    background: linear-gradient(135deg, rgba(255, 138, 200, 0.04) 0%, rgba(255, 196, 0, 0.04) 100%);
+    border: 1px solid rgba(255, 138, 200, 0.28);
+    border-radius: 14px;
+    padding: 18px 22px;
+    margin-top: 22px;
+}
+
+.instruments__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.instruments__title {
+    margin: 0;
+    font-family: 'Outfit', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: #FFFFFF;
+}
+
+.instruments__title-icon {
+    margin-right: 8px;
+    color: #FF8AC8;
+    font-size: 22px;
+}
+
+.instruments__actions {
+    display: inline-flex;
+    gap: 8px;
+}
+
+.instruments__btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 7px 14px;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.instruments__btn:hover { border-color: #FFFFFF; background: rgba(255, 255, 255, 0.05); }
+
+.instruments__btn--primary {
+    background: #FF8AC8;
+    border-color: #FF8AC8;
+    color: #2a0e1f;
+    font-weight: 800;
+}
+
+.instruments__btn--primary:hover { background: #FFA0D5; border-color: #FFA0D5; }
+
+.instruments__intro {
+    margin: 0 0 14px;
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.instruments__intro strong { color: #FFFFFF; font-weight: 700; }
+
+/* Tab switcher: For sale / Savings goals */
+.instruments__tabs {
+    display: inline-flex;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    padding: 3px;
+    margin-bottom: 14px;
+}
+
+.instruments__tab {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 7px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.instruments__tab.is-active {
+    background: #FFFFFF;
+    color: #0a0a0a;
+}
+
+.instruments__tab:not(.is-active):hover { color: #FFFFFF; }
+
+.instruments__tab-count {
+    margin-left: 6px;
+    background: rgba(0, 0, 0, 0.18);
+    color: inherit;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+}
+
+.instruments__tab.is-active .instruments__tab-count {
+    background: rgba(255, 138, 200, 0.18);
+    color: #FF8AC8;
+}
+
+/* ---------- Instrument grid ---------- */
+.instr-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+}
+
+.instr-card {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.instr-card:hover {
+    border-color: rgba(255, 138, 200, 0.5);
+    transform: translateY(-2px);
+}
+
+.instr-card__thumb {
+    aspect-ratio: 4/3;
+    background-size: cover;
+    background-position: center;
+    background-color: rgba(255, 255, 255, 0.06);
+    position: relative;
+}
+
+.instr-card__condition {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(0, 0, 0, 0.7);
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 3px 7px;
+    border-radius: 4px;
+    backdrop-filter: blur(6px);
+}
+
+.instr-card__condition--new        { background: rgba(67, 196, 122, 0.85); }
+.instr-card__condition--used       { background: rgba(74, 144, 226, 0.85); }
+.instr-card__condition--vintage    { background: rgba(255, 196, 0, 0.85); color: #1a1500; }
+.instr-card__condition--for-parts  { background: rgba(255, 106, 85, 0.85); }
+
+.instr-card__verified {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(67, 196, 122, 0.92);
+    color: #FFFFFF;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+    font-size: 12px;
+}
+
+.instr-card__body {
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1 1 auto;
+}
+
+.instr-card__name {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: #FFFFFF;
+    line-height: 1.3;
+}
+
+.instr-card__brand {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.instr-card__serial {
+    margin-top: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Outfit', monospace;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.55);
+    background: rgba(0, 0, 0, 0.25);
+    padding: 3px 7px;
+    border-radius: 4px;
+    width: fit-content;
+}
+
+.instr-card__serial-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(255, 138, 200, 0.85);
+}
+
+.instr-card__seller {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.instr-card__seller-avatar {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+}
+
+.instr-card__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 12px 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.instr-card__actions {
+    display: flex;
+    gap: 6px;
+}
+
+.instr-card__price {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 17px;
+    color: #FFFFFF;
+}
+
+.instr-card__buy {
+    background: #FF8AC8;
+    border: 1px solid #FF8AC8;
+    color: #2a0e1f;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.instr-card__buy:hover { background: #FFA0D5; border-color: #FFA0D5; }
+
+.instr-card__save {
+    background: transparent;
+    border: 1px dashed rgba(255, 196, 0, 0.5);
+    color: #FFC400;
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.instr-card__save:hover { background: rgba(255, 196, 0, 0.1); border-style: solid; }
+
+/* ---------- Savings goal cards ---------- */
+.goal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 14px;
+}
+
+.goal-card {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 196, 0, 0.32);
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.goal-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 196, 0, 0.08) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.goal-card.is-mine {
+    border-color: rgba(74, 144, 226, 0.45);
+}
+
+.goal-card.is-mine::before {
+    background: linear-gradient(135deg, rgba(74, 144, 226, 0.12) 0%, transparent 60%);
+}
+
+.goal-card__head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1;
+}
+
+.goal-card__avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    background-color: rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
+}
+
+.goal-card__main { flex: 1 1 auto; min-width: 0; }
+
+.goal-card__owner {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: #FFFFFF;
+}
+
+.goal-card__instrument {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.3;
+    margin-top: 1px;
+}
+
+.goal-card__mine-tag {
+    background: rgba(74, 144, 226, 0.2);
+    color: #6AA9F0;
+    font-family: 'Outfit', sans-serif;
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 3px 7px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.goal-card__progress-bar {
+    height: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 5px;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.goal-card__progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #FFC400 0%, #FF8AC8 100%);
+    border-radius: 5px;
+    transition: width 0.4s ease;
+}
+
+.goal-card.is-mine .goal-card__progress-fill {
+    background: linear-gradient(90deg, #4A90E2 0%, #7DD3C0 100%);
+}
+
+.goal-card__progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    z-index: 1;
+}
+
+.goal-card__progress-current {
+    color: #FFFFFF;
+    font-weight: 800;
+}
+
+.goal-card__progress-target {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.goal-card__progress-pct {
+    color: #FFC400;
+    font-weight: 700;
+}
+
+.goal-card.is-mine .goal-card__progress-pct {
+    color: #6AA9F0;
+}
+
+.goal-card__msg {
+    margin: 0;
+    padding: 8px 10px;
+    background: rgba(0, 0, 0, 0.25);
+    border-left: 2px solid rgba(255, 196, 0, 0.5);
+    border-radius: 4px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.75);
+    font-style: italic;
+    z-index: 1;
+}
+
+.goal-card.is-mine .goal-card__msg {
+    border-left-color: rgba(74, 144, 226, 0.5);
+}
+
+.goal-card__supporters {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 1;
+}
+
+.goal-card__supporter-avatars {
+    display: inline-flex;
+}
+
+.goal-card__supporter {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid #181818;
+    margin-left: -7px;
+    background-color: rgba(255, 255, 255, 0.1);
+    background-size: cover;
+    background-position: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 9px;
+    color: #FFFFFF;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.4);
+    flex-shrink: 0;
+}
+
+.goal-card__supporter:first-child { margin-left: 0; }
+
+.goal-card__supporters-count {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.goal-card__actions {
+    display: flex;
+    gap: 8px;
+    z-index: 1;
+}
+
+.goal-card__btn {
+    flex: 1 1 auto;
+    background: #FFC400;
+    border: 1px solid #FFC400;
+    color: #1a1500;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 8px 14px;
+    border-radius: 7px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.goal-card__btn:hover { background: #FFD940; border-color: #FFD940; }
+
+.goal-card__btn--secondary {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.22);
+    color: #FFFFFF;
+    font-weight: 600;
+    flex: 0 0 auto;
+}
+
+.goal-card__btn--secondary:hover { border-color: #FFFFFF; background: rgba(255, 255, 255, 0.05); }
+
+.goal-card.is-mine .goal-card__btn {
+    background: #4A90E2;
+    border-color: #4A90E2;
+    color: #FFFFFF;
+}
+
+.goal-card.is-mine .goal-card__btn:hover { background: #5AA0F2; border-color: #5AA0F2; }
+
+/* Funded badge when goal is reached */
+.goal-card.is-funded {
+    border-color: rgba(67, 196, 122, 0.5);
+    background: rgba(67, 196, 122, 0.06);
+}
+
+.goal-card.is-funded::before {
+    background: linear-gradient(135deg, rgba(67, 196, 122, 0.12) 0%, transparent 60%);
+}
+
+.goal-card.is-funded .goal-card__progress-fill {
+    background: #43C47A;
+}
+
+.goal-card__funded-badge {
+    background: #43C47A;
+    color: #02040C;
+    font-family: 'Outfit', sans-serif;
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 3px 7px;
+    border-radius: 4px;
+}
+
+/* ---------- Modals ---------- */
+.release-modal.release-modal--instr {
+    max-width: 540px;
+    width: 92vw;
+}
+
+.instr-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.instr-form__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.instr-form__field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.instr-form__label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.instr-form__input,
+.instr-form__select,
+.instr-form__textarea {
+    background: #1f1f1f;
+    border: 1px solid #2f2f2f;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    padding: 9px 12px;
+    border-radius: 7px;
+}
+
+.instr-form__input:focus,
+.instr-form__select:focus,
+.instr-form__textarea:focus {
+    outline: none;
+    border-color: #FF8AC8;
+}
+
+.instr-form__input--serial {
+    font-family: 'Outfit', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.instr-form__hint {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 2px;
+}
+
+.instr-form__textarea { min-height: 70px; resize: vertical; }
+
+.instr-form__verify {
+    background: rgba(67, 196, 122, 0.08);
+    border: 1px solid rgba(67, 196, 122, 0.4);
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 12px;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.instr-form__verify--fail {
+    background: rgba(255, 106, 85, 0.08);
+    border-color: rgba(255, 106, 85, 0.4);
+}
+
+.instr-form__verify-icon { font-size: 16px; line-height: 1; }
+
+.instr-form__verify strong { color: #FFFFFF; font-weight: 700; }
+
+/* Donation modal: quick-amount preset buttons */
+.donate-amounts {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.donate-amount {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 12px 0;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.donate-amount:hover {
+    border-color: rgba(255, 196, 0, 0.5);
+    background: rgba(255, 196, 0, 0.06);
+}
+
+.donate-amount.is-selected {
+    background: #FFC400;
+    border-color: #FFC400;
+    color: #1a1500;
+}
+
+.donate-summary {
+    background: rgba(255, 196, 0, 0.06);
+    border: 1px solid rgba(255, 196, 0, 0.32);
+    border-radius: 8px;
+    padding: 10px 12px;
+    text-align: center;
+    font-family: 'Outfit', sans-serif;
+}
+
+.donate-summary__amount {
+    font-size: 22px;
+    font-weight: 800;
+    color: #FFC400;
+    line-height: 1.1;
+}
+
+.donate-summary__label {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.65);
+    margin-top: 4px;
+}
+
+@media (max-width: 600px) {
+    .instr-form__row { grid-template-columns: 1fr; }
+    .donate-amounts { grid-template-columns: repeat(2, 1fr); }
+}

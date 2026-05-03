@@ -1,0 +1,902 @@
+/* =====================================================
+   Fan profile page (personal user profile)
+   ===================================================== */
+
+/* Match the artist profile's tighter top spacing */
+.main-content {
+    padding-top: 88px;
+}
+
+/* ---------- Cover banner with overlapping avatar ---------- */
+.fan-cover {
+    position: relative;
+    width: 100%;
+    height: 390px;                  /* 1.5× the original 260px */
+    border-radius: 28px;
+    overflow: visible;
+    margin-bottom: 70px;            /* space for the avatar hanging below */
+    background-color: #1a1a1a;
+    background-image:
+        linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.55) 100%),
+        url('../assets/images/artists/julie-andersen-profile.png');
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.fan-cover__avatar {
+    position: absolute;
+    left: 32px;
+    bottom: -60px;
+    width: 145px;
+    height: 145px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4A90E2 0%, #9B59B6 100%);
+    background-size: cover;
+    background-position: center;
+    border: 4px solid #242424;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5);
+    z-index: 2;
+}
+
+/* Name + username overlaid on the cover, bottom-left (next to the avatar) */
+.fan-cover__identity {
+    position: absolute;
+    left: 200px;             /* right of the avatar (left 32 + 140 width + 28 gap) */
+    bottom: 22px;
+    z-index: 2;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.55);
+    max-width: calc(100% - 480px);   /* leave room for stats on the right */
+}
+
+.fan-cover__name {
+    margin: 0;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 36px;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    letter-spacing: -0.01em;
+}
+
+.fan-cover__username {
+    display: block;
+    margin-top: 4px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 18px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* Stats overlaid on the cover, bottom-right */
+.fan-cover__stats {
+    position: absolute;
+    right: 28px;
+    bottom: 22px;
+    display: flex;
+    gap: 26px;
+    align-items: flex-end;
+    z-index: 2;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.55);
+}
+
+.fan-cover__stats .fan-stat {
+    align-items: flex-end;
+    text-align: right;
+}
+
+.fan-cover__stats .fan-stat__value {
+    color: #FFFFFF;
+}
+
+.fan-cover__stats .fan-stat__label {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* Clickable stat — Friends, Concerts, Following — opens a list modal */
+button.fan-stat--clickable {
+    background: transparent;
+    border: none;
+    padding: 4px 6px;
+    margin: -4px -6px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: inherit;
+    font: inherit;
+    transition: background 0.15s ease;
+}
+
+button.fan-stat--clickable:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+button.fan-stat--clickable:focus-visible {
+    outline: 2px solid #FFFFFF;
+    outline-offset: 2px;
+}
+
+/* Top-right action cluster on the cover (Add friend + Edit cover) */
+.fan-cover__top-actions {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: flex;
+    gap: 10px;
+    z-index: 2;
+}
+
+/* "Add friend" — transparent CTA matching the cover's edit button style */
+.fan-cover__friend-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.fan-cover__friend-btn:hover {
+    background: rgba(0, 0, 0, 0.85);
+    border-color: #FFFFFF;
+}
+
+.fan-cover__friend-icon {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* When the request is sent, button flips to a confirmed state */
+.fan-cover__friend-btn[aria-pressed="true"] {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.6);
+    cursor: default;
+}
+
+.fan-cover__friend-btn[aria-pressed="true"]:hover {
+    transform: none;
+}
+
+/* "Edit cover" button */
+.fan-cover__edit {
+    padding: 8px 14px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    line-height: 1;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.fan-cover__edit:hover {
+    background: rgba(0, 0, 0, 0.85);
+    border-color: #FFFFFF;
+}
+
+/* ---------- Header: bio + edit button (avatar/name/stats live in the cover) ---------- */
+.fan-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 28px;
+    margin-top: -50px;              /* pull bio up closer to the cover */
+    margin-bottom: 36px;
+    padding-left: 200px;            /* skip past the cover's overlapping avatar */
+    flex-wrap: wrap;
+    min-height: 80px;               /* leave room next to the avatar */
+}
+
+.fan-header__main {
+    flex: 1 1 280px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Responsive: shrink overlays on narrower screens */
+@media screen and (max-width: 900px) {
+    .fan-cover__identity {
+        max-width: calc(100% - 380px);
+    }
+    .fan-cover__name { font-size: 26px; line-height: 30px; }
+    .fan-cover__stats {
+        gap: 18px;
+        right: 18px;
+        bottom: 16px;
+    }
+    .fan-cover__stats .fan-stat__value { font-size: 18px; line-height: 22px; }
+    .fan-cover__stats .fan-stat__label { font-size: 10px; }
+}
+
+@media screen and (max-width: 760px) {
+    .fan-cover {
+        height: 270px;          /* 1.5× the original 180px */
+        margin-bottom: 80px;     /* extra space — name + stats fall below the cover */
+    }
+    .fan-cover__avatar {
+        left: 20px;
+        bottom: -50px;
+        width: 110px;
+        height: 110px;
+    }
+    .fan-cover__identity,
+    .fan-cover__stats {
+        position: static;
+        max-width: none;
+        text-shadow: none;
+    }
+    .fan-cover__identity {
+        margin-top: 14px;
+        padding: 0 18px;
+    }
+    .fan-cover__stats {
+        margin-top: 8px;
+        padding: 0 18px 12px;
+        justify-content: flex-start;
+    }
+    .fan-cover__stats .fan-stat {
+        align-items: flex-start;
+        text-align: left;
+    }
+    .fan-cover__name { font-size: 22px; line-height: 26px; }
+    .fan-header {
+        padding-left: 0;
+        padding-top: 0;
+    }
+}
+
+.fan-header__name {
+    margin: 0;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 40px;
+    line-height: 50px;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    letter-spacing: -0.01em;
+}
+
+.fan-header__username {
+    margin: 0;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 20px;
+    color: #B1B1B1;
+}
+
+.fan-header__bio {
+    margin: 8px 0 0;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    color: #FFFFFF;
+    max-width: 540px;
+}
+
+.fan-header__stats {
+    display: flex;
+    gap: 28px;
+    align-items: center;
+    flex-wrap: wrap;
+    padding-top: 8px;
+}
+
+.fan-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.fan-stat__value {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 30px;
+    color: #FFFFFF;
+}
+
+.fan-stat__label {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #B1B1B1;
+}
+
+.fan-header__edit {
+    padding: 10px 20px;
+    background: transparent;
+    border: 1px solid #FFFFFF;
+    border-radius: 8px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 1;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+    margin-top: 8px;
+    flex-shrink: 0;
+}
+
+.fan-header__edit:hover {
+    background: #FFFFFF;
+    color: #000000;
+}
+
+/* ---------- Generic section heading ---------- */
+.fan-section {
+    margin-bottom: 36px;
+}
+
+.fan-section__header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.fan-section__title {
+    margin: 0;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 30px;
+    text-transform: uppercase;
+    color: #FFFFFF;
+}
+
+.fan-section__view-all {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 18px;
+    text-transform: uppercase;
+    color: #B1B1B1;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.fan-section__view-all:hover {
+    color: #FFFFFF;
+}
+
+/* ---------- My Tickets ---------- */
+.fan-tickets__row {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+}
+
+.fan-tickets__row::-webkit-scrollbar { display: none; }
+
+.fan-ticket {
+    flex-shrink: 0;
+    width: 280px;
+    padding: 16px 18px;
+    background: #000000;
+    border: 1px solid #797979;
+    border-radius: 12px;
+    color: #FFFFFF;
+    cursor: pointer;
+    transition: border-color 0.15s ease, transform 0.18s ease;
+}
+
+.fan-ticket:hover {
+    border-color: #FFFFFF;
+    transform: translateY(-2px);
+}
+
+.fan-ticket__date {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+    color: #00A911;
+    margin-bottom: 4px;
+}
+
+.fan-ticket__artist {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 22px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.fan-ticket__venue {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    color: #B1B1B1;
+    margin-bottom: 12px;
+}
+
+.fan-ticket__qr {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #FFFFFF 25%, #b3b3b3 25%, #b3b3b3 50%, #FFFFFF 50%, #FFFFFF 75%, #b3b3b3 75%);
+    background-size: 8px 8px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+
+.fan-ticket__type {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #B1B1B1;
+    letter-spacing: 0.04em;
+}
+
+/* ---------- My Entourages ---------- */
+.fan-entourages__row {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+}
+
+.fan-entourages__row::-webkit-scrollbar { display: none; }
+
+.fan-entourage {
+    flex-shrink: 0;
+    width: 220px;
+    padding: 14px 16px;
+    background: #000000;
+    border: 1px solid #797979;
+    border-radius: 12px;
+    color: #FFFFFF;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+}
+
+.fan-entourage:hover {
+    border-color: #FFFFFF;
+}
+
+.fan-entourage__name {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 20px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.fan-entourage__count {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+    color: #B1B1B1;
+    margin-bottom: 10px;
+}
+
+.fan-entourage__avatars {
+    display: flex;
+}
+
+.fan-entourage__avatars span {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid #000000;
+    margin-left: -6px;
+    background-size: cover;
+    background-position: center;
+}
+
+.fan-entourage__avatars span:first-child { margin-left: 0; }
+
+/* ---------- Friends grid ---------- */
+.fan-friends {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 110px);
+    gap: 14px;
+    justify-content: start;
+}
+
+.fan-friend {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    width: 110px;
+}
+
+.fan-friend__avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    border: 2px solid transparent;
+    transition: border-color 0.15s ease, transform 0.18s ease;
+}
+
+.fan-friend:hover .fan-friend__avatar {
+    border-color: #FFFFFF;
+    transform: scale(1.05);
+}
+
+.fan-friend__name {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 15px;
+    text-align: center;
+    text-transform: uppercase;
+    color: #FFFFFF;
+}
+
+/* ---------- Photo album preview (reuses tile look) ---------- */
+.fan-photos__row {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+}
+
+.fan-photos__row::-webkit-scrollbar { display: none; }
+
+.fan-photo-tile {
+    flex-shrink: 0;
+    width: 200px;
+    height: 140px;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.fan-photo-tile:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
+}
+
+/* ---------- Account creation footer ---------- */
+.fan-account-footer {
+    margin: 32px 0 40px;
+    padding-top: 22px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 300;
+    font-size: 13px;
+    line-height: 18px;
+    color: #B1B1B1;
+    text-align: center;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+/* ============================================================
+   Creator milestone banner — shown on fan profile when the user
+   crosses key follower thresholds (50K = artist-profile unlock).
+   ============================================================ */
+.fan-milestone {
+    margin-top: 8px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    padding: 22px 26px 12px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(0, 169, 17, 0.08) 100%);
+    border: 1px solid #00A911;
+    border-radius: 14px;
+    color: #FFFFFF;
+}
+
+.fan-milestone__icon {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: rgba(0, 169, 17, 0.18);
+    color: #00A911;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fan-milestone__icon svg { width: 26px; height: 26px; }
+
+.fan-milestone__main { flex: 1 1 auto; min-width: 0; }
+
+.fan-milestone__eyebrow {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #00A911;
+    margin-bottom: 6px;
+}
+
+.fan-milestone__title {
+    margin: 0 0 6px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 26px;
+    text-transform: uppercase;
+    color: #FFFFFF;
+}
+
+.fan-milestone__desc {
+    margin: 0;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 18px;
+    color: #B1B1B1;
+    max-width: 720px;
+}
+
+.fan-milestone__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.fan-milestone__btn {
+    padding: 10px 18px;
+    border-radius: 8px;
+    font: 700 12px/1 'Outfit', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border: 1px solid #FFFFFF;
+    background: transparent;
+    color: #FFFFFF;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease;
+}
+
+.fan-milestone__btn:hover { background: rgba(255, 255, 255, 0.08); }
+
+.fan-milestone__btn--primary {
+    background: #00A911;
+    border-color: #00A911;
+    color: #FFFFFF;
+}
+
+.fan-milestone__btn--primary:hover { background: #008e0e; }
+
+@media screen and (max-width: 760px) {
+    .fan-milestone {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+    }
+    .fan-milestone__actions { flex-direction: row; flex-wrap: wrap; }
+}
+
+/* ============================================================
+   Stat list modal — opens when a visitor (or owner) clicks a
+   public stat in the cover (Friends, Concerts, Following).
+   Visibility per category is controlled by the profile owner's
+   privacy settings.
+   ============================================================ */
+.stat-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    z-index: 9999;
+    padding: 96px 20px 40px;
+    overflow-y: auto;
+}
+
+.stat-modal-overlay.open { display: flex; }
+
+.stat-modal {
+    background: #1a1a1a;
+    border: 1px solid #797979;
+    border-radius: 14px;
+    width: 100%;
+    max-width: 540px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 140px);
+}
+
+.stat-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px;
+    border-bottom: 1px solid #2a2a2a;
+}
+
+.stat-modal__title {
+    margin: 0;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 22px;
+    text-transform: uppercase;
+    color: #FFFFFF;
+}
+
+.stat-modal__close {
+    background: transparent;
+    border: none;
+    color: #FFFFFF;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px 10px;
+    border-radius: 6px;
+}
+
+.stat-modal__close:hover { background: rgba(255, 255, 255, 0.08); }
+
+.stat-modal__body {
+    padding: 6px 0;
+    overflow-y: auto;
+}
+
+.stat-modal__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.stat-modal__row a {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    grid-template-rows: auto auto;
+    column-gap: 14px;
+    align-items: center;
+    padding: 12px 22px;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.15s ease;
+}
+
+.stat-modal__row a:hover { background: rgba(255, 255, 255, 0.04); }
+
+.stat-modal__avatar {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    align-self: center;
+}
+
+.stat-modal__name {
+    grid-column: 2;
+    grid-row: 1;
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    line-height: 18px;
+    text-transform: uppercase;
+    color: #FFFFFF;
+}
+
+.stat-modal__meta {
+    grid-column: 2;
+    grid-row: 2;
+    margin-top: 2px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 14px;
+    color: #B1B1B1;
+}
+
+/* ===========================================================================
+   Wall section — fan's own posts on their profile
+   ===========================================================================
+   Distinct from the Explore feed: wall-posts are curated personal content
+   (concert recaps, milestones, gear notes) shown only on the user's own
+   profile to friends and followers.
+*/
+.fan-wall {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.fan-wall__post {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 14px 16px;
+    transition: border-color 0.15s ease;
+}
+
+.fan-wall__post:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.fan-wall__head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.fan-wall__tag {
+    background: #FF8AC8;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+
+.fan-wall__engagement {
+    margin-left: auto;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.4);
+    font-family: 'Outfit', sans-serif;
+}
+
+.fan-wall__text {
+    margin: 0 0 10px;
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.fan-wall__text:last-child { margin-bottom: 0; }
+
+.fan-wall__text strong { color: #FFFFFF; font-weight: 700; }
+
+.fan-wall__image {
+    height: 120px;
+    border-radius: 8px;
+    background-size: cover;
+    background-position: center;
+}

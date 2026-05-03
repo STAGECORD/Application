@@ -1,0 +1,659 @@
+/* Top Bar — translucent dark-blue band over the body's faded blue → black
+   gradient. z-index is set above modal overlays (9999) so the help button (?)
+   is always reachable, even when a popup is open. */
+.topbar {
+    position: fixed;
+    top: 0;
+    left: 126px; /* starts right after the sidebar */
+    right: 0;
+    height: 74px;
+    background: rgba(10, 18, 36, 0.88);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    padding: 0 24px 0 17px;
+    gap: 24px;
+}
+
+/* Logo inside topbar (left) — keeps its full width, never shrinks */
+.topbar .logo-container {
+    position: static;
+    width: auto;
+    height: 50px;
+    flex: 0 0 auto;
+}
+
+.topbar .logo {
+    font-family: 'Outfit', sans-serif;
+    font-style: normal;
+    line-height: 50px;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+}
+
+.topbar .logo-link {
+    text-decoration: none;
+    color: inherit;
+    display: inline-block;
+    transition: opacity 0.3s ease;
+}
+
+.topbar .logo-link:hover {
+    opacity: 0.85;
+}
+
+/* Search-bar wrapper allows the dropdown to position relative to it */
+.search-bar {
+    position: relative;
+}
+
+/* Search suggestions dropdown — appears below the search bar when typing */
+.search-suggestions {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: #1a1a1a;
+    border: 1px solid #797979;
+    border-radius: 10px;
+    max-height: 380px;
+    overflow-y: auto;
+    z-index: 10005;
+    display: none;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+}
+
+.search-suggestions.open {
+    display: block;
+}
+
+.search-suggestion {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    transition: background 0.15s ease;
+}
+
+.search-suggestion:last-child { border-bottom: none; }
+
+.search-suggestion:hover,
+.search-suggestion.is-highlighted {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.search-suggestion__avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background-size: cover;
+    background-position: center;
+}
+
+.search-suggestion__main {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.search-suggestion__name {
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    line-height: 18px;
+    text-transform: uppercase;
+    color: #FFFFFF;
+}
+
+.search-suggestion__meta {
+    margin-top: 2px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    font-size: 11px;
+    line-height: 14px;
+    color: #B1B1B1;
+}
+
+.search-suggestion__role {
+    display: inline-block;
+    margin-left: 2px;
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    color: #FFFFFF;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    font-size: 10px;
+}
+
+.search-suggestions__empty {
+    padding: 16px 14px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    color: #B1B1B1;
+    text-align: center;
+}
+
+/* Search bar (middle) — grows up to 659px, shrinks first when space is tight */
+.search-bar {
+    box-sizing: border-box;
+    position: static;
+    flex: 1 1 0;
+    min-width: 120px;
+    max-width: 659px;
+    height: 40px;
+    background: #000000;
+    border: 1px solid #FFFFFF;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+}
+
+.search-bar .search-input {
+    flex: 1;
+    height: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+}
+
+.search-bar .search-input::placeholder {
+    color: #B1B1B1;
+}
+
+.search-bar .search-icon {
+    width: 28px;
+    height: 28px;
+    color: #FFFFFF;
+    flex-shrink: 0;
+    margin-left: 8px;
+}
+
+/* Filter button — sits after the search icon, opens a category popover */
+.search-filter-btn {
+    flex-shrink: 0;
+    margin-left: 6px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: transparent;
+    border: 1px solid #797979;
+    color: #FFFFFF;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.search-filter-btn:hover {
+    border-color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.search-filter-btn.is-active {
+    border-color: #FFFFFF;
+    background: #FFFFFF;
+    color: #000000;
+}
+
+.search-filter-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.search-filter-btn__count {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: #00A911;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 10px;
+    line-height: 18px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+/* Filter popover — same anchor as the suggestions dropdown */
+.search-filter-popover {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: #1a1a1a;
+    border: 1px solid #797979;
+    border-radius: 10px;
+    z-index: 10006;
+    display: none;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+    max-height: 480px;
+    overflow-y: auto;
+    padding: 18px 20px;
+}
+
+.search-filter-popover.open { display: block; }
+
+.search-filter-popover__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.search-filter-popover__title {
+    margin: 0;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 1;
+    text-transform: uppercase;
+    color: #FFFFFF;
+}
+
+.search-filter-popover__clear {
+    background: transparent;
+    border: none;
+    color: #B1B1B1;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.4px;
+}
+
+.search-filter-popover__clear:hover {
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.search-filter-popover__group + .search-filter-popover__group { margin-top: 14px; }
+
+.search-filter-popover__group-title {
+    margin: 0 0 8px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 10px;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #B1B1B1;
+}
+
+.search-filter-popover__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+}
+
+.filter-chip input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    height: 0;
+}
+
+.filter-chip__label {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 12px;
+    border: 1px solid #797979;
+    border-radius: 999px;
+    background: #000000;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.filter-chip:hover .filter-chip__label { border-color: #FFFFFF; }
+
+.filter-chip input:checked + .filter-chip__label {
+    background: #FFFFFF;
+    color: #000000;
+    border-color: #FFFFFF;
+}
+
+/* Help button (right) — pinned to the right, never shrinks */
+.help-button {
+    box-sizing: border-box;
+    position: static;
+    flex: 0 0 auto;
+    width: 39px;
+    height: 39px;
+    margin-left: auto;
+    border: 2px solid #FFFFFF;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: background 0.2s ease;
+}
+
+.help-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Active / lit-up state when help mode is on */
+.help-button.active {
+    background: #FFFFFF;
+    border-color: #FFFFFF;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+}
+
+.help-button.active .help-mark {
+    color: #000000;
+}
+
+.help-button .help-mark {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    font-size: 32px;
+    line-height: 1;
+    color: #FFFFFF;
+    display: block;
+}
+
+/* Responsive tweaks — flex layout handles shrinking automatically */
+@media screen and (max-width: 900px) {
+    .topbar {
+        padding: 0 16px 0 12px;
+        gap: 16px;
+    }
+}
+
+/* ============================================================
+   Notification bell + dropdown — injected into every topbar
+   ============================================================ */
+.notif-btn {
+    flex-shrink: 0;
+    width: 39px;
+    height: 39px;
+    margin-left: 8px;
+    border: 2px solid #FFFFFF;
+    border-radius: 50%;
+    background: transparent;
+    color: #FFFFFF;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: background 0.2s ease;
+}
+
+.notif-btn:hover { background: rgba(255, 255, 255, 0.1); }
+
+.notif-btn.is-active {
+    background: #FFFFFF;
+    color: #000000;
+}
+
+.notif-btn svg { width: 18px; height: 18px; }
+
+.notif-btn__badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: #ff4d4d;
+    color: #FFFFFF;
+    font: 700 10px/18px 'Outfit', sans-serif;
+    text-align: center;
+    box-sizing: border-box;
+    border: 2px solid #242424;
+}
+
+.notif-btn__badge[hidden] { display: none; }
+
+/* Panel */
+.notif-panel {
+    position: fixed;
+    top: 70px;
+    width: 380px;
+    max-width: calc(100vw - 32px);
+    background: #1a1a1a;
+    border: 1px solid #797979;
+    border-radius: 12px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7);
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    z-index: 10010;
+    display: none;
+    overflow: hidden;
+    max-height: calc(100vh - 100px);
+}
+
+.notif-panel.open { display: flex; flex-direction: column; }
+
+.notif-panel__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid #2a2a2a;
+}
+
+.notif-panel__title {
+    margin: 0;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 1;
+    text-transform: uppercase;
+    color: #FFFFFF;
+}
+
+.notif-panel__mark {
+    background: transparent;
+    border: none;
+    color: #B1B1B1;
+    cursor: pointer;
+    font: 700 11px/1 'Outfit', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.notif-panel__mark:hover { color: #FFFFFF; background: rgba(255, 255, 255, 0.06); }
+
+.notif-panel__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    flex: 1 1 auto;
+}
+
+.notif-row {
+    display: grid;
+    grid-template-columns: 40px 1fr auto;
+    column-gap: 12px;
+    align-items: center;
+    padding: 12px 18px;
+    border-bottom: 1px solid #2a2a2a;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.15s ease;
+}
+
+.notif-row:hover { background: rgba(255, 255, 255, 0.04); }
+
+.notif-row:last-child { border-bottom: none; }
+
+.notif-row.is-unread {
+    background: rgba(74, 144, 226, 0.06);
+}
+
+.notif-row.is-unread::before {
+    content: "";
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #4A90E2;
+    margin-left: -10px;
+    margin-top: 8px;
+}
+
+.notif-row__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 12px;
+    color: #FFFFFF;
+    background-size: cover;
+    background-position: center;
+    flex-shrink: 0;
+    grid-row: 1 / span 2;
+}
+
+.notif-row__icon--bg {
+    background: rgba(255, 255, 255, 0.1);
+    color: #FFFFFF;
+}
+
+.notif-row__icon--bg svg { width: 18px; height: 18px; }
+
+.notif-row__main { min-width: 0; grid-column: 2; grid-row: 1 / span 2; }
+
+.notif-row__title {
+    font-weight: 700;
+    font-size: 13px;
+    line-height: 16px;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    margin-bottom: 2px;
+}
+
+.notif-row__body {
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 16px;
+    color: #B1B1B1;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.notif-row__time {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    align-self: start;
+    font-weight: 400;
+    font-size: 10px;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #B1B1B1;
+    white-space: nowrap;
+}
+
+.notif-panel__footer {
+    padding: 10px 18px;
+    border-top: 1px solid #2a2a2a;
+    text-align: center;
+}
+
+.notif-panel__footer a {
+    color: #FFFFFF;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.notif-panel__footer a:hover { text-decoration: underline; }
+
+.notif-panel__empty {
+    padding: 24px 18px;
+    color: #B1B1B1;
+    text-align: center;
+    font-size: 13px;
+}
+
+/* ===================================================
+   Stage label — two-line stack (PRIMARY / SECONDARY)
+   sitting in the topbar to indicate which Stage role is
+   active (Venue, Filming, Brand, Label). Pushed flush
+   to the help button via margin-left:auto.
+   =================================================== */
+.topbar-stage-label {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-end;
+    line-height: 1;
+    font-family: 'Outfit', sans-serif;
+    color: #FFFFFF;
+    margin-left: auto;
+    margin-right: 8px;
+    text-transform: uppercase;
+    pointer-events: none;
+    user-select: none;
+}
+
+.topbar-stage-label__primary {
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+}
+
+.topbar-stage-label__secondary {
+    font-weight: 400;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    color: rgba(255, 255, 255, 0.65);
+    margin-top: 2px;
+}

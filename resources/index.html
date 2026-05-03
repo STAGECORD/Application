@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAGECORD PRO — Resources</title>
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/logo.css">
+    <link rel="stylesheet" href="../css/topbar.css">
+    <link rel="stylesheet" href="../css/stage.css">
+</head>
+<body>
+    <aside class="sidebar" data-sidebar></aside>
+
+    <header class="topbar">
+        <div class="logo-container">
+            <a href="../index.html" class="logo-link">
+                <h1 class="logo"><span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span><span class="logo-pro">PRO</span></h1>
+            </a>
+        </div>
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Search Artists, Concerts, Venues, Friends and much more" aria-label="Search"/>
+            <svg class="search-icon" viewBox="0 0 28 28" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/><path d="M18 18L24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <button type="button" class="help-button" aria-label="Help" aria-pressed="false" data-help="Help button."><span class="help-mark">?</span></button>
+    </header>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <header class="stage-page-header">
+                <h1 class="stage-page-header__title">Resources</h1>
+            </header>
+
+            <p class="ar-page-intro" data-help="Resources is the pool of email accounts your company has provisioned. An email can be Common (your own domain, e.g. @sony.com) or Non-common (freelancers with external domains). Each resource is in one of four states: Available (not linked to a profile yet), Pending (profile created, person hasn't logged in yet), Active (logged in and completed onboarding), or Inactive (terminated). Use Resources to create new A&R/Manager/PR profiles — or pre-provision emails for future hires.">
+                Pool of email accounts attached to your company profile. Use an <em>available</em> resource to create a new A&amp;R/Manager/PR profile — or add new emails (own domain or freelance).
+            </p>
+
+            <!-- ===== Stats summary ===== -->
+            <div class="resources-summary" data-resources-summary></div>
+
+            <!-- ===== Filter bar (aligned to the 7 table columns below) ===== -->
+            <section class="stage-filters stage-filters--with-cta" data-help="Filter resources by status, type, or search by email/name. Use 'Add resource' to provision a new email. Filter columns align with the table columns below.">
+                <label class="stage-filter stage-filter--search">
+                    <span class="stage-filter__label">Search email</span>
+                    <input type="text" class="stage-filter__control" data-resources-filter="search-email" placeholder=""/>
+                </label>
+                <label class="stage-filter stage-filter--search">
+                    <span class="stage-filter__label">Search name</span>
+                    <input type="text" class="stage-filter__control" data-resources-filter="search-name" placeholder=""/>
+                </label>
+                <label class="stage-filter">
+                    <span class="stage-filter__label">Type</span>
+                    <select class="stage-filter__control" data-resources-filter="type">
+                        <option value="all">All</option>
+                        <option value="common">Common</option>
+                        <option value="non-common">Freelance</option>
+                    </select>
+                </label>
+                <label class="stage-filter">
+                    <span class="stage-filter__label">Status</span>
+                    <select class="stage-filter__control" data-resources-filter="status">
+                        <option value="all">All</option>
+                        <option value="active">Active</option>
+                        <option value="pending">Pending</option>
+                        <option value="available">Available</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </label>
+                <label class="stage-filter">
+                    <span class="stage-filter__label">Profile type</span>
+                    <select class="stage-filter__control" data-resources-filter="profile">
+                        <option value="all">All</option>
+                        <option value="A&R">A&amp;R</option>
+                        <option value="Manager">Manager</option>
+                        <option value="PR">PR</option>
+                        <option value="none">No profile</option>
+                    </select>
+                </label>
+                <label class="stage-filter">
+                    <span class="stage-filter__label">Sort by</span>
+                    <select class="stage-filter__control" data-resources-filter="sort">
+                        <option value="created-desc">Newest first</option>
+                        <option value="created-asc">Oldest first</option>
+                        <option value="email">Email A→Z</option>
+                        <option value="name">Name A→Z</option>
+                    </select>
+                </label>
+                <button type="button" class="stage-filter-cta" data-resources-add data-help="Add a new email to the pool. Common (your own domain) or Non-common (freelancer with external email).">
+                    <span class="stage-filter-cta__plus">+</span>
+                    <span class="stage-filter-cta__label">Add resource</span>
+                </button>
+            </section>
+
+            <!-- ===== Pending invitations (warning section) ===== -->
+            <section class="resources-section" data-resources-pending hidden>
+                <h2 class="resources-section__title resources-section__title--warn">⚠ Pending invitations</h2>
+                <div class="resources-table" data-resources-pending-table></div>
+            </section>
+
+            <!-- ===== Available (no profile) ===== -->
+            <section class="resources-section" data-resources-available hidden>
+                <h2 class="resources-section__title">Available — provisioned but no profile yet</h2>
+                <div class="resources-table" data-resources-available-table></div>
+            </section>
+
+            <!-- ===== Active resources ===== -->
+            <section class="resources-section" data-resources-active hidden>
+                <h2 class="resources-section__title">Active resources</h2>
+                <div class="resources-table" data-resources-active-table></div>
+            </section>
+
+            <!-- ===== Inactive (terminated) ===== -->
+            <section class="resources-section" data-resources-inactive hidden>
+                <h2 class="resources-section__title">Inactive — terminated employees</h2>
+                <div class="resources-table" data-resources-inactive-table></div>
+            </section>
+
+        </div>
+    </main>
+
+    <script src="../js/core.js"></script>
+    <script src="../js/modes.js"></script>
+    <script src="../js/sidebar.js"></script>
+    <script src="../js/topbar-widgets.js"></script>
+    <script src="../js/stage-badge.js"></script>
+    <script src="../js/acting-as-service.js"></script>
+    <script src="../js/stage-cards.js"></script>
+    <script src="../js/stage-label.js"></script>
+    <script src="../js/stage-resources.js"></script>
+    <script src="../js/stage-economy.js"></script>
+    <script src="../js/settings.js"></script>
+    <script src="../js/activity-feed.js"></script>
+    <script src="../js/app.js"></script>
+</body>
+</html>

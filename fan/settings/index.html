@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAGECORD - Fan Settings</title>
+    <link rel="stylesheet" href="../../css/sidebar.css">
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/logo.css">
+    <link rel="stylesheet" href="../../css/topbar.css">
+    <link rel="stylesheet" href="../../css/artist-settings.css">
+</head>
+<body>
+    <!-- Left Sidebar Navigation -->
+    <aside class="sidebar" data-sidebar></aside>
+
+    <!-- Top Bar -->
+    <header class="topbar">
+        <div class="logo-container">
+            <a href="../../index.html" class="logo-link">
+                <h1 class="logo">
+                    <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
+                </h1>
+            </a>
+        </div>
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Search Artists, Concerts, Venues, Friends and much more" aria-label="Search"/>
+            <svg class="search-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/>
+                <path d="M18 18L24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <button type="button" class="help-button" aria-label="Help" aria-pressed="false" data-help="Help button: Click to enter help mode, then click any element with a help-cursor to see what it does. Press Esc or click the help button again to exit.">
+            <span class="help-mark">?</span>
+        </button>
+    </header>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <header class="settings-header">
+                <h1 class="settings-header__title">Fan Settings</h1>
+                <span class="settings-header__sub" data-help="Du redigerer din fan-profil. Disse indstillinger gælder for din personlige profil — ikke en eventuel artist-profil.">Editing Julie Andersen</span>
+            </header>
+
+            <nav class="settings-tabs" role="tablist">
+                <button type="button" class="settings-tab active" data-tab="profile" role="tab" aria-selected="true">Profile</button>
+                <button type="button" class="settings-tab" data-tab="friends" role="tab">Following &amp; friends</button>
+                <button type="button" class="settings-tab" data-tab="creator" role="tab">Creator &amp; monetization</button>
+                <button type="button" class="settings-tab" data-tab="privacy" role="tab">Privacy</button>
+                <button type="button" class="settings-tab" data-tab="notifications" role="tab">Notifications</button>
+                <button type="button" class="settings-tab" data-tab="activity" role="tab">Activity log</button>
+            </nav>
+
+            <!-- ===== Profile panel ===== -->
+            <section class="settings-panel active" data-panel="profile" role="tabpanel">
+
+                <div class="settings-section">
+                    <h2 class="settings-section__title">Identity</h2>
+                    <div class="settings-grid">
+                        <div class="form-field">
+                            <label class="form-field__label">Display name</label>
+                            <input type="text" value="Julie Andersen">
+                        </div>
+                        <div class="form-field">
+                            <label class="form-field__label">Handle</label>
+                            <div class="settings-input-prefix">
+                                <span class="settings-input-prefix__label">stagecord.com/</span>
+                                <input type="text" value="julie">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-field">
+                        <label class="form-field__label">Bio</label>
+                        <textarea rows="4">Festival fanatic and weekend dance content creator. Currently obsessed with comedy-pop and lo-fi.</textarea>
+                    </div>
+                    <div class="settings-grid">
+                        <div class="form-field">
+                            <label class="form-field__label">Location</label>
+                            <input type="text" value="Brooklyn, NY">
+                        </div>
+                        <div class="form-field">
+                            <label class="form-field__label">Pronouns</label>
+                            <input type="text" value="she/her">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h2 class="settings-section__title">What you do</h2>
+                    <div class="role-section">
+                        <h3 class="role-section__title">Creator roles</h3>
+                        <div class="role-grid">
+                            <label class="role-chip"><input type="checkbox" checked><span class="role-chip__label">Dancer</span></label>
+                            <label class="role-chip"><input type="checkbox" checked><span class="role-chip__label">Content creator</span></label>
+                            <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Choreographer</span></label>
+                            <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Streamer</span></label>
+                            <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Podcaster</span></label>
+                            <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Voice actor</span></label>
+                            <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Comedian</span></label>
+                            <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Speaker</span></label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-actions-bar">
+                    <button type="button" class="settings-btn">Reset</button>
+                    <button type="button" class="settings-btn settings-btn--primary">Save changes</button>
+                </div>
+            </section>
+
+            <!-- ===== Following & friends panel ===== -->
+            <section class="settings-panel" data-panel="friends" role="tabpanel">
+                <h2 class="settings-section__title">Connection mode</h2>
+                <ul class="settings-rows">
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Followers-only mode</div>
+                            <div class="settings-row__desc">Replaces friend requests with one-way "Follow". Anyone can follow you without your approval — recommended once you're regularly producing content.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <label class="reward-toggle"><input type="checkbox" checked><span class="reward-toggle__slider"></span></label>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Allow incoming friend requests</div>
+                            <div class="settings-row__desc">Even in followers-only mode, you can keep this on for close personal connections.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <label class="reward-toggle"><input type="checkbox"><span class="reward-toggle__slider"></span></label>
+                        </div>
+                    </li>
+                </ul>
+
+                <h2 class="settings-section__title">Audience</h2>
+                <ul class="settings-rows">
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Followers</div>
+                            <div class="settings-row__desc">People who get notified about your content and activity.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <span style="font: 700 18px/1 'Outfit', sans-serif; color: #FFFFFF;">52,847</span>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Friends</div>
+                            <div class="settings-row__desc">Mutual close connections.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <span style="font: 700 18px/1 'Outfit', sans-serif; color: #FFFFFF;">532</span>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Pending friend requests</div>
+                            <div class="settings-row__desc">Currently awaiting your decision.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <span style="font: 700 18px/1 'Outfit', sans-serif; color: #FFFFFF;">14</span>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="settings-actions-bar">
+                    <button type="button" class="settings-btn">Reset</button>
+                    <button type="button" class="settings-btn settings-btn--primary">Save changes</button>
+                </div>
+            </section>
+
+            <!-- ===== Creator & monetization panel ===== -->
+            <section class="settings-panel" data-panel="creator" role="tabpanel">
+                <h2 class="settings-section__title">Creator program</h2>
+                <ul class="settings-rows">
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Enrolled in creator program</div>
+                            <div class="settings-row__desc">Required to receive sponsorship revenue, ad revenue and artist commissions.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <label class="reward-toggle"><input type="checkbox" checked><span class="reward-toggle__slider"></span></label>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Allow ads on my content</div>
+                            <div class="settings-row__desc">STAGECORD PRO can run pre-roll or banner ads on your videos.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <label class="reward-toggle"><input type="checkbox" checked><span class="reward-toggle__slider"></span></label>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Open to sponsorships</div>
+                            <div class="settings-row__desc">Brands and labels can reach out to you with sponsorship deals.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <label class="reward-toggle"><input type="checkbox" checked><span class="reward-toggle__slider"></span></label>
+                        </div>
+                    </li>
+                </ul>
+
+                <h2 class="settings-section__title">Commissions from artists</h2>
+                <ul class="settings-rows">
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Accept artist commissions</div>
+                            <div class="settings-row__desc">Show up in artists' "Hire creator" search and accept paid briefs.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <label class="reward-toggle"><input type="checkbox" checked><span class="reward-toggle__slider"></span></label>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Pricing mode</div>
+                            <div class="settings-row__desc">"Custom rate" requires 50,000+ followers — you have 52,847.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <select>
+                                <option>Accept artist's fixed fee</option>
+                                <option selected>Set my own rate (custom)</option>
+                            </select>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">My base rate</div>
+                            <div class="settings-row__desc">Default starting price when you respond to a brief. You can still negotiate per project.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <div class="settings-input-suffix" style="width: 140px;">
+                                <input type="number" value="6500">
+                                <span class="settings-input-suffix__unit">DKK</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Content types I make</div>
+                            <div class="settings-row__desc">Helps artists target the right brief format.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <select>
+                                <option>Dance video</option>
+                                <option>Lip-sync / sing-along</option>
+                                <option>Cover performance</option>
+                                <option>Vlog / behind-the-scenes</option>
+                                <option>Podcast appearance</option>
+                            </select>
+                        </div>
+                    </li>
+                </ul>
+
+                <h2 class="settings-section__title">Earnings overview (last 30 days)</h2>
+                <ul class="settings-rows">
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Sponsorship revenue</div>
+                            <div class="settings-row__desc">Brand deals signed via STAGECORD PRO.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <span style="font: 700 18px/1 'Outfit', sans-serif; color: #00A911;">14,200 DKK</span>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Ad revenue</div>
+                            <div class="settings-row__desc">Pre-roll and in-feed ads on your content.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <span style="font: 700 18px/1 'Outfit', sans-serif; color: #00A911;">3,840 DKK</span>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Artist commissions</div>
+                            <div class="settings-row__desc">Direct payouts from commissioned briefs.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <span style="font: 700 18px/1 'Outfit', sans-serif; color: #00A911;">8,500 DKK</span>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Royalties paid out to artists</div>
+                            <div class="settings-row__desc">Auto-deducted from your earnings — covers artists whose music you used.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <span style="font: 700 18px/1 'Outfit', sans-serif; color: #B1B1B1;">−4,610 DKK</span>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="settings-actions-bar">
+                    <button type="button" class="settings-btn">Reset</button>
+                    <button type="button" class="settings-btn settings-btn--primary">Save changes</button>
+                </div>
+            </section>
+
+            <!-- ===== Privacy panel ===== -->
+            <section class="settings-panel" data-panel="privacy" role="tabpanel">
+                <ul class="settings-rows">
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Profile visibility</div>
+                            <div class="settings-row__desc">Who can see your fan page.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <select><option selected>Everyone</option><option>Followers only</option><option>Friends only</option><option>Private</option></select>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Show friends list</div>
+                            <div class="settings-row__desc">Lets other users open your full friends list when they click "Friends" on your cover.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <label class="reward-toggle"><input type="checkbox" checked><span class="reward-toggle__slider"></span></label>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Show past concerts</div>
+                            <div class="settings-row__desc">Lets other users open the list of shows you've attended when they click "Concerts" on your cover.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <label class="reward-toggle"><input type="checkbox" checked><span class="reward-toggle__slider"></span></label>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Show who I follow</div>
+                            <div class="settings-row__desc">Lets other users open your following list when they click "Following" on your cover.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <label class="reward-toggle"><input type="checkbox" checked><span class="reward-toggle__slider"></span></label>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Who can message you</div>
+                            <div class="settings-row__desc">Limit your inbox to certain groups.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <select><option>Everyone</option><option selected>Followers &amp; friends</option><option>Friends only</option><option>No one</option></select>
+                        </div>
+                    </li>
+                </ul>
+                <div class="settings-actions-bar">
+                    <button type="button" class="settings-btn">Reset</button>
+                    <button type="button" class="settings-btn settings-btn--primary">Save changes</button>
+                </div>
+            </section>
+
+            <!-- ===== Notifications panel ===== -->
+            <section class="settings-panel" data-panel="notifications" role="tabpanel">
+                <ul class="settings-rows">
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">New follower</div>
+                            <div class="settings-row__desc">Someone starts following your profile.</div>
+                        </div>
+                        <div class="settings-row__control"><label class="reward-toggle"><input type="checkbox" checked><span class="reward-toggle__slider"></span></label></div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Sponsorship offer</div>
+                            <div class="settings-row__desc">A brand or label has reached out to you.</div>
+                        </div>
+                        <div class="settings-row__control"><label class="reward-toggle"><input type="checkbox" checked><span class="reward-toggle__slider"></span></label></div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Artist commission brief</div>
+                            <div class="settings-row__desc">An artist has hired you to create content with their material.</div>
+                        </div>
+                        <div class="settings-row__control"><label class="reward-toggle"><input type="checkbox" checked><span class="reward-toggle__slider"></span></label></div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Follower milestones</div>
+                            <div class="settings-row__desc">Get notified when you cross 1K, 10K, 50K, 100K followers — and when you unlock the artist-profile upgrade option (which lets you transfer all your followers to a new artist profile).</div>
+                        </div>
+                        <div class="settings-row__control"><label class="reward-toggle"><input type="checkbox" checked><span class="reward-toggle__slider"></span></label></div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Royalty payouts</div>
+                            <div class="settings-row__desc">Monthly summary of what you earned and what was paid out to artists.</div>
+                        </div>
+                        <div class="settings-row__control"><label class="reward-toggle"><input type="checkbox" checked><span class="reward-toggle__slider"></span></label></div>
+                    </li>
+                </ul>
+                <div class="settings-actions-bar">
+                    <button type="button" class="settings-btn">Reset</button>
+                    <button type="button" class="settings-btn settings-btn--primary">Save changes</button>
+                </div>
+            </section>
+
+            <!-- ===== Activity log panel ===== -->
+            <section class="settings-panel" data-panel="activity" role="tabpanel">
+                <h2 class="settings-section__title">Activity overview</h2>
+                <div class="kpi-grid" id="activityKpis"></div>
+
+                <h2 class="settings-section__title" style="margin-top: 28px;">Saved items</h2>
+                <ul class="settings-rows" id="activitySaved" data-help="Bookmarks: Posts og features du har gemt på tværs af platformen — alt der står med gylden bookmark-ikon."></ul>
+
+                <h2 class="settings-section__title" style="margin-top: 28px;">Following</h2>
+                <ul class="settings-rows" id="activityFollowing" data-help="Following: Profiler du har valgt at følge — fra hover-cards eller Suggested for you."></ul>
+
+                <h2 class="settings-section__title" style="margin-top: 28px;">Recent reposts</h2>
+                <ul class="settings-rows" id="activityReposts" data-help="Reposts: Posts du har delt videre til din egen feed."></ul>
+
+                <div class="settings-actions-bar">
+                    <button type="button" class="settings-btn" id="activityClearBtn">Clear all activity</button>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <link rel="stylesheet" href="../../css/dashboard.css">
+
+    <script src="../../js/core.js"></script>
+    <script src="../../js/modes.js"></script>
+    <script src="../../js/sidebar.js"></script>
+    <script src="../../js/topbar-widgets.js"></script>
+    <script src="../../js/stage-badge.js"></script>
+    <script src="../../js/acting-as-service.js"></script>
+    <script src="../../js/stage-cards.js"></script>
+    <script src="../../js/stage-label.js"></script>
+    <script src="../../js/stage-resources.js"></script>
+    <script src="../../js/stage-economy.js"></script>
+    <script src="../../js/settings.js"></script>
+    <script src="../../js/activity-feed.js"></script>
+    <script src="../../js/app.js"></script>
+    <script>
+    // ============================================================
+    // Activity log — pulls from the shared localStorage stores
+    // (saved, following, reposts) populated by the Tier 1 / Tier 2
+    // features. Updates live every time the panel is opened.
+    // ============================================================
+    (function() {
+        const kpis = document.getElementById('activityKpis');
+        const savedList = document.getElementById('activitySaved');
+        const followList = document.getElementById('activityFollowing');
+        const repostList = document.getElementById('activityReposts');
+        const clearBtn = document.getElementById('activityClearBtn');
+        if (!kpis || !savedList || !followList || !repostList) return;
+
+        function read(key, fallback) {
+            try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }
+            catch (e) { return fallback; }
+        }
+
+        function buildEmpty(message) {
+            return '<li class="settings-row"><div class="settings-row__main"><div class="settings-row__desc">' + message + '</div></div></li>';
+        }
+
+        function render() {
+            const saved     = read('stagecord_saved', []);
+            const following = read('stagecord_following', {});
+            const reposts   = read('stagecord_reposts', []);
+            const moderation = read('stagecord_moderation', {});
+            const polls     = read('stagecord_polls', {});
+            const rsvp      = read('stagecord_rsvp', {});
+
+            // KPI cards
+            kpis.innerHTML =
+                '<div class="kpi-card"><div class="kpi-card__label">Saved items</div><div class="kpi-card__value">' + saved.length + '</div><div class="kpi-card__delta kpi-card__delta--flat">posts &amp; features</div></div>' +
+                '<div class="kpi-card"><div class="kpi-card__label">Following</div><div class="kpi-card__value">' + Object.keys(following).length + '</div><div class="kpi-card__delta kpi-card__delta--flat">artists &amp; creators</div></div>' +
+                '<div class="kpi-card"><div class="kpi-card__label">Reposts</div><div class="kpi-card__value">' + reposts.length + '</div><div class="kpi-card__delta kpi-card__delta--flat">shared to your feed</div></div>' +
+                '<div class="kpi-card"><div class="kpi-card__label">Polls voted</div><div class="kpi-card__value">' + Object.keys(polls).length + '</div><div class="kpi-card__delta kpi-card__delta--flat">community decisions</div></div>' +
+                '<div class="kpi-card"><div class="kpi-card__label">RSVP\u2019d events</div><div class="kpi-card__value">' + Object.keys(rsvp).length + '</div><div class="kpi-card__delta kpi-card__delta--flat">going / maybe / not</div></div>' +
+                '<div class="kpi-card"><div class="kpi-card__label">Reports submitted</div><div class="kpi-card__value">' + ((moderation.reports || []).length) + '</div><div class="kpi-card__delta kpi-card__delta--flat">to moderation</div></div>';
+
+            // Saved items list
+            if (!saved.length) {
+                savedList.innerHTML = buildEmpty('You haven\u2019t saved anything yet — click the bookmark icon on any post or feature.');
+            } else {
+                savedList.innerHTML = saved.slice(0, 10).map(function(id) {
+                    const parts = id.split(':');
+                    const type = parts[0];
+                    const slug = parts.slice(1).join(':').replace(/-/g, ' ');
+                    const label = type === 'post' ? 'Post' : (type === 'feature' ? 'Feature' : 'Item');
+                    return '<li class="settings-row">' +
+                        '<div class="settings-row__main">' +
+                            '<div class="settings-row__name">' + label + '</div>' +
+                            '<div class="settings-row__desc">' + slug + '</div>' +
+                        '</div>' +
+                        '<div class="settings-row__control"><span class="pill pill--amber">Saved</span></div>' +
+                    '</li>';
+                }).join('');
+            }
+
+            // Following list
+            const followKeys = Object.keys(following);
+            if (!followKeys.length) {
+                followList.innerHTML = buildEmpty('You\u2019re not following anyone yet — hover any name and click Follow.');
+            } else {
+                followList.innerHTML = followKeys.slice(0, 10).map(function(name) {
+                    const since = following[name] && following[name].since ? new Date(following[name].since).toLocaleDateString() : '';
+                    return '<li class="settings-row">' +
+                        '<div class="settings-row__main">' +
+                            '<div class="settings-row__name auto-name">' + name.replace(/(?:^|\s)\S/g, function(c) { return c.toUpperCase(); }) + '</div>' +
+                            '<div class="settings-row__desc">Following since ' + since + '</div>' +
+                        '</div>' +
+                        '<div class="settings-row__control"><span class="pill pill--green">Following</span></div>' +
+                    '</li>';
+                }).join('');
+                if (typeof formatAllNames === 'function') formatAllNames(followList);
+            }
+
+            // Reposts list
+            if (!reposts.length) {
+                repostList.innerHTML = buildEmpty('You haven\u2019t reposted anything yet — click the share icon on any post.');
+            } else {
+                repostList.innerHTML = reposts.slice(-10).reverse().map(function(r) {
+                    const when = new Date(r.time).toLocaleString();
+                    return '<li class="settings-row">' +
+                        '<div class="settings-row__main">' +
+                            '<div class="settings-row__name auto-name">' + (r.author || 'Unknown') + '</div>' +
+                            '<div class="settings-row__desc">' + (r.quote ? '"' + r.quote + '"' : 'Reposted ' + when) + '</div>' +
+                        '</div>' +
+                        '<div class="settings-row__control"><span class="pill pill--blue">Reposted</span></div>' +
+                    '</li>';
+                }).join('');
+                if (typeof formatAllNames === 'function') formatAllNames(repostList);
+            }
+        }
+
+        // Re-render whenever the Activity tab is activated (or initially)
+        const activityTab = document.querySelector('.settings-tab[data-tab="activity"]');
+        if (activityTab) activityTab.addEventListener('click', render);
+        render();
+
+        if (clearBtn) {
+            clearBtn.addEventListener('click', function() {
+                if (typeof helpActive !== 'undefined' && helpActive) return;
+                if (!confirm('Clear all activity? This removes saved items, following list, reposts, poll votes, RSVPs and reports stored in this browser. Cannot be undone.')) return;
+                ['stagecord_saved','stagecord_following','stagecord_reposts','stagecord_polls','stagecord_rsvp','stagecord_moderation'].forEach(function(k) {
+                    localStorage.removeItem(k);
+                });
+                render();
+                if (typeof showToast === 'function') showToast('Activity cleared');
+            });
+        }
+    })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAGECORD PRO — Label Economy</title>
+    <link rel="stylesheet" href="../../css/sidebar.css">
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/logo.css">
+    <link rel="stylesheet" href="../../css/topbar.css">
+    <link rel="stylesheet" href="../../css/stage.css">
+</head>
+<body>
+    <aside class="sidebar" data-sidebar></aside>
+
+    <header class="topbar">
+        <div class="logo-container">
+            <a href="../../index.html" class="logo-link">
+                <h1 class="logo"><span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span><span class="logo-pro">PRO</span></h1>
+            </a>
+        </div>
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Search Artists, Concerts, Venues, Friends and much more" aria-label="Search"/>
+            <svg class="search-icon" viewBox="0 0 28 28" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/><path d="M18 18L24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <button type="button" class="help-button" aria-label="Help" aria-pressed="false" data-help="Help button."><span class="help-mark">?</span></button>
+    </header>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <header class="stage-page-header">
+                <h1 class="stage-page-header__title">Economy</h1>
+            </header>
+
+            <p class="ar-page-intro" data-help="Label-wide financial overview. Aggregates earnings across all artists in your roster — both your label's share (per the contract terms) and the artists' share. Use this to spot trends, see where revenue concentrates, and track outstanding payouts.">
+                Aggregated earnings across your <strong data-economy-roster-count>—</strong> artists. Numbers show year-to-date unless a different period is selected.
+            </p>
+
+            <!-- ===== Period selector ===== -->
+            <div class="economy-period" data-help="Change the reporting period. Numbers below recalculate to match — useful when comparing recent performance vs earlier periods.">
+                <span class="economy-period__label">Period</span>
+                <button type="button" class="economy-period__pill" data-economy-period="30d">Last 30 days</button>
+                <button type="button" class="economy-period__pill" data-economy-period="90d">Last 90 days</button>
+                <button type="button" class="economy-period__pill is-active" data-economy-period="ytd">Year to date</button>
+                <button type="button" class="economy-period__pill" data-economy-period="all">All time</button>
+            </div>
+
+            <!-- ===== KPI cards ===== -->
+            <div class="economy-kpi-grid" data-economy-kpis></div>
+
+            <!-- ===== Revenue breakdown + Top artists ===== -->
+            <div class="economy-grid">
+                <section class="economy-card" data-help="Revenue split by source. Streams = digital streaming royalties, Sales = paid downloads/physical, Covers = fan-made covers earning a share, Brands = brand-deal income, Concerts = ticketing & merch, Sync = film/TV/commercial licensing.">
+                    <h2 class="economy-card__title">Revenue by source</h2>
+                    <p class="economy-card__hint">Where the label's revenue is coming from across the entire roster.</p>
+                    <div data-economy-sources></div>
+                </section>
+
+                <section class="economy-card" data-help="Top 10 highest-earning artists. Click an artist to drill into their contract and per-source breakdown.">
+                    <h2 class="economy-card__title">Top earning artists</h2>
+                    <p class="economy-card__hint">Sorted by total label-side revenue contribution.</p>
+                    <div class="top-artists-list" data-economy-top-artists></div>
+                </section>
+            </div>
+
+            <!-- ===== Recent payouts ===== -->
+            <section class="economy-card" data-help="Recent payouts to artists in your roster. Pending = scheduled but not yet executed; Paid = funds transferred. Click a row to open the artist's contract for full split details.">
+                <h2 class="economy-card__title">Recent payouts</h2>
+                <p class="economy-card__hint">Last 10 transactions across the roster. Includes both paid and pending.</p>
+                <div data-economy-payouts></div>
+            </section>
+
+        </div>
+    </main>
+
+    <script src="../../js/core.js"></script>
+    <script src="../../js/modes.js"></script>
+    <script src="../../js/sidebar.js"></script>
+    <script src="../../js/topbar-widgets.js"></script>
+    <script src="../../js/stage-badge.js"></script>
+    <script src="../../js/acting-as-service.js"></script>
+    <script src="../../js/stage-cards.js"></script>
+    <script src="../../js/stage-label.js"></script>
+    <script src="../../js/stage-resources.js"></script>
+    <script src="../../js/stage-economy.js"></script>
+    <script src="../../js/settings.js"></script>
+    <script src="../../js/activity-feed.js"></script>
+    <script src="../../js/app.js"></script>
+</body>
+</html>

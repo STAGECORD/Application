@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAGECORD - Collabs</title>
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/logo.css">
+    <link rel="stylesheet" href="../css/topbar.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/artist-settings.css">
+</head>
+<body>
+    <aside class="sidebar" data-sidebar></aside>
+
+    <header class="topbar">
+        <div class="logo-container"><a href="../index.html" class="logo-link"><h1 class="logo"><span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span></h1></a></div>
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Search Artists, Concerts, Venues, Friends and much more" aria-label="Search"/>
+            <svg class="search-icon" viewBox="0 0 28 28" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/><path d="M18 18L24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <button type="button" class="help-button" aria-label="Help" aria-pressed="false" data-help="Help button: Click to enter help mode, then click any element with a help-cursor to see what it does. Press Esc or click the help button again to exit."><span class="help-mark">?</span></button>
+    </header>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <header class="page-header">
+                <h1 class="page-header__title">Collabs</h1>
+                <div class="page-header__actions">
+                    <button type="button" class="page-btn" data-help="Send en collab-anmodning til en anden artist — vælg projekt-type, royalty-split og scope.">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                        New collab request
+                    </button>
+                </div>
+            </header>
+
+            <nav class="settings-tabs" role="tablist">
+                <button type="button" class="settings-tab active" data-tab="active" role="tab" aria-selected="true">Active (4)</button>
+                <button type="button" class="settings-tab" data-tab="pending" role="tab">Pending (2)</button>
+                <button type="button" class="settings-tab" data-tab="completed" role="tab">Completed (3)</button>
+            </nav>
+
+            <section class="settings-panel active" data-panel="active" role="tabpanel">
+            <ul class="reward-list" data-help="Liste over aktive collabs. Hvert kort viser modparten, projekt-titel, din rolle, royalty-split og deadline.">
+                <li class="reward-card">
+                    <div class="reward-card__main">
+                        <div class="reward-card__name auto-name">Maya Thompson</div>
+                        <p class="reward-card__desc">Late Night Sessions — co-writing topline + bridge for the new EP. Studio block booked at Sun Studios.</p>
+                    </div>
+                    <div class="reward-card__rule">
+                        <div class="reward-card__rule-line"><span class="reward-card__rule-key">Role</span><span class="reward-card__rule-value">Co-writer · Topliner</span></div>
+                        <div class="reward-card__rule-line"><span class="reward-card__rule-key">Split</span><span class="reward-card__rule-value reward-card__rule-value--green">35% writer share</span></div>
+                        <div class="reward-card__rule-line"><span class="reward-card__rule-key">Deadline</span><span class="reward-card__rule-value">2024-11-15</span></div>
+                    </div>
+                    <div class="reward-card__actions">
+                        <button type="button" class="reward-card__icon-btn" aria-label="Open thread"><svg viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="2"/></svg></button>
+                        <button type="button" class="reward-card__icon-btn" aria-label="Edit"><svg viewBox="0 0 24 24" fill="none"><path d="M15.2 4.4l4.4 4.4M3 21l4.6-1.1L20 7.4a1.5 1.5 0 0 0 0-2.1l-1.3-1.3a1.5 1.5 0 0 0-2.1 0L4.1 16.4 3 21z" stroke="currentColor" stroke-width="2"/></svg></button>
+                    </div>
+                </li>
+
+                <li class="reward-card">
+                    <div class="reward-card__main">
+                        <div class="reward-card__name auto-name">Anchi Humifuku</div>
+                        <p class="reward-card__desc">Northern Lights vol. 2 — full-length album collaboration. 4 tracks completed, 6 remaining.</p>
+                    </div>
+                    <div class="reward-card__rule">
+                        <div class="reward-card__rule-line"><span class="reward-card__rule-key">Role</span><span class="reward-card__rule-value">Featured artist</span></div>
+                        <div class="reward-card__rule-line"><span class="reward-card__rule-key">Split</span><span class="reward-card__rule-value reward-card__rule-value--green">50/50 master &amp; publishing</span></div>
+                        <div class="reward-card__rule-line"><span class="reward-card__rule-key">Release</span><span class="reward-card__rule-value">Q1 2025</span></div>
+                    </div>
+                    <div class="reward-card__actions">
+                        <button type="button" class="reward-card__icon-btn" aria-label="Open thread"><svg viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="2"/></svg></button>
+                        <button type="button" class="reward-card__icon-btn" aria-label="Edit"><svg viewBox="0 0 24 24" fill="none"><path d="M15.2 4.4l4.4 4.4M3 21l4.6-1.1L20 7.4a1.5 1.5 0 0 0 0-2.1l-1.3-1.3a1.5 1.5 0 0 0-2.1 0L4.1 16.4 3 21z" stroke="currentColor" stroke-width="2"/></svg></button>
+                    </div>
+                </li>
+
+                <li class="reward-card">
+                    <div class="reward-card__main">
+                        <div class="reward-card__name auto-name">Lars Vognsen</div>
+                        <p class="reward-card__desc">Production work on track 4 — mixing in progress. Awaiting his stems for the bridge.</p>
+                    </div>
+                    <div class="reward-card__rule">
+                        <div class="reward-card__rule-line"><span class="reward-card__rule-key">Role</span><span class="reward-card__rule-value">Producer · Mix engineer</span></div>
+                        <div class="reward-card__rule-line"><span class="reward-card__rule-key">Fee</span><span class="reward-card__rule-value reward-card__rule-value--green">12,000 DKK</span></div>
+                        <div class="reward-card__rule-line"><span class="reward-card__rule-key">Status</span><span class="reward-card__rule-value">Awaiting stems</span></div>
+                    </div>
+                    <div class="reward-card__actions">
+                        <button type="button" class="reward-card__icon-btn" aria-label="Open thread"><svg viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="2"/></svg></button>
+                        <button type="button" class="reward-card__icon-btn" aria-label="Edit"><svg viewBox="0 0 24 24" fill="none"><path d="M15.2 4.4l4.4 4.4M3 21l4.6-1.1L20 7.4a1.5 1.5 0 0 0 0-2.1l-1.3-1.3a1.5 1.5 0 0 0-2.1 0L4.1 16.4 3 21z" stroke="currentColor" stroke-width="2"/></svg></button>
+                    </div>
+                </li>
+
+                <li class="reward-card">
+                    <div class="reward-card__main">
+                        <div class="reward-card__name auto-name">Sara Holm</div>
+                        <p class="reward-card__desc">Behind The Curtain podcast — guest appearance + co-host slot for season 4 launch episode.</p>
+                    </div>
+                    <div class="reward-card__rule">
+                        <div class="reward-card__rule-line"><span class="reward-card__rule-key">Role</span><span class="reward-card__rule-value">Co-host</span></div>
+                        <div class="reward-card__rule-line"><span class="reward-card__rule-key">Fee</span><span class="reward-card__rule-value reward-card__rule-value--green">5,000 DKK + 10% ad rev</span></div>
+                        <div class="reward-card__rule-line"><span class="reward-card__rule-key">Recording</span><span class="reward-card__rule-value">2024-10-18</span></div>
+                    </div>
+                    <div class="reward-card__actions">
+                        <button type="button" class="reward-card__icon-btn" aria-label="Open thread"><svg viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="2"/></svg></button>
+                        <button type="button" class="reward-card__icon-btn" aria-label="Edit"><svg viewBox="0 0 24 24" fill="none"><path d="M15.2 4.4l4.4 4.4M3 21l4.6-1.1L20 7.4a1.5 1.5 0 0 0 0-2.1l-1.3-1.3a1.5 1.5 0 0 0-2.1 0L4.1 16.4 3 21z" stroke="currentColor" stroke-width="2"/></svg></button>
+                    </div>
+                </li>
+            </ul>
+            </section>
+
+            <section class="settings-panel" data-panel="pending" role="tabpanel">
+                <ul class="reward-list">
+                    <li class="reward-card">
+                        <div class="reward-card__main">
+                            <div class="reward-card__name auto-name">Frederik Holm</div>
+                            <p class="reward-card__desc">Piano arrangement of "Behind The Curtain" — awaiting his counter-proposal on the writer share split.</p>
+                        </div>
+                        <div class="reward-card__rule">
+                            <div class="reward-card__rule-line"><span class="reward-card__rule-key">Role</span><span class="reward-card__rule-value">Pianist · Arranger</span></div>
+                            <div class="reward-card__rule-line"><span class="reward-card__rule-key">Proposed</span><span class="reward-card__rule-value">15% writer share</span></div>
+                            <div class="reward-card__rule-line"><span class="reward-card__rule-key">Status</span><span class="reward-card__rule-value">Awaiting reply (3d)</span></div>
+                        </div>
+                        <div class="reward-card__actions">
+                            <button type="button" class="reward-card__icon-btn" aria-label="Open thread"><svg viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="2"/></svg></button>
+                            <button type="button" class="reward-card__icon-btn reward-card__icon-btn--danger" aria-label="Cancel"><svg viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" stroke="currentColor" stroke-width="2"/></svg></button>
+                        </div>
+                    </li>
+                    <li class="reward-card">
+                        <div class="reward-card__main">
+                            <div class="reward-card__name auto-name">Tobias Krogh</div>
+                            <p class="reward-card__desc">Lead guitar on track 6 of the new EP — sent the brief 24h ago, awaiting his acceptance.</p>
+                        </div>
+                        <div class="reward-card__rule">
+                            <div class="reward-card__rule-line"><span class="reward-card__rule-key">Role</span><span class="reward-card__rule-value">Lead guitarist</span></div>
+                            <div class="reward-card__rule-line"><span class="reward-card__rule-key">Proposed fee</span><span class="reward-card__rule-value">4,500 DKK</span></div>
+                            <div class="reward-card__rule-line"><span class="reward-card__rule-key">Status</span><span class="reward-card__rule-value">Pending acceptance</span></div>
+                        </div>
+                        <div class="reward-card__actions">
+                            <button type="button" class="reward-card__icon-btn" aria-label="Open thread"><svg viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="2"/></svg></button>
+                            <button type="button" class="reward-card__icon-btn reward-card__icon-btn--danger" aria-label="Cancel"><svg viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" stroke="currentColor" stroke-width="2"/></svg></button>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+
+            <section class="settings-panel" data-panel="completed" role="tabpanel">
+                <ul class="reward-list">
+                    <li class="reward-card is-inactive">
+                        <div class="reward-card__main">
+                            <div class="reward-card__name auto-name">Anchi Humifuku</div>
+                            <p class="reward-card__desc">"Manhattan Rain" single — released 2022, still earning ~80K DKK/year in royalties.</p>
+                        </div>
+                        <div class="reward-card__rule">
+                            <div class="reward-card__rule-line"><span class="reward-card__rule-key">Role</span><span class="reward-card__rule-value">Co-writer · Featured</span></div>
+                            <div class="reward-card__rule-line"><span class="reward-card__rule-key">Final split</span><span class="reward-card__rule-value reward-card__rule-value--green">40/60 in her favor</span></div>
+                            <div class="reward-card__rule-line"><span class="reward-card__rule-key">Released</span><span class="reward-card__rule-value">2022-09-12</span></div>
+                        </div>
+                    </li>
+                    <li class="reward-card is-inactive">
+                        <div class="reward-card__main">
+                            <div class="reward-card__name auto-name">DJ Frostbite</div>
+                            <p class="reward-card__desc">"Frozen Roads" guest verse — released 2023, paid out in full.</p>
+                        </div>
+                        <div class="reward-card__rule">
+                            <div class="reward-card__rule-line"><span class="reward-card__rule-key">Role</span><span class="reward-card__rule-value">Guest vocalist</span></div>
+                            <div class="reward-card__rule-line"><span class="reward-card__rule-key">Fee</span><span class="reward-card__rule-value">8,000 DKK</span></div>
+                            <div class="reward-card__rule-line"><span class="reward-card__rule-key">Released</span><span class="reward-card__rule-value">2023-08-14</span></div>
+                        </div>
+                    </li>
+                    <li class="reward-card is-inactive">
+                        <div class="reward-card__main">
+                            <div class="reward-card__name auto-name">Sara Holm</div>
+                            <p class="reward-card__desc">Behind The Curtain S2E04 — podcast guest, 980K listens to date.</p>
+                        </div>
+                        <div class="reward-card__rule">
+                            <div class="reward-card__rule-line"><span class="reward-card__rule-key">Role</span><span class="reward-card__rule-value">Guest</span></div>
+                            <div class="reward-card__rule-line"><span class="reward-card__rule-key">Fee</span><span class="reward-card__rule-value">3,000 DKK</span></div>
+                            <div class="reward-card__rule-line"><span class="reward-card__rule-key">Released</span><span class="reward-card__rule-value">2024-04-22</span></div>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+
+        </div>
+    </main>
+
+    <script src="../js/core.js"></script>
+    <script src="../js/modes.js"></script>
+    <script src="../js/sidebar.js"></script>
+    <script src="../js/topbar-widgets.js"></script>
+    <script src="../js/stage-badge.js"></script>
+    <script src="../js/acting-as-service.js"></script>
+    <script src="../js/stage-cards.js"></script>
+    <script src="../js/stage-label.js"></script>
+    <script src="../js/stage-resources.js"></script>
+    <script src="../js/stage-economy.js"></script>
+    <script src="../js/settings.js"></script>
+    <script src="../js/activity-feed.js"></script>
+    <script src="../js/app.js"></script>
+    <script>
+    // ============================================================
+    // Collabs — wire up thread + edit + delete actions
+    // ============================================================
+    (function() {
+        document.querySelectorAll('.reward-list').forEach(function(list) {
+            list.addEventListener('click', function(e) {
+                if (typeof helpActive !== 'undefined' && helpActive) return;
+                const card = e.target.closest('.reward-card');
+                if (!card) return;
+
+                if (e.target.closest('[aria-label="Open thread"]')) {
+                    window.location.href = '../inbox/index.html';
+                    return;
+                }
+                if (e.target.closest('[aria-label="Cancel"]')) {
+                    if (confirm('Cancel this pending collab request?')) card.remove();
+                    return;
+                }
+            });
+        });
+    })();
+    </script>
+</body>
+</html>

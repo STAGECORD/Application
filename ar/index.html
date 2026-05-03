@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAGECORD — A&R</title>
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/logo.css">
+    <link rel="stylesheet" href="../css/topbar.css">
+    <link rel="stylesheet" href="../css/stage.css">
+</head>
+<body>
+    <aside class="sidebar" data-sidebar></aside>
+
+    <header class="topbar">
+        <div class="logo-container">
+            <a href="../index.html" class="logo-link">
+                <h1 class="logo"><span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span></h1>
+            </a>
+        </div>
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Search Artists, Concerts, Venues, Friends and much more" aria-label="Search"/>
+            <svg class="search-icon" viewBox="0 0 28 28" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/><path d="M18 18L24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <button type="button" class="help-button" aria-label="Help" aria-pressed="false" data-help="Help button."><span class="help-mark">?</span></button>
+    </header>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <header class="stage-page-header">
+                <h1 class="stage-page-header__title"><strong>Victoria Larsen</strong> <em>A&amp;R · Tomorrow Records</em></h1>
+            </header>
+
+            <p class="ar-page-intro" data-help="A&R role: You've been assigned 3 artists by Tomorrow Records. Click an artist to open their profile and act on their behalf — e.g. reply to fan messages, approve releases, or sign contracts. Every action gets a 'performed by A&R' indicator visible only to the artist (not the public).">
+                You manage <strong>3 artists</strong> on behalf of Tomorrow Records.
+                Click an artist to open their profile — any action you take gets a
+                <em>"performed by A&amp;R"</em> indicator visible only to the artist owner.
+            </p>
+
+            <!-- ============ My roster — 3 artists assigned to Victoria ============ -->
+            <a href="../artist/index.html" class="ar-artist-card"
+               data-act-as data-actor-id="s7" data-actor-role="Manager" data-actor-name="Victoria Larsen" data-actor-avatar="placeholder-female-5.png" data-subject-id="a21" data-subject-name="URO"
+               data-help="URO — R'n'B / Soul. Producer Karl Hans Ingerborg. 2-year contract, 2 albums or 30 singles. 5 revenue sources. Click to act on URO's behalf — actions show as 'performed by A&R' to the artist owner.">
+                <div class="ar-artist-card__cover" style="background-image: url('../assets/images/artists/jeremy-freedom-cover.png');"></div>
+                <div class="ar-artist-card__main">
+                    <div class="ar-artist-card__name auto-name">URO</div>
+                    <div class="ar-artist-card__meta">
+                        <span class="ar-artist-card__meta-line"><span class="ar-artist-card__meta-label">Genre:</span>R'n'B / Soul</span>
+                        <span class="ar-artist-card__meta-line"><span class="ar-artist-card__meta-label">Producer:</span>Karl Hans Ingerborg</span>
+                        <span class="ar-artist-card__meta-line"><span class="ar-artist-card__meta-label">Agreement:</span>2 Albums or 30 singles</span>
+                        <span class="ar-artist-card__meta-line"><span class="ar-artist-card__meta-label">Contract:</span>2 Years · expires 01-02-2027</span>
+                    </div>
+                </div>
+                <div class="ar-artist-card__earnings">
+                    <span class="ar-artist-card__earnings-label">Streams:</span>
+                    <span class="ar-artist-card__earnings-value">6.082,89 USD</span>
+                    <span class="ar-artist-card__earnings-label">Sales:</span>
+                    <span class="ar-artist-card__earnings-value">12.453,16 USD</span>
+                    <span class="ar-artist-card__earnings-label">Covers:</span>
+                    <span class="ar-artist-card__earnings-value">6.238,88 USD</span>
+                    <span class="ar-artist-card__earnings-label">Brands:</span>
+                    <span class="ar-artist-card__earnings-value">16.687,12 USD</span>
+                    <span class="ar-artist-card__earnings-label">Concerts:</span>
+                    <span class="ar-artist-card__earnings-value">35.153,45 USD</span>
+                </div>
+                <span class="stage-action-btn ar-artist-card__cta">Go to Profile →</span>
+            </a>
+
+            <a href="../artist/index.html" class="ar-artist-card"
+               data-act-as data-actor-id="s7" data-actor-role="Manager" data-actor-name="Victoria Larsen" data-actor-avatar="placeholder-female-5.png" data-subject-id="a22" data-subject-name="KRYD"
+               data-help="KRYD — Pop / Soul. 1-year contract, 1 album & 6 singles. 3 revenue sources (Streams, Sales, Covers). Click to act on KRYD's behalf.">
+                <div class="ar-artist-card__cover" style="background-image: url('../assets/images/artists/lola-young-event.jpg');"></div>
+                <div class="ar-artist-card__main">
+                    <div class="ar-artist-card__name auto-name">KRYD</div>
+                    <div class="ar-artist-card__meta">
+                        <span class="ar-artist-card__meta-line"><span class="ar-artist-card__meta-label">Genre:</span>Pop / Soul</span>
+                        <span class="ar-artist-card__meta-line"><span class="ar-artist-card__meta-label">Producer:</span>Michael Korn</span>
+                        <span class="ar-artist-card__meta-line"><span class="ar-artist-card__meta-label">Agreement:</span>1 Album &amp; 6 singles</span>
+                        <span class="ar-artist-card__meta-line"><span class="ar-artist-card__meta-label">Contract:</span>1 Year · expires 01-06-2026</span>
+                    </div>
+                </div>
+                <div class="ar-artist-card__earnings">
+                    <span class="ar-artist-card__earnings-label">Streams:</span>
+                    <span class="ar-artist-card__earnings-value">7.832,23 USD</span>
+                    <span class="ar-artist-card__earnings-label">Sales:</span>
+                    <span class="ar-artist-card__earnings-value">22.743,62 USD</span>
+                    <span class="ar-artist-card__earnings-label">Covers:</span>
+                    <span class="ar-artist-card__earnings-value">15.093,45 USD</span>
+                </div>
+                <span class="stage-action-btn ar-artist-card__cta">Go to Profile →</span>
+            </a>
+
+            <a href="../artist/index.html" class="ar-artist-card"
+               data-act-as data-actor-id="s7" data-actor-role="Manager" data-actor-name="Victoria Larsen" data-actor-avatar="placeholder-female-5.png" data-subject-id="a23" data-subject-name="Niko Blonde"
+               data-help="Niko Blonde — Hip Hop. 2-year contract, 1 album. 3 revenue sources. Click to act on Niko Blonde's behalf.">
+                <div class="ar-artist-card__cover" style="background-image: url('../assets/images/artists/kebu-event.jpg');"></div>
+                <div class="ar-artist-card__main">
+                    <div class="ar-artist-card__name auto-name">Niko Blonde</div>
+                    <div class="ar-artist-card__meta">
+                        <span class="ar-artist-card__meta-line"><span class="ar-artist-card__meta-label">Genre:</span>Hip Hop</span>
+                        <span class="ar-artist-card__meta-line"><span class="ar-artist-card__meta-label">Producer:</span>Nike Blonde</span>
+                        <span class="ar-artist-card__meta-line"><span class="ar-artist-card__meta-label">Agreement:</span>1 Album</span>
+                        <span class="ar-artist-card__meta-line"><span class="ar-artist-card__meta-label">Contract:</span>2 Years · expires 01-08-2026</span>
+                    </div>
+                </div>
+                <div class="ar-artist-card__earnings">
+                    <span class="ar-artist-card__earnings-label">Streams:</span>
+                    <span class="ar-artist-card__earnings-value">38.997,11 USD</span>
+                    <span class="ar-artist-card__earnings-label">Sales:</span>
+                    <span class="ar-artist-card__earnings-value">30.546,75 USD</span>
+                    <span class="ar-artist-card__earnings-label">Covers:</span>
+                    <span class="ar-artist-card__earnings-value">6.045,25 USD</span>
+                </div>
+                <span class="stage-action-btn ar-artist-card__cta">Go to Profile →</span>
+            </a>
+
+        </div>
+    </main>
+
+    <script src="../js/core.js"></script>
+    <script src="../js/modes.js"></script>
+    <script src="../js/sidebar.js"></script>
+    <script src="../js/topbar-widgets.js"></script>
+    <script src="../js/stage-badge.js"></script>
+    <script src="../js/acting-as-service.js"></script>
+    <script src="../js/stage-cards.js"></script>
+    <script src="../js/stage-label.js"></script>
+    <script src="../js/stage-resources.js"></script>
+    <script src="../js/stage-economy.js"></script>
+    <script src="../js/settings.js"></script>
+    <script src="../js/activity-feed.js"></script>
+    <script src="../js/app.js"></script>
+</body>
+</html>

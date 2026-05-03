@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAGECORD - Artist Settings</title>
+    <link rel="stylesheet" href="../../css/sidebar.css">
+    <link rel="stylesheet" href="../../css/main.css">
+    <link rel="stylesheet" href="../../css/logo.css">
+    <link rel="stylesheet" href="../../css/topbar.css">
+    <link rel="stylesheet" href="../../css/artist-settings.css">
+</head>
+<body>
+    <!-- Left Sidebar Navigation -->
+    <aside class="sidebar" data-sidebar></aside>
+
+    <!-- Top Bar -->
+    <header class="topbar">
+        <!-- Logo (left) -->
+        <div class="logo-container" data-help="STAGECORD PRO-logoet. Klik for at vende tilbage til forsiden uanset hvor du er i platformen.">
+            <a href="../../index.html" class="logo-link">
+                <h1 class="logo">
+                    <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
+                </h1>
+            </a>
+        </div>
+
+        <!-- Search bar (middle) -->
+        <div class="search-bar" data-help="Søgebar: Find artister, koncerter, spillesteder, venner og alt andet på platformen. Skriv mindst 2 tegn for at se forslag.">
+            <input
+                type="text"
+                class="search-input"
+                placeholder="Search Artists, Concerts, Venues, Friends and much more"
+                aria-label="Search"
+            />
+            <svg class="search-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/>
+                <path d="M18 18L24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </div>
+
+        <!-- Help button (right) -->
+        <button type="button" class="help-button" aria-label="Help" aria-pressed="false" data-help="Hjælpeknap: Klik for at aktivere hjælpetilstand. Derefter kan du klikke på et vilkårligt element for at se en forklaring. Tryk Esc eller klik ? igen for at slukke.">
+            <span class="help-mark">?</span>
+        </button>
+    </header>
+
+    <!-- Main Content Area -->
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <header class="settings-header">
+                <h1 class="settings-header__title">Artist Settings</h1>
+                <span class="settings-header__sub" data-help="Du redigerer indstillinger for din artist-profil — disse gælder kun for din JokesmithJohnson-side.">Editing JokesmithJohnson</span>
+            </header>
+
+            <!-- Sub-section tabs -->
+            <nav class="settings-tabs" role="tablist" data-help="Skift mellem de forskellige indstillingsområder.">
+                <button type="button" class="settings-tab" data-tab="profile" role="tab">Profile</button>
+                <button type="button" class="settings-tab active" data-tab="rewards" role="tab" aria-selected="true">Fan Rewards</button>
+                <button type="button" class="settings-tab" data-tab="pricing" role="tab">Pricing</button>
+                <button type="button" class="settings-tab" data-tab="royalties" role="tab">Royalties &amp; creators</button>
+                <button type="button" class="settings-tab" data-tab="privacy" role="tab">Privacy</button>
+                <button type="button" class="settings-tab" data-tab="notifications" role="tab">Notifications</button>
+            </nav>
+
+            <!-- ===== Profile panel ===== -->
+            <section class="settings-panel" data-panel="profile" role="tabpanel">
+                <div class="settings-section">
+                    <h2 class="settings-section__title">Identity</h2>
+                    <div class="settings-grid">
+                        <div class="form-field" data-help="Det navn der vises på din side, dine udgivelser og billetter.">
+                            <label class="form-field__label">Artist name</label>
+                            <input type="text" value="JokesmithJohnson">
+                        </div>
+                        <div class="form-field" data-help="Din unikke URL på platformen. Skiftes med forsigtighed — gamle links virker ikke længere.">
+                            <label class="form-field__label">Handle</label>
+                            <div class="settings-input-prefix">
+                                <span class="settings-input-prefix__label">stagecord.com/</span>
+                                <input type="text" value="jokesmithjohnson">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-field" data-help="En kort one-liner der vises øverst på din profil. Maks 80 tegn.">
+                        <label class="form-field__label">Tagline</label>
+                        <input type="text" value="Comedy-pop fra Aarhus, ét hook ad gangen.">
+                    </div>
+                    <div class="form-field" data-help="Den lange beskrivelse der vises i Bio-sektionen på din profil.">
+                        <label class="form-field__label">Bio</label>
+                        <textarea rows="5">JokesmithJohnson startede som et soveværelses-projekt i 2019 og er i dag en af Danmarks mest spillede comedy-pop artister. Kendt for fængende hooks, skæve tekster og energiske live-shows.</textarea>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h2 class="settings-section__title">Categorization</h2>
+
+                    <div class="form-field" data-help="Anerkend alle de led du bidrager med — det kan være alt fra leder-rollen som artist til specifikke bidrag som guitarist eller mastering-ingeniør. Fans kan søge på hver enkelt rolle og følge dit arbejde uanset om du er primær-udgiver eller bidragsyder på et projekt.">
+                        <label class="form-field__label">Roles</label>
+
+                        <div class="role-section">
+                            <h3 class="role-section__title">Performance</h3>
+                            <div class="role-grid">
+                                <label class="role-chip"><input type="checkbox" checked><span class="role-chip__label">Musician</span></label>
+                                <label class="role-chip"><input type="checkbox" checked><span class="role-chip__label">Vocalist</span></label>
+                                <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Backing vocalist</span></label>
+                                <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Instrumentalist</span></label>
+                                <label class="role-chip"><input type="checkbox" checked><span class="role-chip__label">Comedian</span></label>
+                                <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Speaker</span></label>
+                                <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Voice actor</span></label>
+                                <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Podcaster</span></label>
+                                <label class="role-chip"><input type="checkbox"><span class="role-chip__label">DJ</span></label>
+                                <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Dancer</span></label>
+                                <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Choreographer</span></label>
+                                <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Content creator</span></label>
+                                <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Streamer</span></label>
+                            </div>
+                        </div>
+
+                        <div class="role-section">
+                            <h3 class="role-section__title">Instruments</h3>
+                            <div class="role-grid">
+                                <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Guitarist</span></label>
+                                <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Bassist</span></label>
+                                <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Drummer</span></label>
+                                <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Pianist / Keyboardist</span></label>
+                                <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Saxophonist</span></label>
+                                <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Violinist</span></label>
+                                <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Trumpeter</span></label>
+                            </div>
+                        </div>
+
+                        <div class="role-section">
+                            <h3 class="role-section__title">Writing &amp; arrangement</h3>
+                            <div class="role-grid">
+                                <label class="role-chip"><input type="checkbox" checked><span class="role-chip__label">Songwriter</span></label>
+                                <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Lyricist</span></label>
+                                <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Topliner</span></label>
+                                <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Composer</span></label>
+                                <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Arranger</span></label>
+                                <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Beatmaker</span></label>
+                            </div>
+                        </div>
+
+                        <div class="role-section">
+                            <h3 class="role-section__title">Production &amp; engineering</h3>
+                            <div class="role-grid">
+                                <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Producer</span></label>
+                                <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Co-producer</span></label>
+                                <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Mixing engineer</span></label>
+                                <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Mastering engineer</span></label>
+                                <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Audio engineer</span></label>
+                                <label class="role-chip"><input type="checkbox"><span class="role-chip__label">Sound designer</span></label>
+                            </div>
+                        </div>
+
+                        <span class="form-field__hint">Hver valgt rolle bliver søgbar — fans kan fx søge på "Mastering engineer" og finde alle der har valgt den rolle, og se hvilke projekter du har bidraget til.</span>
+                    </div>
+
+                    <div class="settings-grid">
+                        <div class="form-field" data-help="Vises i søgeresultater og bruges til at matche dig med events i området.">
+                            <label class="form-field__label">Location</label>
+                            <input type="text" value="Aarhus, Denmark">
+                        </div>
+                        <div class="form-field" data-help="Hvis dit indhold er på et bestemt sprog, så fans kan filtrere efter det.">
+                            <label class="form-field__label">Primary language</label>
+                            <select>
+                                <option selected>Danish</option>
+                                <option>English</option>
+                                <option>Swedish</option>
+                                <option>Norwegian</option>
+                                <option>German</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-field" data-help="Sub-genrer hjælper fans med at finde dig på tværs af tags. Tilføj så mange du vil — fx Pop, Indie, Comedy, Lo-fi.">
+                        <label class="form-field__label">Music genres &amp; tags</label>
+                        <div class="settings-tag-list">
+                            <span class="settings-tag">Comedy <button type="button" aria-label="Remove">&times;</button></span>
+                            <span class="settings-tag">Pop <button type="button" aria-label="Remove">&times;</button></span>
+                            <span class="settings-tag">Indie <button type="button" aria-label="Remove">&times;</button></span>
+                            <span class="settings-tag">Lo-fi <button type="button" aria-label="Remove">&times;</button></span>
+                            <button type="button" class="settings-tag-add">+ Add</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h2 class="settings-section__title">Visuals</h2>
+                    <div class="settings-upload" data-help="Profilbillede vises overalt hvor du optræder på platformen — kvadratisk format anbefales.">
+                        <div class="settings-upload__preview" style="background-image: url('../../assets/images/artists/placeholder-male-6.png'); background-size: cover; background-position: center;"></div>
+                        <div class="settings-upload__main">
+                            <div class="settings-upload__name">Profile picture</div>
+                            <div class="settings-upload__hint">Square image, at least 400 × 400 px. JPG or PNG.</div>
+                        </div>
+                        <button type="button" class="settings-btn">Replace</button>
+                    </div>
+                    <div class="settings-upload" data-help="Cover-billedet er det store banner øverst på din artistside.">
+                        <div class="settings-upload__preview settings-upload__preview--cover" style="background-image: url('../../assets/images/artists/jokesmith-johnson-post-2.png'); background-size: cover; background-position: center;"></div>
+                        <div class="settings-upload__main">
+                            <div class="settings-upload__name">Cover image</div>
+                            <div class="settings-upload__hint">Wide banner shown on top of your profile. 1920 × 480 px recommended.</div>
+                        </div>
+                        <button type="button" class="settings-btn">Replace</button>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h2 class="settings-section__title">External links</h2>
+                    <div class="settings-grid">
+                        <div class="form-field">
+                            <label class="form-field__label">Spotify</label>
+                            <input type="url" placeholder="https://open.spotify.com/artist/...">
+                        </div>
+                        <div class="form-field">
+                            <label class="form-field__label">Instagram</label>
+                            <input type="url" placeholder="https://instagram.com/...">
+                        </div>
+                        <div class="form-field">
+                            <label class="form-field__label">YouTube</label>
+                            <input type="url" placeholder="https://youtube.com/@...">
+                        </div>
+                        <div class="form-field">
+                            <label class="form-field__label">Website</label>
+                            <input type="url" placeholder="https://...">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-actions-bar">
+                    <button type="button" class="settings-btn">Reset</button>
+                    <button type="button" class="settings-btn settings-btn--primary">Save changes</button>
+                </div>
+            </section>
+
+            <!-- ===== Fan Rewards panel ===== -->
+            <section class="settings-panel active" data-panel="rewards" role="tabpanel">
+                <div class="settings-section-header">
+                    <h2 class="settings-section-header__title">Active reward programs</h2>
+                    <button type="button" class="settings-new-btn" id="newRewardBtn" data-help="Opret et nyt belønnings-program.">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                        New reward
+                    </button>
+                </div>
+
+                <ul class="reward-list" id="rewardList" data-help="Liste over dine aktive og inaktive belønnings-programmer. Brug switchen til at slå dem til/fra uden at slette.">
+                    <li class="reward-card"
+                        data-trigger-type="concerts"
+                        data-trigger-threshold="10"
+                        data-reward-type="percent"
+                        data-reward-value="10"
+                        data-reward-applies="all">
+                        <div class="reward-card__main">
+                            <div class="reward-card__name auto-name">Loyal Fans</div>
+                            <p class="reward-card__desc">Reward fans who have stuck with you across multiple shows.</p>
+                        </div>
+                        <div class="reward-card__rule">
+                            <div class="reward-card__rule-line"><span class="reward-card__rule-key">Trigger</span><span class="reward-card__rule-value">10+ concerts attended</span></div>
+                            <div class="reward-card__rule-line"><span class="reward-card__rule-key">Reward</span><span class="reward-card__rule-value reward-card__rule-value--green">10% off all purchases</span></div>
+                        </div>
+                        <div class="reward-card__actions">
+                            <label class="reward-toggle" title="Active">
+                                <input type="checkbox" checked>
+                                <span class="reward-toggle__slider"></span>
+                            </label>
+                            <button type="button" class="reward-card__icon-btn" aria-label="Edit reward" data-help="Rediger reglen.">
+                                <svg viewBox="0 0 24 24" fill="none"><path d="M15.2 4.4l4.4 4.4M3 21l4.6-1.1L20 7.4a1.5 1.5 0 0 0 0-2.1l-1.3-1.3a1.5 1.5 0 0 0-2.1 0L4.1 16.4 3 21z" stroke="currentColor" stroke-width="2"/></svg>
+                            </button>
+                            <button type="button" class="reward-card__icon-btn reward-card__icon-btn--danger" aria-label="Delete reward" data-help="Slet reglen permanent.">
+                                <svg viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </button>
+                        </div>
+                    </li>
+
+                    <li class="reward-card"
+                        data-trigger-type="concerts"
+                        data-trigger-threshold="25"
+                        data-reward-type="percent"
+                        data-reward-value="20"
+                        data-reward-applies="all">
+                        <div class="reward-card__main">
+                            <div class="reward-card__name auto-name">Veteran Supporters</div>
+                            <p class="reward-card__desc">Bigger discount for fans who have followed you across the long haul.</p>
+                        </div>
+                        <div class="reward-card__rule">
+                            <div class="reward-card__rule-line"><span class="reward-card__rule-key">Trigger</span><span class="reward-card__rule-value">25+ concerts attended</span></div>
+                            <div class="reward-card__rule-line"><span class="reward-card__rule-key">Reward</span><span class="reward-card__rule-value reward-card__rule-value--green">20% off all purchases</span></div>
+                        </div>
+                        <div class="reward-card__actions">
+                            <label class="reward-toggle">
+                                <input type="checkbox" checked>
+                                <span class="reward-toggle__slider"></span>
+                            </label>
+                            <button type="button" class="reward-card__icon-btn" aria-label="Edit reward">
+                                <svg viewBox="0 0 24 24" fill="none"><path d="M15.2 4.4l4.4 4.4M3 21l4.6-1.1L20 7.4a1.5 1.5 0 0 0 0-2.1l-1.3-1.3a1.5 1.5 0 0 0-2.1 0L4.1 16.4 3 21z" stroke="currentColor" stroke-width="2"/></svg>
+                            </button>
+                            <button type="button" class="reward-card__icon-btn reward-card__icon-btn--danger" aria-label="Delete reward">
+                                <svg viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </button>
+                        </div>
+                    </li>
+
+                    <li class="reward-card"
+                        data-trigger-type="months"
+                        data-trigger-threshold="24"
+                        data-reward-type="freeship"
+                        data-reward-applies="merch">
+                        <div class="reward-card__main">
+                            <div class="reward-card__name auto-name">Day-One Fans</div>
+                            <p class="reward-card__desc">Free shipping on all merchandise for fans following you for 2+ years.</p>
+                        </div>
+                        <div class="reward-card__rule">
+                            <div class="reward-card__rule-line"><span class="reward-card__rule-key">Trigger</span><span class="reward-card__rule-value">24+ months following</span></div>
+                            <div class="reward-card__rule-line"><span class="reward-card__rule-key">Reward</span><span class="reward-card__rule-value reward-card__rule-value--green">Free shipping on merch</span></div>
+                        </div>
+                        <div class="reward-card__actions">
+                            <label class="reward-toggle">
+                                <input type="checkbox" checked>
+                                <span class="reward-toggle__slider"></span>
+                            </label>
+                            <button type="button" class="reward-card__icon-btn" aria-label="Edit reward">
+                                <svg viewBox="0 0 24 24" fill="none"><path d="M15.2 4.4l4.4 4.4M3 21l4.6-1.1L20 7.4a1.5 1.5 0 0 0 0-2.1l-1.3-1.3a1.5 1.5 0 0 0-2.1 0L4.1 16.4 3 21z" stroke="currentColor" stroke-width="2"/></svg>
+                            </button>
+                            <button type="button" class="reward-card__icon-btn reward-card__icon-btn--danger" aria-label="Delete reward">
+                                <svg viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </button>
+                        </div>
+                    </li>
+
+                    <li class="reward-card is-inactive"
+                        data-trigger-type="tickets"
+                        data-trigger-threshold="3"
+                        data-reward-type="amount"
+                        data-reward-value="50"
+                        data-reward-applies="tickets">
+                        <div class="reward-card__main">
+                            <div class="reward-card__name auto-name">Tour Bundle</div>
+                            <p class="reward-card__desc">50 DKK off the next ticket for fans who buy 3+ tickets in a row.</p>
+                        </div>
+                        <div class="reward-card__rule">
+                            <div class="reward-card__rule-line"><span class="reward-card__rule-key">Trigger</span><span class="reward-card__rule-value">3+ tickets purchased</span></div>
+                            <div class="reward-card__rule-line"><span class="reward-card__rule-key">Reward</span><span class="reward-card__rule-value reward-card__rule-value--green">50 DKK off next ticket</span></div>
+                        </div>
+                        <div class="reward-card__actions">
+                            <label class="reward-toggle">
+                                <input type="checkbox">
+                                <span class="reward-toggle__slider"></span>
+                            </label>
+                            <button type="button" class="reward-card__icon-btn" aria-label="Edit reward">
+                                <svg viewBox="0 0 24 24" fill="none"><path d="M15.2 4.4l4.4 4.4M3 21l4.6-1.1L20 7.4a1.5 1.5 0 0 0 0-2.1l-1.3-1.3a1.5 1.5 0 0 0-2.1 0L4.1 16.4 3 21z" stroke="currentColor" stroke-width="2"/></svg>
+                            </button>
+                            <button type="button" class="reward-card__icon-btn reward-card__icon-btn--danger" aria-label="Delete reward">
+                                <svg viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </button>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+
+            <!-- ===== Pricing panel ===== -->
+            <section class="settings-panel" data-panel="pricing" role="tabpanel">
+                <div class="settings-section">
+                    <h2 class="settings-section__title">Currency &amp; taxes</h2>
+                    <div class="settings-grid">
+                        <div class="form-field" data-help="Valutaen alle dine priser regnes i. Fans i andre lande ser automatisk omregnede priser.">
+                            <label class="form-field__label">Default currency</label>
+                            <select>
+                                <option selected>DKK — Danish kroner</option>
+                                <option>EUR — Euro</option>
+                                <option>USD — US dollar</option>
+                                <option>GBP — Pound sterling</option>
+                            </select>
+                        </div>
+                        <div class="form-field" data-help="Moms tillægges automatisk for fans i Danmark.">
+                            <label class="form-field__label">VAT rate</label>
+                            <div class="settings-input-suffix">
+                                <input type="number" value="25" min="0" max="100">
+                                <span class="settings-input-suffix__unit">%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h2 class="settings-section__title">Tickets</h2>
+                    <div class="settings-grid">
+                        <div class="form-field" data-help="Standardpris du foreslås når du opretter et nyt event.">
+                            <label class="form-field__label">Default ticket price</label>
+                            <div class="settings-input-suffix">
+                                <input type="number" value="295">
+                                <span class="settings-input-suffix__unit">DKK</span>
+                            </div>
+                        </div>
+                        <div class="form-field" data-help="Tillægspris for meet &amp; greet add-on på koncertbilletter.">
+                            <label class="form-field__label">Meet &amp; greet add-on</label>
+                            <div class="settings-input-suffix">
+                                <input type="number" value="450">
+                                <span class="settings-input-suffix__unit">DKK</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h2 class="settings-section__title">Features (verses, tracks, AI voice)</h2>
+                    <div class="settings-grid">
+                        <div class="form-field" data-help="Startpris for åbne vers som flere fans kan købe.">
+                            <label class="form-field__label">Open verse — base price</label>
+                            <div class="settings-input-suffix">
+                                <input type="number" value="800">
+                                <span class="settings-input-suffix__unit">DKK</span>
+                            </div>
+                        </div>
+                        <div class="form-field" data-help="Startpris for eksklusive features som kun én køber kan erhverve.">
+                            <label class="form-field__label">Exclusive — base price</label>
+                            <div class="settings-input-suffix">
+                                <input type="number" value="3500">
+                                <span class="settings-input-suffix__unit">DKK</span>
+                            </div>
+                        </div>
+                        <div class="form-field" data-help="Pris pr. minut når fans bruger din AI-stemme.">
+                            <label class="form-field__label">AI voice — per minute</label>
+                            <div class="settings-input-suffix">
+                                <input type="number" value="120">
+                                <span class="settings-input-suffix__unit">DKK</span>
+                            </div>
+                        </div>
+                        <div class="form-field" data-help="Standard fortjeneste-margin på merchandise.">
+                            <label class="form-field__label">Merchandise markup</label>
+                            <div class="settings-input-suffix">
+                                <input type="number" value="35">
+                                <span class="settings-input-suffix__unit">%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h2 class="settings-section__title">Payouts</h2>
+                    <div class="settings-grid">
+                        <div class="form-field" data-help="Hvor ofte STAGECORD PRO udbetaler dine indtægter til din konto.">
+                            <label class="form-field__label">Payout schedule</label>
+                            <select>
+                                <option>Weekly</option>
+                                <option selected>Bi-weekly</option>
+                                <option>Monthly</option>
+                            </select>
+                        </div>
+                        <div class="form-field" data-help="Indtægter ruller videre indtil du krydser denne grænse.">
+                            <label class="form-field__label">Minimum payout</label>
+                            <div class="settings-input-suffix">
+                                <input type="number" value="500">
+                                <span class="settings-input-suffix__unit">DKK</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-actions-bar">
+                    <button type="button" class="settings-btn">Reset</button>
+                    <button type="button" class="settings-btn settings-btn--primary">Save changes</button>
+                </div>
+            </section>
+
+            <!-- ===== Royalties & content creators panel ===== -->
+            <section class="settings-panel" data-panel="royalties" role="tabpanel">
+                <h2 class="settings-section__title">Derivative content royalty splits</h2>
+                <ul class="settings-rows">
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Cover videos</div>
+                            <div class="settings-row__desc">Creator performs your song using their own visuals.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <div class="settings-input-suffix" style="width: 110px;">
+                                <input type="number" value="40" min="0" max="100">
+                                <span class="settings-input-suffix__unit">%</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Snippets &amp; samples</div>
+                            <div class="settings-row__desc">Short clips used in fan-made videos, reels and shorts.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <div class="settings-input-suffix" style="width: 110px;">
+                                <input type="number" value="25" min="0" max="100">
+                                <span class="settings-input-suffix__unit">%</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Remixes</div>
+                            <div class="settings-row__desc">Creator builds a new track on top of your stems.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <div class="settings-input-suffix" style="width: 110px;">
+                                <input type="number" value="50" min="0" max="100">
+                                <span class="settings-input-suffix__unit">%</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Dance / lip-sync videos</div>
+                            <div class="settings-row__desc">Choreography or dance routines set to your song.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <div class="settings-input-suffix" style="width: 110px;">
+                                <input type="number" value="30" min="0" max="100">
+                                <span class="settings-input-suffix__unit">%</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Reaction / commentary</div>
+                            <div class="settings-row__desc">Creator reacts to or critiques your song.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <div class="settings-input-suffix" style="width: 110px;">
+                                <input type="number" value="0" min="0" max="100">
+                                <span class="settings-input-suffix__unit">%</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Auto-approve creators below this following</div>
+                            <div class="settings-row__desc">Smaller creators get instant approval; bigger ones need manual review.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <select>
+                                <option>1,000 followers</option>
+                                <option selected>10,000 followers</option>
+                                <option>50,000 followers</option>
+                                <option>Manual review for everyone</option>
+                            </select>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="settings-section-header" style="margin-top: 28px;">
+                    <h2 class="settings-section-header__title">Hire content creators</h2>
+                    <button type="button" class="settings-new-btn" data-help="Inviter en specifik fan-creator til at lave indhold omkring dit materiale.">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                        New commission
+                    </button>
+                </div>
+                <ul class="reward-list">
+                    <li class="reward-card">
+                        <div class="reward-card__main">
+                            <div class="reward-card__name auto-name">Liva Mai</div>
+                            <p class="reward-card__desc">Dance routine for "Jokes On Me" — single TikTok + reel cross-post. 412K followers.</p>
+                        </div>
+                        <div class="reward-card__rule">
+                            <div class="reward-card__rule-line"><span class="reward-card__rule-key">Scope</span><span class="reward-card__rule-value">Dance video · 30s</span></div>
+                            <div class="reward-card__rule-line"><span class="reward-card__rule-key">Rate</span><span class="reward-card__rule-value reward-card__rule-value--green">8,500 DKK (creator-set)</span></div>
+                            <div class="reward-card__rule-line"><span class="reward-card__rule-key">Status</span><span class="reward-card__rule-value">In production</span></div>
+                        </div>
+                        <div class="reward-card__actions">
+                            <label class="reward-toggle"><input type="checkbox" checked><span class="reward-toggle__slider"></span></label>
+                            <button type="button" class="reward-card__icon-btn" aria-label="Edit commission">
+                                <svg viewBox="0 0 24 24" fill="none"><path d="M15.2 4.4l4.4 4.4M3 21l4.6-1.1L20 7.4a1.5 1.5 0 0 0 0-2.1l-1.3-1.3a1.5 1.5 0 0 0-2.1 0L4.1 16.4 3 21z" stroke="currentColor" stroke-width="2"/></svg>
+                            </button>
+                            <button type="button" class="reward-card__icon-btn reward-card__icon-btn--danger" aria-label="Cancel commission">
+                                <svg viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </button>
+                        </div>
+                    </li>
+                    <li class="reward-card">
+                        <div class="reward-card__main">
+                            <div class="reward-card__name auto-name">Anders Vlog</div>
+                            <p class="reward-card__desc">Behind-the-scenes podcast episode covering the new EP rollout. 89K followers.</p>
+                        </div>
+                        <div class="reward-card__rule">
+                            <div class="reward-card__rule-line"><span class="reward-card__rule-key">Scope</span><span class="reward-card__rule-value">Podcast · 45 min</span></div>
+                            <div class="reward-card__rule-line"><span class="reward-card__rule-key">Rate</span><span class="reward-card__rule-value reward-card__rule-value--green">3,000 DKK (fixed fee)</span></div>
+                            <div class="reward-card__rule-line"><span class="reward-card__rule-key">Status</span><span class="reward-card__rule-value">Pending acceptance</span></div>
+                        </div>
+                        <div class="reward-card__actions">
+                            <label class="reward-toggle"><input type="checkbox" checked><span class="reward-toggle__slider"></span></label>
+                            <button type="button" class="reward-card__icon-btn" aria-label="Edit commission">
+                                <svg viewBox="0 0 24 24" fill="none"><path d="M15.2 4.4l4.4 4.4M3 21l4.6-1.1L20 7.4a1.5 1.5 0 0 0 0-2.1l-1.3-1.3a1.5 1.5 0 0 0-2.1 0L4.1 16.4 3 21z" stroke="currentColor" stroke-width="2"/></svg>
+                            </button>
+                            <button type="button" class="reward-card__icon-btn reward-card__icon-btn--danger" aria-label="Cancel commission">
+                                <svg viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </button>
+                        </div>
+                    </li>
+                </ul>
+
+                <h2 class="settings-section__title" style="margin-top: 22px;">Curated fan content on your profile</h2>
+                <ul class="settings-rows">
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Show fan covers section</div>
+                            <div class="settings-row__desc">Display the curated strip above your Posts feed.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <label class="reward-toggle"><input type="checkbox" checked><span class="reward-toggle__slider"></span></label>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Curation mode</div>
+                            <div class="settings-row__desc">"Auto" features content above your view threshold; "Manual" lets you approve every piece.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <select>
+                                <option>Auto-feature popular content</option>
+                                <option selected>Manual review &amp; approval</option>
+                                <option>Verified creators only</option>
+                            </select>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Auto-feature view threshold</div>
+                            <div class="settings-row__desc">Only used when curation mode is "Auto" — content below this view count stays hidden.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <select>
+                                <option>10,000 views</option>
+                                <option selected>100,000 views</option>
+                                <option>500,000 views</option>
+                                <option>1,000,000 views</option>
+                            </select>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Pending approval</div>
+                            <div class="settings-row__desc">Items currently awaiting your manual review.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <a href="#" class="settings-btn">Review 12 →</a>
+                        </div>
+                    </li>
+                </ul>
+
+                <h2 class="settings-section__title" style="margin-top: 22px;">Default fixed fee</h2>
+                <ul class="settings-rows">
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Fixed fee for new commissions</div>
+                            <div class="settings-row__desc">Suggested when you reach out to a creator. They can accept it or counter-propose their own rate.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <div class="settings-input-suffix" style="width: 130px;">
+                                <input type="number" value="3000">
+                                <span class="settings-input-suffix__unit">DKK</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Allow creator-set rates</div>
+                            <div class="settings-row__desc">Creators with 50,000+ followers can quote their own fee instead of accepting yours.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <label class="reward-toggle"><input type="checkbox" checked><span class="reward-toggle__slider"></span></label>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="settings-actions-bar">
+                    <button type="button" class="settings-btn">Reset</button>
+                    <button type="button" class="settings-btn settings-btn--primary">Save changes</button>
+                </div>
+            </section>
+
+            <!-- ===== Privacy panel ===== -->
+            <section class="settings-panel" data-panel="privacy" role="tabpanel">
+                <h2 class="settings-section__title">Profile visibility</h2>
+                <ul class="settings-rows">
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Profile visibility</div>
+                            <div class="settings-row__desc">Who can see your artist page.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <select>
+                                <option selected>Everyone</option>
+                                <option>Fans only</option>
+                                <option>Private</option>
+                            </select>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Show fan count</div>
+                            <div class="settings-row__desc">Display the number of followers on your profile.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <label class="reward-toggle"><input type="checkbox" checked><span class="reward-toggle__slider"></span></label>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Show concert attendance</div>
+                            <div class="settings-row__desc">Reveal which shows individual fans have attended.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <label class="reward-toggle"><input type="checkbox"><span class="reward-toggle__slider"></span></label>
+                        </div>
+                    </li>
+                </ul>
+
+                <h2 class="settings-section__title">Messaging</h2>
+                <ul class="settings-rows">
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Who can message you</div>
+                            <div class="settings-row__desc">Limit your inbox to certain groups.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <select>
+                                <option>Everyone</option>
+                                <option selected>Fans only</option>
+                                <option>Friends only</option>
+                                <option>No one</option>
+                            </select>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Allow project invites</div>
+                            <div class="settings-row__desc">Let other artists invite you to collab projects.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <label class="reward-toggle"><input type="checkbox" checked><span class="reward-toggle__slider"></span></label>
+                        </div>
+                    </li>
+                </ul>
+
+                <h2 class="settings-section__title">Collaboration</h2>
+                <ul class="settings-rows">
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Open to collabs</div>
+                            <div class="settings-row__desc">Show an "Open to collabs" badge on your profile.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <label class="reward-toggle"><input type="checkbox" checked><span class="reward-toggle__slider"></span></label>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Auto-accept verified artists</div>
+                            <div class="settings-row__desc">Skip the manual approval step for verified artists.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <label class="reward-toggle"><input type="checkbox"><span class="reward-toggle__slider"></span></label>
+                        </div>
+                    </li>
+                </ul>
+
+                <h2 class="settings-section__title">Data &amp; analytics</h2>
+                <ul class="settings-rows">
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Share aggregated stats with platform</div>
+                            <div class="settings-row__desc">Helps STAGECORD PRO improve discovery and recommendations.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <label class="reward-toggle"><input type="checkbox" checked><span class="reward-toggle__slider"></span></label>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Allow third-party integrations</div>
+                            <div class="settings-row__desc">Apps like Spotify-for-Artists can read your tour data.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <label class="reward-toggle"><input type="checkbox"><span class="reward-toggle__slider"></span></label>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="settings-actions-bar">
+                    <button type="button" class="settings-btn">Reset</button>
+                    <button type="button" class="settings-btn settings-btn--primary">Save changes</button>
+                </div>
+            </section>
+
+            <!-- ===== Notifications panel ===== -->
+            <section class="settings-panel" data-panel="notifications" role="tabpanel">
+
+                <h2 class="settings-section__title">Notification preferences</h2>
+                <div class="notif-table">
+                    <div class="notif-table__head">
+                        <div>Event</div>
+                        <div>Email</div>
+                        <div>Push</div>
+                        <div>In-app</div>
+                    </div>
+                    <div class="notif-row">
+                        <div class="notif-row__main">
+                            <div class="notif-row__name">New fan</div>
+                            <div class="notif-row__desc">Someone starts following you.</div>
+                        </div>
+                        <input type="checkbox">
+                        <input type="checkbox" checked>
+                        <input type="checkbox" checked>
+                    </div>
+                    <div class="notif-row">
+                        <div class="notif-row__main">
+                            <div class="notif-row__name">Reward triggered</div>
+                            <div class="notif-row__desc">A fan unlocks one of your reward programs.</div>
+                        </div>
+                        <input type="checkbox" checked>
+                        <input type="checkbox" checked>
+                        <input type="checkbox" checked>
+                    </div>
+                    <div class="notif-row">
+                        <div class="notif-row__main">
+                            <div class="notif-row__name">New message</div>
+                            <div class="notif-row__desc">Direct message from a fan or collaborator.</div>
+                        </div>
+                        <input type="checkbox">
+                        <input type="checkbox" checked>
+                        <input type="checkbox" checked>
+                    </div>
+                    <div class="notif-row">
+                        <div class="notif-row__main">
+                            <div class="notif-row__name">Collab request</div>
+                            <div class="notif-row__desc">Another artist invites you to a project.</div>
+                        </div>
+                        <input type="checkbox" checked>
+                        <input type="checkbox" checked>
+                        <input type="checkbox" checked>
+                    </div>
+                    <div class="notif-row">
+                        <div class="notif-row__main">
+                            <div class="notif-row__name">Ticket sales</div>
+                            <div class="notif-row__desc">Daily summary of tickets sold for upcoming shows.</div>
+                        </div>
+                        <input type="checkbox" checked>
+                        <input type="checkbox">
+                        <input type="checkbox" checked>
+                    </div>
+                    <div class="notif-row">
+                        <div class="notif-row__main">
+                            <div class="notif-row__name">Feature purchases</div>
+                            <div class="notif-row__desc">Someone buys one of your verses, tracks or AI voice features.</div>
+                        </div>
+                        <input type="checkbox" checked>
+                        <input type="checkbox" checked>
+                        <input type="checkbox" checked>
+                    </div>
+                    <div class="notif-row">
+                        <div class="notif-row__main">
+                            <div class="notif-row__name">Project updates</div>
+                            <div class="notif-row__desc">Activity in projects you're part of (uploads, approvals, royalties).</div>
+                        </div>
+                        <input type="checkbox">
+                        <input type="checkbox" checked>
+                        <input type="checkbox" checked>
+                    </div>
+                    <div class="notif-row">
+                        <div class="notif-row__main">
+                            <div class="notif-row__name">Platform announcements</div>
+                            <div class="notif-row__desc">News about new features and important platform changes.</div>
+                        </div>
+                        <input type="checkbox" checked>
+                        <input type="checkbox">
+                        <input type="checkbox">
+                    </div>
+                </div>
+
+                <h2 class="settings-section__title" style="margin-top: 22px;">Email digest</h2>
+                <ul class="settings-rows">
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Frequency</div>
+                            <div class="settings-row__desc">How often we bundle email notifications into a single digest.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <select>
+                                <option>Real-time (no digest)</option>
+                                <option selected>Daily</option>
+                                <option>Weekly</option>
+                            </select>
+                        </div>
+                    </li>
+                    <li class="settings-row">
+                        <div class="settings-row__main">
+                            <div class="settings-row__name">Quiet hours</div>
+                            <div class="settings-row__desc">Hold push notifications between 22:00 and 08:00.</div>
+                        </div>
+                        <div class="settings-row__control">
+                            <label class="reward-toggle"><input type="checkbox" checked><span class="reward-toggle__slider"></span></label>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="settings-actions-bar">
+                    <button type="button" class="settings-btn">Reset</button>
+                    <button type="button" class="settings-btn settings-btn--primary">Save changes</button>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- ===== New / edit reward modal ===== -->
+    <div class="modal-overlay" id="rewardModal" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="modal">
+            <header class="modal__header">
+                <h2>New fan reward</h2>
+                <button type="button" class="modal__close" data-close-modal aria-label="Close">&times;</button>
+            </header>
+            <form class="modal__form" id="rewardForm">
+                <div class="form-field" data-help="Et kort, beskrivende navn til dette belønnings-program.">
+                    <label class="form-field__label">Reward name</label>
+                    <input type="text" name="name" required placeholder="e.g. Loyal Fans">
+                </div>
+
+                <div class="form-field" data-help="Hvad fans skal opnå for at udløse belønningen — vælg type og threshold.">
+                    <label class="form-field__label">Trigger</label>
+                    <div class="form-field--row">
+                        <select name="triggerType" required>
+                            <option value="concerts">Concerts attended</option>
+                            <option value="months">Months following</option>
+                            <option value="tickets">Tickets purchased</option>
+                            <option value="merch">Merch items purchased</option>
+                            <option value="streams">Streams played</option>
+                        </select>
+                        <input type="number" name="triggerThreshold" min="1" placeholder="10" required>
+                    </div>
+                    <span class="form-field__hint">Example: "10 concerts attended" or "24 months following".</span>
+                </div>
+
+                <div class="form-field" data-help="Hvad fanen får — procentvis rabat, fast beløbs-rabat, gratis fragt eller eksklusivt indhold.">
+                    <label class="form-field__label">Reward</label>
+                    <div class="form-field--row">
+                        <select name="rewardType" required>
+                            <option value="percent">% discount</option>
+                            <option value="amount">Fixed amount off (DKK)</option>
+                            <option value="freeship">Free shipping</option>
+                            <option value="exclusive">Exclusive access</option>
+                        </select>
+                        <input type="number" name="rewardValue" min="0" placeholder="10">
+                    </div>
+                    <span class="form-field__hint">Leave the value empty for "Free shipping" or "Exclusive access".</span>
+                </div>
+
+                <div class="form-field" data-help="Vælg hvilke køb der skal være rabatten gælder for.">
+                    <label class="form-field__label">Applies to</label>
+                    <select name="applies">
+                        <option value="all">All purchases</option>
+                        <option value="tickets">Tickets only</option>
+                        <option value="merch">Merchandise only</option>
+                        <option value="features">Feature purchases</option>
+                    </select>
+                </div>
+
+                <div class="modal__actions">
+                    <button type="button" class="modal__btn" data-close-modal>Cancel</button>
+                    <button type="submit" class="modal__btn modal__btn--primary">Save reward</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <script src="../../js/core.js"></script>
+    <script src="../../js/modes.js"></script>
+    <script src="../../js/sidebar.js"></script>
+    <script src="../../js/topbar-widgets.js"></script>
+    <script src="../../js/stage-badge.js"></script>
+    <script src="../../js/acting-as-service.js"></script>
+    <script src="../../js/stage-cards.js"></script>
+    <script src="../../js/stage-label.js"></script>
+    <script src="../../js/stage-resources.js"></script>
+    <script src="../../js/stage-economy.js"></script>
+    <script src="../../js/settings.js"></script>
+    <script src="../../js/activity-feed.js"></script>
+    <script src="../../js/app.js"></script>
+</body>
+</html>

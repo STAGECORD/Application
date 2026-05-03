@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAGECORD — Educator</title>
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/logo.css">
+    <link rel="stylesheet" href="../css/topbar.css">
+    <link rel="stylesheet" href="../css/educator.css">
+</head>
+<body>
+    <aside class="sidebar" data-sidebar></aside>
+
+    <header class="topbar">
+        <div class="logo-container">
+            <a href="../index.html" class="logo-link">
+                <h1 class="logo"><span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span></h1>
+            </a>
+        </div>
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Search Artists, Concerts, Venues, Friends and much more" aria-label="Search"/>
+            <svg class="search-icon" viewBox="0 0 28 28" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/><path d="M18 18L24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <button type="button" class="help-button" aria-label="Help" aria-pressed="false" data-help="Help button: Click to enter help mode, then click any element with a help-cursor to see what it does. Press Esc or click the help button again to exit."><span class="help-mark">?</span></button>
+    </header>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <!-- ===== Hero / Cover ===== -->
+            <section class="edu-cover" data-help="Educator cover: Public profile shown to students browsing for a teacher. Includes name, tagline, key stats (years teaching, active students, average rating), and primary CTAs.">
+                <div class="edu-cover__top">
+                    <button type="button" class="edu-cover__cta edu-cover__cta--ghost" data-help="Send the educator a direct message — useful for quick questions before booking a lesson.">Message</button>
+                    <button type="button" class="edu-cover__cta" data-edu-book data-help="Open the booking flow to schedule a 1:1 lesson with this educator.">Book a lesson →</button>
+                </div>
+                <span class="edu-cover__role" data-help="Profile type — Educator. The viewer is on a teacher profile, not an artist or label profile.">Educator · Sound production</span>
+                <h1 class="edu-cover__name auto-name">Lasse Søndergård</h1>
+                <p class="edu-cover__tagline">12 years producing for Danish indie + pop. Teaching mixing, beat-making, and full-track production in Logic Pro X.</p>
+                <div class="edu-cover__stats">
+                    <div class="edu-cover__stat" data-help="Years teaching: How long this educator has been offering lessons on STAGECORD.">
+                        <div class="edu-cover__stat-value">12</div>
+                        <div class="edu-cover__stat-label">Years teaching</div>
+                    </div>
+                    <div class="edu-cover__stat" data-help="Active students: Number of students currently signed up for ongoing lessons.">
+                        <div class="edu-cover__stat-value">23</div>
+                        <div class="edu-cover__stat-label">Active students</div>
+                    </div>
+                    <div class="edu-cover__stat" data-help="Average rating from past students out of 5 stars. Shown publicly so prospective students can gauge fit.">
+                        <div class="edu-cover__stat-value">4.9</div>
+                        <div class="edu-cover__stat-label">★ rating · 87 reviews</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===== Specialties chips ===== -->
+            <section data-help="Specialties: The disciplines this educator teaches. The first chip (highlighted yellow) is their primary area; the rest are secondary skills they can also coach on.">
+                <div class="edu-specialties">
+                    <span class="edu-specialty edu-specialty--primary">Sound production</span>
+                    <span class="edu-specialty">Logic Pro X</span>
+                    <span class="edu-specialty">Mixing</span>
+                    <span class="edu-specialty">Mastering</span>
+                    <span class="edu-specialty">Beat-making</span>
+                    <span class="edu-specialty">Vocal recording</span>
+                    <span class="edu-specialty">Songwriting</span>
+                </div>
+            </section>
+
+            <!-- ===== Two-column body ===== -->
+            <div class="edu-body">
+
+                <!-- Left column: bio, calendar, videos, reviews -->
+                <div>
+
+                    <!-- Bio -->
+                    <section class="edu-section" data-help="About: The educator's professional bio — experience, teaching philosophy, what students typically work on with them.">
+                        <h2 class="edu-section__heading">About</h2>
+                        <div class="edu-bio-text">
+                            <p>I have been producing professionally since 2014, with credits on records by Anchi Humifuku, Jeremy Freedom, and a handful of indie acts that have come through Tomorrow Records. For the last five years I have also been teaching one-on-one — both in my home studio in Vesterbro and online over Logic Pro X screen-share.</p>
+                            <p>My students range from total beginners getting their first beats out, to working artists tightening up their mixes before release. Lessons are practical and project-based — we work on YOUR track, not exercises in isolation.</p>
+                            <p>I assign exercise videos between lessons so you can keep building skills on your own time. You will see assigned material under "My practice plan" on your dashboard.</p>
+                        </div>
+                    </section>
+
+                    <!-- Availability calendar -->
+                    <section class="edu-section" data-help="Availability: Open lesson slots for the next 14 days. Green slot count = available time slots that day. Click a day to see the time slots and book.">
+                        <h2 class="edu-section__heading">Availability · next 14 days</h2>
+                        <div class="edu-calendar" data-edu-calendar></div>
+                    </section>
+
+                    <!-- Demo videos -->
+                    <section class="edu-section" data-help="Demo videos: Sample of the educator's teaching style — short clips showing how they approach a topic. Click to watch.">
+                        <h2 class="edu-section__heading">Demo videos</h2>
+                        <div class="edu-videos">
+                            <article class="edu-video" data-help="Mixing fundamentals · 8:42 · A walkthrough of EQ, compression, and stereo imaging on a vocal-led pop track.">
+                                <div class="edu-video__thumb" style="background-image: url('../assets/images/artists/jokesmith-johnson-cover.png');">
+                                    <span class="edu-video__duration">8:42</span>
+                                    <span class="edu-video__play">▶</span>
+                                </div>
+                                <div class="edu-video__body">
+                                    <div class="edu-video__title">Mixing fundamentals — EQ &amp; compression</div>
+                                    <div class="edu-video__tags">
+                                        <span class="edu-video__tag">Mixing</span>
+                                        <span class="edu-video__tag">EQ</span>
+                                    </div>
+                                    <div class="edu-video__meta">3.2K views · 6 months ago</div>
+                                </div>
+                            </article>
+
+                            <article class="edu-video" data-help="Building a beat from scratch · 12:18 · Using Logic Pro X stock plugins only, ground up.">
+                                <div class="edu-video__thumb" style="background-image: url('../assets/images/artists/jeremy-freedom-cover.png');">
+                                    <span class="edu-video__duration">12:18</span>
+                                    <span class="edu-video__play">▶</span>
+                                </div>
+                                <div class="edu-video__body">
+                                    <div class="edu-video__title">Beat from scratch (stock plugins only)</div>
+                                    <div class="edu-video__tags">
+                                        <span class="edu-video__tag">Beat-making</span>
+                                        <span class="edu-video__tag">Logic Pro</span>
+                                    </div>
+                                    <div class="edu-video__meta">8.7K views · 3 months ago</div>
+                                </div>
+                            </article>
+
+                            <article class="edu-video" data-help="Vocal recording at home · 6:54 · Practical setup tips for tracking vocals in untreated rooms.">
+                                <div class="edu-video__thumb" style="background-image: url('../assets/images/artists/lola-young-event.jpg');">
+                                    <span class="edu-video__duration">6:54</span>
+                                    <span class="edu-video__play">▶</span>
+                                </div>
+                                <div class="edu-video__body">
+                                    <div class="edu-video__title">Vocal recording at home</div>
+                                    <div class="edu-video__tags">
+                                        <span class="edu-video__tag">Recording</span>
+                                        <span class="edu-video__tag">Vocals</span>
+                                    </div>
+                                    <div class="edu-video__meta">5.4K views · 2 months ago</div>
+                                </div>
+                            </article>
+
+                            <article class="edu-video" data-help="Mastering for streaming platforms · 9:20 · How loud should your master be? Practical LUFS-targeting walkthrough.">
+                                <div class="edu-video__thumb" style="background-image: url('../assets/images/artists/kebu-event.jpg');">
+                                    <span class="edu-video__duration">9:20</span>
+                                    <span class="edu-video__play">▶</span>
+                                </div>
+                                <div class="edu-video__body">
+                                    <div class="edu-video__title">Mastering for streaming platforms</div>
+                                    <div class="edu-video__tags">
+                                        <span class="edu-video__tag">Mastering</span>
+                                        <span class="edu-video__tag">LUFS</span>
+                                    </div>
+                                    <div class="edu-video__meta">2.1K views · 5 weeks ago</div>
+                                </div>
+                            </article>
+                        </div>
+                    </section>
+
+                    <!-- Reviews -->
+                    <section class="edu-section" data-help="Reviews: Public feedback from students who have completed lessons. Helps prospective students gauge fit before booking.">
+                        <h2 class="edu-section__heading">Reviews</h2>
+
+                        <div class="edu-review">
+                            <div class="edu-review__head">
+                                <span class="edu-review__avatar" style="background-image: url('../assets/images/artists/placeholder-female-2.png');"></span>
+                                <div>
+                                    <div class="edu-review__name auto-name">Maja Steen</div>
+                                    <div class="edu-review__date">3 weeks ago · 8 lessons completed</div>
+                                </div>
+                                <span class="edu-review__stars">★★★★★</span>
+                            </div>
+                            <div class="edu-review__body">Lasse went straight into MY tracks — no generic exercises. After 8 sessions my mixes are tighter, more controlled, and my mastering finally hits proper LUFS targets without sounding crushed. Highly recommend.</div>
+                        </div>
+
+                        <div class="edu-review">
+                            <div class="edu-review__head">
+                                <span class="edu-review__avatar" style="background-image: url('../assets/images/artists/placeholder-male-3.png');"></span>
+                                <div>
+                                    <div class="edu-review__name auto-name">Frederik Holm</div>
+                                    <div class="edu-review__date">2 months ago · 12 lessons completed</div>
+                                </div>
+                                <span class="edu-review__stars">★★★★★</span>
+                            </div>
+                            <div class="edu-review__body">Started as an absolute beginner with Logic. After 3 months working with Lasse I have a finished EP I am proud of. The video assignments between lessons were essential — I could practice technique on my own time and bring questions back.</div>
+                        </div>
+
+                        <div class="edu-review">
+                            <div class="edu-review__head">
+                                <span class="edu-review__avatar" style="background-image: url('../assets/images/artists/placeholder-female-4.png');"></span>
+                                <div>
+                                    <div class="edu-review__name auto-name">Iris Korn</div>
+                                    <div class="edu-review__date">3 months ago · 4 lessons completed</div>
+                                </div>
+                                <span class="edu-review__stars">★★★★☆</span>
+                            </div>
+                            <div class="edu-review__body">Solid teacher with a deep technical foundation. Sometimes felt the pace was a bit fast for me as a beginner — but Lasse was responsive when I asked to slow down. The beat-making module was great.</div>
+                        </div>
+                    </section>
+
+                </div>
+
+                <!-- Right column: pricing card -->
+                <aside>
+                    <div class="edu-pricing" data-help="Pricing: Lesson formats and rates. 1:1 lessons run in your DAW with screen-share or in-person. Group lessons are 4-person max for cohort-style learning.">
+                        <h3 class="edu-pricing__heading">Pricing</h3>
+
+                        <div class="edu-pricing__option">
+                            <div>
+                                <div class="edu-pricing__option-name">1:1 lesson · 60 min</div>
+                                <div class="edu-pricing__option-meta">Online or in-person · Copenhagen</div>
+                            </div>
+                            <span class="edu-pricing__option-price">650 DKK</span>
+                        </div>
+
+                        <div class="edu-pricing__option">
+                            <div>
+                                <div class="edu-pricing__option-name">1:1 lesson · 90 min</div>
+                                <div class="edu-pricing__option-meta">Deep-dive on a specific track</div>
+                            </div>
+                            <span class="edu-pricing__option-price">920 DKK</span>
+                        </div>
+
+                        <div class="edu-pricing__option">
+                            <div>
+                                <div class="edu-pricing__option-name">10-lesson package</div>
+                                <div class="edu-pricing__option-meta">Save 15% · 60 min sessions</div>
+                            </div>
+                            <span class="edu-pricing__option-price">5,520 DKK</span>
+                        </div>
+
+                        <div class="edu-pricing__option">
+                            <div>
+                                <div class="edu-pricing__option-name">Group cohort · 4 students</div>
+                                <div class="edu-pricing__option-meta">8 weeks · Tuesdays 19:00</div>
+                            </div>
+                            <span class="edu-pricing__option-price">2,800 DKK</span>
+                        </div>
+
+                        <div class="edu-pricing__divider"></div>
+
+                        <button type="button" class="edu-pricing__book" data-edu-book>Book a lesson</button>
+                        <div class="edu-pricing__note">Free 15-minute intro call available before your first paid lesson.</div>
+                    </div>
+                </aside>
+
+            </div>
+
+        </div>
+    </main>
+
+    <script src="../js/core.js"></script>
+    <script src="../js/modes.js"></script>
+    <script src="../js/sidebar.js"></script>
+    <script src="../js/topbar-widgets.js"></script>
+    <script src="../js/stage-badge.js"></script>
+    <script src="../js/acting-as-service.js"></script>
+    <script src="../js/stage-cards.js"></script>
+    <script src="../js/stage-label.js"></script>
+    <script src="../js/stage-resources.js"></script>
+    <script src="../js/stage-economy.js"></script>
+    <script src="../js/settings.js"></script>
+    <script src="../js/activity-feed.js"></script>
+    <script src="../js/educator.js"></script>
+    <script src="../js/app.js"></script>
+</body>
+</html>

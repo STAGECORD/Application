@@ -1,0 +1,529 @@
+/* ===========================================================================
+   Music Market + Music Teaching
+   ===========================================================================
+   Music Market: marketplace for samples, beats, loops, open verses, stems.
+   Music Teaching: lesson booking for music teachers — 1-on-1, group,
+   masterclass formats with rate-per-hour and availability.
+*/
+
+/* ============== MUSIC MARKET ============== */
+.market {
+    background: linear-gradient(135deg, rgba(163, 112, 240, 0.04) 0%, rgba(74, 144, 226, 0.04) 100%);
+    border: 1px solid rgba(163, 112, 240, 0.22);
+    border-radius: 14px;
+    padding: 18px 22px;
+    margin-top: 22px;
+}
+
+.market__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.market__title {
+    margin: 0;
+    font-family: 'Outfit', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: #FFFFFF;
+}
+
+.market__title-icon {
+    display: inline-block;
+    margin-right: 8px;
+    color: #A370F0;
+    font-size: 22px;
+}
+
+.market__cart {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(163, 112, 240, 0.18);
+    border: 1px solid #A370F0;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+.market__cart:hover { background: rgba(163, 112, 240, 0.32); }
+
+.market__cart strong { color: #C4A0F4; }
+
+.market__intro {
+    margin: 0 0 14px;
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.market__intro strong { color: #FFFFFF; font-weight: 700; }
+
+/* Filter tabs (categories) */
+.market__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.market__filter {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.78);
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+.market__filter:hover {
+    border-color: rgba(255, 255, 255, 0.45);
+    color: #FFFFFF;
+}
+
+.market__filter.is-active {
+    background: rgba(163, 112, 240, 0.18);
+    border-color: #A370F0;
+    color: #FFFFFF;
+}
+
+/* Item grid */
+.market__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+.market-item {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.market-item:hover {
+    border-color: rgba(163, 112, 240, 0.5);
+    transform: translateY(-2px);
+}
+
+.market-item__thumb {
+    aspect-ratio: 16/9;
+    background-size: cover;
+    background-position: center;
+    background-color: rgba(255, 255, 255, 0.06);
+    position: relative;
+}
+
+.market-item__category {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(0, 0, 0, 0.7);
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 3px 7px;
+    border-radius: 4px;
+    backdrop-filter: blur(6px);
+}
+
+.market-item__category--sample  { background: rgba(74, 144, 226, 0.85); }
+.market-item__category--beat    { background: rgba(163, 112, 240, 0.85); }
+.market-item__category--loop    { background: rgba(255, 138, 200, 0.85); }
+.market-item__category--lyrics  { background: rgba(255, 196, 0, 0.85); color: #1a1500; }
+.market-item__category--openverse { background: rgba(125, 211, 192, 0.85); color: #0a1f1a; }
+.market-item__category--stem    { background: rgba(255, 106, 85, 0.85); }
+
+.market-item__play {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #FFFFFF;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+}
+
+.market-item__play:hover { background: #A370F0; border-color: #A370F0; }
+
+.market-item__body {
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1 1 auto;
+}
+
+.market-item__title {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: #FFFFFF;
+    line-height: 1.3;
+}
+
+.market-item__creator {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.market-item__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 2px;
+}
+
+.market-item__tag {
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.7);
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 4px;
+}
+
+.market-item__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.market-item__price {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    color: #FFFFFF;
+}
+
+.market-item__add {
+    background: #A370F0;
+    border: 1px solid #A370F0;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 5px 11px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.market-item__add:hover { background: #B484F4; border-color: #B484F4; }
+
+.market-item__add.is-added {
+    background: rgba(67, 196, 122, 0.18);
+    border-color: #43C47A;
+    color: #43C47A;
+}
+
+/* ============== MUSIC TEACHING ============== */
+.teaching {
+    background: rgba(67, 196, 122, 0.04);
+    border: 1px solid rgba(67, 196, 122, 0.28);
+    border-radius: 14px;
+    padding: 18px 20px;
+}
+
+.teaching__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.teaching__title {
+    margin: 0;
+    font-family: 'Outfit', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #FFFFFF;
+}
+
+.teaching__title-icon { color: #43C47A; margin-right: 8px; }
+
+.teaching__cta {
+    background: #43C47A;
+    border: 1px solid #43C47A;
+    color: #02040C;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    padding: 8px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.teaching__cta:hover { background: #59D38A; border-color: #59D38A; }
+
+.teaching__intro {
+    margin: 0 0 14px;
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.teaching__intro strong { color: #FFFFFF; font-weight: 700; }
+
+/* Lesson formats grid */
+.teaching__formats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.lesson-format {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(67, 196, 122, 0.25);
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.lesson-format:hover {
+    border-color: #43C47A;
+    background: rgba(67, 196, 122, 0.08);
+}
+
+.lesson-format.is-selected {
+    border-color: #43C47A;
+    background: rgba(67, 196, 122, 0.12);
+    box-shadow: 0 0 0 1px #43C47A;
+}
+
+.lesson-format__icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    background: rgba(67, 196, 122, 0.18);
+    color: #43C47A;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.lesson-format__name {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: #FFFFFF;
+}
+
+.lesson-format__desc {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.4;
+}
+
+.lesson-format__rate {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    color: #FFFFFF;
+    margin-top: auto;
+}
+
+.lesson-format__rate-meta {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+}
+
+/* Mini availability calendar */
+.teaching__avail {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+}
+
+.teaching__avail-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.teaching__avail-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.teaching__avail-month {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.65);
+    font-weight: 600;
+}
+
+.teaching__avail-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.teaching__avail-day {
+    aspect-ratio: 1;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: default;
+    position: relative;
+}
+
+.teaching__avail-day--available {
+    background: rgba(67, 196, 122, 0.12);
+    border-color: rgba(67, 196, 122, 0.4);
+    color: #FFFFFF;
+    cursor: pointer;
+}
+
+.teaching__avail-day--available:hover {
+    background: rgba(67, 196, 122, 0.32);
+    border-color: #43C47A;
+}
+
+.teaching__avail-day--booked {
+    background: rgba(255, 196, 0, 0.12);
+    border-color: rgba(255, 196, 0, 0.4);
+    color: #FFC400;
+}
+
+.teaching__avail-day--past {
+    opacity: 0.3;
+}
+
+.teaching__avail-day-dot {
+    position: absolute;
+    bottom: 3px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.teaching__avail-legend {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.teaching__avail-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.teaching__avail-legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+}
+
+.teaching__avail-legend-dot--available {
+    background: rgba(67, 196, 122, 0.4);
+    border: 1px solid #43C47A;
+}
+
+.teaching__avail-legend-dot--booked {
+    background: rgba(255, 196, 0, 0.4);
+    border: 1px solid #FFC400;
+}
+
+.teaching__avail-legend-dot--closed {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+/* Teacher stats row */
+.teaching__stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.teaching__stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.teaching__stat-label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.teaching__stat-value {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    color: #FFFFFF;
+}
+
+.teaching__stat-meta {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+@media (max-width: 600px) {
+    .teaching__stats { grid-template-columns: repeat(2, 1fr); }
+}

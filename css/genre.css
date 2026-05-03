@@ -1,0 +1,258 @@
+/* ===========================================================================
+   Genre + Sub-genre tagging — used on artist profile and project cards
+   ===========================================================================
+   Each main genre has its own hue. Sub-genres inherit the parent's hue but
+   render with reduced saturation so the primary stands out visually.
+*/
+
+/* ---------- Inline chip row (read-only display) ---------- */
+.genre-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    margin: 8px 0 4px;
+}
+
+.genre-chips__label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.5);
+    margin-right: 4px;
+}
+
+.genre-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.genre-chip:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.genre-chip__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.genre-chip--primary {
+    background: var(--genre-bg, rgba(255, 138, 200, 0.18));
+    border-color: var(--genre-color, #FF8AC8);
+    color: #FFFFFF;
+    font-weight: 700;
+}
+
+.genre-chip--primary .genre-chip__dot {
+    background: var(--genre-color, #FF8AC8);
+}
+
+.genre-chip--sub {
+    background: var(--genre-bg, rgba(255, 138, 200, 0.08));
+    border-color: var(--genre-border, rgba(255, 138, 200, 0.4));
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 500;
+    font-size: 11px;
+}
+
+.genre-chip--sub .genre-chip__dot {
+    background: var(--genre-color, #FF8AC8);
+    opacity: 0.7;
+}
+
+.genre-chip--add {
+    background: transparent;
+    border: 1px dashed rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.genre-chip--add:hover {
+    border-color: #FFFFFF;
+    color: #FFFFFF;
+    border-style: solid;
+}
+
+.genre-chip--placeholder {
+    color: rgba(255, 255, 255, 0.4);
+    font-style: italic;
+    border-style: dashed;
+}
+
+/* ---------- Editor modal ---------- */
+.release-modal.release-modal--genre {
+    max-width: 720px;
+    width: 92vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.genre-editor__intro {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.genre-editor__intro strong { color: #FFFFFF; font-weight: 700; }
+
+.genre-editor__section {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 12px 14px;
+}
+
+.genre-editor__section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    gap: 12px;
+}
+
+.genre-editor__section-title {
+    margin: 0;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #FFFFFF;
+}
+
+.genre-editor__section-hint {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    text-align: right;
+}
+
+/* Main genre grid — radio-button-style picks */
+.genre-main-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 6px;
+}
+
+.genre-main-pick {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.85);
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 10px;
+    border-radius: 7px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-align: left;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.genre-main-pick__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.genre-main-pick:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.35);
+}
+
+.genre-main-pick.is-active {
+    background: var(--genre-bg, rgba(255, 138, 200, 0.18));
+    border-color: var(--genre-color, #FF8AC8);
+    color: #FFFFFF;
+    font-weight: 700;
+}
+
+/* Sub-genre cluster — toggleable pills filtered by chosen main */
+.genre-sub-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.genre-sub-pick {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.78);
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 11px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.genre-sub-pick:hover {
+    border-color: rgba(255, 255, 255, 0.45);
+    color: #FFFFFF;
+}
+
+.genre-sub-pick.is-active {
+    background: var(--genre-bg, rgba(255, 138, 200, 0.18));
+    border-color: var(--genre-color, #FF8AC8);
+    color: #FFFFFF;
+}
+
+.genre-editor__empty {
+    margin: 6px 0 0;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+}
+
+/* ---------- Project-card genre row ---------- */
+.button-group--genre .button-group__label { color: rgba(255, 255, 255, 0.7); }
+
+.project-genre-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    min-height: 28px;
+}
+
+.project-genre-row .genre-chip { font-size: 11px; padding: 3px 9px; }
+
+.project-genre-row .genre-chip__dot { width: 6px; height: 6px; }
+
+/* ---------- Artist-cover genre row (sits between name and stats) ---------- */
+.artist-cover__genres {
+    margin: 6px 0 4px;
+}
+
+.artist-cover__genres .genre-chip { font-size: 12px; }
+
+/* Picker flow hint when no main is chosen yet */
+.genre-editor__no-main {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 12px;
+    font-style: italic;
+    margin: 0;
+    padding: 8px 0;
+}

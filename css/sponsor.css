@@ -1,0 +1,149 @@
+/* =====================================================
+   Sponsor / Brand dashboard
+   Active sponsorships, browse events, crowdfunding.
+   ===================================================== */
+
+/* Sponsorship card grid */
+.sponsor-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+}
+
+.sponsor-card {
+    display: flex;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    overflow: hidden;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.sponsor-card:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.sponsor-card__hero {
+    aspect-ratio: 16 / 9;
+    background-size: cover;
+    background-position: center;
+    background-color: #02040C;
+    position: relative;
+}
+
+.sponsor-card__pill {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.sponsor-card__body {
+    padding: 16px 18px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1 1 auto;
+}
+
+.sponsor-card__title {
+    font-weight: 700;
+    font-size: 16px;
+    margin: 0;
+    line-height: 1.3;
+}
+
+.sponsor-card__sub {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
+}
+
+.sponsor-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-top: 4px;
+}
+
+.sponsor-card__meta strong {
+    font-weight: 700;
+    color: #FFFFFF;
+}
+
+.sponsor-card__progress {
+    margin-top: 8px;
+}
+
+.sponsor-card__progress-bar {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.sponsor-card__progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #43C47A 0%, #6FA9FF 100%);
+    border-radius: 999px;
+}
+
+.sponsor-card__progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.sponsor-card__progress-meta strong { color: #FFFFFF; font-weight: 700; }
+
+.sponsor-card__actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.sponsor-card__actions .role-btn { flex: 1 1 0; justify-content: center; }
+
+/* Filter chips for sponsor browse */
+.sponsor-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.sponsor-filter {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    padding: 7px 14px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.sponsor-filter:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.32);
+}
+
+.sponsor-filter.is-active {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #FFFFFF;
+}

@@ -1,0 +1,98 @@
+/* =====================================================
+   Photos overview page
+   One section per album. Each album has a heading + a row-based grid
+   of photo tiles. Tiles share the same visual language as the photo
+   preview row on the artist profile (200×140, hover scale + shadow).
+   ===================================================== */
+
+/* Match the artist profile's tighter top spacing so content starts just below
+   the topbar, not 40px below it. (overrides main.css default of 114px) */
+.main-content {
+    padding-top: 88px;
+}
+
+.photos-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 22px;
+    color: #B1B1B1;
+    text-decoration: none;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.photos-back:hover {
+    color: #FFFFFF;
+}
+
+.photos-page__heading {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 40px;
+    line-height: 50px;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    margin: 0 0 32px;
+}
+
+/* ----- One album section: heading + photo grid ----- */
+.photos-album {
+    margin-bottom: 38px;
+}
+
+.photos-album__header {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+
+.photos-album__title {
+    margin: 0;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 22px;
+    text-transform: uppercase;
+    color: #FFFFFF;
+}
+
+.photos-album__meta {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 18px;
+    color: #B1B1B1;
+}
+
+/* ----- Photo grid — same 200×140 tiles as the artist profile preview,
+   wrapping left-to-right into new rows instead of horizontal scrolling. ----- */
+.photos-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 12px;
+    width: 100%;
+}
+
+.photo-tile {
+    display: block;
+    flex: 0 0 200px;
+    width: 200px;
+    height: 140px;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.photo-tile:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5);
+}

@@ -1,0 +1,115 @@
+/* ===========================================================================
+   Sales page — revenue hero + per-source breakdown cards
+   ===========================================================================
+   Extracted from the sales/index.html inline <style> block. Styles for
+   the big revenue total at the top and the per-source income breakdown.
+*/
+
+.revenue-hero {
+    background: linear-gradient(135deg, rgba(0, 169, 17, 0.1) 0%, rgba(74, 144, 226, 0.06) 100%);
+    border: 1px solid #00A911;
+    border-radius: 14px;
+    padding: 28px 30px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.revenue-hero__main { flex: 1 1 auto; min-width: 0; }
+
+.revenue-hero__label {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #00A911;
+    margin-bottom: 8px;
+}
+
+.revenue-hero__value {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 56px;
+    line-height: 60px;
+    text-transform: uppercase;
+    color: #FFFFFF;
+}
+
+.revenue-hero__delta {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    line-height: 1;
+    color: #00A911;
+    margin-top: 8px;
+}
+
+.revenue-hero__cta {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+    margin-bottom: 28px;
+}
+
+.source-card {
+    padding: 18px 20px;
+    background: #000000;
+    border: 1px solid #797979;
+    border-radius: 12px;
+    color: #FFFFFF;
+}
+
+.source-card__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.source-card__label {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #B1B1B1;
+}
+
+.source-card__pct {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    color: #B1B1B1;
+}
+
+.source-card__value {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 26px;
+    color: #FFFFFF;
+    margin: 8px 0;
+}
+
+.source-card__bar {
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+}
+
+.source-card__bar-fill {
+    height: 100%;
+    border-radius: 2px;
+}

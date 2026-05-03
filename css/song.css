@@ -1,0 +1,759 @@
+/* =====================================================
+   Song player page — full-screen "now playing" view with
+   overlapping artist/song circles, progress bar, lyrics
+   and stem-toggle chips for wavefile-aware playback.
+   ===================================================== */
+
+/* Minimize button — collapses the song page down to the bottom bar */
+.song-stage__minimize {
+    position: absolute;
+    top: 16px;
+    right: 18px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px 6px 8px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    color: rgba(255, 255, 255, 0.85);
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    z-index: 8;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.song-stage__minimize:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #FFFFFF;
+}
+
+.song-stage__minimize svg { width: 14px; height: 14px; }
+
+.song-stage { position: relative; }
+
+/* When minimized, hide all the heavy song-page surfaces; only the
+   bottom mini-player remains visible (along with sidebar + topbar). */
+body.song-page--minimized .song-stage,
+body.song-page--minimized .song-stems,
+body.song-page--minimized .song-lyrics {
+    display: none;
+}
+
+/* The mini-player's expand chevron lives at the far right of the bar */
+.streaming-player__expand {
+    margin-left: 10px;
+    flex-shrink: 0;
+}
+
+/* Mini-bar play button shows ONE icon at a time based on data-playing. */
+.streaming-player__btn--play[data-playing="true"]  .icon-play  { display: none; }
+.streaming-player__btn--play[data-playing="false"] .icon-pause { display: none; }
+.streaming-player__btn--play .icon-play,
+.streaming-player__btn--play .icon-pause {
+    width: 16px;
+    height: 16px;
+}
+
+/* "Now playing" pill in the topbar */
+.topbar-now-playing {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px 6px 6px;
+    background: linear-gradient(135deg, #C04A1F 0%, #E0691F 60%, #F39C12 100%);
+    border-radius: 999px;
+    color: #FFFFFF;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    box-shadow: 0 6px 18px rgba(224, 105, 31, 0.35);
+}
+
+.topbar-now-playing__cover {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #02040C;
+    background-size: cover;
+    background-position: center;
+    flex-shrink: 0;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.topbar-now-playing__label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.85;
+}
+
+.topbar-now-playing__separator {
+    opacity: 0.5;
+}
+
+.topbar-now-playing__track {
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+
+/* Player controls integrated into the stage carousel — bare icons only,
+   no extra circles. Everything sits at the vertical centre of the
+   circle row so it lines up with the discs. */
+
+/* Centre disc IS the play button — give it pointer feedback */
+.song-circle[data-slot="0"] { cursor: pointer; }
+.song-circle[data-slot="0"] .song-circle__disc { transition-property: transform, opacity, border-color, box-shadow; }
+.song-circle[data-slot="0"]:hover .song-circle__disc {
+    box-shadow: 0 14px 40px rgba(220, 70, 30, 0.55);
+}
+
+/* Play / pause triangle overlaid on the centre disc — purely visual */
+.song-stage__play-glyph {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 56px;
+    height: 56px;
+    color: #FFFFFF;
+    z-index: 7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.55));
+    transition: transform 0.18s ease;
+}
+
+.song-circle[data-slot="0"]:hover ~ .song-stage__play-glyph,
+.song-circle[data-slot="0"]:hover + * ~ .song-stage__play-glyph { /* fallback */
+    transform: translate(-50%, -50%) scale(1.08);
+}
+
+.song-stage__play-glyph svg { width: 56px; height: 56px; fill: currentColor; }
+
+.song-stage__play-glyph[data-playing="true"]  .icon-play  { display: none; }
+.song-stage__play-glyph[data-playing="false"] .icon-pause { display: none; }
+
+/* Prev / next arrows — sit on the past/next discs. Arrow icon on top
+   with a small PAST / NEXT label underneath. No circle background. */
+.song-arrow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 70px;
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: #FFFFFF;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    z-index: 6;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.6));
+    transition: transform 0.18s ease, color 0.18s ease;
+}
+
+.song-arrow:hover { color: #FFD75A; transform: translate(var(--tx), -50%) scale(1.1); }
+.song-arrow svg { width: 28px; height: 28px; }
+
+.song-arrow__label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    line-height: 1;
+}
+
+.song-arrow--prev { --tx: calc(-50% - 144px); transform: translate(var(--tx), -50%); }
+.song-arrow--next { --tx: calc(-50% + 144px); transform: translate(var(--tx), -50%); }
+
+/* Side icons (shuffle / repeat) — bare icons at the outer edges,
+   vertically centred with the circles */
+.song-side-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: rgba(255, 255, 255, 0.75);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 4;
+    transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.song-side-btn:hover { color: #FFFFFF; }
+.song-side-btn.is-active { color: #43C47A; }
+.song-side-btn svg { width: 22px; height: 22px; }
+
+.song-stage__shuffle { transform: translate(calc(-50% - 410px), -50%); }
+.song-stage__repeat  { transform: translate(calc(-50% + 410px), -50%); }
+.song-stage__shuffle:hover { transform: translate(calc(-50% - 410px), -50%) scale(1.1); }
+.song-stage__repeat:hover  { transform: translate(calc(-50% + 410px), -50%) scale(1.1); }
+
+/* Stage card — wraps the 5 overlapping circles + titles + progress */
+.song-stage {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 22px;
+    padding: 20px 28px 28px;
+    margin-bottom: 24px;
+}
+
+.song-stage__heading {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    margin: 0 0 10px;
+}
+
+/* Slot-based carousel — wrapper translates only (no scale → label text
+   stays sharp during transitions). The inner .song-circle__disc handles
+   scale + opacity for the cover-photo disc itself. PAST / NEXT badges sit
+   over the disc in their own pill so they're always readable. */
+.song-stage__circles {
+    position: relative;
+    height: 300px;
+    margin: 38px 0 16px;
+    overflow: hidden;
+}
+
+.song-circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 220px;
+    height: 220px;
+    /* margin centres the disc vertically and horizontally on (top:50%, left:50%) */
+    margin: -110px 0 0 -110px;
+    transition: transform 0.55s cubic-bezier(0.34, 1.05, 0.4, 1);
+    cursor: pointer;
+    color: #FFFFFF;
+}
+
+/* Slot positioning — wrapper only translates */
+.song-circle[data-slot="-3"] { transform: translateX(-440px); z-index: 0; pointer-events: none; }
+.song-circle[data-slot="-2"] { transform: translateX(-260px); z-index: 1; }
+.song-circle[data-slot="-1"] { transform: translateX(-130px); z-index: 2; }
+.song-circle[data-slot="0"]  { transform: translateX(0);      z-index: 3; }
+.song-circle[data-slot="1"]  { transform: translateX(130px);  z-index: 2; }
+.song-circle[data-slot="2"]  { transform: translateX(260px);  z-index: 1; }
+.song-circle[data-slot="3"]  { transform: translateX(440px);  z-index: 0; pointer-events: none; }
+
+/* The actual disc — scales + fades; carries the cover photo and red tint */
+.song-circle__disc {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background-color: #02040C;
+    background-size: cover;
+    background-position: center;
+    border: 2px solid rgba(255, 255, 255, 0.12);
+    transition:
+        transform    0.55s cubic-bezier(0.34, 1.05, 0.4, 1),
+        opacity      0.45s ease,
+        border-color 0.4s ease,
+        box-shadow   0.45s ease;
+    overflow: hidden;
+}
+
+.song-circle__disc::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(220, 70, 30, 0.55), rgba(40, 8, 0, 0.45));
+    mix-blend-mode: multiply;
+    pointer-events: none;
+    border-radius: 50%;
+}
+
+.song-circle[data-slot="-3"] .song-circle__disc { transform: scale(0.5);  opacity: 0;    }
+.song-circle[data-slot="-2"] .song-circle__disc { transform: scale(0.7);  opacity: 0.45; }
+.song-circle[data-slot="-1"] .song-circle__disc { transform: scale(0.85); opacity: 0.85; }
+.song-circle[data-slot="0"]  .song-circle__disc {
+    transform: scale(1);
+    opacity: 1;
+    border-color: #FFFFFF;
+    box-shadow: 0 12px 36px rgba(220, 70, 30, 0.4);
+}
+.song-circle[data-slot="1"]  .song-circle__disc { transform: scale(0.85); opacity: 0.85; }
+.song-circle[data-slot="2"]  .song-circle__disc { transform: scale(0.7);  opacity: 0.45; }
+.song-circle[data-slot="3"]  .song-circle__disc { transform: scale(0.5);  opacity: 0;    }
+
+/* Artist label — sibling of the disc so it never gets scaled (no blur). */
+.song-circle__artist {
+    position: absolute;
+    top: -42px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    font-family: 'Outfit', sans-serif;
+    color: #FFFFFF;
+    line-height: 1.05;
+    white-space: nowrap;
+    transition: opacity 0.45s ease;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.song-circle__artist strong {
+    display: block;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.02em;
+}
+
+.song-circle__artist span {
+    display: block;
+    font-weight: 400;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.song-circle[data-slot="-1"] .song-circle__artist,
+.song-circle[data-slot="1"]  .song-circle__artist { opacity: 0.7; }
+.song-circle[data-slot="-2"] .song-circle__artist,
+.song-circle[data-slot="2"]  .song-circle__artist { opacity: 0.5; }
+.song-circle[data-slot="-3"] .song-circle__artist,
+.song-circle[data-slot="3"]  .song-circle__artist { opacity: 0; }
+
+/* PAST / NEXT badge — sits over the disc in its own dark pill so it's
+   always readable on the red-tinted cover. */
+.song-circle__role {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 6px 16px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    z-index: 6;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+/* PAST/NEXT pills are no longer used — the prev/next arrows replace them. */
+.song-circle__role { display: none; }
+
+/* Song titles row, beneath the circles */
+.song-stage__titles {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 38px;
+    padding: 0 36px;
+}
+
+.song-title-cell {
+    flex: 1 1 0;
+    text-align: center;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.song-title-cell--current {
+    color: #FFFFFF;
+    font-weight: 700;
+}
+
+.song-title-cell--far {
+    opacity: 0.4;
+}
+
+/* Progress bar */
+.song-progress {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 22px;
+}
+
+.song-progress__time {
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    color: rgba(255, 255, 255, 0.7);
+    flex-shrink: 0;
+    min-width: 40px;
+}
+
+.song-progress__time--end { text-align: right; }
+
+.song-progress__bar {
+    flex: 1 1 auto;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.song-progress__fill {
+    height: 100%;
+    width: 15%;
+    background: linear-gradient(90deg, #FFFFFF 0%, #DDDDDD 100%);
+    border-radius: 999px;
+    transition: width 0.25s linear;
+}
+
+/* Stem toggles — bass/drums/vocal/guitar/piano */
+.song-stems {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 18px 22px;
+    margin-bottom: 24px;
+}
+
+.song-stems__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.song-stems__heading {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    margin: 0;
+}
+
+.song-stems__hint {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.song-stems__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.song-stem {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: rgba(67, 196, 122, 0.16);
+    border: 1px solid rgba(67, 196, 122, 0.55);
+    border-radius: 999px;
+    color: #43C47A;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+}
+
+.song-stem input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.song-stem__icon {
+    width: 14px;
+    height: 14px;
+}
+
+.song-stem:has(input:not(:checked)) {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.5);
+    opacity: 0.7;
+}
+
+.song-stem--unavailable {
+    opacity: 0.35;
+    cursor: not-allowed;
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.4);
+    text-decoration: line-through;
+}
+
+/* Lyrics & music sheet — left column. Covers & tutorials — right column. */
+.song-lyrics {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 22px 28px 28px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 32px;
+}
+
+.song-lyrics__col { min-width: 0; }
+
+.song-lyrics__heading {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    margin: 0 0 18px;
+}
+
+.song-lyrics__sheet {
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    line-height: 1.85;
+    color: rgba(255, 255, 255, 0.85);
+    white-space: pre;
+    overflow-x: auto;
+    padding-bottom: 6px;
+}
+
+.song-lyrics__chord {
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+.song-lyrics__line {
+    color: #FFFFFF;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+/* Covers & tutorials column */
+.song-covers__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.song-covers__head .song-lyrics__heading { margin: 0; }
+
+.song-covers__count {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.55);
+    letter-spacing: 0.02em;
+}
+
+.song-covers__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.song-cover {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 12px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    text-decoration: none;
+    color: #FFFFFF;
+    transition: background 0.15s ease, border-color 0.15s ease;
+    align-items: center;
+}
+
+.song-cover:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+.song-cover__thumb {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background-color: #02040C;
+    background-size: cover;
+    background-position: center;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.song-cover__badge {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    padding: 2px 7px;
+    background: rgba(0, 0, 0, 0.65);
+    border-radius: 999px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+}
+
+.song-cover__badge--cover    { background: rgba(67, 196, 122, 0.78); }
+.song-cover__badge--tutorial { background: rgba(56, 134, 252, 0.78); }
+.song-cover__badge--dance    { background: rgba(255, 191, 0, 0.78); color: #02040C; }
+
+.song-cover__duration {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    padding: 1px 6px;
+    background: rgba(0, 0, 0, 0.65);
+    border-radius: 4px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    color: #FFFFFF;
+}
+
+.song-cover__main {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.song-cover__title {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 12.5px;
+    line-height: 1.3;
+    color: #FFFFFF;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.song-cover__meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.song-cover__avatar {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    background-color: #1a1a1a;
+    flex-shrink: 0;
+}
+
+.song-cover__plays {
+    font-variant-numeric: tabular-nums;
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.song-covers__view-all {
+    display: inline-block;
+    margin-top: 14px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.song-covers__view-all:hover { color: #FFFFFF; }
+
+@media (max-width: 980px) {
+    .song-lyrics { grid-template-columns: 1fr; gap: 28px; }
+}
+
+/* Toggle the active state on the play button glyph (set by JS) */
+.song-control--play[data-playing="true"] svg.icon-play { display: none; }
+.song-control--play[data-playing="false"] svg.icon-pause { display: none; }
+
+@media (max-width: 1100px) {
+    .song-stage__circles { height: 240px; }
+    .song-circle { width: 180px; height: 180px; margin: -90px 0 0 -90px; }
+    .song-circle[data-slot="-3"] { transform: translateX(-360px); }
+    .song-circle[data-slot="-2"] { transform: translateX(-210px); }
+    .song-circle[data-slot="-1"] { transform: translateX(-105px); }
+    .song-circle[data-slot="1"]  { transform: translateX(105px); }
+    .song-circle[data-slot="2"]  { transform: translateX(210px); }
+    .song-circle[data-slot="3"]  { transform: translateX(360px); }
+    .song-arrow--prev { --tx: calc(-50% - 116px); transform: translate(var(--tx), -50%); }
+    .song-arrow--next { --tx: calc(-50% + 116px); transform: translate(var(--tx), -50%); }
+    .song-stage__shuffle { transform: translate(calc(-50% - 320px), -50%); }
+    .song-stage__repeat  { transform: translate(calc(-50% + 320px), -50%); }
+    .song-stage__play-glyph { width: 46px; height: 46px; }
+    .song-stage__play-glyph svg { width: 46px; height: 46px; }
+    .song-stage__titles { padding: 0 8px; }
+    .song-title-cell { font-size: 13px; }
+}
+
+@media (max-width: 760px) {
+    .song-stage__circles { height: 180px; }
+    .song-circle { width: 130px; height: 130px; margin: -65px 0 0 -65px; }
+    .song-circle[data-slot="-3"] { transform: translateX(-260px); }
+    .song-circle[data-slot="-2"] { transform: translateX(-150px); }
+    .song-circle[data-slot="-1"] { transform: translateX(-78px); }
+    .song-circle[data-slot="1"]  { transform: translateX(78px); }
+    .song-circle[data-slot="2"]  { transform: translateX(150px); }
+    .song-circle[data-slot="3"]  { transform: translateX(260px); }
+    .song-arrow { width: 36px; height: 36px; }
+    .song-arrow svg { width: 22px; height: 22px; }
+    .song-arrow--prev { --tx: calc(-50% - 88px); transform: translate(var(--tx), -50%); }
+    .song-arrow--next { --tx: calc(-50% + 88px); transform: translate(var(--tx), -50%); }
+    .song-stage__shuffle, .song-stage__repeat { display: none; }
+    .song-stage__play-glyph { width: 36px; height: 36px; }
+    .song-stage__play-glyph svg { width: 36px; height: 36px; }
+    .song-circle__artist strong { font-size: 12px; }
+    .song-circle__artist span { font-size: 11px; }
+    .song-title-cell { font-size: 11px; }
+}

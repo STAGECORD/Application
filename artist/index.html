@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAGECORD - Artist Page</title>
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/logo.css">
+    <link rel="stylesheet" href="../css/topbar.css">
+    <link rel="stylesheet" href="../css/artist.css">
+    <link rel="stylesheet" href="../css/pitch-modals.css">
+    <link rel="stylesheet" href="../css/genre.css">
+    <link rel="stylesheet" href="../css/vibes.css">
+    <link rel="stylesheet" href="../css/pitched-songs.css">
+    <link rel="stylesheet" href="../css/intimate.css">
+    <link rel="stylesheet" href="../css/qr-befriend.css">
+    <link rel="stylesheet" href="../css/paying-forward.css">
+    <link rel="stylesheet" href="../css/market-teaching.css">
+</head>
+<body>
+    <!-- Left Sidebar Navigation -->
+    <aside class="sidebar" data-sidebar></aside>
+
+    <!-- Top Bar -->
+    <header class="topbar">
+        <!-- Logo (left) -->
+        <div class="logo-container" data-help="STAGECORD PRO-logoet. Klik for at vende tilbage til forsiden uanset hvor du er i platformen.">
+            <a href="../index.html" class="logo-link">
+                <h1 class="logo">
+                    <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
+                </h1>
+            </a>
+        </div>
+
+        <!-- Search bar (middle) -->
+        <div class="search-bar" data-help="Søgebar: Find artister, koncerter, spillesteder, venner og alt andet på platformen. Skriv mindst 2 tegn for at se forslag.">
+            <input
+                type="text"
+                class="search-input"
+                placeholder="Search Artists, Concerts, Venues, Friends and much more"
+                aria-label="Search"
+            />
+            <svg class="search-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/>
+                <path d="M18 18L24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </div>
+
+        <!-- Help button (right) -->
+        <button type="button" class="help-button" aria-label="Help" aria-pressed="false" data-help="Hjælpeknap: Klik for at aktivere hjælpetilstand. Derefter kan du klikke på et vilkårligt element for at se en forklaring. Tryk Esc eller klik ? igen for at slukke.">
+            <span class="help-mark">?</span>
+        </button>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <!-- ============ Artist Cover ============ -->
+            <section class="artist-cover" data-help="Artist cover: Den øverste hero-sektion på din artistside, med dit kunstnernavn, stats og links til billet- og merchandise-køb.">
+                <!-- Top row: Tickets (left) + Merch (right) -->
+                <div class="artist-cover__top">
+                    <button type="button" class="artist-cta artist-cta--tickets" data-help="Buy Tickets: Køb adgang til artistens næste store event eller turné.">
+                        <svg class="artist-cta__icon" viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M25.0229 9.98047C24.4542 9.4116 24.1212 8.64901 24.0905 7.84522C24.0599 7.04142 24.3338 6.25568 24.8574 5.64512C24.9007 5.59434 24.9233 5.52907 24.9205 5.46238C24.9177 5.3957 24.8898 5.33254 24.8424 5.28555L21.8257 2.26543C21.7758 2.21559 21.7082 2.18759 21.6377 2.18759C21.5672 2.18759 21.4996 2.21559 21.4497 2.26543L16.6413 7.07383C16.4639 7.2512 16.3303 7.46746 16.251 7.70547C16.172 7.94403 16.0385 8.16091 15.8611 8.3389C15.6837 8.51688 15.4673 8.65109 15.229 8.73086C14.9908 8.81023 14.7744 8.94385 14.5967 9.12119L2.26534 21.4498C2.2155 21.4997 2.1875 21.5673 2.1875 21.6378C2.1875 21.7083 2.2155 21.7759 2.26534 21.8258L5.28204 24.8425C5.32903 24.8899 5.39219 24.9178 5.45887 24.9206C5.52556 24.9234 5.59083 24.9008 5.64161 24.8575C6.25204 24.3333 7.03796 24.0589 7.84203 24.0894C8.6461 24.1199 9.40898 24.453 9.97795 25.022C10.5469 25.5909 10.88 26.3538 10.9105 27.1579C10.941 27.962 10.6666 28.7479 10.1424 29.3583C10.0991 29.4091 10.0766 29.4744 10.0794 29.541C10.0821 29.6077 10.11 29.6709 10.1574 29.7179L13.1741 32.7346C13.224 32.7844 13.2916 32.8124 13.3621 32.8124C13.4326 32.8124 13.5002 32.7844 13.5501 32.7346L25.8821 20.4032C26.0595 20.2255 26.1931 20.0091 26.2725 19.7709C26.3514 19.5323 26.4849 19.3155 26.6623 19.1375C26.8397 18.9595 27.0561 18.8253 27.2944 18.7455C27.5325 18.6662 27.7487 18.5326 27.9261 18.3552L32.7345 13.5468C32.7843 13.4969 32.8123 13.4293 32.8123 13.3588C32.8123 13.2883 32.7843 13.2207 32.7345 13.1708L29.7178 10.1541C29.6708 10.1067 29.6076 10.0788 29.5409 10.076C29.4743 10.0732 29.409 10.0958 29.3582 10.1391C28.7485 10.6636 27.9632 10.9387 27.1595 10.9093C26.3557 10.8799 25.5926 10.5482 25.0229 9.98047Z" stroke="currentColor" stroke-miterlimit="10"/>
+                            <path d="M17.124 9.60038L15.9954 8.47177M20.1332 12.6096L19.3805 11.8576M23.1423 15.6194L22.3904 14.8668M26.5282 19.0046L25.3996 17.876" stroke="currentColor" stroke-miterlimit="10" stroke-linecap="round"/>
+                        </svg>
+                        <span>Buy Tickets for REGREDS</span>
+                    </button>
+
+                    <button type="button" class="artist-cta artist-cta--merch" data-help="Buy Merchandise: Adgang til artistens online merch-shop.">
+                        <svg class="artist-cta__icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M16 4l-2 2-2 2-2-2-2-2-5 3 2 4h2v9h10v-9h2l2-4-5-3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Buy Merchandise</span>
+                    </button>
+                </div>
+
+                <!-- Bottom row: Artist name (left) + stats (right) -->
+                <div class="artist-cover__bottom">
+                    <h1 class="artist-cover__name auto-name" data-help="The artist's stage name — shown at the top of the page.">Jokesmith Johnson</h1>
+
+                    <div class="artist-cover__stats" data-help="Artist stats: Followers (passive subscribers to your content) are different from Friends (mutual connections in your close circle). The two are distinct concepts — Followers grow with reach, Friends grow with relationships.">
+                        <span class="artist-cover__stat" data-help="Followers: Antal personer der følger dig passivt — får dine opslag i deres feed, men ikke nødvendigvis venner. Vokser med eksponering og 'Paying it forward'-systemet."><span class="artist-cover__stat-value">1.4M</span><span class="artist-cover__stat-label">Followers</span></span>
+                        <span class="artist-cover__stat" data-help="Friends: Mutuelle forbindelser — personer du har gensidig venskab med. Mindre tal end Followers, men en mere personlig relation. Bruges fx til entourage-grupper og gruppe-billetkøb."><span class="artist-cover__stat-value">512</span><span class="artist-cover__stat-label">Friends</span></span>
+                        <span class="artist-cover__stat" data-help="Daily Listeners: Antal unikke lyttere der har streamet din musik den seneste dag — direkte indikator for streaming-momentum."><span class="artist-cover__stat-value">103K</span><span class="artist-cover__stat-label">Daily Listeners</span></span>
+                        <span class="artist-cover__stat" data-help="Visiting Artist Page: Antal unikke besøgende på selve din artistside den seneste dag. Adskilt fra streams — siges at vise interesse for hele dit brand, ikke bare en enkelt sang."><span class="artist-cover__stat-value">76K</span><span class="artist-cover__stat-label">Visiting Artist Page</span></span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ Bio ============ -->
+            <section class="artist-bio" data-help="Bio: Kort biografi der præsenterer artisten. Vises forkortet til 3 linjer — klik 'Read more' for at se hele teksten.">
+                <h2 class="artist-bio__heading">Bio</h2>
+                <div class="artist-bio__content">
+                    <p class="artist-bio__text" title="Click to expand" role="button" tabindex="0" aria-expanded="false" data-help="Bio'en er foldet sammen til 3 linjer — klik på teksten for at se hele biografien. Klik igen for at folde sammen.">Meet Jack "Jokesmith" Johnson, the quick-witted American comedian whose infectious humor has left audiences roaring with laughter from coast to coast. Born and raised in the bustling streets of Brooklyn, New York, Jack discovered his comedic talent at a young age, using humor as a coping mechanism to navigate life's challenges. Jack's comedic style is as diverse as the city that raised him. With a blend of observational humor, sharp wit, and a touch of self-deprecation, he effortlessly connects with audiences from all walks of life. His unique ability to find humor in the mundane and turn everyday situations into comedic gold sets him apart in the world of stand-up comedy. After honing his craft in the local comedy scene, Jack's talent caught the attention of industry insiders, leading to appearances on late-night talk shows and comedy specials. His sharp delivery…</p>
+                </div>
+            </section>
+
+            <!-- ============ Events / Concerts calendar ============ -->
+            <section class="artist-calendar" data-help="Event-kalender: De næste 16 dage med optrædener fremhævet. Røde dage er datoer hvor artisten har et event eller koncert. Klik på en dag for at se detaljer.">
+                <h2 class="artist-calendar__heading">Events / Concerts</h2>
+
+                <div class="artist-calendar__row">
+                    <button type="button" class="artist-calendar__day artist-calendar__day--event"
+                        data-event-date="Saturday, 2 November"
+                        data-event-venue="Apollo Theatre, London"
+                        data-event-time="Doors 19:00 · Show 20:00"
+                        data-event-description="An intimate evening of stand-up at one of the world's most iconic comedy stages."
+                        data-event-ticket-price="450 DKK"
+                        data-event-viewer-price="99 DKK"
+                        data-event-tickets-available="true"
+                        data-help="2 Nov — Event-dag. Klik for detaljer og billet-køb.">
+                        <span class="artist-calendar__date">2 Nov.</span>
+                        <span class="artist-calendar__weekday">Saturday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">3 Nov.</span>
+                        <span class="artist-calendar__weekday">Sunday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">4 Nov.</span>
+                        <span class="artist-calendar__weekday">Monday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">5 Nov.</span>
+                        <span class="artist-calendar__weekday">Tuesday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day artist-calendar__day--event"
+                        data-event-date="Wednesday, 6 November"
+                        data-event-venue="Comedy Cellar, Brooklyn NYC"
+                        data-event-time="Show 21:30"
+                        data-event-description="Late-night underground set with surprise guests. Sold out — online viewer access still available."
+                        data-event-ticket-price="380 DKK"
+                        data-event-viewer-price="79 DKK"
+                        data-event-tickets-available="false">
+                        <span class="artist-calendar__date">6 Nov.</span>
+                        <span class="artist-calendar__weekday">Wednesday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">7 Nov.</span>
+                        <span class="artist-calendar__weekday">Thursday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">8 Nov.</span>
+                        <span class="artist-calendar__weekday">Friday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day artist-calendar__day--event"
+                        data-event-date="Saturday, 9 November"
+                        data-event-venue="Hammerstein Ballroom, NYC"
+                        data-event-time="Doors 18:30 · Show 19:30"
+                        data-event-description="Headline show — full new hour featuring material from the upcoming special."
+                        data-event-ticket-price="520 DKK"
+                        data-event-viewer-price="119 DKK"
+                        data-event-tickets-available="true">
+                        <span class="artist-calendar__date">9 Nov.</span>
+                        <span class="artist-calendar__weekday">Saturday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day artist-calendar__day--event"
+                        data-event-date="Sunday, 10 November"
+                        data-event-venue="Hammerstein Ballroom, NYC"
+                        data-event-time="Doors 18:30 · Show 19:30"
+                        data-event-description="Second night at Hammerstein — same set, different audience."
+                        data-event-ticket-price="520 DKK"
+                        data-event-viewer-price="119 DKK"
+                        data-event-tickets-available="true">
+                        <span class="artist-calendar__date">10 Nov.</span>
+                        <span class="artist-calendar__weekday">Sunday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">11 Nov.</span>
+                        <span class="artist-calendar__weekday">Monday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">12 Nov.</span>
+                        <span class="artist-calendar__weekday">Tuesday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">13 Nov.</span>
+                        <span class="artist-calendar__weekday">Wed.</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">14 Nov.</span>
+                        <span class="artist-calendar__weekday">Thursday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">15 Nov.</span>
+                        <span class="artist-calendar__weekday">Friday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">16 Nov.</span>
+                        <span class="artist-calendar__weekday">Saturday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">17 Nov.</span>
+                        <span class="artist-calendar__weekday">Sunday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">18 Nov.</span>
+                        <span class="artist-calendar__weekday">Monday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">19 Nov.</span>
+                        <span class="artist-calendar__weekday">Tuesday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">20 Nov.</span>
+                        <span class="artist-calendar__weekday">Wed.</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">21 Nov.</span>
+                        <span class="artist-calendar__weekday">Thursday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">22 Nov.</span>
+                        <span class="artist-calendar__weekday">Friday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day artist-calendar__day--event"
+                        data-event-date="Saturday, 23 November"
+                        data-event-venue="Royal Albert Hall, London"
+                        data-event-time="Doors 19:00 · Show 20:00"
+                        data-event-description="Special one-off charity show with guest performers. Premium production."
+                        data-event-ticket-price="695 DKK"
+                        data-event-viewer-price="149 DKK"
+                        data-event-tickets-available="true">
+                        <span class="artist-calendar__date">23 Nov.</span>
+                        <span class="artist-calendar__weekday">Saturday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">24 Nov.</span>
+                        <span class="artist-calendar__weekday">Sunday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">25 Nov.</span>
+                        <span class="artist-calendar__weekday">Monday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">26 Nov.</span>
+                        <span class="artist-calendar__weekday">Tuesday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">27 Nov.</span>
+                        <span class="artist-calendar__weekday">Wed.</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">28 Nov.</span>
+                        <span class="artist-calendar__weekday">Thursday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">29 Nov.</span>
+                        <span class="artist-calendar__weekday">Friday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day artist-calendar__day--event"
+                        data-event-date="Saturday, 30 November"
+                        data-event-venue="Sydney Opera House, Sydney"
+                        data-event-time="Doors 19:00 · Show 20:00"
+                        data-event-description="Australian tour finale — once-in-a-lifetime venue."
+                        data-event-ticket-price="850 DKK"
+                        data-event-viewer-price="199 DKK"
+                        data-event-tickets-available="true">
+                        <span class="artist-calendar__date">30 Nov.</span>
+                        <span class="artist-calendar__weekday">Saturday</span>
+                    </button>
+                    <button type="button" class="artist-calendar__day">
+                        <span class="artist-calendar__date">1 Dec.</span>
+                        <span class="artist-calendar__weekday">Sunday</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- ============ Achievements & Projects ============ -->
+            <section class="artist-projects">
+
+                <div class="artist-projects__column">
+                    <h2 class="artist-projects__heading" data-help="Releases der allerede er udgivet — albums, comedy-specials og podcasts på artistens katalog.">Comedy Specials &amp; Podcasts</h2>
+                    <div class="artist-projects__list">
+
+                        <article class="artist-project" data-help="Album-kort: Klik for at se hele projektet med credits, streams og mulighed for at lytte.">
+                            <div class="artist-project__thumb" style="background: url('../assets/images/artists/jokesmith-johnson-project-1.png') center/cover;"></div>
+                            <ul class="artist-project__info">
+                                <li><span class="key">Album:</span><span class="value">Jokes On Me</span></li>
+                                <li><span class="key">Artist:</span><span class="value">Jokesmith Johnson</span></li>
+                                <li><span class="key">Category:</span><span class="value">Comedy</span></li>
+                                <li><span class="key">Length:</span><span class="value">85 minutes</span></li>
+                                <li><span class="key">Features:</span><span class="value">Anchi Humifuku</span></li>
+                                <li><span class="key">Co-writer:</span><span class="value">Anchi Humifuku</span></li>
+                                <li><span class="key">Streams:</span><span class="value value--highlight">63 Million</span></li>
+                                <li><span class="key">Release:</span><span class="value">2023</span></li>
+                            </ul>
+                        </article>
+
+                        <article class="artist-project">
+                            <div class="artist-project__thumb" style="background: url('../assets/images/artists/jokesmith-johnson-project-2.png') center/cover;"></div>
+                            <ul class="artist-project__info">
+                                <li><span class="key">Podcast:</span><span class="value">Behind The Curtain</span></li>
+                                <li><span class="key">Artist:</span><span class="value">Jokesmith Johnson</span></li>
+                                <li><span class="key">Seasons:</span><span class="value">3</span></li>
+                                <li><span class="key">Episodes:</span><span class="value">36</span></li>
+                                <li><span class="key">Length:</span><span class="value">60 minutes</span></li>
+                                <li><span class="key">Main sponsor:</span><span class="value">Walmart ApS, eBay ApS</span></li>
+                                <li><span class="key">Streams:</span><span class="value value--highlight">104 Million</span></li>
+                                <li><span class="key">Release:</span><span class="value">2021–2024</span></li>
+                            </ul>
+                        </article>
+
+                    </div>
+                </div>
+
+                <div class="artist-projects__column">
+                    <h2 class="artist-projects__heading" data-help="Igangværende samarbejder og kommende releases — projekter der er under produktion eller planlagt til udgivelse.">Collabs in Progress</h2>
+                    <div class="artist-projects__list">
+
+                        <article class="artist-project">
+                            <div class="artist-project__thumb" style="background: url('../assets/images/artists/jokesmith-johnson-project-3.png') center/cover;"></div>
+                            <ul class="artist-project__info">
+                                <li><span class="key">Podcast:</span><span class="value">Behind The Curtain</span></li>
+                                <li><span class="key">Artist:</span><span class="value">Jokesmith Johnson</span></li>
+                                <li><span class="key">Season:</span><span class="value">4</span></li>
+                                <li><span class="key">Episodes:</span><span class="value">12</span></li>
+                                <li><span class="key">Length:</span><span class="value">60 minutes</span></li>
+                                <li><span class="key">Main sponsor:</span><span class="value">Coca Cola ApS</span></li>
+                                <li><span class="key">Co-host:</span><span class="value">Mike Shritslerz</span></li>
+                                <li><span class="key">Release:</span><span class="value value--highlight">2025</span></li>
+                            </ul>
+                        </article>
+
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- ============ Credits & contributions ============ -->
+            <section class="artist-credits" data-help="Credits & contributions: Projekter denne artist har bidraget til i en ikke-primær rolle — fx som producer, guitarist eller mix-ingeniør. Følg artisten for at få besked når de bidrager til nye projekter, så du kan opdage musik på tværs af alle de led du holder af.">
+                <h2 class="artist-credits__heading">Credits &amp; contributions</h2>
+                <div class="artist-credits__list">
+
+                    <a href="#" class="artist-credit">
+                        <div class="artist-credit__thumb" style="background: url('../assets/images/artists/jokesmith-johnson-post-3.png') center/cover;"></div>
+                        <div class="artist-credit__main">
+                            <span class="artist-credit__role">Co-writer</span>
+                            <div class="artist-credit__title auto-name">Northern Lights</div>
+                            <div class="artist-credit__meta">Anchi Humifuku · Album · 2024</div>
+                        </div>
+                        <div class="artist-credit__streams">12M streams</div>
+                    </a>
+
+                    <a href="#" class="artist-credit">
+                        <div class="artist-credit__thumb" style="background: url('../assets/images/artists/jeremy-freedom-cover.png') center/cover;"></div>
+                        <div class="artist-credit__main">
+                            <span class="artist-credit__role">Featured vocals</span>
+                            <div class="artist-credit__title auto-name">City Lights Are Calling</div>
+                            <div class="artist-credit__meta">Maya Thompson · Single · 2024</div>
+                        </div>
+                        <div class="artist-credit__streams">8.4M streams</div>
+                    </a>
+
+                    <a href="#" class="artist-credit">
+                        <div class="artist-credit__thumb" style="background: url('../assets/images/artists/kebu-event.jpg') center/cover;"></div>
+                        <div class="artist-credit__main">
+                            <span class="artist-credit__role">Topline / lyrics</span>
+                            <div class="artist-credit__title auto-name">Static In My Head</div>
+                            <div class="artist-credit__meta">Lars Vognsen · EP · 2023</div>
+                        </div>
+                        <div class="artist-credit__streams">4.1M streams</div>
+                    </a>
+
+                    <a href="#" class="artist-credit">
+                        <div class="artist-credit__thumb" style="background: url('../assets/images/artists/lola-young-event.jpg') center/cover;"></div>
+                        <div class="artist-credit__main">
+                            <span class="artist-credit__role">Guest verse</span>
+                            <div class="artist-credit__title auto-name">Frozen Roads</div>
+                            <div class="artist-credit__meta">DJ Frostbite · Single · 2023</div>
+                        </div>
+                        <div class="artist-credit__streams">2.7M streams</div>
+                    </a>
+
+                    <a href="#" class="artist-credit">
+                        <div class="artist-credit__thumb" style="background: url('../assets/images/artists/placeholder-male-5.png') center/cover;"></div>
+                        <div class="artist-credit__main">
+                            <span class="artist-credit__role">Podcast guest</span>
+                            <div class="artist-credit__title auto-name">Voices In My Head</div>
+                            <div class="artist-credit__meta">Sara Holm · Podcast · S2E04 · 2024</div>
+                        </div>
+                        <div class="artist-credit__streams">980K listens</div>
+                    </a>
+
+                    <a href="#" class="artist-credit">
+                        <div class="artist-credit__thumb" style="background: url('../assets/images/artists/jonathan-roy-event.png') center/cover;"></div>
+                        <div class="artist-credit__main">
+                            <span class="artist-credit__role">Songwriter</span>
+                            <div class="artist-credit__title auto-name">Manhattan Rain</div>
+                            <div class="artist-credit__meta">Anchi Humifuku · Single · 2022</div>
+                        </div>
+                        <div class="artist-credit__streams">15M streams</div>
+                    </a>
+
+                </div>
+            </section>
+
+            <!-- ============ Photo album preview ============ -->
+            <section class="artist-photos" data-help="Foto-album: En forhåndsvisning af artistens galleri. Klik på et billede eller 'View all' for at se hele samlingen.">
+                <header class="artist-photos__header">
+                    <h2 class="artist-photos__heading"><a href="../photos/index.html">Photo Album</a></h2>
+                    <a href="../photos/index.html" class="artist-photos__view-all" data-help="Klik for at se alle billeder og album.">View all →</a>
+                </header>
+                <div class="artist-photos__row">
+                    <a class="artist-photo-tile" href="../photos/index.html"><span class="artist-photo-tile__image" style="background: url('../assets/images/artists/jokesmith-johnson-cover.png') center/cover;"></span></a>
+                    <a class="artist-photo-tile" href="../photos/index.html"><span class="artist-photo-tile__image" style="background: url('../assets/images/artists/girli-event.jpg') center/cover;"></span></a>
+                    <a class="artist-photo-tile" href="../photos/index.html"><span class="artist-photo-tile__image" style="background: url('../assets/images/artists/mike-andersen-event.jpg') center/cover;"></span></a>
+                    <a class="artist-photo-tile" href="../photos/index.html"><span class="artist-photo-tile__image" style="background: url('../assets/images/artists/jeremy-freedom-cover.png') center/cover;"></span></a>
+                    <a class="artist-photo-tile" href="../photos/index.html"><span class="artist-photo-tile__image" style="background: url('../assets/images/artists/jokesmith-johnson-post-2.png') center/cover;"></span></a>
+                    <a class="artist-photo-tile" href="../photos/index.html"><span class="artist-photo-tile__image" style="background: url('../assets/images/artists/nick-sander-event.jpg') center/cover;"></span></a>
+                    <a class="artist-photo-tile" href="../photos/index.html"><span class="artist-photo-tile__image" style="background: url('../assets/images/artists/kebu-event.jpg') center/cover;"></span></a>
+                    <a class="artist-photo-tile" href="../photos/index.html"><span class="artist-photo-tile__image" style="background: url('../assets/images/artists/jokesmith-johnson-post-1.png') center/cover;"></span></a>
+                    <a class="artist-photo-tile" href="../photos/index.html"><span class="artist-photo-tile__image" style="background: url('../assets/images/artists/rust-cover.png') center/cover;"></span></a>
+                    <a class="artist-photo-tile" href="../photos/index.html"><span class="artist-photo-tile__image" style="background: url('../assets/images/artists/jokesmith-johnson-post-3.png') center/cover;"></span></a>
+                </div>
+            </section>
+
+            <!-- ============ Paying it forward — 5% fanbase exposure with genre group ============ -->
+            <section class="paying-forward" data-help="Paying it forward: Artister i samme primary genre-gruppe (fx alle Pop-artister) hjælper hinanden med at vokse ved at eksponere 5% af deres fanbase for hinanden. Andelen skalerer op eller ned baseret på hvor godt eksponeringen konverterer til reelle lyttere. PDF-koncept der gør STAGECORD til et samarbejds-økosystem snarere end en konkurrence-arena.">
+                <header class="paying-forward__head">
+                    <h2 class="paying-forward__title"><span class="paying-forward__title-icon">↻</span>Paying it forward · Pop genre group</h2>
+                    <span class="paying-forward__total" data-help="Samlet eksponering: Hvor mange ekstra unikke lyttere du potentielt når via genre-gruppen pr. måned. Tal er baseret på 5% af hver gruppe-medlems aktive fanbase.">Reaching <strong>+128K</strong> listeners through group exchange</span>
+                </header>
+
+                <p class="paying-forward__intro" data-help="Eksponerings-mekanisme: 5% af hver gruppe-medlems fanbase får dine sange foreslået via 'Paying it forward'-feed. Hvis dine sange konverterer (≥30s play), skalerer din eksponering op næste måned. Hvis ikke, skalerer det ned. Algoritmen belønner kvalitet og engagement.">5% af hver gruppe-medlems fanbase eksponeres for dine sange. Procentdelen <strong>skalerer op</strong> hvis lytterne engagerer sig (≥30s play, vibes, follows), eller <strong>ned</strong> hvis de skipper. Genre-gruppen er <strong>Pop</strong> — du tilhører den fordi din primary genre er Pop.</p>
+
+                <div class="paying-forward__grid">
+                    <div class="paying-forward__card paying-forward__card--self" data-help="Din profil i genre-gruppen. Du eksponerer 5% af dine 1.376K followers (≈68.8K) til de andre artister, fordelt jævnt mellem dem.">
+                        <div class="paying-forward__avatar" style="background-image:url('../assets/images/artists/jokesmith-johnson-profile.png');"></div>
+                        <div class="paying-forward__main">
+                            <div class="paying-forward__name auto-name">Jokesmith Johnson</div>
+                            <div class="paying-forward__role">You · 1.376K followers</div>
+                        </div>
+                        <div class="paying-forward__exchange">
+                            <span class="paying-forward__out">↗ <strong>68.8K</strong> shared out</span>
+                            <span class="paying-forward__in">↘ <strong>+128K</strong> received</span>
+                        </div>
+                    </div>
+
+                    <div class="paying-forward__card" data-help="Maya Thompson · 412K followers. Du modtager 5% af hendes fanbase (≈20.6K) som potentielle lyttere — og hun modtager 5% af din. Klik for at se per-artist konvertering historik.">
+                        <div class="paying-forward__avatar" style="background-image:url('../assets/images/artists/maya-thompson-profile.png');"></div>
+                        <div class="paying-forward__main">
+                            <div class="paying-forward__name auto-name">Maya Thompson</div>
+                            <div class="paying-forward__role">412K followers · same primary: Pop</div>
+                        </div>
+                        <div class="paying-forward__exchange">
+                            <span class="paying-forward__in">↘ +20.6K from her</span>
+                            <span class="paying-forward__rate paying-forward__rate--up">↑ 5.4%</span>
+                        </div>
+                    </div>
+
+                    <div class="paying-forward__card" data-help="Anchi Humifuku · 482K followers. Sub-genre overlap (Indie pop). Konverteringsrate på 6.1% — over gennemsnittet — så du modtager udvidet eksponering næste måned.">
+                        <div class="paying-forward__avatar" style="background-image:url('../assets/images/artists/placeholder-female-6.png');"></div>
+                        <div class="paying-forward__main">
+                            <div class="paying-forward__name auto-name">Anchi Humifuku</div>
+                            <div class="paying-forward__role">482K followers · sub-genre: Indie pop</div>
+                        </div>
+                        <div class="paying-forward__exchange">
+                            <span class="paying-forward__in">↘ +24.1K from her</span>
+                            <span class="paying-forward__rate paying-forward__rate--up">↑ 6.1%</span>
+                        </div>
+                    </div>
+
+                    <div class="paying-forward__card" data-help="Jeremy Freedom · 218K followers. Lavt konverteringsrate (3.2%) i sidste måned — eksponeringen til ham er reduceret automatisk denne måned.">
+                        <div class="paying-forward__avatar" style="background-image:url('../assets/images/artists/jeremy-freedom-profile.png');"></div>
+                        <div class="paying-forward__main">
+                            <div class="paying-forward__name auto-name">Jeremy Freedom</div>
+                            <div class="paying-forward__role">218K followers · sub-genre: Synthpop</div>
+                        </div>
+                        <div class="paying-forward__exchange">
+                            <span class="paying-forward__in">↘ +10.9K from him</span>
+                            <span class="paying-forward__rate paying-forward__rate--down">↓ 3.2%</span>
+                        </div>
+                    </div>
+
+                    <div class="paying-forward__card" data-help="Tara Park · 928K followers (genre-gruppens største). 5% af hendes fanbase = 46.4K potentielle lyttere — den største enkelt-eksponering du modtager.">
+                        <div class="paying-forward__avatar" style="background-image:url('../assets/images/artists/placeholder-female-5.png');"></div>
+                        <div class="paying-forward__main">
+                            <div class="paying-forward__name auto-name">Tara Park</div>
+                            <div class="paying-forward__role">928K followers · sub-genre: K-pop crossover</div>
+                        </div>
+                        <div class="paying-forward__exchange">
+                            <span class="paying-forward__in">↘ +46.4K from her</span>
+                            <span class="paying-forward__rate paying-forward__rate--up">↑ 5.8%</span>
+                        </div>
+                    </div>
+
+                    <div class="paying-forward__card" data-help="Lola Young · 521K followers. Genre-gruppe baseret på dansable pop — meget overlap med dit publikum.">
+                        <div class="paying-forward__avatar" style="background-image:url('../assets/images/artists/lola-young-event.jpg');"></div>
+                        <div class="paying-forward__main">
+                            <div class="paying-forward__name auto-name">Lola Young</div>
+                            <div class="paying-forward__role">521K followers · sub-genre: Dance pop</div>
+                        </div>
+                        <div class="paying-forward__exchange">
+                            <span class="paying-forward__in">↘ +26.0K from her</span>
+                            <span class="paying-forward__rate paying-forward__rate--up">↑ 4.9%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <footer class="paying-forward__foot" data-help="Algoritme-detaljer: Eksponeringen revurderes hver 30. dag baseret på engagement-data. Konverteringsrate over 5% giver bonus-eksponering, under 5% trimmes. Genre-gruppen er auto-bestemt af din primary genre (kan justeres i settings).">
+                    Eksponering revurderes hver 30. dag · Genre-gruppen er auto-bestemt af din <strong>primary genre</strong>. Justér i Settings → Genre.
+                </footer>
+            </section>
+
+            <!-- ============ Intimate concerts — fan-bookable private performances ============ -->
+            <section class="intimate-section" data-help="Intimate concerts: Fans kan booke artisten til private optrædener — i deres hjem, et baglokale, eller et lille event. Artisten sætter en pre-fixed rate (basis-honorar), max-publikum inkluderet i prisen, og en pris pr. ekstra deltager hvis flere møder op end aftalt. Fanen specificerer dato, adresse og forventet antal gæster.">
+                <header class="intimate-section__head">
+                    <h2 class="intimate-section__title"><span class="intimate-section__title-icon">★</span>Intimate concerts</h2>
+                    <button type="button" class="intimate-section__cta" data-open-intimate data-help="Book intimate concert: Åbner booking-formularen hvor du angiver dato, adresse, forventet publikum og evt. besked til artisten. Prisberegningen viser basis-honorar + tillæg for ekstra publikum.">+ Book intimate concert</button>
+                </header>
+
+                <p class="section-intro" data-help="Sådan virker det: Artisten sætter sit basis-honorar og max publikum i prisen. Du angiver dato + adresse + forventet antal gæster. Hvis flere end aftalt møder op på dagen, kan artisten kræve ekstra-betaling per gæst.">Book artisten til et privat event — i dit hjem, et baglokale, eller et lille venue. Pre-fixed rate, klart loft på publikum, og fuldt fleksibel dato.</p>
+
+                <!-- Offer summary — what the artist offers -->
+                <div class="intimate-offer">
+                    <div class="intimate-offer__card" data-help="Basis-honorar: Det fastlagte beløb artisten tager for en intimate concert med op til det antal gæster der står under 'Audience cap'. Inkluderer typisk 1-1.5 timers optræden.">
+                        <div class="intimate-offer__label">Base rate</div>
+                        <div class="intimate-offer__value">$1,800</div>
+                        <div class="intimate-offer__hint">Fixed · 60-90 min set</div>
+                    </div>
+                    <div class="intimate-offer__card" data-help="Audience cap: Det max antal gæster der er inkluderet i basis-honoraret. Hvis flere end dette møder op, opkræves ekstra-fee pr. yderligere gæst.">
+                        <div class="intimate-offer__label">Audience cap</div>
+                        <div class="intimate-offer__value">25</div>
+                        <div class="intimate-offer__hint">Included in base rate</div>
+                    </div>
+                    <div class="intimate-offer__card" data-help="Ekstra-fee: Beløbet artisten opkræver pr. yderligere gæst hvis flere end 'Audience cap' møder op på dagen. Skal være tydeligt aftalt før booking accepteres.">
+                        <div class="intimate-offer__label">Extra attendee</div>
+                        <div class="intimate-offer__value">$45</div>
+                        <div class="intimate-offer__hint">Per extra guest above cap</div>
+                    </div>
+                    <div class="intimate-offer__card" data-help="Travel range: Hvor langt artisten er villig til at rejse. Booking-anmodninger uden for denne afstand kan afvises eller indebære ekstra rejse-tillæg.">
+                        <div class="intimate-offer__label">Travel range</div>
+                        <div class="intimate-offer__value">100 km</div>
+                        <div class="intimate-offer__hint">From København</div>
+                    </div>
+                </div>
+
+                <!-- Recent bookings -->
+                <h3 class="intimate-bookings__title" data-help="Recent bookings: De seneste anmodninger til intimate concerts. Pending afventer artistens accept, Confirmed er aftalt, Past er afholdt.">Recent bookings</h3>
+                <ul class="intimate-list" data-intimate-list></ul>
+                <p class="intimate-empty" data-intimate-empty hidden>Ingen bookings endnu.</p>
+            </section>
+
+            <!-- ============ Music Teaching — lessons offered by the artist ============ -->
+            <section class="teaching" data-help="Music Teaching: Som artist kan du tilbyde musiklektioner — 1-on-1, gruppe-sessions eller masterclass-format. Fans og opvoksende artister kan booke lektioner direkte på din profil. STAGECORD håndterer betaling, kalender-koordinering og video-call rooms automatisk.">
+                <header class="teaching__head">
+                    <h2 class="teaching__title"><span class="teaching__title-icon">♬</span>Music teaching · lessons</h2>
+                    <button type="button" class="teaching__cta" data-help="Book session: Vælger en ledig dato og tid, betaler, og får automatisk en video-call link 24 timer før session.">+ Book a lesson</button>
+                </header>
+
+                <p class="teaching__intro">Tilbyd lektioner i 3 formater — <strong>1-on-1</strong>, <strong>gruppe-session</strong>, eller <strong>masterclass</strong>. Fans booker direkte på din profil. STAGECORD håndterer betaling, kalender-koordinering og video-call rooms.</p>
+
+                <div class="teaching__formats" data-help="Lektions-formater: Vælg det format der passer dig — vælg ét som default eller tilbyd alle tre. Hvert format har sin egen rate.">
+                    <article class="lesson-format is-selected" data-help="1-on-1 session: Privat 60-minutters lektion. Tilpasses elevens niveau og mål. Højeste rate — du får hele beløbet (minus platform-fee) for én elev.">
+                        <span class="lesson-format__icon">👤</span>
+                        <span class="lesson-format__name">1-on-1 session</span>
+                        <span class="lesson-format__desc">60 min privat lektion · tilpasset elevens niveau</span>
+                        <span class="lesson-format__rate">800 DKK</span>
+                        <span class="lesson-format__rate-meta">per session · per student</span>
+                    </article>
+
+                    <article class="lesson-format" data-help="Group session: 90-minutters gruppelektion for 4-8 elever. Lavere rate per person, men du tjener mere total — godt for grundlæggende emner som teori eller riff-grupper.">
+                        <span class="lesson-format__icon">👥</span>
+                        <span class="lesson-format__name">Group session</span>
+                        <span class="lesson-format__desc">90 min · 4-8 elever · grundlæggende emner</span>
+                        <span class="lesson-format__rate">350 DKK</span>
+                        <span class="lesson-format__rate-meta">per student · max 8 spots</span>
+                    </article>
+
+                    <article class="lesson-format" data-help="Masterclass: 2-timers fokuseret session for op til 25 elever om et specifikt emne (fx 'comedy timing', 'songwriting from scratch'). Mest skalérbar — én session, mange elever.">
+                        <span class="lesson-format__icon">🎓</span>
+                        <span class="lesson-format__name">Masterclass</span>
+                        <span class="lesson-format__desc">2 t · op til 25 · specifikt emne · livestream</span>
+                        <span class="lesson-format__rate">450 DKK</span>
+                        <span class="lesson-format__rate-meta">per student · max 25 spots</span>
+                    </article>
+                </div>
+
+                <!-- Mini availability calendar -->
+                <div class="teaching__avail" data-help="Tilgængelighed: Grøn dag = ledig tid, gul dag = booket op (kan stadig book ekstra hvis ledig). Klik en grøn dag for at se tider og book lektion.">
+                    <header class="teaching__avail-head">
+                        <span class="teaching__avail-title">Available this month</span>
+                        <span class="teaching__avail-month">May 2026</span>
+                    </header>
+                    <div class="teaching__avail-grid">
+                        <div class="teaching__avail-day teaching__avail-day--past">M</div>
+                        <div class="teaching__avail-day teaching__avail-day--past">T</div>
+                        <div class="teaching__avail-day teaching__avail-day--past">W</div>
+                        <div class="teaching__avail-day teaching__avail-day--past">T</div>
+                        <div class="teaching__avail-day teaching__avail-day--past">F</div>
+                        <div class="teaching__avail-day teaching__avail-day--past">S</div>
+                        <div class="teaching__avail-day teaching__avail-day--past">S</div>
+
+                        <div class="teaching__avail-day teaching__avail-day--past">28</div>
+                        <div class="teaching__avail-day teaching__avail-day--past">29</div>
+                        <div class="teaching__avail-day teaching__avail-day--past">30</div>
+                        <div class="teaching__avail-day teaching__avail-day--past">1</div>
+                        <div class="teaching__avail-day teaching__avail-day--past">2</div>
+                        <div class="teaching__avail-day teaching__avail-day--past">3</div>
+                        <div class="teaching__avail-day teaching__avail-day--past">4</div>
+
+                        <div class="teaching__avail-day">5</div>
+                        <div class="teaching__avail-day teaching__avail-day--available">6<span class="teaching__avail-day-dot"></span></div>
+                        <div class="teaching__avail-day teaching__avail-day--available">7<span class="teaching__avail-day-dot"></span></div>
+                        <div class="teaching__avail-day teaching__avail-day--booked">8</div>
+                        <div class="teaching__avail-day teaching__avail-day--available">9<span class="teaching__avail-day-dot"></span></div>
+                        <div class="teaching__avail-day">10</div>
+                        <div class="teaching__avail-day">11</div>
+
+                        <div class="teaching__avail-day teaching__avail-day--available">12<span class="teaching__avail-day-dot"></span></div>
+                        <div class="teaching__avail-day teaching__avail-day--available">13<span class="teaching__avail-day-dot"></span></div>
+                        <div class="teaching__avail-day teaching__avail-day--booked">14</div>
+                        <div class="teaching__avail-day teaching__avail-day--booked">15</div>
+                        <div class="teaching__avail-day teaching__avail-day--available">16<span class="teaching__avail-day-dot"></span></div>
+                        <div class="teaching__avail-day">17</div>
+                        <div class="teaching__avail-day">18</div>
+
+                        <div class="teaching__avail-day teaching__avail-day--available">19<span class="teaching__avail-day-dot"></span></div>
+                        <div class="teaching__avail-day teaching__avail-day--available">20<span class="teaching__avail-day-dot"></span></div>
+                        <div class="teaching__avail-day teaching__avail-day--available">21<span class="teaching__avail-day-dot"></span></div>
+                        <div class="teaching__avail-day teaching__avail-day--booked">22</div>
+                        <div class="teaching__avail-day teaching__avail-day--available">23<span class="teaching__avail-day-dot"></span></div>
+                        <div class="teaching__avail-day">24</div>
+                        <div class="teaching__avail-day">25</div>
+
+                        <div class="teaching__avail-day teaching__avail-day--available">26<span class="teaching__avail-day-dot"></span></div>
+                        <div class="teaching__avail-day teaching__avail-day--available">27<span class="teaching__avail-day-dot"></span></div>
+                        <div class="teaching__avail-day teaching__avail-day--available">28<span class="teaching__avail-day-dot"></span></div>
+                        <div class="teaching__avail-day teaching__avail-day--available">29<span class="teaching__avail-day-dot"></span></div>
+                        <div class="teaching__avail-day teaching__avail-day--booked">30</div>
+                        <div class="teaching__avail-day">31</div>
+                        <div class="teaching__avail-day teaching__avail-day--past">1</div>
+                    </div>
+                    <div class="teaching__avail-legend">
+                        <span class="teaching__avail-legend-item"><span class="teaching__avail-legend-dot teaching__avail-legend-dot--available"></span>Available</span>
+                        <span class="teaching__avail-legend-item"><span class="teaching__avail-legend-dot teaching__avail-legend-dot--booked"></span>Fully booked</span>
+                        <span class="teaching__avail-legend-item"><span class="teaching__avail-legend-dot teaching__avail-legend-dot--closed"></span>Closed / past</span>
+                    </div>
+                </div>
+
+                <!-- Teaching stats -->
+                <div class="teaching__stats" data-help="Teaching stats: Hvor godt din undervisning klarer sig — total elever, gennemsnits-rating fra elev-feedback, antal sessions afholdt, og samlet tjent siden start.">
+                    <div class="teaching__stat">
+                        <span class="teaching__stat-label">Total students</span>
+                        <span class="teaching__stat-value">128</span>
+                        <span class="teaching__stat-meta">+12 this month</span>
+                    </div>
+                    <div class="teaching__stat">
+                        <span class="teaching__stat-label">Avg rating</span>
+                        <span class="teaching__stat-value">4.8★</span>
+                        <span class="teaching__stat-meta">from 84 reviews</span>
+                    </div>
+                    <div class="teaching__stat">
+                        <span class="teaching__stat-label">Sessions held</span>
+                        <span class="teaching__stat-value">312</span>
+                        <span class="teaching__stat-meta">since Jan 2024</span>
+                    </div>
+                    <div class="teaching__stat">
+                        <span class="teaching__stat-label">Total earned</span>
+                        <span class="teaching__stat-value">142K DKK</span>
+                        <span class="teaching__stat-meta">net of platform fee</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ Pitched songs — outbound pitches to radio profiles ============ -->
+            <section class="pitched-songs" data-help="Pitched songs: Sange du har sendt til radio-profiler (DR P3, NRJ, Radio Happy …). Tabellen viser om radio-værterne faktisk har lyttet — afspilningsknappen bliver cyan-farvet når mindst én vært har lyttet ≥30 sek (det er den minimum-tid der tæller som en 'rigtig' lytning). Klik en række for at se per-radio detaljer + per-vært ratings og kommentarer.">
+                <header class="pitched-songs__head">
+                    <h2 class="pitched-songs__title">Pitched songs · radio</h2>
+                    <label class="pitched-songs__sort" data-help="Sortering: Sortér efter den dimension der er mest relevant for dig — fx nyeste pitches, højeste rating, eller flest 30-sek lytninger.">
+                        Sort by:
+                        <select data-pitched-sort>
+                            <option value="recent">Most recent</option>
+                            <option value="played">Most played (≥30 sec)</option>
+                            <option value="rating">Highest rated</option>
+                            <option value="comments">Most commented</option>
+                        </select>
+                    </label>
+                </header>
+
+                <div class="pitched-table">
+                    <div class="pitched-table__header">
+                        <span class="pitched-table__th" data-help="▶-indikator: Cyan hvis mindst én radiovært har lyttet ≥30 sek til sangen. Grå hvis ingen har spillet den endnu eller alle har stoppet før 30 sek."></span>
+                        <span class="pitched-table__th" data-help="Sang-titel og udgivelsestype.">Song</span>
+                        <span class="pitched-table__th pitched-table__th--genre" data-help="Genre + sub-genre du har tagget sangen med. Bruges af radioerne til at filtrere indkomne pitches.">Genre</span>
+                        <span class="pitched-table__th pitched-table__th--released" data-help="Release-dato for sangen. Pitches sendt før release har højere prioritet hos radio-værter.">Released</span>
+                        <span class="pitched-table__th pitched-table__th--played" data-help="Antal radio-værter der har lyttet ≥30 sek af sangen. Total under: hvor mange procent af pitchede værter det udgør.">Played ≥30s</span>
+                        <span class="pitched-table__th pitched-table__th--heard" data-help="Avatars af de radio-stationer der har modtaget pitchet. Stationer der har spillet sangen vises i fuld opacity, andre er nedtonet.">Heard by</span>
+                        <span class="pitched-table__th pitched-table__th--rating" data-help="Gennemsnitlig rating på tværs af alle radio-værter der har rated sangen. Stations med flere værter beregner stationens egen gennemsnit først.">Rating</span>
+                        <span class="pitched-table__th pitched-table__th--comments" data-help="Antal kommentarer fra radio-værter på denne sang. Klik en række for at læse dem alle.">Comments</span>
+                    </div>
+                    <div data-pitched-rows></div>
+                </div>
+
+                <p class="pitched-empty" data-pitched-empty hidden data-help="Tom-tilstand: Du har ikke pitched nogen sange til radio-stationer endnu. Brug 'Pitch'-knappen i din toolbar eller fra en sangs detalje-side.">Du har ikke pitched nogen sange til radio-stationer endnu.</p>
+            </section>
+
+            <!-- ============ Fan covers & tutorials ============ -->
+            <section class="artist-covers" data-help="Fan covers & tutorials: Indhold som dine fans har lavet med dine sange — covers, tutorials og dansevideoer. Du vælger selv under Royalties &amp; creators i indstillingerne hvilke der vises offentligt på din profil; resten skjules. Klik et kort for at åbne hele videoen.">
+                <header class="artist-covers__header">
+                    <h2 class="artist-covers__heading">Fan covers &amp; tutorials</h2>
+                    <a href="#" class="artist-covers__view-all">View all →</a>
+                </header>
+
+                <div class="artist-covers__list">
+
+                    <article class="artist-cover-card">
+                        <div class="artist-cover-card__thumb" style="background: url('../assets/images/artists/jokesmith-johnson-post-2.png') center/cover;">
+                            <span class="artist-cover-card__badge artist-cover-card__badge--dance">Dance video</span>
+                            <span class="artist-cover-card__duration">0:32</span>
+                            <span class="artist-cover-card__play" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                            </span>
+                        </div>
+                        <div class="artist-cover-card__main">
+                            <div class="artist-cover-card__creator">
+                                <span class="artist-cover-card__avatar" style="background: url('../assets/images/artists/placeholder-female-6.png') center/cover;"></span>
+                                <span class="artist-cover-card__creator-name auto-name">Liva Mai</span>
+                                <span class="artist-cover-card__creator-followers">412K</span>
+                            </div>
+                            <div class="artist-cover-card__song">"Jokes On Me" choreography</div>
+                            <div class="artist-cover-card__stats">8.4M views · 642K Vibes</div>
+                        </div>
+                    </article>
+
+                    <article class="artist-cover-card">
+                        <div class="artist-cover-card__thumb" style="background: url('../assets/images/artists/kebu-event.jpg') center/cover;">
+                            <span class="artist-cover-card__badge artist-cover-card__badge--tutorial">Tutorial</span>
+                            <span class="artist-cover-card__duration">3:48</span>
+                            <span class="artist-cover-card__play" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                            </span>
+                        </div>
+                        <div class="artist-cover-card__main">
+                            <div class="artist-cover-card__creator">
+                                <span class="artist-cover-card__avatar" style="background: url('../assets/images/artists/placeholder-female-6.png') center/cover;"></span>
+                                <span class="artist-cover-card__creator-name auto-name">Camilla Step</span>
+                                <span class="artist-cover-card__creator-followers">128K</span>
+                            </div>
+                            <div class="artist-cover-card__song">Step-by-step "Jokes On Me" routine</div>
+                            <div class="artist-cover-card__stats">2.1M views · 184K Vibes</div>
+                        </div>
+                    </article>
+
+                    <article class="artist-cover-card">
+                        <div class="artist-cover-card__thumb" style="background: url('../assets/images/artists/jokesmith-johnson-post-3.png') center/cover;">
+                            <span class="artist-cover-card__badge artist-cover-card__badge--cover">Cover</span>
+                            <span class="artist-cover-card__duration">2:46</span>
+                            <span class="artist-cover-card__play" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                            </span>
+                        </div>
+                        <div class="artist-cover-card__main">
+                            <div class="artist-cover-card__creator">
+                                <span class="artist-cover-card__avatar" style="background: url('../assets/images/artists/placeholder-male-6.png') center/cover;"></span>
+                                <span class="artist-cover-card__creator-name auto-name">Frederik Holm</span>
+                                <span class="artist-cover-card__creator-followers">76K</span>
+                            </div>
+                            <div class="artist-cover-card__song">"Behind The Curtain" — piano version</div>
+                            <div class="artist-cover-card__stats">948K views · 71K Vibes</div>
+                        </div>
+                    </article>
+
+                    <article class="artist-cover-card">
+                        <div class="artist-cover-card__thumb" style="background: url('../assets/images/artists/mellow-event.jpg') center/cover;">
+                            <span class="artist-cover-card__badge artist-cover-card__badge--cover">Cover</span>
+                            <span class="artist-cover-card__duration">3:12</span>
+                            <span class="artist-cover-card__play" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                            </span>
+                        </div>
+                        <div class="artist-cover-card__main">
+                            <div class="artist-cover-card__creator">
+                                <span class="artist-cover-card__avatar" style="background: url('../assets/images/artists/placeholder-female-2.png') center/cover;"></span>
+                                <span class="artist-cover-card__creator-name auto-name">Anders Vlog</span>
+                                <span class="artist-cover-card__creator-followers">89K</span>
+                            </div>
+                            <div class="artist-cover-card__song">Acoustic "Jokes On Me"</div>
+                            <div class="artist-cover-card__stats">540K views · 38K Vibes</div>
+                        </div>
+                    </article>
+
+                    <article class="artist-cover-card">
+                        <div class="artist-cover-card__thumb" style="background: url('../assets/images/artists/lola-young-event.jpg') center/cover;">
+                            <span class="artist-cover-card__badge artist-cover-card__badge--dance">Dance video</span>
+                            <span class="artist-cover-card__duration">0:48</span>
+                            <span class="artist-cover-card__play" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                            </span>
+                        </div>
+                        <div class="artist-cover-card__main">
+                            <div class="artist-cover-card__creator">
+                                <span class="artist-cover-card__avatar" style="background: url('../assets/images/artists/placeholder-female-6.png') center/cover;"></span>
+                                <span class="artist-cover-card__creator-name auto-name">Julie Andersen</span>
+                                <span class="artist-cover-card__creator-followers">52K</span>
+                            </div>
+                            <div class="artist-cover-card__song">VEGA encore choreography</div>
+                            <div class="artist-cover-card__stats">320K views · 24K Vibes</div>
+                        </div>
+                    </article>
+
+                    <article class="artist-cover-card">
+                        <div class="artist-cover-card__thumb" style="background: url('../assets/images/artists/jokesmith-johnson-post-1.png') center/cover;">
+                            <span class="artist-cover-card__badge artist-cover-card__badge--tutorial">Tutorial</span>
+                            <span class="artist-cover-card__duration">5:20</span>
+                            <span class="artist-cover-card__play" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                            </span>
+                        </div>
+                        <div class="artist-cover-card__main">
+                            <div class="artist-cover-card__creator">
+                                <span class="artist-cover-card__avatar" style="background: url('../assets/images/artists/placeholder-male-5.png') center/cover;"></span>
+                                <span class="artist-cover-card__creator-name auto-name">Tobias Krogh</span>
+                                <span class="artist-cover-card__creator-followers">42K</span>
+                            </div>
+                            <div class="artist-cover-card__song">Guitar tab tutorial — "Jokes On Me"</div>
+                            <div class="artist-cover-card__stats">186K views · 14K Vibes</div>
+                        </div>
+                    </article>
+
+                </div>
+            </section>
+
+            <!-- ============ Posts feed ============ -->
+            <section class="artist-feed" data-help="Posts: Artistens egne opslag fra koncerter, oplevelser og hverdagen.">
+
+                <!-- ===== Post 1 ===== -->
+                <article class="artist-post" data-post-id="post1" data-has-event="true">
+                    <header class="artist-post__meta">
+                        <span class="artist-post__date">2023.06.12</span>
+                        <span class="artist-post__separator">—</span>
+                        <span class="artist-post__author auto-name">Jokesmith Johnson</span>
+                        <span class="artist-post__context">(REGREDS)</span>
+                    </header>
+
+                    <div class="artist-post__body">
+                        <div class="artist-post__image" style="background: url('../assets/images/artists/jokesmith-johnson-post-1.png') center/cover;"></div>
+                        <div class="artist-post__main">
+                            <p class="artist-post__text" title="Click to expand" data-help="Klik på posttekst for at folde hele opslaget ud. Klik igen for at folde sammen.">TRUE STORY!! So there I was, minding my own business, trying to get to my gig, when suddenly, my stomach starts rumbling like a freight train. I'm talking about seismic activity here, folks! Now, I tried to play it cool, you know, act like everything's fine. But deep down, I knew trouble was brewing. ohh lord help me out!! As the train chugged along, my stomach decides it's had enough of this underground adventure and starts making noises louder than the subway itself! People are looking at me like I've got a live chicken in my pants or something! And then, just when I think things can't get any worse, the metro comes to a screeching halt — we're stuck between stations! Now, let me tell you, being stuck in a metal tube with a gassy stomach is like being trapped in a comedy sketch written by the universe itself. But hey, when life hands you lemons, you make fart jokes, am I right? So there I am, regaling my fellow passengers with tales of my digestive distress, turning that subway car into a comedy club faster than you can say 'stand-up special.' By the time we finally reach our destination, I've got the whole train car in stitches, and let's just say the air was a little lighter — in more ways than one!</p>
+
+                            <!-- Friend photos from this event — scrolls horizontally -->
+                            <div class="artist-post__photos" data-help="Billeder fra venner der deltog i eventet. Scroll til siden hvis der er mere end pladsen tillader. Klik hjertet for at like et billede.">
+                                <span class="artist-post__photos-label">Photos from friends at this event</span>
+                                <div class="artist-post__photos-row">
+                                    <figure class="event-photo">
+                                        <div class="event-photo__image" style="background: url('../assets/images/artists/placeholder-female-6.png') center/cover;"></div>
+                                        <button type="button" class="event-photo__like" data-engagement="vibes" data-vibe-variant="overlay" aria-pressed="false" aria-label="Like photo"><span class="event-photo__heart">♥</span><span class="event-photo__count">42</span></button>
+                                    </figure>
+                                    <figure class="event-photo">
+                                        <div class="event-photo__image" style="background: url('../assets/images/artists/placeholder-female-4.png') center/cover;"></div>
+                                        <button type="button" class="event-photo__like" data-engagement="vibes" data-vibe-variant="overlay" aria-pressed="false"><span class="event-photo__heart">♥</span><span class="event-photo__count">128</span></button>
+                                    </figure>
+                                    <figure class="event-photo">
+                                        <div class="event-photo__image" style="background: url('../assets/images/artists/placeholder-male-6.png') center/cover;"></div>
+                                        <button type="button" class="event-photo__like" data-engagement="vibes" data-vibe-variant="overlay" aria-pressed="false"><span class="event-photo__heart">♥</span><span class="event-photo__count">76</span></button>
+                                    </figure>
+                                    <figure class="event-photo">
+                                        <div class="event-photo__image" style="background: url('../assets/images/artists/placeholder-female-6.png') center/cover;"></div>
+                                        <button type="button" class="event-photo__like" data-engagement="vibes" data-vibe-variant="overlay" aria-pressed="false"><span class="event-photo__heart">♥</span><span class="event-photo__count">19</span></button>
+                                    </figure>
+                                    <figure class="event-photo">
+                                        <div class="event-photo__image" style="background: url('../assets/images/artists/placeholder-female-2.png') center/cover;"></div>
+                                        <button type="button" class="event-photo__like" data-engagement="vibes" data-vibe-variant="overlay" aria-pressed="false"><span class="event-photo__heart">♥</span><span class="event-photo__count">203</span></button>
+                                    </figure>
+                                    <figure class="event-photo">
+                                        <div class="event-photo__image" style="background: url('../assets/images/artists/placeholder-female-6.png') center/cover;"></div>
+                                        <button type="button" class="event-photo__like" data-engagement="vibes" data-vibe-variant="overlay" aria-pressed="false"><span class="event-photo__heart">♥</span><span class="event-photo__count">11</span></button>
+                                    </figure>
+                                    <figure class="event-photo">
+                                        <div class="event-photo__image" style="background: url('../assets/images/artists/placeholder-male-6.png') center/cover;"></div>
+                                        <button type="button" class="event-photo__like" data-engagement="vibes" data-vibe-variant="overlay" aria-pressed="false"><span class="event-photo__heart">♥</span><span class="event-photo__count">57</span></button>
+                                    </figure>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="artist-post__footer">
+                        <span class="artist-post__friends"><strong>The following friends attended:</strong> Line Rasmussen, Matt Samuel Ne'Ogle, Joakim Nielsen… +6 Others</span>
+                        <div class="artist-post__stats">
+                            <button type="button" class="artist-post__like" aria-pressed="false" data-help="Like dette opslag.">
+                                <span class="artist-post__like-icon">♥</span>
+                                <span class="artist-post__like-count">2,341</span>
+                            </button>
+                            <span class="artist-post__reactions" data-help="Samlet antal reaktioner på opslaget.">
+                                <span>😂</span><span>🔥</span><span>👏</span>
+                                <span class="artist-post__reactions-count">+892</span>
+                            </span>
+                            <button type="button" class="artist-post__comments-toggle" aria-expanded="false" data-help="Klik for at folde kommentar-sektionen ud. Når åben sløres resten af feeden så du kan fokusere på diskussionen.">Comments +174</button>
+                        </div>
+                    </div>
+
+                    <div class="artist-post__comments" hidden>
+                        <h3 class="artist-post__comments-title">Latest comments</h3>
+                        <ul class="artist-post__comment-list">
+
+                            <li class="artist-comment">
+                                <div class="artist-comment__avatar" style="background: url('../assets/images/artists/placeholder-female-6.png') center/cover;"></div>
+                                <div class="artist-comment__main">
+                                    <div class="artist-comment__body"><strong>Samantha Patel:</strong> 😂😂 OMG, Jokesmith, you had me in tears with this one! Your ability to turn any situation into comedy gold is unmatched! Keep 'em coming!</div>
+                                    <div class="artist-comment__actions">
+                                        <button type="button" class="artist-comment__like" aria-pressed="false"><span class="heart">♥</span><span class="count">214</span></button>
+                                        <button type="button" class="artist-comment__reply">Reply</button>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li class="artist-comment">
+                                <div class="artist-comment__avatar" style="background: url('../assets/images/artists/placeholder-male-5.png') center/cover;"></div>
+                                <div class="artist-comment__main">
+                                    <div class="artist-comment__body"><strong>Laura Schmidt:</strong> I swear, Jokesmith, you could make a trip to the dentist sound like a stand-up routine! Your wit and charm are unmatched. Keep spreading those laughs!</div>
+                                    <div class="artist-comment__actions">
+                                        <button type="button" class="artist-comment__like" aria-pressed="false"><span class="heart">♥</span><span class="count">87</span></button>
+                                        <button type="button" class="artist-comment__reply">Reply</button>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li class="artist-comment">
+                                <div class="artist-comment__avatar" style="background: url('../assets/images/artists/placeholder-male-3.png') center/cover;"></div>
+                                <div class="artist-comment__main">
+                                    <div class="artist-comment__body"><strong>Daniel Müller:</strong> Haha, classic Jokesmith! Your talent for storytelling is truly incredible. Thanks for brightening up my day with your hilarious antics!</div>
+                                    <div class="artist-comment__actions">
+                                        <button type="button" class="artist-comment__like" aria-pressed="false"><span class="heart">♥</span><span class="count">42</span></button>
+                                        <button type="button" class="artist-comment__reply">Reply</button>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li class="artist-comment">
+                                <div class="artist-comment__avatar" style="background: url('../assets/images/artists/placeholder-male-3.png') center/cover;"></div>
+                                <div class="artist-comment__main">
+                                    <div class="artist-comment__body"><strong>Frankie Rossi:</strong> Another day, another hilarious tale from the one and only Jokesmith Johnson! Your comedic timing is impeccable, my friend. Keep those laughs coming!</div>
+                                    <div class="artist-comment__actions">
+                                        <button type="button" class="artist-comment__like" aria-pressed="false"><span class="heart">♥</span><span class="count">56</span></button>
+                                        <button type="button" class="artist-comment__reply">Reply</button>
+                                    </div>
+
+                                    <ul class="artist-comment__replies">
+                                        <li class="artist-comment">
+                                            <div class="artist-comment__avatar" style="background: url('../assets/images/artists/placeholder-male-1.png') center/cover;"></div>
+                                            <div class="artist-comment__main">
+                                                <div class="artist-comment__body"><strong>Liam Johnson:</strong> Frankie, your positive energy is what makes these shows even more enjoyable! Keep spreading the laughter.</div>
+                                                <div class="artist-comment__actions">
+                                                    <button type="button" class="artist-comment__like" aria-pressed="false"><span class="heart">♥</span><span class="count">9</span></button>
+                                                    <button type="button" class="artist-comment__reply">Reply</button>
+                                                </div>
+                                            </div>
+                                        </li>
+
+                                        <li class="artist-comment">
+                                            <div class="artist-comment__avatar" style="background: url('../assets/images/artists/placeholder-female-4.png') center/cover;"></div>
+                                            <div class="artist-comment__main">
+                                                <div class="artist-comment__body"><strong>Sophie Brown:</strong> Frankie, I've seen Jokesmith's shows, and I just don't get the hype. Everyone's entitled to their opinion, I guess.</div>
+                                                <div class="artist-comment__actions">
+                                                    <button type="button" class="artist-comment__like" aria-pressed="false"><span class="heart">♥</span><span class="count">12</span></button>
+                                                    <button type="button" class="artist-comment__reply">Reply</button>
+                                                </div>
+
+                                                <ul class="artist-comment__replies">
+                                                    <li class="artist-comment">
+                                                        <div class="artist-comment__avatar" style="background: url('../assets/images/artists/placeholder-male-7.png') center/cover;"></div>
+                                                        <div class="artist-comment__main">
+                                                            <div class="artist-comment__body"><strong>Elena Martinez:</strong> Liar!! we all know you're broke and can't afford tickets... such a liar, even your name is a lie, nothing brown about you Sophie "Brown"</div>
+                                                            <div class="artist-comment__actions">
+                                                                <button type="button" class="artist-comment__like" aria-pressed="false"><span class="heart">♥</span><span class="count">1.2K</span></button>
+                                                                <span class="artist-comment__reaction">😄 1K</span>
+                                                                <span class="artist-comment__reaction">😠 3K</span>
+                                                                <button type="button" class="artist-comment__reply">Reply</button>
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </li>
+
+                                        <li class="artist-comment">
+                                            <div class="artist-comment__avatar" style="background: url('../assets/images/artists/placeholder-female-2.png') center/cover;"></div>
+                                            <div class="artist-comment__main">
+                                                <div class="artist-comment__body"><strong>Maxime Dubois:</strong> Are we even talking about the same comedian? Jokesmith's jokes are so outdated. We need something fresh in the comedy scene. But hey, comedy is subjective, right?</div>
+                                                <div class="artist-comment__actions">
+                                                    <button type="button" class="artist-comment__like" aria-pressed="false"><span class="heart">♥</span><span class="count">7</span></button>
+                                                    <button type="button" class="artist-comment__reply">Reply</button>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+
+                        </ul>
+
+                        <form class="artist-comment-form" data-help="Skriv en kommentar og tryk Post for at sende.">
+                            <input type="text" placeholder="Add a comment…" class="artist-comment-form__input" aria-label="Add a comment">
+                            <button type="submit" class="artist-comment-form__submit">Post</button>
+                        </form>
+                    </div>
+                </article>
+
+                <!-- ===== Post 2 ===== -->
+                <article class="artist-post" data-post-id="post2">
+                    <header class="artist-post__meta">
+                        <span class="artist-post__date">2023.01.28</span>
+                        <span class="artist-post__separator">—</span>
+                        <span class="artist-post__author auto-name">Jokesmith Johnson</span>
+                        <span class="artist-post__context">(SNL)</span>
+                    </header>
+
+                    <div class="artist-post__body">
+                        <div class="artist-post__image" style="background: url('../assets/images/artists/jokesmith-johnson-post-3.png') center/cover;"></div>
+                        <div class="artist-post__main">
+                            <p class="artist-post__text" title="Click to expand">We're backstage, right before showtime, and I'm trying to make small talk with the host. I ask, "So, what's it like hosting SNL?" And then he replies, "Oh, it's a breeze. Just like riding a bike, except the bike is on fire, and you're in hell." Needless to say, I'm sweating bullets trying to come up with a witty comeback. So, I muster up the courage and say, "Well, at least you're not juggling chainsaws, right?" Silence. Awkward, uncomfortable silence. And then, out of nowhere, he bursts into laughter. "You're alright, kid," they said. "You'll fit in just fine." So, no hard feelings, I'll just remember, next time I'll bring my A-game… and maybe a fire extinguisher!</p>
+                        </div>
+                    </div>
+
+                    <div class="artist-post__footer">
+                        <span class="artist-post__friends"><strong>The following friends attended:</strong> Mike Shritslerz, Anchi Humifuku, Tara Park… +12 Others</span>
+                        <div class="artist-post__stats">
+                            <button type="button" class="artist-post__like" aria-pressed="false">
+                                <span class="artist-post__like-icon">♥</span>
+                                <span class="artist-post__like-count">964</span>
+                            </button>
+                            <span class="artist-post__reactions">
+                                <span>😂</span><span>👏</span>
+                                <span class="artist-post__reactions-count">+411</span>
+                            </span>
+                            <button type="button" class="artist-post__comments-toggle" aria-expanded="false">Comments +88</button>
+                        </div>
+                    </div>
+
+                    <div class="artist-post__comments" hidden>
+                        <h3 class="artist-post__comments-title">Latest comments</h3>
+                        <ul class="artist-post__comment-list">
+                            <li class="artist-comment">
+                                <div class="artist-comment__avatar" style="background: url('../assets/images/artists/placeholder-male-1.png') center/cover;"></div>
+                                <div class="artist-comment__main">
+                                    <div class="artist-comment__body"><strong>Tara Park:</strong> Honestly the funniest moment of the night — fire extinguisher line absolutely killed.</div>
+                                    <div class="artist-comment__actions">
+                                        <button type="button" class="artist-comment__like" aria-pressed="false"><span class="heart">♥</span><span class="count">34</span></button>
+                                        <button type="button" class="artist-comment__reply">Reply</button>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="artist-comment">
+                                <div class="artist-comment__avatar" style="background: url('../assets/images/artists/placeholder-male-5.png') center/cover;"></div>
+                                <div class="artist-comment__main">
+                                    <div class="artist-comment__body"><strong>Anchi Humifuku:</strong> You always rise to the occasion, brother. Proud of you.</div>
+                                    <div class="artist-comment__actions">
+                                        <button type="button" class="artist-comment__like" aria-pressed="false"><span class="heart">♥</span><span class="count">21</span></button>
+                                        <button type="button" class="artist-comment__reply">Reply</button>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="artist-comment">
+                                <div class="artist-comment__avatar" style="background: url('../assets/images/artists/placeholder-male-6.png') center/cover;"></div>
+                                <div class="artist-comment__main">
+                                    <div class="artist-comment__body"><strong>Mike Shritslerz:</strong> The room was silent for a full second and then exploded. Iconic.</div>
+                                    <div class="artist-comment__actions">
+                                        <button type="button" class="artist-comment__like" aria-pressed="false"><span class="heart">♥</span><span class="count">8</span></button>
+                                        <button type="button" class="artist-comment__reply">Reply</button>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+
+                        <form class="artist-comment-form">
+                            <input type="text" placeholder="Add a comment…" class="artist-comment-form__input" aria-label="Add a comment">
+                            <button type="submit" class="artist-comment-form__submit">Post</button>
+                        </form>
+                    </div>
+                </article>
+
+            </section>
+
+            <!-- ============ Account creation footer ============ -->
+            <footer class="artist-account-footer" data-help="Datoen hvor denne artist- eller fan-profil blev oprettet på STAGECORD PRO. Vises i bunden af profil-feeden.">
+                Account created: 12 January 2018
+            </footer>
+
+            <!-- More artist sections (store, etc.) will go here -->
+
+        </div>
+    </main>
+
+    <!-- ===== Shared QR-befriend modal ===== -->
+    <div class="release-modal-overlay" id="qrBefriendModal" data-qr-modal aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="release-modal release-modal--qr">
+            <header class="release-modal__header">
+                <h2 class="release-modal__title">Befriend via QR</h2>
+                <button type="button" class="release-modal__close" data-close-qr aria-label="Close" data-help="Luk QR-befriend.">&times;</button>
+            </header>
+            <div class="release-modal__body">
+                <div class="qr-modal__tabs" role="tablist" data-help="QR-tabs: Vis dit eget QR-kode (så andre kan tilføje dig) eller scan en andens (så du kan tilføje dem).">
+                    <button type="button" class="qr-modal__tab is-active" data-qr-tab="show" role="tab">Show mine</button>
+                    <button type="button" class="qr-modal__tab" data-qr-tab="scan" role="tab">Scan theirs</button>
+                </div>
+
+                <div data-qr-panel="show">
+                    <p class="qr-modal__intro">Vis din QR til en fan eller ven du møder IRL. Når de scanner med deres telefon-kamera, åbnes <strong data-qr-name>—</strong>'s profil med en pre-fyldt friend-request klar.</p>
+                    <div class="qr-modal__code" data-qr-code></div>
+                    <div class="qr-modal__url" data-qr-url>—</div>
+                    <p class="qr-modal__hint">Tip: Vis QR'en på din telefon på koncerter, festivaler eller meet-and-greets. Hurtigere end at skrive brugernavnet.</p>
+                </div>
+
+                <div data-qr-panel="scan" hidden>
+                    <p class="qr-modal__intro">Hold telefonen op foran en andens QR-kode. Vi kan også åbne kameraet direkte hvis du har givet adgang i indstillingerne.</p>
+                    <div class="qr-modal__scan-area">
+                        <strong>📷 Camera scan area</strong><br>
+                        <small>(Demo: brug din enheds normale kamera-app for at scanne en QR — den åbner automatisk profilen i STAGECORD-appen.)</small>
+                    </div>
+                </div>
+            </div>
+            <footer class="release-modal__actions">
+                <button type="button" class="release-modal__btn" data-close-qr>Close</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ===== Genre editor modal — pick primary + sub-genres ===== -->
+    <div class="release-modal-overlay" id="genreEditorModal" data-genre-modal aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="release-modal release-modal--genre">
+            <header class="release-modal__header">
+                <h2 class="release-modal__title" data-genre-modal-title>Edit genre</h2>
+                <button type="button" class="release-modal__close" data-close-genre aria-label="Close" data-help="Luk genre-editor uden at gemme.">&times;</button>
+            </header>
+            <div class="release-modal__body">
+                <p class="genre-editor__intro" data-help="Genre-system: Vælg én primær genre + op til 3 sub-genrer. Den primære bestemmer din eksponerings-gruppe (artister med samme primær hjælper hinanden via 'Paying it forward'). Sub-genrer hjælper algoritmen med at finde det rigtige publikum.">Vælg én <strong>primær genre</strong> og op til <strong>3 sub-genrer</strong>. Primary bestemmer din eksponerings-gruppe; sub-genrer specificerer din lyd.</p>
+
+                <section class="genre-editor__section" data-help="Primær genre: Den vigtigste genre-kategori. Bestemmer hvilken 'Paying it forward'-gruppe du tilhører — artister med samme primary deler 5% af hinandens fanbase som eksponering.">
+                    <header class="genre-editor__section-head">
+                        <h3 class="genre-editor__section-title">Primary genre</h3>
+                        <span class="genre-editor__section-hint">Vælg én</span>
+                    </header>
+                    <div class="genre-main-grid" data-genre-main-grid></div>
+                </section>
+
+                <section class="genre-editor__section" data-help="Sub-genrer: Specificér din lyd nærmere. Du kan vælge op til 3, og de behøver ikke være under samme primary.">
+                    <header class="genre-editor__section-head">
+                        <h3 class="genre-editor__section-title">Sub-genres</h3>
+                        <span class="genre-editor__section-hint" data-genre-sub-counter>0 / 3 valgt</span>
+                    </header>
+                    <div class="genre-sub-grid" data-genre-sub-grid></div>
+                    <p class="genre-editor__no-main" data-genre-no-main hidden>Vælg en primær genre først for at se relevante sub-genrer — eller klik <em>Vis alle</em> for at se alle.</p>
+                </section>
+            </div>
+            <footer class="release-modal__actions">
+                <button type="button" class="release-modal__btn" data-close-genre>Cancel</button>
+                <button type="button" class="release-modal__btn" data-genre-show-all data-help="Vis alle sub-genrer på tværs af alle primaries.">Show all sub-genres</button>
+                <button type="button" class="release-modal__btn release-modal__btn--primary" data-genre-save data-help="Gem valgte genrer.">Save</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ===== Intimate concert booking modal — fan books a private performance ===== -->
+    <div class="release-modal-overlay" id="intimateBookingModal" data-intimate-modal aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="release-modal release-modal--intimate">
+            <header class="release-modal__header">
+                <h2 class="release-modal__title">Book intimate concert</h2>
+                <button type="button" class="release-modal__close" data-close-intimate aria-label="Close" data-help="Annullér booking-anmodningen — intet sendes til artisten.">&times;</button>
+            </header>
+            <div class="release-modal__body">
+                <form class="intimate-form" data-intimate-form>
+                    <p class="intimate-form__intro" data-help="Form-oversigt: Udfyld dato, adresse, forventede gæster og evt. besked. Prisen beregnes automatisk: basis-honorar + tillæg hvis du forventer flere gæster end audience cap. Artisten ser din anmodning og kan acceptere eller foreslå justeringer.">Udfyld detaljerne nedenfor — artisten ser din anmodning og kan acceptere eller foreslå ændringer.</p>
+
+                    <div class="intimate-form__row">
+                        <div class="intimate-form__field">
+                            <label class="intimate-form__label" data-help="Koncert-dato: Det ønskede dato for den private optræden. Tjek artistens tour-kalender først så datoen ikke overlapper med andre koncerter.">Date</label>
+                            <input type="date" class="intimate-form__input" data-intimate-date required>
+                        </div>
+                        <div class="intimate-form__field">
+                            <label class="intimate-form__label" data-help="Forventede gæster: Antal personer du forventer møder op. Hvis flere møder op på dagen, kan artisten opkræve ekstra-fee pr. yderligere gæst.">Expected guests</label>
+                            <input type="number" class="intimate-form__input" data-intimate-guests min="1" max="100" value="20" required>
+                        </div>
+                    </div>
+
+                    <div class="intimate-form__field">
+                        <label class="intimate-form__label" data-help="Adresse: Hvor koncerten skal afholdes. Vises kun for artisten efter accept — bruges også til at tjekke om lokationen er inden for travel range (100 km fra København).">Address</label>
+                        <input type="text" class="intimate-form__input" data-intimate-address placeholder="Street, postcode, city" required>
+                    </div>
+
+                    <div class="intimate-form__field">
+                        <label class="intimate-form__label" data-help="Besked til artisten: Beskriv eventet — fødselsdag, jubilæum, ven-samling osv. Ønsket sæt-længde, særlige sange, dresscode. Hjælper artisten med at vurdere om det passer.">Message (optional)</label>
+                        <textarea class="intimate-form__textarea" data-intimate-message placeholder="Tell the artist about the event — occasion, vibe, any specific song requests, dresscode…"></textarea>
+                    </div>
+
+                    <div class="intimate-summary" data-intimate-summary data-help="Pris-beregning: Basis-honorar + tillæg for hver gæst over audience cap. Beløbet er foreløbigt — endelig pris bekræftes når artisten accepterer.">
+                        <div class="intimate-summary__line">
+                            <span>Base rate (up to 25 guests)</span>
+                            <span><strong>$1,800</strong></span>
+                        </div>
+                        <div class="intimate-summary__line" data-intimate-extras-line hidden>
+                            <span data-intimate-extras-label>0 extra guests</span>
+                            <span><strong data-intimate-extras-amount>$0</strong></span>
+                        </div>
+                        <div class="intimate-summary__line intimate-summary__line--total">
+                            <span>Estimated total</span>
+                            <span data-intimate-total>$1,800</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <footer class="release-modal__actions">
+                <button type="button" class="release-modal__btn" data-close-intimate>Cancel</button>
+                <button type="button" class="release-modal__btn release-modal__btn--primary" data-intimate-submit data-help="Send anmodningen til artisten. Du modtager besked når artisten har gennemgået den. Først efter accept skal betaling fuldføres.">Send booking request</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ===== Pitched song detail modal — per-radio + per-host breakdown ===== -->
+    <div class="release-modal-overlay" id="pitchedDetailModal" data-pitched-modal aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="release-modal release-modal--pitched">
+            <header class="release-modal__header">
+                <h2 class="release-modal__title" data-pitched-modal-title>Pitched song</h2>
+                <button type="button" class="release-modal__close" data-close-pitched aria-label="Close" data-help="Luk pitched-song detaljer.">&times;</button>
+            </header>
+            <div class="release-modal__body release-modal__body--pitched">
+                <div class="pitched-detail__head">
+                    <div>
+                        <h3 class="pitched-detail__title" data-pitched-detail-title>Song name</h3>
+                        <p class="pitched-detail__meta" data-pitched-detail-meta data-help="Sang-info: Genre, release-dato, target-land for radio-pitchet og total antal afspilninger ≥30 sek på tværs af alle radio-stationer.">Genre · Released — · Target country —</p>
+                    </div>
+                    <div class="pitched-detail__rating-large" data-help="Gennemsnitlig rating på tværs af alle radio-værter der har rated sangen. Stationer med flere værter (fx P3 med 3 værter) beregner deres eget gennemsnit først, og det station-gennemsnit indgår derefter i den samlede.">
+                        <div class="pitched-detail__rating-large-num" data-pitched-rating-num>—</div>
+                        <div class="pitched-detail__rating-large-stars" data-pitched-rating-stars></div>
+                        <div class="pitched-detail__rating-large-meta" data-pitched-rating-meta>0 ratings</div>
+                    </div>
+                </div>
+
+                <div data-pitched-radios></div>
+            </div>
+            <footer class="release-modal__actions">
+                <button type="button" class="release-modal__btn" data-close-pitched>Close</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ============ Event details modal ============ -->
+    <div class="modal-overlay" id="eventModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="eventModalDate">
+        <div class="modal event-modal">
+            <header class="modal__header">
+                <div class="event-modal__title">
+                    <span class="event-modal__date" id="eventModalDate">Date</span>
+                    <span class="event-modal__venue" id="eventModalVenue">Venue</span>
+                </div>
+                <button type="button" class="modal__close" aria-label="Close" data-close-modal>&times;</button>
+            </header>
+
+            <div class="event-modal__body">
+                <div class="event-modal__time" id="eventModalTime"></div>
+                <p class="event-modal__description" id="eventModalDescription"></p>
+            </div>
+
+            <div class="event-modal__options">
+                <!-- Concert ticket option -->
+                <div class="event-modal__option" id="eventModalTicketOption">
+                    <div class="event-modal__option-label">Concert ticket</div>
+                    <div class="event-modal__option-price" id="eventModalTicketPrice">— DKK</div>
+                    <button type="button" class="wide-btn wide-btn--accept" id="eventModalTicketBtn">Buy ticket</button>
+                    <p class="event-modal__option-note">Includes physical entry with a personal QR-code.</p>
+                </div>
+
+                <!-- Online viewer option -->
+                <div class="event-modal__option" id="eventModalViewerOption">
+                    <div class="event-modal__option-label">Online viewer access</div>
+                    <div class="event-modal__option-price" id="eventModalViewerPrice">— DKK</div>
+                    <button type="button" class="wide-btn wide-btn--buy" id="eventModalViewerBtn">Buy online access</button>
+                    <p class="event-modal__option-note">Stream the show live from any device — cheaper alternative when tickets are sold out.</p>
+                </div>
+            </div>
+
+            <div class="event-modal__entourage" data-help="Entourage: Hvis du er medlem af en gruppe der har godkendt fælles billet-køb, kan du købe billetter til hele gruppen på én gang. Hver bruger trækkes deres egen andel.">
+                <h3 class="event-modal__entourage-title">Buy for your entourage</h3>
+                <p class="event-modal__entourage-note">
+                    If your entourage has approved group ticket purchases, you can buy for
+                    everyone at once. Each member is charged their own share and the ticket
+                    appears in their purchased-tickets list. You can be a member of
+                    multiple entourages.
+                </p>
+                <div class="event-modal__entourage-row">
+                    <select class="event-modal__entourage-select" id="eventModalEntouragePick" aria-label="Select entourage">
+                        <option value="">Select your entourage…</option>
+                        <option value="brooklyn" data-members="4">Brooklyn Crew · 4 members</option>
+                        <option value="comedy" data-members="6">Comedy Connoisseurs · 6 members</option>
+                        <option value="studio" data-members="3">Studio Squad · 3 members</option>
+                        <option value="duo" data-members="2">Tour Duo · 2 members</option>
+                        <option value="warehouse" data-members="9">Warehouse Friends · 9 members</option>
+                    </select>
+                    <div class="event-modal__entourage-total" id="eventModalEntourageTotal">— DKK</div>
+                </div>
+                <button type="button" class="wide-btn wide-btn--accept" id="eventModalEntourageBtn" disabled>Buy for entourage</button>
+
+                <details class="event-modal__entourage-info">
+                    <summary>How does payment work?</summary>
+                    <ul>
+                        <li>Each member is charged their share automatically when you confirm.</li>
+                        <li>If a member's account can't be charged, their ticket is placed on <strong>reservation</strong> — only when there's more than <strong>2 weeks</strong> until the event.</li>
+                        <li>Reserved members have <strong>3 days</strong> to complete payment before the seat is released.</li>
+                        <li>For a <strong>2-person entourage</strong>, if one member fails to pay, both tickets are cancelled so no one attends alone.</li>
+                    </ul>
+                </details>
+            </div>
+
+            <div class="event-modal__owner">
+                <h3 class="event-modal__owner-title">Already own a ticket?</h3>
+                <p class="event-modal__owner-note">
+                    If you can't attend, you can convert your ticket to online viewer access or
+                    list it for resale to another fan — as long as the QR-code on your ticket
+                    hasn't been scanned at the venue.
+                </p>
+                <div class="event-modal__owner-actions">
+                    <button type="button" class="wide-btn" id="eventModalConvertBtn" data-help="Konverterer din billet til online viewer-adgang. Kun muligt hvis billettens QR-kode ikke er blevet scannet endnu.">Convert to online access</button>
+                    <button type="button" class="wide-btn" id="eventModalSellBtn" data-help="Sætter din billet til salg på platformen så en anden fan kan købe den. Kun muligt så længe QR-koden ikke er scannet.">Sell my ticket</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/core.js"></script>
+    <script src="../js/modes.js"></script>
+    <script src="../js/sidebar.js"></script>
+    <script src="../js/topbar-widgets.js"></script>
+    <script src="../js/stage-badge.js"></script>
+    <script src="../js/acting-as-service.js"></script>
+    <script src="../js/stage-cards.js"></script>
+    <script src="../js/stage-label.js"></script>
+    <script src="../js/stage-resources.js"></script>
+    <script src="../js/stage-economy.js"></script>
+    <script src="../js/settings.js"></script>
+    <script src="../js/activity-feed.js"></script>
+    <script src="../js/artist-shop.js"></script>
+    <script src="../js/app.js"></script>
+    <script>
+    // ============================================================
+    // Artist profile dynamic switcher — ?id=<slug> in URL replaces
+    // cover, stats, bio, projects, credits and posts with that
+    // artist's own data. Cover uses a wide thematic photo (not the
+    // portrait), and JokesmithJohnson-only sections are hidden when
+    // the visited artist doesn't have equivalent content.
+    // ============================================================
+    (function() {
+        const profile = (new URLSearchParams(window.location.search).get('id') || '').toLowerCase();
+        if (!profile) return;
+
+        const _COVER_POOL =['rust-cover.png','jokesmith-johnson-cover.png','jeremy-freedom-cover.png','jonathan-roy-event.png','kebu-event.jpg','lola-young-event.jpg','mellow-event.jpg','mike-andersen-event.jpg','nick-sander-event.jpg','girli-event.jpg','jokesmith-johnson-post-1.png','jokesmith-johnson-post-2.png','jokesmith-johnson-post-3.png','jokesmith-johnson-project-1.png','jokesmith-johnson-project-2.png','jokesmith-johnson-project-3.png'];
+        function _localThumb(seed) {
+            let h = 0; const s = String(seed);
+            for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+            return '../assets/images/artists/' + _COVER_POOL[h % _COVER_POOL.length];
+        }
+
+        const COLLAB_PROFILES = {
+            'jeremy-freedom': {
+                name: 'Jeremy Freedom',
+                portrait: '../assets/images/artists/jeremy-freedom-profile.png',
+                cover: "../assets/images/artists/jeremy-freedom-cover.png",
+                coverHasOverlay: true,
+                stats: { followers: '507K', listeners: '165K', visitors: '37K' },
+                bio: "Jeremy Freedom is a New York-based songwriter and frontman releasing his debut full-length project this year. Known for melodic hooks and confessional lyrics, he's been building a loyal listener base through intimate venues and stripped-back livestreams.",
+                cta: { tickets: 'Buy Tickets for FREEDOM TOUR', merch: 'Buy Merchandise' },
+                projects: [
+                    { type: 'EP',     title: 'Open Window',   col: 'Jeremy Freedom', cat: 'Indie pop', length: '24 min', features: '—', cowriter: 'Maya Thompson', streams: '2.4 Million', release: '2024', thumb: 'window,sunset,room' },
+                    { type: 'Single', title: 'Brooklyn Air', col: 'Jeremy Freedom', cat: 'Indie pop', length: '3:48',   features: 'Maya Thompson', cowriter: 'Maya Thompson', streams: '5.1 Million', release: '2023', thumb: 'brooklyn,bridge,city' }
+                ],
+                credits: [
+                    { role: 'Co-writer',     title: 'Static In My Head', meta: 'Lars Vognsen · EP · 2023', streams: '4.1M streams', thumb: 'guitar,studio,music' },
+                    { role: 'Featured',      title: 'Brooklyn Air',      meta: 'Self-released · 2023',     streams: '5.1M streams', thumb: 'brooklyn,bridge' },
+                    { role: 'Songwriter',    title: 'Halfway Home',      meta: 'Sara Holm · Podcast theme · 2023', streams: '780K listens', thumb: 'podcast,microphone' }
+                ],
+                posts: [
+                    {
+                        date: '2024.09.04',
+                        context: 'Mercury Lounge, NYC',
+                        text: "Sold out the Mercury Lounge for night three of the warm-up run. Played the whole EP front to back for the first time and the room went completely silent during the bridge of #BrooklynAir — that's a feeling you don't forget. Studio version drops next month — until then, every show is a chance to live inside these songs with you. Thank you for showing up. 🌃",
+                        image: 'concert,intimate,acoustic'
+                    }
+                ]
+            },
+            'malik-johnson': {
+                name: 'Malik Johnson',
+                portrait: '../assets/images/artists/malik-johnson-profile.png',
+                cover: "../assets/images/artists/girli-event.jpg",
+                stats: { followers: '92K', listeners: '6.4K', visitors: '4.1K' },
+                bio: "Malik Johnson is a vocalist and writer working at the seam between R&B and indie pop. He's a regular feature on songs by topliners across the platform, and is currently co-writing the upcoming Eternaty release.",
+                cta: null,
+                projects: [
+                    { type: 'Single', title: 'Velvet Hours', col: 'Malik Johnson', cat: 'R&B', length: '4:12', features: '—', cowriter: 'Solo', streams: '1.2 Million', release: '2024', thumb: 'neon,night,studio' }
+                ],
+                credits: [
+                    { role: 'Featured vocal',  title: 'Northern Lights', meta: 'Anchi Humifuku · Album · 2024',  streams: '12M streams', thumb: 'aurora,sky,studio' },
+                    { role: 'Featured vocal',  title: 'City Lights Are Calling', meta: 'Maya Thompson · Single · 2024', streams: '8.4M streams', thumb: 'city,lights,sunset' },
+                    { role: 'Background vocal', title: 'Manhattan Rain',  meta: 'Anchi Humifuku · Single · 2022', streams: '15M streams',  thumb: 'manhattan,rain' },
+                    { role: 'Featured vocal',  title: 'Eternaty (preview)', meta: 'Jeremy Freedom + Maya Thompson · Upcoming', streams: 'TBA', thumb: 'studio,vocal,booth' }
+                ],
+                posts: [
+                    {
+                        date: '2024.10.02',
+                        context: 'Sun Studios',
+                        text: "Three takes deep on the bridge of Eternaty and we're inching closer 🎙️ @MayaThompson keeps pushing me to take the second half higher and she's right. Album version drops Q1 next year. Until then — keep telling me what's hitting on the singles I drop, your DMs literally shape what I push for. #studio #vocals",
+                        image: 'studio,vocal,booth'
+                    }
+                ]
+            },
+            'maya-thompson': {
+                name: 'Maya Thompson',
+                portrait: '../assets/images/artists/maya-thompson-profile.png',
+                cover: "../assets/images/artists/lola-young-event.jpg",
+                stats: { followers: '328K', listeners: '24K', visitors: '18K' },
+                bio: "Maya Thompson is an LA-based topliner who's placed cuts with major-label artists and built a steady following on the platform with her own releases. Currently co-writing on Eternaty and the upcoming Late Night Sessions EP.",
+                cta: { tickets: 'Buy Tickets for LATE NIGHT SESSIONS', merch: 'Buy Merchandise' },
+                projects: [
+                    { type: 'EP',     title: 'Late Night Sessions',  col: 'Maya Thompson', cat: 'Pop',  length: '22 min', features: 'Anchi Humifuku', cowriter: 'Solo',           streams: 'TBA',          release: '2025', thumb: 'late,night,city' },
+                    { type: 'Single', title: 'City Lights Are Calling', col: 'Maya Thompson', cat: 'Pop',  length: '3:36',   features: 'Malik Johnson', cowriter: 'Anchi Humifuku',  streams: '8.4 Million', release: '2024', thumb: 'city,lights,sunset' },
+                    { type: 'Album',  title: 'Open Hours',           col: 'Maya Thompson', cat: 'Pop',  length: '38 min', features: '—',             cowriter: 'Solo',           streams: '24 Million',  release: '2022', thumb: 'sunset,window,piano' }
+                ],
+                credits: [
+                    { role: 'Co-writer',     title: 'Open Window',       meta: 'Jeremy Freedom · EP · 2024', streams: '2.4M streams', thumb: 'window,sunset' },
+                    { role: 'Topliner',      title: 'Behind The Curtain (S4 theme)', meta: 'JokesmithJohnson · Podcast · 2024', streams: '1.8M listens', thumb: 'podcast,studio' },
+                    { role: 'Featured',      title: 'Manhattan Rain',    meta: 'Anchi Humifuku · Single · 2022',  streams: '15M streams', thumb: 'manhattan,rain' },
+                    { role: 'Co-writer',     title: 'Eternaty (preview)', meta: 'Jeremy Freedom · Upcoming', streams: 'TBA', thumb: 'studio,piano' }
+                ],
+                posts: [
+                    {
+                        date: '2024.10.18',
+                        context: 'The Wiltern, LA',
+                        text: "Sold out The Wiltern last night. Played City Lights Are Calling with @MalikJohnson on stage and the whole room sang it back from the second verse. I told the band I'd cry if the third chorus hit and reader, it hit. Thank you LA — Eternaty drops with @JeremyFreedom in Q1 and I cannot wait for you to live in it. 🌆",
+                        image: 'concert,la,sunset'
+                    },
+                    {
+                        date: '2024.09.22',
+                        context: 'Sun Studios',
+                        text: "Spent six hours with the Late Night Sessions EP today and only finished one song — but that one song is gonna be the lead single 🎹 @AnchiHumifuku swung by for the bridge harmonies and we landed on something that finally felt right after take 11. Quality over speed always. #songwriting #studio",
+                        image: 'songwriting,piano,studio'
+                    }
+                ]
+            },
+            'winston-sinclair': {
+                name: 'Winston Sinclair',
+                portrait: '../assets/images/artists/winston-sinclair-profile.png',
+                cover: "../assets/images/artists/jonathan-roy-event.png",
+                stats: { followers: '47K', listeners: '3.8K', visitors: '2.6K' },
+                bio: "Winston Sinclair is a producer and mix/mastering engineer based in Aarhus. Credits include hundreds of releases across pop, rap and indie. Known for warm low-end and crisp top-end finishes — currently mixing the Eternaty record.",
+                cta: null,
+                projects: [],
+                credits: [
+                    { role: 'Producer · Mix · Master', title: 'Eternaty (preview)', meta: 'Jeremy Freedom + Maya Thompson · Upcoming', streams: 'TBA', thumb: 'studio,console,mixing' },
+                    { role: 'Mix engineer',           title: 'Static In My Head',  meta: 'Lars Vognsen · EP · 2023', streams: '4.1M streams', thumb: 'guitar,studio' },
+                    { role: 'Mastering',              title: 'City Lights Are Calling', meta: 'Maya Thompson · Single · 2024', streams: '8.4M streams', thumb: 'city,lights' },
+                    { role: 'Producer',               title: 'Halfway Home',       meta: 'Sara Holm · Podcast theme · 2023', streams: '780K listens', thumb: 'podcast,microphone' },
+                    { role: 'Mix engineer',           title: 'Velvet Hours',       meta: 'Malik Johnson · Single · 2024', streams: '1.2M streams', thumb: 'neon,studio' }
+                ],
+                posts: [
+                    {
+                        date: '2024.10.10',
+                        context: 'Aarhus Studio',
+                        text: "Inside week 4 of the Eternaty mix and we're getting close 🎚️ @JeremyFreedom and @MayaThompson keep adding production layers and every revision somehow makes it tighter, not denser. The mark of writers who actually know what they want. Tracking the master next week. Real proud of this one. #mixing #engineering",
+                        image: 'mixing,console,headphones'
+                    }
+                ]
+            }
+        };
+
+        const data = COLLAB_PROFILES[profile];
+        if (!data) return;
+
+        // === Cover: name, wide thematic image, stats, CTAs ===
+        // When `coverHasOverlay` is true, the image already has the artist name,
+        // CTAs and stats baked in — so we paint the image edge-to-edge (no dim
+        // gradient) and hide the duplicate DOM overlays.
+        const nameEl = document.querySelector('.artist-cover__name');
+        if (nameEl) {
+            nameEl.classList.add('auto-name');
+            nameEl.removeAttribute('data-name-formatted');
+            nameEl.textContent = data.name;
+        }
+        const cover = document.querySelector('.artist-cover');
+        if (cover) {
+            cover.style.backgroundImage = data.coverHasOverlay
+                ? "url('" + data.cover + "')"
+                : "linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.55) 100%), url('" + data.cover + "')";
+            cover.style.backgroundSize = 'cover';
+            cover.style.backgroundPosition = 'center';
+        }
+        const statValues = document.querySelectorAll('.artist-cover__stat-value');
+        if (statValues.length >= 3) {
+            statValues[0].textContent = data.stats.followers;
+            statValues[1].textContent = data.stats.listeners;
+            statValues[2].textContent = data.stats.visitors;
+        }
+        const ticketBtn = document.querySelector('.artist-cta--tickets');
+        const merchBtn  = document.querySelector('.artist-cta--merch');
+        if (data.cta) {
+            if (ticketBtn) {
+                const lbl = ticketBtn.querySelector('span') || ticketBtn;
+                lbl.innerHTML = data.cta.tickets;
+            }
+            if (merchBtn) {
+                const lbl = merchBtn.querySelector('span') || merchBtn;
+                lbl.innerHTML = data.cta.merch;
+            }
+        } else {
+            if (ticketBtn) ticketBtn.style.display = 'none';
+            if (merchBtn)  merchBtn.style.display  = 'none';
+        }
+        if (data.coverHasOverlay) {
+            if (nameEl) nameEl.style.display = 'none';
+            const statsBlock = document.querySelector('.artist-cover__stats');
+            if (statsBlock) statsBlock.style.display = 'none';
+            if (ticketBtn) ticketBtn.style.display = 'none';
+            if (merchBtn)  merchBtn.style.display  = 'none';
+        }
+
+        const bioText = document.querySelector('.artist-bio__text');
+        if (bioText) bioText.textContent = data.bio;
+
+        // === Hide JokesmithJohnson-only sections (calendar, fan covers/tutorials, photos) ===
+        const calendarSection = document.querySelector('.artist-calendar');
+        if (calendarSection) calendarSection.style.display = 'none';
+        const fanCoversSection = document.querySelector('.artist-covers');
+        if (fanCoversSection) fanCoversSection.style.display = 'none';
+        const photosSection = document.querySelector('.artist-photos');
+        if (photosSection) photosSection.style.display = 'none';
+
+        // === Replace projects ===
+        const projectsSection = document.querySelector('.artist-projects');
+        if (projectsSection) {
+            if (data.projects.length === 0) {
+                projectsSection.style.display = 'none';
+            } else {
+                projectsSection.innerHTML =
+                    '<div class="artist-projects__column">' +
+                        '<h2 class="artist-projects__heading">Releases</h2>' +
+                        '<div class="artist-projects__list">' +
+                            data.projects.map(function(p) {
+                                return '<article class="artist-project">' +
+                                    '<div class="artist-project__thumb" style="background: url(\'' + _localThumb(p.thumb + ':' + p.title) + '\') center/cover;"></div>' +
+                                    '<ul class="artist-project__info">' +
+                                        '<li><span class="key">' + p.type + ':</span><span class="value">' + p.title + '</span></li>' +
+                                        '<li><span class="key">Artist:</span><span class="value">' + p.col + '</span></li>' +
+                                        '<li><span class="key">Category:</span><span class="value">' + p.cat + '</span></li>' +
+                                        '<li><span class="key">Length:</span><span class="value">' + p.length + '</span></li>' +
+                                        '<li><span class="key">Features:</span><span class="value">' + p.features + '</span></li>' +
+                                        '<li><span class="key">Co-writer:</span><span class="value">' + p.cowriter + '</span></li>' +
+                                        '<li><span class="key">Streams:</span><span class="value value--highlight">' + p.streams + '</span></li>' +
+                                        '<li><span class="key">Release:</span><span class="value">' + p.release + '</span></li>' +
+                                    '</ul>' +
+                                '</article>';
+                            }).join('') +
+                        '</div>' +
+                    '</div>';
+            }
+        }
+
+        // === Replace credits ===
+        const creditsList = document.querySelector('.artist-credits__list');
+        if (creditsList && data.credits.length) {
+            creditsList.innerHTML = data.credits.map(function(c) {
+                return '<a href="#" class="artist-credit">' +
+                    '<div class="artist-credit__thumb" style="background: url(\'' + _localThumb(c.thumb + ':' + c.title) + '\') center/cover;"></div>' +
+                    '<div class="artist-credit__main">' +
+                        '<span class="artist-credit__role">' + c.role + '</span>' +
+                        '<div class="artist-credit__title auto-name">' + c.title + '</div>' +
+                        '<div class="artist-credit__meta">' + c.meta + '</div>' +
+                    '</div>' +
+                    '<div class="artist-credit__streams">' + c.streams + '</div>' +
+                '</a>';
+            }).join('');
+        } else if (creditsList) {
+            const creditsSection = document.querySelector('.artist-credits');
+            if (creditsSection) creditsSection.style.display = 'none';
+        }
+
+        // === Replace posts feed ===
+        const feedSection = document.querySelector('.artist-feed');
+        if (feedSection) {
+            if (data.posts.length === 0) {
+                feedSection.style.display = 'none';
+            } else {
+                const header = feedSection.querySelector('.artist-feed__header');
+                feedSection.innerHTML = (header ? header.outerHTML : '') +
+                    data.posts.map(function(p, i) {
+                        return '<article class="artist-post" data-post-id="' + profile + '-post-' + (i+1) + '">' +
+                            '<header class="artist-post__meta">' +
+                                '<span class="artist-post__date">' + p.date + '</span>' +
+                                '<span class="artist-post__separator">—</span>' +
+                                '<span class="artist-post__author auto-name">' + data.name + '</span>' +
+                                '<span class="artist-post__context">(' + p.context + ')</span>' +
+                            '</header>' +
+                            '<div class="artist-post__body">' +
+                                '<div class="artist-post__image" style="background: url(\'' + _localThumb(p.image + ':' + (p.text||'') + ':' + i) + '\') center/cover;"></div>' +
+                                '<div class="artist-post__main">' +
+                                    '<p class="artist-post__text" title="Click to expand">' + p.text + '</p>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="artist-post__footer">' +
+                                '<div class="artist-post__stats">' +
+                                    '<button type="button" class="artist-post__like" aria-pressed="false">' +
+                                        '<span class="artist-post__like-icon">♥</span>' +
+                                        '<span class="artist-post__like-count">' + (Math.floor(parseInt(data.stats.followers) / 100) || 240) + '</span>' +
+                                    '</button>' +
+                                    '<span class="artist-post__reactions">' +
+                                        '<span>🔥</span><span>👏</span><span>🎶</span>' +
+                                        '<span class="artist-post__reactions-count">+' + (Math.floor(parseInt(data.stats.followers) / 600) || 80) + '</span>' +
+                                    '</span>' +
+                                    '<button type="button" class="artist-post__comments-toggle" aria-expanded="false">Comments +' + (Math.floor(parseInt(data.stats.followers) / 1500) || 22) + '</button>' +
+                                '</div>' +
+                            '</div>' +
+                        '</article>';
+                    }).join('');
+            }
+        }
+
+        document.title = 'STAGECORD PRO — ' + data.name;
+
+        if (typeof formatAllNames === 'function') formatAllNames(document.body);
+        if (typeof linkifyMentionsAndTags === 'function') linkifyMentionsAndTags(document.body);
+    })();
+    </script>
+</body>
+</html>

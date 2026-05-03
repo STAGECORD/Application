@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAGECORD - Overview</title>
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/logo.css">
+    <link rel="stylesheet" href="../css/topbar.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/onboarding.css">
+</head>
+<body>
+    <aside class="sidebar" data-sidebar></aside>
+
+    <header class="topbar">
+        <div class="logo-container">
+            <a href="../index.html" class="logo-link">
+                <h1 class="logo"><span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span></h1>
+            </a>
+        </div>
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Search Artists, Concerts, Venues, Friends and much more" aria-label="Search"/>
+            <svg class="search-icon" viewBox="0 0 28 28" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/><path d="M18 18L24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <button type="button" class="help-button" aria-label="Help" aria-pressed="false" data-help="Help button: Click to enter help mode, then click any element with a help-cursor to see what it does. Press Esc or click the help button again to exit."><span class="help-mark">?</span></button>
+    </header>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <header class="page-header">
+                <h1 class="page-header__title">Overview</h1>
+                <div class="page-header__actions">
+                    <button type="button" class="page-btn page-btn--ghost" data-open-onboarding data-help="Setup wizard: 5-step onboarding der hjælper dig med at konfigurere artist-, venue-, virksomhed-, fan- og bookkeeping-profiler. Kan køres når som helst — alle steps er valgfri og kan springes over."><svg viewBox="0 0 24 24" fill="none" width="14" height="14" style="margin-right:6px;"><path d="M12 2v4M12 18v4M4 12H2M22 12h-2M5 5l3 3M19 19l-3-3M5 19l3-3M19 5l-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/></svg>Setup wizard</button>
+                    <select class="page-btn page-btn--ghost" data-help="Vælg datointerval for alle metrics på siden.">
+                        <option>Last 7 days</option>
+                        <option selected>Last 30 days</option>
+                        <option>Last 90 days</option>
+                        <option>This year</option>
+                    </select>
+                </div>
+            </header>
+
+            <!-- KPI grid -->
+            <div class="kpi-grid">
+                <div class="kpi-card" data-help="Totalt antal followers på artist-profilen JokesmithJohnson — opdateres dagligt.">
+                    <div class="kpi-card__label">Followers</div>
+                    <div class="kpi-card__value">1.4M</div>
+                    <div class="kpi-card__delta kpi-card__delta--up">▲ +12,840 (30d)</div>
+                </div>
+                <div class="kpi-card" data-help="Daily listeners — antal unikke streams på tværs af platforme i går.">
+                    <div class="kpi-card__label">Daily listeners</div>
+                    <div class="kpi-card__value">103K</div>
+                    <div class="kpi-card__delta kpi-card__delta--up">▲ +4.2% (30d)</div>
+                </div>
+                <div class="kpi-card" data-help="Total revenue tjent på STAGECORD PRO — alle kilder samlet.">
+                    <div class="kpi-card__label">Revenue (30d)</div>
+                    <div class="kpi-card__value">42,650 DKK</div>
+                    <div class="kpi-card__delta kpi-card__delta--up">▲ +18.3%</div>
+                </div>
+                <div class="kpi-card" data-help="Antal aktive projekter — under produktion eller afventer godkendelse.">
+                    <div class="kpi-card__label">Active projects</div>
+                    <div class="kpi-card__value">3</div>
+                    <div class="kpi-card__delta kpi-card__delta--flat">— same as last month</div>
+                </div>
+                <div class="kpi-card" data-help="Antal ulæste beskeder i din indbakke.">
+                    <div class="kpi-card__label">Unread messages</div>
+                    <div class="kpi-card__value">8</div>
+                    <div class="kpi-card__delta kpi-card__delta--down">▼ −3 (24h)</div>
+                </div>
+                <div class="kpi-card" data-help="Fan covers og tutorials der venter på din godkendelse før de vises på din artist-side.">
+                    <div class="kpi-card__label">Pending fan content</div>
+                    <div class="kpi-card__value">12</div>
+                    <div class="kpi-card__delta kpi-card__delta--up">▲ +5 this week</div>
+                </div>
+            </div>
+
+            <!-- Stories / Now ribbon -->
+            <section class="stories-ribbon" data-help="Stories: 24-timers ephemeral indhold fra artister og creators du følger. Røde rings = live nu, hvide rings = nye stories du ikke har set, grå rings = allerede set.">
+                <div class="stories-track" id="storiesTrack"></div>
+            </section>
+
+            <!-- Suggested for you -->
+            <section class="dash-section" data-help="Suggested for you: Anbefalede artister og creators baseret på dine roller (Dancer, Content creator), de artister du allerede følger, og hvad lignende fans engagerer sig med. Klik Follow for at tilføje dem til din feed.">
+                <header class="dash-section__header">
+                    <h2 class="dash-section__title">Suggested for you</h2>
+                    <a href="#" class="dash-section__link">View all →</a>
+                </header>
+                <div class="suggest-grid" id="suggestGrid"></div>
+            </section>
+
+            <!-- Recent activity -->
+            <section class="dash-section" data-help="Recent activity: De seneste begivenheder på tværs af platformen — beskeder, salg, fan-content og collabs.">
+                <header class="dash-section__header">
+                    <h2 class="dash-section__title">Recent activity</h2>
+                    <a href="#" class="dash-section__link">View all →</a>
+                </header>
+                <div class="list-card">
+                    <div class="list-row">
+                        <div class="list-row__avatar" style="background: url('../assets/images/artists/placeholder-female-1.png') center/cover;"></div>
+                        <div class="list-row__main">
+                            <div class="list-row__name auto-name">Liva Mai</div>
+                            <div class="list-row__meta">submitted a dance video using "Jokes On Me" — awaiting your approval</div>
+                        </div>
+                        <span class="pill pill--amber">Pending</span>
+                        <span class="list-row__time">2h ago</span>
+                    </div>
+                    <div class="list-row">
+                        <div class="list-row__icon"><svg class="nav-icon" width="20" height="15" viewBox="0 0 20 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M19.3359 13.1524H0.195312C0.0878906 13.1524 0 13.2403 0 13.3478V14.7149C0 14.8224 0.0878906 14.9103 0.195312 14.9103H19.3359C19.4434 14.9103 19.5312 14.8224 19.5312 14.7149V13.3478C19.5312 13.2403 19.4434 13.1524 19.3359 13.1524ZM1.31104 10.0958L2.28027 11.0602C2.35596 11.1358 2.48047 11.1358 2.55615 11.0602L8.28613 5.34971L10.6689 7.7252C10.8157 7.87065 11.014 7.95225 11.2207 7.95225C11.4274 7.95225 11.6257 7.87065 11.7725 7.7252L18.2227 1.29941C18.2983 1.22373 18.2983 1.09922 18.2227 1.02354L17.2534 0.0567384C17.2167 0.0203902 17.1671 0 17.1155 0C17.0638 0 17.0142 0.0203902 16.9775 0.0567384L11.2231 5.79404L8.83789 3.41855C8.69109 3.2731 8.49279 3.1915 8.28613 3.1915C8.07948 3.1915 7.88118 3.2731 7.73437 3.41855L1.31104 9.81992C1.29277 9.83795 1.27827 9.85943 1.26838 9.88311C1.25848 9.90679 1.25338 9.9322 1.25338 9.95786C1.25338 9.98353 1.25848 10.0089 1.26838 10.0326C1.27827 10.0563 1.29277 10.0778 1.31104 10.0958Z" fill="currentColor"/>
+</svg></div>
+                        <div class="list-row__main">
+                            <div class="list-row__name">Streaming royalties paid out</div>
+                            <div class="list-row__meta">August payout from "Behind The Curtain" S3</div>
+                        </div>
+                        <span class="list-row__amount">+8,420 DKK</span>
+                        <span class="list-row__time">6h ago</span>
+                    </div>
+                    <div class="list-row">
+                        <div class="list-row__avatar" style="background: url('../assets/images/artists/placeholder-female-5.png') center/cover;"></div>
+                        <div class="list-row__main">
+                            <div class="list-row__name auto-name">Maya Thompson</div>
+                            <div class="list-row__meta">accepted your collab request on "Late Night Sessions"</div>
+                        </div>
+                        <span class="pill pill--green">Accepted</span>
+                        <span class="list-row__time">1d ago</span>
+                    </div>
+                    <div class="list-row">
+                        <div class="list-row__avatar" style="background: url('../assets/images/artists/mike-andersen-event.jpg') center/cover;"></div>
+                        <div class="list-row__main">
+                            <div class="list-row__name auto-name">Walmart ApS</div>
+                            <div class="list-row__meta">renewed the "Behind The Curtain" sponsorship for season 4</div>
+                        </div>
+                        <span class="list-row__amount">+125,000 DKK</span>
+                        <span class="list-row__time">2d ago</span>
+                    </div>
+                    <div class="list-row">
+                        <div class="list-row__icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+                        <div class="list-row__main">
+                            <div class="list-row__name">Studio session — track 4</div>
+                            <div class="list-row__meta">scheduled tomorrow at Sun Studios with Lars Vognsen</div>
+                        </div>
+                        <span class="pill pill--blue">Tomorrow 14:00</span>
+                        <span class="list-row__time">3d ago</span>
+                    </div>
+                    <div class="list-row">
+                        <div class="list-row__avatar" style="background: url('../assets/images/artists/placeholder-female-3.png') center/cover;"></div>
+                        <div class="list-row__main">
+                            <div class="list-row__name auto-name">Camilla Step</div>
+                            <div class="list-row__meta">accepted your commission for the new EP rollout</div>
+                        </div>
+                        <span class="pill pill--green">Confirmed</span>
+                        <span class="list-row__time">4d ago</span>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Stories viewer (built lazily via JS) -->
+    <div class="story-viewer" id="storyViewer" aria-hidden="true">
+        <div class="story-viewer__progress" id="storyProgress"></div>
+        <header class="story-viewer__header">
+            <span class="story-viewer__avatar" id="storyHeaderAvatar"></span>
+            <div class="story-viewer__main">
+                <div class="story-viewer__name auto-name" id="storyHeaderName">—</div>
+                <div class="story-viewer__time" id="storyHeaderTime">—</div>
+            </div>
+            <button type="button" class="story-viewer__close" id="storyClose" aria-label="Close">&times;</button>
+        </header>
+        <div class="story-viewer__stage" id="storyStage">
+            <button type="button" class="story-viewer__nav-prev" id="storyPrev" aria-label="Previous"></button>
+            <button type="button" class="story-viewer__nav-next" id="storyNext" aria-label="Next"></button>
+            <div class="story-viewer__caption" id="storyCaption">
+                <div class="story-viewer__caption-title" id="storyCaptionTitle">—</div>
+                <div class="story-viewer__caption-body" id="storyCaptionBody">—</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/core.js"></script>
+    <script src="../js/modes.js"></script>
+    <script src="../js/sidebar.js"></script>
+    <script src="../js/topbar-widgets.js"></script>
+    <script src="../js/stage-badge.js"></script>
+    <script src="../js/acting-as-service.js"></script>
+    <script src="../js/stage-cards.js"></script>
+    <script src="../js/stage-label.js"></script>
+    <script src="../js/stage-resources.js"></script>
+    <script src="../js/stage-economy.js"></script>
+    <script src="../js/settings.js"></script>
+    <script src="../js/activity-feed.js"></script>
+    <script src="../js/app.js"></script>
+    <script>
+    // ============================================================
+    // Overview — date range filter + activity row navigation
+    // ============================================================
+    (function() {
+        // KPI values keyed by range. Updates the cards in place.
+        const KPI = {
+            '7':   { followers:['183K','▲ +3,140 (7d)'],     listeners:['98K','▲ +1.4% (7d)'],   revenue:['9,840 DKK','▲ +5.1%'],   projects:['3','— same'],         unread:['2','▼ −1'],     pending:['3','▲ +2 this week'] },
+            '30':  { followers:['1.4M','▲ +12,840 (30d)'], listeners:['103K','▲ +4.2% (30d)'], revenue:['42,650 DKK','▲ +18.3%'], projects:['3','— same as last month'], unread:['8','▼ −3 (24h)'], pending:['12','▲ +5 this week'] },
+            '90':  { followers:['1.4M','▲ +41,200 (90d)'], listeners:['108K','▲ +8.7% (90d)'], revenue:['132,780 DKK','▲ +22.4%'],projects:['5','▲ +2'],         unread:['8','▼ −12'],    pending:['28','▲ +14 this quarter'] },
+            '365': { followers:['1.4M','▲ +384,500 (1y)'], listeners:['96K','▲ +24.8% (1y)'],  revenue:['482,400 DKK','▲ +34.8%'],projects:['12','▲ +9'],        unread:['8','▼ −41'],    pending:['86','▲ +52 this year'] }
+        };
+
+        const cards = {
+            followers: document.querySelectorAll('.kpi-card')[0],
+            listeners: document.querySelectorAll('.kpi-card')[1],
+            revenue:   document.querySelectorAll('.kpi-card')[2],
+            projects:  document.querySelectorAll('.kpi-card')[3],
+            unread:    document.querySelectorAll('.kpi-card')[4],
+            pending:   document.querySelectorAll('.kpi-card')[5]
+        };
+
+        function deltaClass(text) {
+            if (text.indexOf('▲') === 0) return 'kpi-card__delta kpi-card__delta--up';
+            if (text.indexOf('▼') === 0) return 'kpi-card__delta kpi-card__delta--down';
+            return 'kpi-card__delta kpi-card__delta--flat';
+        }
+
+        function update(key) {
+            const k = KPI[key];
+            if (!k) return;
+            Object.keys(cards).forEach(function(name) {
+                const card = cards[name];
+                if (!card) return;
+                const [val, dlt] = k[name];
+                card.querySelector('.kpi-card__value').textContent = val;
+                const d = card.querySelector('.kpi-card__delta');
+                d.textContent = dlt;
+                d.className = deltaClass(dlt);
+            });
+        }
+
+        const select = document.querySelector('.page-header__actions select');
+        if (select) {
+            // Add value attributes so the select gives back the range key
+            const opts = select.querySelectorAll('option');
+            const keys = ['7','30','90','365'];
+            opts.forEach(function(o, i) { o.value = keys[i]; });
+            select.value = '30';
+            select.addEventListener('change', function() { update(select.value); });
+        }
+
+        // Make activity rows feel clickable — route to the matching destination.
+        const ROUTES = {
+            'submitted a dance video': '../artist/settings/index.html',
+            'Streaming royalties paid out': '../sales/index.html',
+            'accepted your collab request': '../collabs/index.html',
+            'renewed the': '../sales/index.html',
+            'Studio session': '../calendar/index.html',
+            'accepted your commission': '../artist/settings/index.html'
+        };
+        document.querySelectorAll('.list-row').forEach(function(row) {
+            row.style.cursor = 'pointer';
+            row.addEventListener('click', function() {
+                if (typeof helpActive !== 'undefined' && helpActive) return;
+                const text = row.textContent;
+                for (const key in ROUTES) {
+                    if (text.indexOf(key) !== -1) { window.location.href = ROUTES[key]; return; }
+                }
+            });
+        });
+    })();
+    </script>
+
+    <script>
+    // ============================================================
+    // Stories ribbon + fullscreen viewer
+    // ============================================================
+    (function() {
+        const PIC = function(seed, w, h) {
+            const PORTRAITS = ['placeholder-female-1.png','placeholder-female-2.png','placeholder-female-3.png','placeholder-female-4.png','placeholder-female-5.png','placeholder-female-6.png','placeholder-male-1.png','placeholder-male-2.png','placeholder-male-3.png','placeholder-male-4.png','placeholder-male-5.png','placeholder-male-6.png','placeholder-male-7.png'];
+            const COVERS = ['rust-cover.png','jokesmith-johnson-cover.png','jeremy-freedom-cover.png','jonathan-roy-event.png','kebu-event.jpg','lola-young-event.jpg','mellow-event.jpg','mike-andersen-event.jpg','nick-sander-event.jpg','girli-event.jpg','jokesmith-johnson-post-1.png','jokesmith-johnson-post-2.png','jokesmith-johnson-post-3.png'];
+            let s = 0; for (let i = 0; i < seed.length; i++) s = (s * 31 + seed.charCodeAt(i)) >>> 0;
+            const pool = (w >= 600 || h >= 600) ? COVERS : PORTRAITS;
+            return "url('../assets/images/artists/" + pool[s % pool.length] + "') center/cover";
+        };
+        const STORIES = [
+            { name: 'JokesmithJohnson', avatar: "url('../assets/images/artists/jokesmith-johnson-cover.png') center/cover", live: true,  items: [
+                { title: 'Soundcheck · VEGA', body: '15 min until doors open — last vibes check', bg: PIC('story-jokesmith-soundcheck',900,1600), time: 'LIVE' },
+                { title: 'Setlist locked',    body: 'Adding "Manhattan Rain" mid-set tonight 🔥', bg: PIC('story-jokesmith-setlist',900,1600), time: '8m ago' }
+            ]},
+            { name: 'Anchi Humifuku',   avatar: PIC('anchi-humifuku-avatar',200,200), live: false, items: [
+                { title: 'Studio session', body: 'Topline take 14, the bridge finally clicked', bg: PIC('story-anchi-studio',900,1600), time: '32m ago' }
+            ]},
+            { name: 'Maya Thompson',    avatar: PIC('maya-thompson-avatar',200,200), live: false, items: [
+                { title: 'On a plane to LA', body: 'Late Night Sessions vocals — touchdown 18:30', bg: PIC('story-maya-plane',900,1600), time: '1h ago' }
+            ]},
+            { name: 'DJ Frostbite',     avatar: PIC('dj-frostbite-avatar',200,200), live: true,  items: [
+                { title: 'Set prep · Skive Festival', body: 'New unreleased opener tonight', bg: PIC('story-frostbite-decks',900,1600), time: 'LIVE' }
+            ]},
+            { name: 'Liva Mai',         avatar: PIC('liva-mai-avatar',200,200), live: false, items: [
+                { title: 'Choreography rehearsal', body: '@CamillaStep showing me the bridge transition', bg: PIC('story-liva-rehearsal',900,1600), time: '2h ago' },
+                { title: 'Takeaway', body: 'Three coffees in. We got it on the 8th try.', bg: PIC('story-liva-coffee',900,1600), time: '1h ago' }
+            ]},
+            { name: 'Sara Holm',        avatar: PIC('sara-holm-avatar',200,200), live: false, items: [
+                { title: 'Podcast recording', body: 'S2E12 with Anders Vlog — tomorrow at 14:00', bg: PIC('story-sara-podcast',900,1600), time: '4h ago' }
+            ]},
+            { name: 'Tobias Krogh',     avatar: PIC('tobias-krogh-avatar',200,200), live: false, items: [
+                { title: 'New tab posted', body: 'Guitar tab for "Jokes On Me" intro is up', bg: PIC('story-tobias-guitar',900,1600), time: '6h ago' }
+            ]},
+            { name: 'Camilla Step',     avatar: PIC('camilla-step-avatar',200,200), live: false, items: [
+                { title: 'Dance class', body: 'Drop-in on Saturday at Aalborg studio', bg: PIC('story-camilla-class',900,1600), time: '8h ago' }
+            ]}
+        ];
+
+        // Track seen state in localStorage so circles dim after viewing
+        let seen = {};
+        try { seen = JSON.parse(localStorage.getItem('stagecord_stories_seen') || '{}'); }
+        catch (e) { seen = {}; }
+
+        const track = document.getElementById('storiesTrack');
+        if (!track) return;
+
+        function buildRibbon() {
+            track.innerHTML = STORIES.map(function(s, idx) {
+                const isSeen = !s.live && !!seen[s.name];
+                const cls = ['story-bubble'];
+                if (s.live) cls.push('story-bubble--live');
+                else if (isSeen) cls.push('story-bubble--seen');
+                return '<button type="button" class="' + cls.join(' ') + '" data-story-index="' + idx + '">' +
+                    '<span class="story-bubble__ring"><span class="story-bubble__avatar" style="background:' + s.avatar + '"></span></span>' +
+                    '<span class="story-bubble__name">' + s.name.split(' ')[0] + '</span>' +
+                '</button>';
+            }).join('');
+        }
+        buildRibbon();
+
+        // Viewer logic
+        const viewer       = document.getElementById('storyViewer');
+        const stage        = document.getElementById('storyStage');
+        const progressBar  = document.getElementById('storyProgress');
+        const headerAvatar = document.getElementById('storyHeaderAvatar');
+        const headerName   = document.getElementById('storyHeaderName');
+        const headerTime   = document.getElementById('storyHeaderTime');
+        const captionTitle = document.getElementById('storyCaptionTitle');
+        const captionBody  = document.getElementById('storyCaptionBody');
+        const closeBtn     = document.getElementById('storyClose');
+        const prevBtn      = document.getElementById('storyPrev');
+        const nextBtn      = document.getElementById('storyNext');
+
+        let currentArtist = null;
+        let currentItemIdx = 0;
+        let advanceTimer = null;
+
+        function showItem() {
+            if (!currentArtist) return;
+            const item = currentArtist.items[currentItemIdx];
+            if (!item) return;
+            stage.style.background = '#000 ' + item.bg;
+            stage.style.backgroundSize = 'cover';
+            stage.style.backgroundPosition = 'center';
+            captionTitle.textContent = item.title;
+            captionBody.textContent  = item.body;
+            headerAvatar.style.background = currentArtist.avatar;
+            headerName.textContent  = currentArtist.name;
+            headerTime.textContent  = item.time;
+            // Build progress bars
+            progressBar.innerHTML = currentArtist.items.map(function(_, i) {
+                let cls = 'story-viewer__bar';
+                if (i < currentItemIdx)   cls += ' is-complete';
+                if (i === currentItemIdx) cls += ' is-active';
+                return '<div class="' + cls + '"><div class="story-viewer__bar-fill"></div></div>';
+            }).join('');
+            // Auto-advance after 5s
+            clearTimeout(advanceTimer);
+            advanceTimer = setTimeout(advanceStory, 5200);
+        }
+
+        function advanceStory() {
+            if (!currentArtist) return;
+            if (currentItemIdx + 1 < currentArtist.items.length) {
+                currentItemIdx += 1;
+                showItem();
+            } else {
+                // Move to next artist's stories, or close if last
+                const idx = STORIES.indexOf(currentArtist);
+                if (idx + 1 < STORIES.length) {
+                    openArtist(idx + 1);
+                } else {
+                    closeViewer();
+                }
+            }
+        }
+
+        function rewindStory() {
+            if (!currentArtist) return;
+            if (currentItemIdx > 0) {
+                currentItemIdx -= 1;
+                showItem();
+            } else {
+                const idx = STORIES.indexOf(currentArtist);
+                if (idx > 0) openArtist(idx - 1, /*last*/ true);
+            }
+        }
+
+        function openArtist(artistIdx, startAtLast) {
+            currentArtist = STORIES[artistIdx];
+            if (!currentArtist) return;
+            currentItemIdx = startAtLast ? currentArtist.items.length - 1 : 0;
+            // Mark seen (for non-live)
+            if (!currentArtist.live) {
+                seen[currentArtist.name] = true;
+                try { localStorage.setItem('stagecord_stories_seen', JSON.stringify(seen)); }
+                catch (e) {}
+                buildRibbon();
+            }
+            viewer.classList.add('is-open');
+            viewer.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+            showItem();
+        }
+
+        function closeViewer() {
+            clearTimeout(advanceTimer);
+            advanceTimer = null;
+            viewer.classList.remove('is-open');
+            viewer.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+            currentArtist = null;
+        }
+
+        // Wire up clicks
+        track.addEventListener('click', function(e) {
+            const btn = e.target.closest('[data-story-index]');
+            if (!btn) return;
+            const idx = parseInt(btn.dataset.storyIndex, 10);
+            openArtist(idx);
+        });
+
+        closeBtn.addEventListener('click', closeViewer);
+        nextBtn.addEventListener('click', advanceStory);
+        prevBtn.addEventListener('click', rewindStory);
+
+        document.addEventListener('keydown', function(e) {
+            if (!viewer.classList.contains('is-open')) return;
+            if (e.key === 'Escape')      closeViewer();
+            else if (e.key === 'ArrowRight') advanceStory();
+            else if (e.key === 'ArrowLeft')  rewindStory();
+        });
+    })();
+    </script>
+</body>
+</html>

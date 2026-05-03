@@ -1,0 +1,326 @@
+/* Import Outfit Font */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&display=swap');
+
+/* Sidebar Container — sits above modal overlays so navigation stays visible. */
+.sidebar {
+    position: fixed;
+    width: 126px;
+    height: 1024px;
+    left: 0px;
+    top: 0px;
+    background: #000000;
+    overflow-y: auto;
+    z-index: 10001;
+}
+
+/* Profile Section */
+.sidebar-profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 29px;
+}
+
+.profile-image {
+    width: 82px;
+    height: 82px;
+    border-radius: 549px;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+.profile-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* The "placeholder" class historically rendered a camera-icon stand-in;
+   now that Julie (the logged-in demo user) has a profile photo, we paint
+   her avatar in via background and hide the camera SVG. */
+.profile-image--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: url('../assets/images/artists/placeholder-female-6.png') center/cover, #4A90E2;
+    border: 1px solid #FFFFFF;
+    cursor: pointer;
+    transition: filter 0.2s ease;
+}
+
+.profile-image--placeholder:hover {
+    filter: brightness(1.08);
+}
+
+.profile-camera {
+    display: none;
+}
+
+.profile-name {
+    display: block;
+    width: 119px;
+    margin-top: 9px;
+    font-family: 'Outfit', sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 18px;
+    text-align: center;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+}
+
+.profile-name:hover {
+    opacity: 0.8;
+}
+
+/* Always render the logged-in user's name on two lines:
+   first name (bold) on line 1, remaining names (regular) on line 2. */
+.profile-name .name-bold,
+.profile-name .name-light {
+    display: block;
+}
+
+/* Create button — always-visible CTA between profile and nav.
+   Opens the new-post modal (text / photos / live video). */
+.sidebar-create {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: calc(100% - 24px);
+    margin: 24px 12px 0;
+    padding: 11px 14px;
+    background: #FFFFFF;
+    color: #000000;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.sidebar-create:hover {
+    background: #E6E6E6;
+    transform: translateY(-1px);
+}
+
+.sidebar-create:active { transform: translateY(0); }
+
+.sidebar-create__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar-create__icon svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Navigation Menu */
+.sidebar-nav {
+    margin-top: 24px;
+}
+
+.nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-item {
+    margin-bottom: 20px;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding-left: 20px;
+    text-decoration: none;
+    color: #FFFFFF;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    opacity: 0.8;
+}
+
+.nav-icon {
+    /* Width/height come from the inline SVG attributes so each icon keeps its intended size. */
+    color: #FFFFFF;
+    flex-shrink: 0;
+}
+
+.nav-text {
+    margin-left: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+    color: #FFFFFF;
+}
+
+/* Active State */
+.nav-item.active .nav-text {
+    font-weight: 900;
+}
+
+/* Scrollbar Styling */
+.sidebar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: #000000;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: #333333;
+    border-radius: 2px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: #555555;
+}
+
+/* Responsive Adjustments */
+@media screen and (max-height: 1024px) {
+    .sidebar {
+        height: 100vh;
+    }
+}
+
+/* ============================================================
+   User mode switcher — temporary prototyping tool injected
+   by app.js into the bottom of every sidebar.
+   ============================================================ */
+.sidebar-mode {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 12px 12px 14px;
+    background: linear-gradient(0deg, #000 0%, rgba(0, 0, 0, 0.94) 75%, rgba(0, 0, 0, 0) 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-mode__label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.45);
+    margin: 0 0 6px;
+    padding-left: 2px;
+}
+
+.sidebar-mode__current {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.08);
+    color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    text-align: left;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.sidebar-mode__current:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.sidebar-mode__name {
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sidebar-mode__chevron {
+    font-size: 11px;
+    line-height: 1;
+    opacity: 0.7;
+}
+
+.sidebar-mode__menu {
+    position: absolute;
+    bottom: calc(100% - 6px);
+    left: 12px;
+    right: 12px;
+    background: #1a1a1a;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 8px;
+    padding: 4px;
+    margin: 0;
+    list-style: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    z-index: 10002;
+}
+
+.sidebar-mode__menu[hidden] { display: none; }
+
+.sidebar-mode__menu li { display: block; }
+
+.sidebar-mode__menu button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    width: 100%;
+    background: none;
+    border: none;
+    color: #FFFFFF;
+    text-align: left;
+    padding: 7px 9px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.12s ease;
+}
+
+.sidebar-mode__menu button:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-mode__menu button.is-active {
+    background: rgba(67, 196, 122, 0.18);
+    color: #43C47A;
+    font-weight: 600;
+}
+
+.sidebar-mode__stub {
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.08);
+    padding: 1px 5px;
+    border-radius: 3px;
+}
+
+/* When the mode switcher is present, give the nav-list breathing room
+   above it so its last item isn't covered. */
+.sidebar:has(.sidebar-mode) .sidebar-nav { padding-bottom: 90px; }

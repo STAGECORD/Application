@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAGECORD - Profile</title>
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/logo.css">
+    <link rel="stylesheet" href="../css/topbar.css">
+    <link rel="stylesheet" href="../css/artist.css">
+    <link rel="stylesheet" href="../css/pitch-modals.css">
+    <link rel="stylesheet" href="../css/qr-befriend.css">
+    <link rel="stylesheet" href="../css/fan.css">
+</head>
+<body>
+    <!-- Left Sidebar Navigation -->
+    <aside class="sidebar" data-sidebar></aside>
+
+    <!-- Top Bar -->
+    <header class="topbar">
+        <!-- Logo (left) -->
+        <div class="logo-container" data-help="STAGECORD PRO-logoet. Klik for at vende tilbage til forsiden uanset hvor du er i platformen.">
+            <a href="../index.html" class="logo-link">
+                <h1 class="logo">
+                    <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
+                </h1>
+            </a>
+        </div>
+
+        <!-- Search bar (middle) -->
+        <div class="search-bar" data-help="Søgebar: Find artister, koncerter, spillesteder, venner og alt andet på platformen. Skriv mindst 2 tegn for at se forslag.">
+            <input
+                type="text"
+                class="search-input"
+                placeholder="Search Artists, Concerts, Venues, Friends and much more"
+                aria-label="Search"
+            />
+            <svg class="search-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/>
+                <path d="M18 18L24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </div>
+
+        <!-- Help button (right) -->
+        <button type="button" class="help-button" aria-label="Help" aria-pressed="false" data-help="Hjælpeknap: Klik for at aktivere hjælpetilstand. Derefter kan du klikke på et vilkårligt element for at se en forklaring. Tryk Esc eller klik ? igen for at slukke.">
+            <span class="help-mark">?</span>
+        </button>
+    </header>
+
+    <!-- Main Content Area -->
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <!-- ============ Cover banner with avatar + name + stats ============ -->
+            <section class="fan-cover" data-help="Cover-billede til din profil. Klik på 'Edit cover' for at uploade dit eget banner.">
+                <div class="fan-cover__top-actions">
+                    <button type="button" class="fan-cover__friend-btn" aria-pressed="false" data-help="Send venskabs-anmodning til denne profil. Når brugeren accepterer, bliver I venner og kan se hinandens venne-aktivitet.">
+                        <span class="fan-cover__friend-icon">+</span>
+                        <span class="fan-cover__friend-label">Add friend</span>
+                    </button>
+                    <button type="button" class="qr-trigger" data-qr-trigger data-qr-name="Julie Andersen" data-qr-handle="@julieandersen" data-help="QR-befriend: Vis et QR-kode din ven kan scanne med deres telefon for hurtigt at sende venneanmodning. Klik også for at scanne en QR fra en andens profil — så du kan tilføje folk uden at skrive deres brugernavn." aria-label="Show friend-add QR code">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M3 3h6v6H3zM15 3h6v6h-6zM3 15h6v6H3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M15 15h2v2h-2zM19 15h2v2h-2zM15 19h2v2h-2zM19 19h2v2h-2z" fill="currentColor"/></svg>
+                    </button>
+                    <button type="button" class="fan-cover__edit" data-help="Skift cover-billede.">Edit cover</button>
+                </div>
+                <div class="fan-cover__avatar" style="background: url('../assets/images/artists/julie-andersen-profile.png') center/cover" data-help="Profilbillede — klik for at uploade et nyt."></div>
+
+                <div class="fan-cover__identity" data-help="Dit navn vist hen over coveret.">
+                    <h1 class="fan-cover__name auto-name">Julie Andersen</h1>
+                </div>
+
+                <div class="fan-cover__stats" data-help="Dine sociale stats — opdateres automatisk efterhånden som du tilføjer venner, går til koncerter og laver opslag.">
+                    <div class="fan-stat"><span class="fan-stat__value">52,847</span><span class="fan-stat__label">Followers</span></div>
+                    <button type="button" class="fan-stat fan-stat--clickable" data-stat-modal="friends" data-help="Klik for at se Julies fulde venneliste — synligt fordi hun har slået 'Show friends list' til i sine privacy-indstillinger."><span class="fan-stat__value">532</span><span class="fan-stat__label">Friends</span></button>
+                    <button type="button" class="fan-stat fan-stat--clickable" data-stat-modal="concerts" data-help="Klik for at se de koncerter Julie har deltaget i — synligt fordi hun har slået 'Show past concerts' til."><span class="fan-stat__value">47</span><span class="fan-stat__label">Concerts</span></button>
+                    <button type="button" class="fan-stat fan-stat--clickable" data-stat-modal="following" data-help="Klik for at se hvem Julie følger — synligt fordi hun har slået 'Show who I follow' til."><span class="fan-stat__value">89</span><span class="fan-stat__label">Following</span></button>
+                </div>
+            </section>
+
+            <!-- ============ Profile header (bio + edit button) ============ -->
+            <section class="fan-header" data-help="Din personlige profil — vises til dine venner med dit billede, navn og aktivitet på platformen.">
+                <div class="fan-header__main">
+                    <p class="fan-header__bio">Music lover from Brooklyn. Live shows are my therapy. Always hunting for the next great gig.</p>
+                </div>
+
+                <button type="button" class="fan-header__edit" data-help="Rediger din profil — navn, brugernavn, bio, billede og indstillinger.">Edit profile</button>
+            </section>
+
+            <!-- ============ Creator milestone banner (shown when followers > 50K) ============ -->
+            <section class="fan-milestone" data-help="Du er nu over 50.000 followers — det betyder at du har låst op for muligheden for at oprette en artist-profil og overføre alle dine 52.847 followers med over. Tilbuddet gælder kun via dette milestone-flow — hvis du i stedet opretter en artist-profil fra bunden i indstillingerne, starter den med 0 followers.">
+                <div class="fan-milestone__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l2.5 6.5L21 9.5l-5 4.5 1.5 7-5.5-3.5L6.5 21l1.5-7-5-4.5 6.5-1L12 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="fan-milestone__main">
+                    <div class="fan-milestone__eyebrow">Milestone unlocked · 50,000 followers</div>
+                    <h2 class="fan-milestone__title">Ready to launch an artist profile?</h2>
+                    <p class="fan-milestone__desc">You've crossed 50,000 followers — you can now upgrade and bring all <strong>52,847 followers</strong> with you to a new artist profile. This transfer is only available through the milestone path; an artist profile created from scratch in settings starts at zero.</p>
+                </div>
+                <div class="fan-milestone__actions">
+                    <button type="button" class="fan-milestone__btn fan-milestone__btn--primary">Create artist profile</button>
+                    <button type="button" class="fan-milestone__btn">Maybe later</button>
+                </div>
+            </section>
+
+            <!-- ============ Wall — your own posts on your profile ============ -->
+            <section class="fan-section" data-help="Wall: Dine egne opslag på din profil — distinkt fra det generelle feed (Explore). Wall'en vises kun når andre besøger din profil. Bruges til personlige milestones, koncert-fotos, gear-anmeldelser og fan-only updates.">
+                <header class="fan-section__header">
+                    <h2 class="fan-section__title">Wall</h2>
+                    <a href="#" class="fan-section__view-all">All posts →</a>
+                </header>
+                <div class="fan-wall">
+                    <article class="fan-wall__post" data-help="Wall-post fra 2 dage siden — om VEGA-koncerten med Jokesmith Johnson. Wall-posts er din egen indholdsstrøm, der vises på din profil for venner og followers.">
+                        <header class="fan-wall__head">
+                            <span class="fan-wall__tag">Wall · 2d ago</span>
+                            <span class="fan-wall__engagement">22 vibes · 4 comments</span>
+                        </header>
+                        <p class="fan-wall__text">Sidste nat på VEGA — Jokesmith leverede et legendarisk set. Encore-koreografien gik perfekt op. Hvor mange vidste i forvejen at hans tour-sætning er en ægte komiker?? 🎤💃</p>
+                        <div class="fan-wall__image" style="background-image:url('../assets/images/artists/mellow-event.jpg');"></div>
+                    </article>
+
+                    <article class="fan-wall__post" data-help="Wall-post fra 1 uge siden — om en ny entourage 'Brooklyn Crew'. Wall-posts kan være tekst, billeder, eller links til events.">
+                        <header class="fan-wall__head">
+                            <span class="fan-wall__tag">Wall · 1w ago</span>
+                            <span class="fan-wall__engagement">8 vibes · 1 comment</span>
+                        </header>
+                        <p class="fan-wall__text">Lavet en ny entourage <strong>Brooklyn Crew</strong> til de næste 4 koncerter. Fire pladser tilbage hvis nogen gider tag-along. Group-buying via STAGECORD så vi sidder samlet 🎟</p>
+                    </article>
+
+                    <article class="fan-wall__post" data-help="Wall-post fra 2 uger siden. Wall-posts adskiller sig fra Explore-feed ved at være kuraterede til din profil — det er din 'hjemmeside' på platformen.">
+                        <header class="fan-wall__head">
+                            <span class="fan-wall__tag">Wall · 2w ago</span>
+                            <span class="fan-wall__engagement">14 vibes · 6 comments</span>
+                        </header>
+                        <p class="fan-wall__text">Min playlist <em>"Friday Coffee Loops"</em> ramte 1.000 lyttere i denne uge — tak til alle der har delt 🙏 Vibing til Anchi Humifuku's nye remix lige nu.</p>
+                    </article>
+                </div>
+            </section>
+
+            <!-- ============ My upcoming tickets ============ -->
+            <section class="fan-section" data-help="De koncerter og events du har købt billet til. Klik for at se billetten med QR-kode.">
+                <header class="fan-section__header">
+                    <h2 class="fan-section__title">My upcoming tickets</h2>
+                    <a href="#" class="fan-section__view-all">View all →</a>
+                </header>
+                <div class="fan-tickets__row">
+                    <article class="fan-ticket">
+                        <div class="fan-ticket__date">Sat, 9 Nov · 19:30</div>
+                        <div class="fan-ticket__artist">Jokesmith Johnson</div>
+                        <div class="fan-ticket__venue">Hammerstein Ballroom, NYC</div>
+                        <div class="fan-ticket__qr"></div>
+                        <div class="fan-ticket__type">Concert ticket · Seat A14</div>
+                    </article>
+                    <article class="fan-ticket">
+                        <div class="fan-ticket__date">Sat, 23 Nov · 20:00</div>
+                        <div class="fan-ticket__artist">Jokesmith Johnson</div>
+                        <div class="fan-ticket__venue">Royal Albert Hall, London</div>
+                        <div class="fan-ticket__qr"></div>
+                        <div class="fan-ticket__type">Concert ticket · Box 4</div>
+                    </article>
+                    <article class="fan-ticket">
+                        <div class="fan-ticket__date">Wed, 6 Nov · 21:30</div>
+                        <div class="fan-ticket__artist">Jokesmith Johnson</div>
+                        <div class="fan-ticket__venue">Comedy Cellar, Brooklyn</div>
+                        <div class="fan-ticket__qr"></div>
+                        <div class="fan-ticket__type">Online viewer access</div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- ============ My entourages ============ -->
+            <section class="fan-section" data-help="De entourage-grupper du er medlem af — gruppe-køb af billetter går igennem en af disse.">
+                <header class="fan-section__header">
+                    <h2 class="fan-section__title">My entourages</h2>
+                    <a href="#" class="fan-section__view-all">Manage →</a>
+                </header>
+                <div class="fan-entourages__row">
+                    <article class="fan-entourage">
+                        <div class="fan-entourage__name">Brooklyn Crew</div>
+                        <div class="fan-entourage__count">4 members · Group buying enabled</div>
+                        <div class="fan-entourage__avatars">
+                            <span style="background: url('../assets/images/artists/placeholder-female-4.png') center/cover;"></span>
+                            <span style="background: url('../assets/images/artists/placeholder-male-5.png') center/cover;"></span>
+                            <span style="background: url('../assets/images/artists/placeholder-female-6.png') center/cover;"></span>
+                            <span style="background: url('../assets/images/artists/placeholder-female-4.png') center/cover;"></span>
+                        </div>
+                    </article>
+                    <article class="fan-entourage">
+                        <div class="fan-entourage__name">Comedy Connoisseurs</div>
+                        <div class="fan-entourage__count">6 members · Group buying enabled</div>
+                        <div class="fan-entourage__avatars">
+                            <span style="background: url('../assets/images/artists/placeholder-male-2.png') center/cover;"></span>
+                            <span style="background: url('../assets/images/artists/placeholder-female-2.png') center/cover;"></span>
+                            <span style="background: url('../assets/images/artists/placeholder-female-4.png') center/cover;"></span>
+                            <span style="background: url('../assets/images/artists/placeholder-female-2.png') center/cover;"></span>
+                        </div>
+                    </article>
+                    <article class="fan-entourage">
+                        <div class="fan-entourage__name">Studio Squad</div>
+                        <div class="fan-entourage__count">3 members · Group buying enabled</div>
+                        <div class="fan-entourage__avatars">
+                            <span style="background: url('../assets/images/artists/placeholder-male-3.png') center/cover;"></span>
+                            <span style="background: url('../assets/images/artists/placeholder-male-7.png') center/cover;"></span>
+                            <span style="background: url('../assets/images/artists/placeholder-female-2.png') center/cover;"></span>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- ============ Friends ============ -->
+            <section class="fan-section" data-help="Dine venner på platformen — klik på en for at besøge deres profil.">
+                <header class="fan-section__header">
+                    <h2 class="fan-section__title">Friends</h2>
+                    <a href="#" class="fan-section__view-all">See all 532 →</a>
+                </header>
+                <div class="fan-friends">
+                    <a class="fan-friend" href="#"><span class="fan-friend__avatar" style="background: url('../assets/images/artists/placeholder-female-5.png') center/cover;"></span><span class="fan-friend__name auto-name">Line Rasmussen</span></a>
+                    <a class="fan-friend" href="#"><span class="fan-friend__avatar" style="background: url('../assets/images/artists/placeholder-male-5.png') center/cover;"></span><span class="fan-friend__name auto-name">Matt Samuel</span></a>
+                    <a class="fan-friend" href="#"><span class="fan-friend__avatar" style="background: url('../assets/images/artists/placeholder-male-3.png') center/cover;"></span><span class="fan-friend__name auto-name">Joakim Nielsen</span></a>
+                    <a class="fan-friend" href="#"><span class="fan-friend__avatar" style="background: url('../assets/images/artists/placeholder-female-5.png') center/cover;"></span><span class="fan-friend__name auto-name">Tara Park</span></a>
+                    <a class="fan-friend" href="#"><span class="fan-friend__avatar" style="background: url('../assets/images/artists/placeholder-male-1.png') center/cover;"></span><span class="fan-friend__name auto-name">Mike Shritslerz</span></a>
+                    <a class="fan-friend" href="#"><span class="fan-friend__avatar" style="background: url('../assets/images/artists/placeholder-female-6.png') center/cover;"></span><span class="fan-friend__name auto-name">Anchi Humifuku</span></a>
+                    <a class="fan-friend" href="#"><span class="fan-friend__avatar" style="background: url('../assets/images/artists/placeholder-female-6.png') center/cover;"></span><span class="fan-friend__name auto-name">Maya Thompson</span></a>
+                    <a class="fan-friend" href="#"><span class="fan-friend__avatar" style="background: url('../assets/images/artists/placeholder-male-6.png') center/cover;"></span><span class="fan-friend__name auto-name">Winston Sinclair</span></a>
+                    <a class="fan-friend" href="#"><span class="fan-friend__avatar" style="background: url('../assets/images/artists/placeholder-male-4.png') center/cover;"></span><span class="fan-friend__name auto-name">Malik Johnson</span></a>
+                    <a class="fan-friend" href="#"><span class="fan-friend__avatar" style="background: url('../assets/images/artists/placeholder-female-5.png') center/cover;"></span><span class="fan-friend__name auto-name">Sophie Brown</span></a>
+                </div>
+            </section>
+
+            <!-- ============ Photo album ============ -->
+            <section class="fan-section" data-help="Dine egne billeder — fra koncerter, festivaler og hverdagen. Klik for at åbne hele galleriet.">
+                <header class="fan-section__header">
+                    <h2 class="fan-section__title"><a href="../photos/index.html" style="color:inherit;text-decoration:none;">Photo album</a></h2>
+                    <a href="../photos/index.html" class="fan-section__view-all">View all →</a>
+                </header>
+                <div class="fan-photos__row">
+                    <a class="fan-photo-tile" href="../photos/index.html" style="background: url('../assets/images/artists/placeholder-male-3.png') center/cover;"></a>
+                    <a class="fan-photo-tile" href="../photos/index.html" style="background: url('../assets/images/artists/placeholder-male-1.png') center/cover;"></a>
+                    <a class="fan-photo-tile" href="../photos/index.html" style="background: url('../assets/images/artists/placeholder-male-2.png') center/cover;"></a>
+                    <a class="fan-photo-tile" href="../photos/index.html" style="background: url('../assets/images/artists/placeholder-male-3.png') center/cover;"></a>
+                    <a class="fan-photo-tile" href="../photos/index.html" style="background: url('../assets/images/artists/placeholder-female-4.png') center/cover;"></a>
+                    <a class="fan-photo-tile" href="../photos/index.html" style="background: url('../assets/images/artists/placeholder-female-4.png') center/cover;"></a>
+                    <a class="fan-photo-tile" href="../photos/index.html" style="background: url('../assets/images/artists/placeholder-male-2.png') center/cover;"></a>
+                </div>
+            </section>
+
+            <!-- ============ Posts feed ============ -->
+            <section class="artist-feed" data-help="Posts: Dine egne opslag fra koncerter, dansevideoer og hverdagen. Folder ud når du klikker på teksten — klik 'Comments' for at se diskussionen.">
+
+                <header class="artist-feed__header">
+                    <h2 class="artist-feed__heading">Posts</h2>
+                </header>
+
+                <article class="artist-post" data-post-id="fan-post-1">
+                    <header class="artist-post__meta">
+                        <span class="artist-post__date">2024.08.14</span>
+                        <span class="artist-post__separator">—</span>
+                        <span class="artist-post__author auto-name">Julie Andersen</span>
+                        <span class="artist-post__context">(VEGA, Copenhagen)</span>
+                    </header>
+
+                    <div class="artist-post__body">
+                        <div class="artist-post__image" style="background: url('../assets/images/artists/jokesmith-johnson-post-3.png') center/cover;"></div>
+                        <div class="artist-post__main">
+                            <p class="artist-post__text" title="Click to expand">Last night at the #JokesOnMeTour was UNREAL!! 🎤🔥 We were down in the front row screaming every punchline back at @JokesmithJohnson and he straight up pulled me up on stage for the encore choreography. I have been working on those steps in my bedroom for like a month and somehow my legs didn't fail me. Posted the full clip to my page — already at 84K views and climbing. @AnchiHumifuku came out for the closer and the crowd lost it. To everyone who came up to me after the show: yes, I'm doing the #DanceChallenge officially this weekend, stay tuned. Thank you to the whole #STAGECORD crew for setting this up — and shoutout to @LineRasmussen, @MattSamuel and @JoakimNielsen for being the most chaotic concert buddies ever 💃🪩 #VEGA #livemusic</p>
+                        </div>
+                    </div>
+
+                    <div class="artist-post__footer">
+                        <span class="artist-post__friends"><strong>The following friends attended:</strong> Line Rasmussen, Matt Samuel, Joakim Nielsen… +4 Others</span>
+                        <div class="artist-post__stats">
+                            <button type="button" class="artist-post__like" aria-pressed="false">
+                                <span class="artist-post__like-icon">♥</span>
+                                <span class="artist-post__like-count">3,127</span>
+                            </button>
+                            <span class="artist-post__reactions">
+                                <span>🔥</span><span>💃</span><span>🎤</span>
+                                <span class="artist-post__reactions-count">+612</span>
+                            </span>
+                            <button type="button" class="artist-post__comments-toggle" aria-expanded="false">Comments +89</button>
+                        </div>
+                    </div>
+
+                    <div class="artist-post__comments" hidden>
+                        <h3 class="artist-post__comments-title">Latest comments</h3>
+                        <ul class="artist-post__comment-list">
+                            <li class="artist-comment">
+                                <div class="artist-comment__avatar" style="background: url('../assets/images/artists/placeholder-female-2.png') center/cover;"></div>
+                                <div class="artist-comment__main">
+                                    <div class="artist-comment__body"><strong>Line Rasmussen:</strong> Best night ever. Still recovering 😭 those choreography steps were CLEAN!</div>
+                                    <div class="artist-comment__actions">
+                                        <button type="button" class="artist-comment__like" aria-pressed="false"><span class="heart">♥</span><span class="count">142</span></button>
+                                        <button type="button" class="artist-comment__reply">Reply</button>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="artist-comment">
+                                <div class="artist-comment__avatar" style="background: url('../assets/images/artists/jokesmith-johnson-cover.png') center/cover;"></div>
+                                <div class="artist-comment__main">
+                                    <div class="artist-comment__body"><strong>JokesmithJohnson:</strong> You stole the show, Julie. Officially adding you to the encore lineup for the rest of the tour 👏</div>
+                                    <div class="artist-comment__actions">
+                                        <button type="button" class="artist-comment__like" aria-pressed="false"><span class="heart">♥</span><span class="count">2.8K</span></button>
+                                        <span class="artist-comment__reaction">🔥 1.2K</span>
+                                        <button type="button" class="artist-comment__reply">Reply</button>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="artist-comment">
+                                <div class="artist-comment__avatar" style="background: url('../assets/images/artists/placeholder-female-4.png') center/cover;"></div>
+                                <div class="artist-comment__main">
+                                    <div class="artist-comment__body"><strong>Matt Samuel:</strong> Filmed the whole thing on my phone, sending you the raw clip later 🎥</div>
+                                    <div class="artist-comment__actions">
+                                        <button type="button" class="artist-comment__like" aria-pressed="false"><span class="heart">♥</span><span class="count">73</span></button>
+                                        <button type="button" class="artist-comment__reply">Reply</button>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </article>
+
+                <article class="artist-post" data-post-id="fan-post-2">
+                    <header class="artist-post__meta">
+                        <span class="artist-post__date">2024.07.01</span>
+                        <span class="artist-post__separator">—</span>
+                        <span class="artist-post__author auto-name">Julie Andersen</span>
+                        <span class="artist-post__context">(Roskilde Festival)</span>
+                    </header>
+
+                    <div class="artist-post__body">
+                        <div class="artist-post__image" style="background: url('../assets/images/artists/jonathan-roy-event.png') center/cover;"></div>
+                        <div class="artist-post__main">
+                            <p class="artist-post__text" title="Click to expand">8 days. 47 hours of sleep. Probably 200 km of walking. #Roskilde2024 is officially in the books and I am EXHAUSTED in the best way 🎪✨ Highlights: @AnchiHumifuku closing Orange Stage on Sunday (chills), discovering @LarsVognsen at Pavilion Junior at 2am, the secret dance circle that formed by Camping South every night around 3am, and the warmest meet-and-greet I've ever had with @MayaThompson. Lowlights: rain on Wednesday, lost my favorite scrunchie, and somehow ended up wearing the same outfit for 36 hours but we don't talk about that. Already counting down to #Roskilde2025. To my #festivalfam: you are everything. To the new friends I made in line for tacos: hi, hello, follow me here. 🧡</p>
+                        </div>
+                    </div>
+
+                    <div class="artist-post__footer">
+                        <span class="artist-post__friends"><strong>The following friends attended:</strong> Tara Park, Mike Shritslerz, Sophie Brown… +12 Others</span>
+                        <div class="artist-post__stats">
+                            <button type="button" class="artist-post__like" aria-pressed="false">
+                                <span class="artist-post__like-icon">♥</span>
+                                <span class="artist-post__like-count">1,894</span>
+                            </button>
+                            <span class="artist-post__reactions">
+                                <span>🧡</span><span>🎪</span><span>✨</span>
+                                <span class="artist-post__reactions-count">+341</span>
+                            </span>
+                            <button type="button" class="artist-post__comments-toggle" aria-expanded="false">Comments +52</button>
+                        </div>
+                    </div>
+
+                    <div class="artist-post__comments" hidden>
+                        <h3 class="artist-post__comments-title">Latest comments</h3>
+                        <ul class="artist-post__comment-list">
+                            <li class="artist-comment">
+                                <div class="artist-comment__avatar" style="background: url('../assets/images/artists/placeholder-male-1.png') center/cover;"></div>
+                                <div class="artist-comment__main">
+                                    <div class="artist-comment__body"><strong>Tara Park:</strong> The dance circle by Camping South was a SPIRITUAL EXPERIENCE 🪩 already planning the choreography for next year</div>
+                                    <div class="artist-comment__actions">
+                                        <button type="button" class="artist-comment__like" aria-pressed="false"><span class="heart">♥</span><span class="count">68</span></button>
+                                        <button type="button" class="artist-comment__reply">Reply</button>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="artist-comment">
+                                <div class="artist-comment__avatar" style="background: url('../assets/images/artists/placeholder-female-2.png') center/cover;"></div>
+                                <div class="artist-comment__main">
+                                    <div class="artist-comment__body"><strong>Maya Thompson:</strong> So good meeting you, Julie 🧡 your energy is the best part of these festivals.</div>
+                                    <div class="artist-comment__actions">
+                                        <button type="button" class="artist-comment__like" aria-pressed="false"><span class="heart">♥</span><span class="count">421</span></button>
+                                        <button type="button" class="artist-comment__reply">Reply</button>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </article>
+
+                <article class="artist-post" data-post-id="fan-post-3">
+                    <header class="artist-post__meta">
+                        <span class="artist-post__date">2024.06.05</span>
+                        <span class="artist-post__separator">—</span>
+                        <span class="artist-post__author auto-name">Julie Andersen</span>
+                        <span class="artist-post__context">(BTS)</span>
+                    </header>
+
+                    <div class="artist-post__body">
+                        <div class="artist-post__image" style="background: url('../assets/images/artists/mellow-event.jpg') center/cover;"></div>
+                        <div class="artist-post__main">
+                            <p class="artist-post__text" title="Click to expand">Quick #BTS from yesterday's choreography session 💪 working with @CamillaStep on a new routine for the upcoming @JokesmithJohnson #DanceChallenge — we tried like 14 different versions of the chorus before we landed on something that actually felt right. The thing about choreography is that you can't rush it; the song tells you what it wants once you stop fighting it. Anyway, the final cut drops Friday and I'm legitimately nervous for once. Thank you to everyone who voted on the snippets I posted last week — your feedback shapes literally everything I make. #choreography #danceforever</p>
+
+                            <div class="post-poll" data-poll-id="poll-bts-chorus" data-help="Poll: Stem på et af tre valg. Resultaterne opdateres live; din stemme markeres med blå border, og de andres procenter justeres når du stemmer.">
+                                <header class="post-poll__header">
+                                    <span class="post-poll__label">Help me decide — final chorus drop</span>
+                                    <span class="post-poll__meta"><span data-poll-total>432</span> votes · closes in 2 days</span>
+                                </header>
+                                <ul class="post-poll__options">
+                                    <li class="post-poll__option" data-poll-option="1" data-votes="268">
+                                        <button type="button" class="post-poll__btn">
+                                            <span class="post-poll__bar" style="width: 62%"></span>
+                                            <span class="post-poll__text">Stick with the punchy drop ⚡</span>
+                                            <span class="post-poll__pct">62%</span>
+                                        </button>
+                                    </li>
+                                    <li class="post-poll__option" data-poll-option="2" data-votes="95">
+                                        <button type="button" class="post-poll__btn">
+                                            <span class="post-poll__bar" style="width: 22%"></span>
+                                            <span class="post-poll__text">Go full a cappella 🎤</span>
+                                            <span class="post-poll__pct">22%</span>
+                                        </button>
+                                    </li>
+                                    <li class="post-poll__option" data-poll-option="3" data-votes="69">
+                                        <button type="button" class="post-poll__btn">
+                                            <span class="post-poll__bar" style="width: 16%"></span>
+                                            <span class="post-poll__text">Add a chant call-and-response 📣</span>
+                                            <span class="post-poll__pct">16%</span>
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="artist-post__footer">
+                        <span class="artist-post__friends"><strong>Tagged:</strong> Camilla Step</span>
+                        <div class="artist-post__stats">
+                            <button type="button" class="artist-post__like" aria-pressed="false">
+                                <span class="artist-post__like-icon">♥</span>
+                                <span class="artist-post__like-count">724</span>
+                            </button>
+                            <span class="artist-post__reactions">
+                                <span>💃</span><span>👏</span>
+                                <span class="artist-post__reactions-count">+118</span>
+                            </span>
+                            <button type="button" class="artist-post__comments-toggle" aria-expanded="false">Comments +21</button>
+                        </div>
+                    </div>
+
+                    <div class="artist-post__comments" hidden>
+                        <h3 class="artist-post__comments-title">Latest comments</h3>
+                        <ul class="artist-post__comment-list">
+                            <li class="artist-comment">
+                                <div class="artist-comment__avatar" style="background: url('../assets/images/artists/placeholder-female-6.png') center/cover;"></div>
+                                <div class="artist-comment__main">
+                                    <div class="artist-comment__body"><strong>Camilla Step:</strong> 14 versions and I'm STILL singing the chorus in my sleep. Worth it. Friday is going to be huge 💃</div>
+                                    <div class="artist-comment__actions">
+                                        <button type="button" class="artist-comment__like" aria-pressed="false"><span class="heart">♥</span><span class="count">34</span></button>
+                                        <button type="button" class="artist-comment__reply">Reply</button>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </article>
+
+            </section>
+
+            <!-- ============ Account creation footer ============ -->
+            <footer class="fan-account-footer" data-help="Datoen hvor profilen blev oprettet på STAGECORD.">
+                Account created: 12 January 2018
+            </footer>
+
+        </div>
+    </main>
+
+    <!-- ===== Stat list modals (friends / concerts / following) ===== -->
+    <div class="stat-modal-overlay" id="friendsModal" data-stat-modal-overlay aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="stat-modal">
+            <header class="stat-modal__header">
+                <h2 class="stat-modal__title">Friends · 532</h2>
+                <button type="button" class="stat-modal__close" data-close-stat-modal aria-label="Close">&times;</button>
+            </header>
+            <div class="stat-modal__body">
+                <ul class="stat-modal__list">
+                    <li class="stat-modal__row"><a href="#"><span class="stat-modal__avatar" style="background: url('../assets/images/artists/placeholder-female-4.png') center/cover;"></span><span class="stat-modal__name auto-name">Line Rasmussen</span><span class="stat-modal__meta">Mutual friend · Aarhus</span></a></li>
+                    <li class="stat-modal__row"><a href="#"><span class="stat-modal__avatar" style="background: url('../assets/images/artists/placeholder-male-5.png') center/cover;"></span><span class="stat-modal__name auto-name">Matt Samuel</span><span class="stat-modal__meta">Friend · Copenhagen</span></a></li>
+                    <li class="stat-modal__row"><a href="#"><span class="stat-modal__avatar" style="background: url('../assets/images/artists/placeholder-female-6.png') center/cover;"></span><span class="stat-modal__name auto-name">Joakim Nielsen</span><span class="stat-modal__meta">Mutual friend · Brooklyn</span></a></li>
+                    <li class="stat-modal__row"><a href="#"><span class="stat-modal__avatar" style="background: url('../assets/images/artists/placeholder-male-7.png') center/cover;"></span><span class="stat-modal__name auto-name">Tara Park</span><span class="stat-modal__meta">Friend · NYC</span></a></li>
+                    <li class="stat-modal__row"><a href="#"><span class="stat-modal__avatar" style="background: url('../assets/images/artists/placeholder-male-6.png') center/cover;"></span><span class="stat-modal__name auto-name">Mike Shritslerz</span><span class="stat-modal__meta">Mutual friend · Roskilde</span></a></li>
+                    <li class="stat-modal__row"><a href="#"><span class="stat-modal__avatar" style="background: url('../assets/images/artists/placeholder-male-3.png') center/cover;"></span><span class="stat-modal__name auto-name">Anchi Humifuku</span><span class="stat-modal__meta">Friend · NYC</span></a></li>
+                    <li class="stat-modal__row"><a href="#"><span class="stat-modal__avatar" style="background: url('../assets/images/artists/placeholder-male-3.png') center/cover;"></span><span class="stat-modal__name auto-name">Maya Thompson</span><span class="stat-modal__meta">Friend · LA</span></a></li>
+                    <li class="stat-modal__row"><a href="#"><span class="stat-modal__avatar" style="background: url('../assets/images/artists/placeholder-female-4.png') center/cover;"></span><span class="stat-modal__name auto-name">Winston Sinclair</span><span class="stat-modal__meta">Mutual friend · Aarhus</span></a></li>
+                    <li class="stat-modal__row"><a href="#"><span class="stat-modal__avatar" style="background: url('../assets/images/artists/placeholder-female-2.png') center/cover;"></span><span class="stat-modal__name auto-name">Malik Johnson</span><span class="stat-modal__meta">Friend · Copenhagen</span></a></li>
+                    <li class="stat-modal__row"><a href="#"><span class="stat-modal__avatar" style="background: url('../assets/images/artists/placeholder-male-4.png') center/cover;"></span><span class="stat-modal__name auto-name">Sophie Brown</span><span class="stat-modal__meta">Mutual friend · London</span></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="stat-modal-overlay" id="concertsModal" data-stat-modal-overlay aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="stat-modal">
+            <header class="stat-modal__header">
+                <h2 class="stat-modal__title">Concerts attended · 47</h2>
+                <button type="button" class="stat-modal__close" data-close-stat-modal aria-label="Close">&times;</button>
+            </header>
+            <div class="stat-modal__body">
+                <ul class="stat-modal__list stat-modal__list--concerts">
+                    <li class="stat-modal__row"><a href="#"><span class="stat-modal__avatar" style="background: url('../assets/images/artists/placeholder-male-7.png') center/cover;"></span><span class="stat-modal__name auto-name">JokesmithJohnson · Jokes On Me Tour</span><span class="stat-modal__meta">VEGA Hovedscenen, Copenhagen · 2024-08-14</span></a></li>
+                    <li class="stat-modal__row"><a href="#"><span class="stat-modal__avatar" style="background: url('../assets/images/artists/placeholder-male-5.png') center/cover;"></span><span class="stat-modal__name auto-name">Anchi Humifuku · Northern Lights</span><span class="stat-modal__meta">Brooklyn Steel, NYC · 2024-05-22</span></a></li>
+                    <li class="stat-modal__row"><a href="#"><span class="stat-modal__avatar" style="background: url('../assets/images/artists/placeholder-female-2.png') center/cover;"></span><span class="stat-modal__name auto-name">Maya Thompson · City Lights Live</span><span class="stat-modal__meta">The Wiltern, LA · 2024-03-09</span></a></li>
+                    <li class="stat-modal__row"><a href="#"><span class="stat-modal__avatar" style="background: url('../assets/images/artists/placeholder-male-3.png') center/cover;"></span><span class="stat-modal__name auto-name">DJ Frostbite · Frozen Roads Set</span><span class="stat-modal__meta">Skive Festival · 2023-09-02</span></a></li>
+                    <li class="stat-modal__row"><a href="#"><span class="stat-modal__avatar" style="background: url('../assets/images/artists/placeholder-male-3.png') center/cover;"></span><span class="stat-modal__name auto-name">Lars Vognsen · Static In My Head</span><span class="stat-modal__meta">Pumpehuset, Copenhagen · 2023-06-18</span></a></li>
+                    <li class="stat-modal__row"><a href="#"><span class="stat-modal__avatar" style="background: url('../assets/images/artists/placeholder-female-4.png') center/cover;"></span><span class="stat-modal__name auto-name">Roskilde Festival 2023</span><span class="stat-modal__meta">Orange Stage · 2023-07-01</span></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="stat-modal-overlay" id="followingModal" data-stat-modal-overlay aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="stat-modal">
+            <header class="stat-modal__header">
+                <h2 class="stat-modal__title">Following · 89</h2>
+                <button type="button" class="stat-modal__close" data-close-stat-modal aria-label="Close">&times;</button>
+            </header>
+            <div class="stat-modal__body">
+                <ul class="stat-modal__list">
+                    <li class="stat-modal__row"><a href="#"><span class="stat-modal__avatar" style="background: url('../assets/images/artists/placeholder-male-5.png') center/cover;"></span><span class="stat-modal__name auto-name">JokesmithJohnson</span><span class="stat-modal__meta">Artist · Aarhus</span></a></li>
+                    <li class="stat-modal__row"><a href="#"><span class="stat-modal__avatar" style="background: url('../assets/images/artists/placeholder-male-3.png') center/cover;"></span><span class="stat-modal__name auto-name">Anchi Humifuku</span><span class="stat-modal__meta">Artist · NYC</span></a></li>
+                    <li class="stat-modal__row"><a href="#"><span class="stat-modal__avatar" style="background: url('../assets/images/artists/placeholder-male-3.png') center/cover;"></span><span class="stat-modal__name auto-name">Maya Thompson</span><span class="stat-modal__meta">Artist · LA</span></a></li>
+                    <li class="stat-modal__row"><a href="#"><span class="stat-modal__avatar" style="background: url('../assets/images/artists/placeholder-male-6.png') center/cover;"></span><span class="stat-modal__name auto-name">DJ Frostbite</span><span class="stat-modal__meta">Artist · Aalborg</span></a></li>
+                    <li class="stat-modal__row"><a href="#"><span class="stat-modal__avatar" style="background: url('../assets/images/artists/placeholder-male-5.png') center/cover;"></span><span class="stat-modal__name auto-name">Sara Holm</span><span class="stat-modal__meta">Podcaster · Aarhus</span></a></li>
+                    <li class="stat-modal__row"><a href="#"><span class="stat-modal__avatar" style="background: url('../assets/images/artists/placeholder-female-6.png') center/cover;"></span><span class="stat-modal__name auto-name">Tobias Krogh</span><span class="stat-modal__meta">Guitarist · Aarhus</span></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Create-post modal (picker + composer) ===== -->
+    <div class="create-post-overlay" id="createPostModal" data-create-post-overlay aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="create-post-modal">
+
+            <!-- Step 1: Pick post type -->
+            <div class="create-post-view" data-view="picker">
+                <header class="create-post-modal__header">
+                    <h2 class="create-post-modal__title">Create</h2>
+                    <button type="button" class="create-post-modal__close" data-close-create-post aria-label="Close">&times;</button>
+                </header>
+                <p class="create-post-modal__sub">What are you sharing?</p>
+
+                <div class="create-post-options create-post-options--two">
+                    <button type="button" class="create-post-option create-post-option--text" data-post-type="post" data-help="Opslag: Skriv tekst og vedhæft billeder, videoer eller filer. Du kan også markere hvilken sang du bruger — det kobler dit opslag til artistens katalog og giver dig ekstra eksponering.">
+                        <span class="create-post-option__icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                        </span>
+                        <span class="create-post-option__title">Make a post</span>
+                        <span class="create-post-option__desc">Write text and attach photos, videos or files. Tag the song you're using to boost exposure.</span>
+                    </button>
+
+                    <button type="button" class="create-post-option create-post-option--live" data-post-type="live" data-help="Live video: Stream live til dine followers — de bliver underrettet med det samme og kan reagere i realtid.">
+                        <span class="create-post-option__icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" fill="currentColor"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/></svg>
+                        </span>
+                        <span class="create-post-option__title"><span class="create-post-option__live-dot" aria-hidden="true"></span>Go live</span>
+                        <span class="create-post-option__desc">Start a live video — followers get notified instantly and can react in real time.</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Composer (hidden by default) -->
+            <div class="create-post-view" data-view="composer" hidden>
+                <header class="create-post-modal__header">
+                    <button type="button" class="create-post-modal__back" data-back-create-post aria-label="Back">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    </button>
+                    <h2 class="create-post-modal__title">New post</h2>
+                    <button type="button" class="create-post-modal__close" data-close-create-post aria-label="Close">&times;</button>
+                </header>
+
+                <textarea class="composer__text" placeholder="What's on your mind, Julie?" rows="5"></textarea>
+
+                <div class="composer__attachments-list" id="composerAttachments" hidden></div>
+
+                <div class="composer__attach-row" data-help="Vedhæft billeder, videoer eller filer til dit opslag — fans der følger dig får dem vist i feeden.">
+                    <span class="composer__attach-label">Attach</span>
+                    <button type="button" class="composer__attach-btn" data-attach-type="photo">
+                        <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2"/><circle cx="8.5" cy="10.5" r="1.5" fill="currentColor"/><path d="M21 15l-5-5L5 19" stroke="currentColor" stroke-width="2"/></svg>
+                        Photos
+                    </button>
+                    <button type="button" class="composer__attach-btn" data-attach-type="video">
+                        <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="13" height="12" rx="2" stroke="currentColor" stroke-width="2"/><path d="M16 10l5-2v8l-5-2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+                        Video
+                    </button>
+                    <button type="button" class="composer__attach-btn" data-attach-type="file">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9l-6-6z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M14 3v6h6" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+                        File
+                    </button>
+                </div>
+
+                <div class="composer__category" data-help="Markér hvad slags indhold dit opslag er. Dette hjælper fans med at finde dig under deres yndlings-format (covers, tutorials eller dansevideoer) og forbedrer din eksponering når andre browser efter en specifik type. Lad være tom hvis det er et almindeligt opslag.">
+                    <span class="composer__category-label">Content type</span>
+                    <div class="composer__category-chips">
+                        <label class="composer__category-chip">
+                            <input type="radio" name="postCategory" value="cover">
+                            <span class="composer__category-chip__label">
+                                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 18V6l11 6-11 6z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+                                Cover
+                            </span>
+                        </label>
+                        <label class="composer__category-chip">
+                            <input type="radio" name="postCategory" value="tutorial">
+                            <span class="composer__category-chip__label">
+                                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                                Tutorial
+                            </span>
+                        </label>
+                        <label class="composer__category-chip">
+                            <input type="radio" name="postCategory" value="dance">
+                            <span class="composer__category-chip__label">
+                                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="5" r="2" stroke="currentColor" stroke-width="2"/><path d="M8 22l2-9 4 5 4-3M10 13l-3-3 5-3 4 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                Dance video
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="composer__song" data-help="Markér hvilken sang du bruger i din video eller dit opslag. Det kobler opslaget til artistens katalog — fans af artisten får dit opslag vist i deres feed, og artisten får automatisk deres royalty-andel hvis det er sat op. Det giver dig markant mere eksponering.">
+                    <div class="composer__song-header">
+                        <span class="composer__song-label">Tag a song</span>
+                        <span class="composer__song-hint">Boosts exposure — fans of the artist see your post too</span>
+                    </div>
+
+                    <div class="composer__song-picker" id="composerSongPicker">
+                        <input type="text" class="composer__song-input" id="composerSongInput" placeholder="Search by song or artist…" autocomplete="off">
+                        <ul class="composer__song-results" id="composerSongResults" hidden></ul>
+                    </div>
+
+                    <div class="composer__song-selected" id="composerSongSelected" hidden></div>
+                </div>
+
+                <div class="composer__actions">
+                    <button type="button" class="composer__btn" data-close-create-post>Cancel</button>
+                    <button type="button" class="composer__btn composer__btn--primary">Post</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ===== Shared QR-befriend modal ===== -->
+    <div class="release-modal-overlay" id="qrBefriendModal" data-qr-modal aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="release-modal release-modal--qr">
+            <header class="release-modal__header">
+                <h2 class="release-modal__title">Befriend via QR</h2>
+                <button type="button" class="release-modal__close" data-close-qr aria-label="Close" data-help="Luk QR-befriend.">&times;</button>
+            </header>
+            <div class="release-modal__body">
+                <div class="qr-modal__tabs" role="tablist" data-help="QR-tabs: Vis dit eget QR-kode (så andre kan tilføje dig) eller scan en andens (så du kan tilføje dem).">
+                    <button type="button" class="qr-modal__tab is-active" data-qr-tab="show" role="tab">Show mine</button>
+                    <button type="button" class="qr-modal__tab" data-qr-tab="scan" role="tab">Scan theirs</button>
+                </div>
+
+                <div data-qr-panel="show">
+                    <p class="qr-modal__intro">Vis din QR til en ven du møder IRL. Når de scanner med deres telefon-kamera, åbnes <strong data-qr-name>—</strong>'s profil med en pre-fyldt friend-request klar.</p>
+                    <div class="qr-modal__code" data-qr-code></div>
+                    <div class="qr-modal__url" data-qr-url>—</div>
+                    <p class="qr-modal__hint">Tip: Vis QR'en på din telefon på koncerter, festivaler eller events. Hurtigere end at skrive brugernavnet.</p>
+                </div>
+
+                <div data-qr-panel="scan" hidden>
+                    <p class="qr-modal__intro">Hold telefonen op foran en andens QR-kode. Vi kan også åbne kameraet direkte hvis du har givet adgang i indstillingerne.</p>
+                    <div class="qr-modal__scan-area">
+                        <strong>📷 Camera scan area</strong><br>
+                        <small>(Demo: brug din enheds normale kamera-app for at scanne en QR — den åbner automatisk profilen i STAGECORD-appen.)</small>
+                    </div>
+                </div>
+            </div>
+            <footer class="release-modal__actions">
+                <button type="button" class="release-modal__btn" data-close-qr>Close</button>
+            </footer>
+        </div>
+    </div>
+
+    <script src="../js/core.js"></script>
+    <script src="../js/modes.js"></script>
+    <script src="../js/sidebar.js"></script>
+    <script src="../js/topbar-widgets.js"></script>
+    <script src="../js/stage-badge.js"></script>
+    <script src="../js/acting-as-service.js"></script>
+    <script src="../js/stage-cards.js"></script>
+    <script src="../js/stage-label.js"></script>
+    <script src="../js/stage-resources.js"></script>
+    <script src="../js/stage-economy.js"></script>
+    <script src="../js/settings.js"></script>
+    <script src="../js/activity-feed.js"></script>
+    <script src="../js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAGECORD - Creative Collaboration Platform</title>
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/logo.css">
+    <link rel="stylesheet" href="../css/topbar.css">
+    <link rel="stylesheet" href="../css/project-card.css">
+    <link rel="stylesheet" href="../css/lyrics-notebook.css">
+    <link rel="stylesheet" href="../css/sheet-music.css">
+    <link rel="stylesheet" href="../css/genre.css">
+    <link rel="stylesheet" href="../css/feature-card.css">
+</head>
+<body>
+    <!-- Left Sidebar Navigation -->
+    <aside class="sidebar" data-sidebar></aside>
+
+    <!-- Top Bar -->
+    <header class="topbar">
+        <!-- Logo (left) -->
+        <div class="logo-container" data-help="STAGECORD PRO-logoet. Klik for at vende tilbage til forsiden uanset hvor du er i platformen.">
+            <a href="../index.html" class="logo-link">
+                <h1 class="logo">
+                    <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
+                </h1>
+            </a>
+        </div>
+
+        <!-- Search bar (middle) -->
+        <div class="search-bar" data-help="Søgebar: Find artister, koncerter, spillesteder, venner og alt andet på platformen. Skriv mindst 2 tegn for at se forslag.">
+            <input
+                type="text"
+                class="search-input"
+                placeholder="Search Artists, Concerts, Venues, Friends and much more"
+                aria-label="Search"
+            />
+            <svg class="search-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/>
+                <path d="M18 18L24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </div>
+
+        <!-- Help button (right) -->
+        <button type="button" class="help-button" aria-label="Help" aria-pressed="false" data-help="Hjælpeknap: Klik for at aktivere hjælpetilstand. Derefter kan du klikke på et vilkårligt element for at se en forklaring. Tryk Esc eller klik ? igen for at slukke.">
+            <span class="help-mark">?</span>
+        </button>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <div class="content-wrapper">
+            <header class="projects-header">
+                <h1>Projects</h1>
+                <div class="projects-toolbar">
+                    <button type="button" class="projects-toolbar__btn" id="editProjectsBtn" aria-pressed="false" data-help="Edit: Slå redigering til og omdøb dine projektnavne. Tryk Enter for at gemme eller Esc for at annullere.">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M15.2 4.4l4.4 4.4M3 21l4.6-1.1L20 7.4a1.5 1.5 0 0 0 0-2.1l-1.3-1.3a1.5 1.5 0 0 0-2.1 0L4.1 16.4 3 21z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Edit</span>
+                    </button>
+                    <button type="button" class="projects-toolbar__btn" data-book-of-rhymes data-help="Book of Rhymes: Dit private bibliotek af tekstideer fra tidligere projekter. Når et projekt er færdigt, kan du gemme dine ubrugte sektioner her — kategoriseret efter sangsektion (Verse, Chorus …) og mood (Romantic, Sad, Energetic …). Hent dem ind i nye projekter via Import-knappen i Notes &amp; Lyrics.">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5v-17z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                            <path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                            <path d="M8 7h8M8 11h8M8 15h5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                        </svg>
+                        <span>Book of Rhymes</span>
+                    </button>
+                    <button type="button" class="projects-toolbar__btn projects-toolbar__btn--primary" id="newProjectBtn" data-help="New project: Opretter et nyt projektkort. Derefter kan du omdøbe det og tilføje samarbejdspartnere.">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <span>New project</span>
+                    </button>
+                </div>
+            </header>
+
+            <div class="projects-list">
+
+            <!-- Example project card: Eternaty -->
+            <article class="project-card" data-project-id="eternaty" data-project-name="Eternaty" data-help="Projekt-kort: Hvert projekt på din profil vises som et kort med team, uploads, finals, royalties og godkendelses-status.">
+                <div class="project-card__body">
+
+                    <div class="project-card__left">
+                        <h3 class="project-card__name" data-help="Projektets navn. Klik på 'Edit' øverst til højre for at omdøbe."><span class="project-card__name-label">Project name:</span> <span class="project-card__name-value" contenteditable="false" spellcheck="false">Eternaty</span></h3>
+
+                    <div class="genre-chips" data-genre-target="project" data-genre-key="eternaty" data-help="Genre-tags: Vælg primær musikgenre + 1-3 sub-genrer for dette projekt. Bruges til at matche projektet med rette publikum og 'Paying it forward'-eksponerings-grupper. Klik et chip for at redigere.">
+                        <span class="genre-chips__label">Genre</span>
+                    </div>
+
+                    <!-- Team (horizontal) — hidden at narrow widths, replaced by dropdown -->
+                    <div class="project-team" data-help="Team: De medvirkende på projektet — klik et medlem for at åbne deres artist-profil.">
+                        <a href="../artist/index.html?id=jeremy-freedom" class="collaborator-card" data-collab-profile="Jeremy Freedom">
+                            <span class="collaborator-role">Artist</span>
+                            <div class="collaborator-image" style="background: url('../assets/images/artists/jeremy-freedom-profile.png') center/cover;"></div>
+                            <span class="collaborator-name">
+                                <span class="collaborator-name__first">Jeremy</span>
+                                <span class="collaborator-name__rest">Freedom</span>
+                            </span>
+                        </a>
+                        <a href="../artist/index.html?id=malik-johnson" class="collaborator-card" data-collab-profile="Malik Johnson">
+                            <span class="collaborator-role">Artist</span>
+                            <div class="collaborator-image" style="background: url('../assets/images/artists/malik-johnson-profile.png') center/cover;"></div>
+                            <span class="collaborator-name">
+                                <span class="collaborator-name__first">Malik</span>
+                                <span class="collaborator-name__rest">Johnson</span>
+                            </span>
+                        </a>
+                        <a href="../artist/index.html?id=maya-thompson" class="collaborator-card" data-collab-profile="Maya Thompson">
+                            <span class="collaborator-role">Topliner</span>
+                            <div class="collaborator-image" style="background: url('../assets/images/artists/maya-thompson-profile.png') center/cover;"></div>
+                            <span class="collaborator-name">
+                                <span class="collaborator-name__first">Maya</span>
+                                <span class="collaborator-name__rest">Thompson</span>
+                            </span>
+                        </a>
+                        <a href="../artist/index.html?id=winston-sinclair" class="collaborator-card" data-collab-profile="Winston Sinclair">
+                            <span class="collaborator-role">Producer, mix &amp; mastering</span>
+                            <div class="collaborator-image" style="background: url('../assets/images/artists/winston-sinclair-profile.png') center/cover;"></div>
+                            <span class="collaborator-name">
+                                <span class="collaborator-name__first">Winston</span>
+                                <span class="collaborator-name__rest">Sinclair</span>
+                            </span>
+                        </a>
+                        <button type="button" class="collaborator-card add-person" id="addMemberBtn" data-help="Tilføj person: Klik for at vælge en funktion (artist, topliner, producer mv.) og inviter en samarbejdspartner. Du kan også invitere på en aftalt fee med 10% platform-fee og 50/50 udbetaling.">
+                            <span class="collaborator-role">Select function</span>
+                            <span class="collaborator-image" aria-hidden="true">
+                                <span class="plus-icon">+</span>
+                            </span>
+                            <span class="collaborator-name">Add person</span>
+                        </button>
+                    </div>
+
+                    <!-- Dropdown team — shown when the card is too narrow for even 2 cards -->
+                    <details class="project-team-dropdown" data-help="Team-dropdown: Skærmen er for smal til at vise personerne på rækken — klik for at folde listen ud.">
+                        <summary>
+                            <span class="project-team-dropdown__label">Team <span class="project-team-dropdown__count">(4 + add)</span></span>
+                            <svg class="project-team-dropdown__chevron" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </summary>
+                        <ul class="project-team-dropdown__list">
+                            <li><a href="../artist/index.html?id=jeremy-freedom" class="name"><strong>Jeremy</strong> Freedom</a></li>
+                            <li><a href="../artist/index.html?id=malik-johnson" class="name"><strong>Malik</strong> Johnson</a></li>
+                            <li><a href="../artist/index.html?id=maya-thompson" class="name"><strong>Maya</strong> Thompson</a></li>
+                            <li><a href="../artist/index.html?id=winston-sinclair" class="name"><strong>Winston</strong> Sinclair</a></li>
+                            <li class="add-member"><button type="button">+ Add person</button></li>
+                        </ul>
+                    </details>
+                    </div>
+
+                    <!-- Action cluster: labels sit above each column -->
+                    <div class="project-actions">
+
+                        <div class="button-group button-group--uploads">
+                            <span class="button-group__label" data-help="Uploads: Arbejdsfiler der er delt med teamet — bruges til feedback og iterationer før release.">Uploads</span>
+                            <div class="action-col">
+                                <button class="pill-btn" type="button" data-wave-upload data-help="WAVE: Upload uncompressed audio (.wav). Add either one master mix or one file per stem (vocal, drums, bass, guitar, etc.) — the more stems you upload, the more control listeners get over the mix while streaming.">WAVE</button>
+                                <button class="pill-btn" type="button" data-sheet-music data-project-id="eternaty" data-help="Sheet Music: Værktøj der ud fra Main Lyrics lader dig placere noder, vælge tempo, taktart og toneart for hvert ord. Klik et ord for at sætte dets pitch og varighed; programmet tegner et forenklet nodebillede.">Sheet Music</button>
+                                <button class="pill-btn" type="button" data-lyrics-notebook data-project-id="eternaty" data-help="Notes &amp; Lyrics: Hver person på projektet har sit eget tekst-hæfte opdelt i sangsektioner (Intro, Vers, Chorus, Bridge, Outro …). Marker ord med farver for at gruppere rim — programmet foreslår også rim når du klikker et ord.">Notes &amp; Lyrics</button>
+                                <button class="pill-btn" type="button" data-project-log data-project-id="eternaty" data-help="Log: Aktivitetshistorik for projektet — se hvilke handlinger hvert teammedlem har foretaget (uploads, ændringer, godkendelser).">Log</button>
+                            </div>
+                        </div>
+
+                        <div class="button-group button-group--finals">
+                            <span class="button-group__label" data-help="Finals: De endelige mastered filer der er klar til distribution.">Finals</span>
+                            <div class="action-col">
+                                <button class="pill-btn" type="button" data-help="Final WAVE/MP3: Mastered lydfiler (.wav og .mp3) klar til distributør og streaming-preview.">WAVE/MP3</button>
+                                <button class="pill-btn" type="button" data-help="Final Sheet Music: Godkendte noder til udgivelse.">Sheet Music</button>
+                                <button class="pill-btn" type="button" data-help="Image: Det endelige cover-artwork til projektet — leveres sammen med releasen.">Image</button>
+                                <button class="pill-btn" type="button" data-help="Final Lyrics: Godkendt tekst — leveres til streamingtjenester.">Lyrics</button>
+                            </div>
+                        </div>
+
+                        <div class="button-group button-group--royalties">
+                            <span class="button-group__label" data-help="Royalties: Klik en royalty-kategori for at se og justere fordelingen mellem alle medvirkende på projektet. Totalen pr. kategori skal altid give 100%.">Royalties</span>
+                            <div class="royalties-cols">
+                                <div class="action-col">
+                                    <button class="pill-btn" type="button" data-royalty-cat="mechanical" data-help="Mechanical: Rettigheder ved kopiering/fremstilling af lydoptagelsen. Klik for at justere fordelingen mellem medlemmerne.">Mechanical</button>
+                                    <button class="pill-btn" type="button" data-royalty-cat="performance" data-help="Performance: Rettigheder ved offentlig opførelse (radio, livestream, koncert). Klik for at justere fordelingen mellem medlemmerne.">Performance</button>
+                                    <button class="pill-btn" type="button" data-royalty-cat="covers" data-help="Covers: Rettigheder til at andre må lave covers af sangen. Klik for at justere fordelingen mellem medlemmerne.">Covers</button>
+                                    <button class="pill-btn" type="button" data-royalty-cat="sample" data-help="Sample: Rettigheder til at andre må sample dele af optagelsen. Klik for at justere fordelingen mellem medlemmerne.">Sample</button>
+                                </div>
+                                <div class="action-col">
+                                    <button class="pill-btn" type="button" data-royalty-cat="synch" data-help="Synch: Synkroniseringsrettigheder til film, TV, reklamer og spil. Klik for at justere fordelingen mellem medlemmerne.">Synch</button>
+                                    <button class="pill-btn" type="button" data-royalty-cat="print" data-help="Print Music: Rettigheder til at printe noder og tekster. Klik for at justere fordelingen mellem medlemmerne.">Print Music</button>
+                                    <button class="pill-btn" type="button" data-royalty-cat="tutorials" data-help="Tutorials: Rettigheder til brug i undervisnings- og tutorial-indhold. Klik for at justere fordelingen mellem medlemmerne.">Tutorials</button>
+                                    <button class="pill-btn" type="button" data-royalty-cat="commercial" data-help="Commercial: Rettigheder til kommerciel brug ud over synch. Klik for at justere fordelingen mellem medlemmerne.">Commercial</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="button-group button-group--approvals">
+                            <span class="button-group__label" data-help="Approvals for release: Alle medvirkende skal godkende før projektet kan udgives. Klik på en linje for at toggle dit eget approval.">Approvals for release</span>
+                            <div class="project-approvals" data-project-approvals data-help="Approvals: Klik en linje for at toggle din godkendelse. Grøn = godkendt, rød = afventer.">
+                                <button type="button" class="approval-row is-approved" data-approval="approved" data-member="Jeremy Freedom">
+                                    <span class="approval-status" aria-hidden="true"></span>
+                                    <span class="approval-row__name auto-name">Jeremy Freedom</span>
+                                </button>
+                                <button type="button" class="approval-row" data-approval="pending" data-member="Malik Johnson">
+                                    <span class="approval-status" aria-hidden="true"></span>
+                                    <span class="approval-row__name auto-name">Malik Johnson</span>
+                                </button>
+                                <button type="button" class="approval-row" data-approval="pending" data-member="Maya Thompson">
+                                    <span class="approval-status" aria-hidden="true"></span>
+                                    <span class="approval-row__name auto-name">Maya Thompson</span>
+                                </button>
+                                <button type="button" class="approval-row" data-approval="pending" data-member="Winston Sinclair">
+                                    <span class="approval-status" aria-hidden="true"></span>
+                                    <span class="approval-row__name auto-name">Winston Sinclair</span>
+                                </button>
+                            </div>
+                            <div class="project-release" data-help="Release-knap: Aktiveres når alle members har godkendt. Klik for at vælge release-dato — STAGECORD PRO genererer automatisk en UPC-kode og udgiver projektet.">
+                                <button type="button" class="project-release__btn" data-release-btn disabled>
+                                    <span class="project-release__progress" data-release-progress>1 of 4 approved</span>
+                                    <span class="project-release__label">Release project</span>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </article>
+
+            <!-- ============ Topliner production hints — structured tips from the topliner ============ -->
+            <section class="topliner-hints" data-help="Topliner production hints: Strukturerede produktions-noter fra topliner-rollen i projektet. Modsat fri tekst i Notes &amp; Lyrics, har hints kategori (Vocal style, Song structure, Tempo &amp; feel, Production) og deles direkte med producer + artist. Eksempel fra PDF: 'Topline ideas — try a half-time feel on the pre-chorus, push the falsetto on the second chorus.'">
+                <header class="topliner-hints__head">
+                    <h3 class="topliner-hints__title"><span class="topliner-hints__title-icon">🎼</span>Topliner production hints</h3>
+                    <span class="topliner-hints__author">From <strong>Maya Thompson</strong> · topliner</span>
+                    <button type="button" class="topliner-hints__add" data-help="Tilføj hint: Som topliner kan du tilføje strukturerede tips i 4 kategorier — Vocal style, Song structure, Tempo &amp; feel, Production. Hints vises i project-kortet og kan diskuteres direkte med producer.">+ Add hint</button>
+                </header>
+                <ul class="topliner-hints__list">
+                    <li class="topliner-hint" data-help="Vocal style hint: Specifik anbefaling om hvordan vocal-takes skal performes. Adskilt fra ord-niveau lyrics-noter — fokus på leverance, ikke indhold.">
+                        <span class="topliner-hint__cat" style="background:rgba(255,138,200,0.18);color:#FF8AC8;">Vocal style</span>
+                        <span class="topliner-hint__text">Push the <strong>falsetto on the second chorus</strong> — drops the dynamic floor before the bridge hits.</span>
+                    </li>
+                    <li class="topliner-hint" data-help="Song structure hint: Strukturel observation der påvirker hele arrangementet. Bruges til at koordinere hvordan sektionerne forbinder.">
+                        <span class="topliner-hint__cat" style="background:rgba(74,144,226,0.18);color:#6AA9F0;">Song structure</span>
+                        <span class="topliner-hint__text">Try a <strong>half-time feel on the pre-chorus</strong> so the chorus lift feels twice as big in contrast.</span>
+                    </li>
+                    <li class="topliner-hint" data-help="Tempo &amp; feel hint: Rytme- og groove-relateret feedback til producer. Påvirker hvordan trommer og bas mixes.">
+                        <span class="topliner-hint__cat" style="background:rgba(255,196,0,0.18);color:#FFC400;">Tempo &amp; feel</span>
+                        <span class="topliner-hint__text">Sidde i <strong>92 BPM</strong> i stedet for 96 — vocal-phrasing får mere room at trække vejret.</span>
+                    </li>
+                    <li class="topliner-hint" data-help="Production hint: Direkte mix/produktions-feedback til producer. Specifik som muligt så ingen mistolkning.">
+                        <span class="topliner-hint__cat" style="background:rgba(67,196,122,0.18);color:#43C47A;">Production</span>
+                        <span class="topliner-hint__text">Drop the snare on bar 17-20 of the bridge — let the vocal carry alone for that resolution moment.</span>
+                    </li>
+                </ul>
+            </section>
+
+            <section class="collab-progress" data-collab-progress data-help="Show collaboration in progress: Hvert medlem vælger individuelt om dette projekt skal vises på deres artist-side under 'Collaboration in progress'. Når et medlem aktiverer det, eksponeres deres 5% fanbase for de øvrige medvirkende — også kaldet 'giving it forward'. Procenten skalerer op eller ned afhængigt af om de eksponerede fans rent faktisk lytter til den pågældende medvirkende.">
+                <header class="collab-progress__header">
+                    <span class="collab-progress__label">Show collaboration in progress on artist pages</span>
+                    <span class="collab-progress__count" data-collab-count>2 of 4 opted in</span>
+                </header>
+
+                <div class="collab-progress__members">
+                    <label class="collab-toggle-pill is-active">
+                        <input type="checkbox" data-collab-member data-fanbase="1376000" data-name="Jeremy Freedom" checked>
+                        <span class="collab-toggle-pill__check" aria-hidden="true">✓</span>
+                        <span class="collab-toggle-pill__name auto-name">Jeremy Freedom</span>
+                        <span class="collab-toggle-pill__followers">1.4M</span>
+                    </label>
+                    <label class="collab-toggle-pill is-active">
+                        <input type="checkbox" data-collab-member data-fanbase="89000" data-name="Malik Johnson" checked>
+                        <span class="collab-toggle-pill__check" aria-hidden="true">✓</span>
+                        <span class="collab-toggle-pill__name auto-name">Malik Johnson</span>
+                        <span class="collab-toggle-pill__followers">89K</span>
+                    </label>
+                    <label class="collab-toggle-pill">
+                        <input type="checkbox" data-collab-member data-fanbase="412000" data-name="Maya Thompson">
+                        <span class="collab-toggle-pill__check" aria-hidden="true">✓</span>
+                        <span class="collab-toggle-pill__name auto-name">Maya Thompson</span>
+                        <span class="collab-toggle-pill__followers">412K</span>
+                    </label>
+                    <label class="collab-toggle-pill">
+                        <input type="checkbox" data-collab-member data-fanbase="24000" data-name="Winston Sinclair">
+                        <span class="collab-toggle-pill__check" aria-hidden="true">✓</span>
+                        <span class="collab-toggle-pill__name auto-name">Winston Sinclair</span>
+                        <span class="collab-toggle-pill__followers">24K</span>
+                    </label>
+                </div>
+
+                <div class="collab-progress__footer" data-help="Giving it forward: Summen af 5% af hver opt-in medlems fanbase. Den repræsenterer eksponeringen som projektet får på tværs af medlemmernes følgeskaber — fans der lytter til medvirkendes andre projekter får automatisk procentdelen skaleret op næste gang.">
+                    <div class="collab-progress__effect">
+                        <span class="collab-progress__effect-label">Giving it forward · combined exposure</span>
+                        <span class="collab-progress__effect-value" data-collab-exposure>73,250 listeners</span>
+                    </div>
+                    <p class="collab-progress__desc">5% of each opted-in member's fanbase is exposed to the rest of the team. The percentage scales up or down based on how those listeners engage with the other members' material.</p>
+                </div>
+            </section>
+
+            </div> <!-- /.projects-list -->
+
+            <!-- ============ PROJECT REQUEST ============ -->
+            <header class="projects-header projects-header--request">
+                <h2 class="section-heading" data-help="Project Request: Indgående samarbejdsanmodninger fra andre artister. Gennemgå vilkår og accepter, forhandl eller afvis.">Project Request</h2>
+                <div class="request-sort" data-help="Sortering: Vælg hvordan dine anmodninger sorteres — først efter artist, derefter efter collab fee.">
+                    <div class="request-sort__row"><span class="request-sort__label">Sort by:</span> <span class="request-sort__value">Artist</span></div>
+                    <div class="request-sort__row"><span class="request-sort__label">Then by:</span> <span class="request-sort__value">Collab fee</span></div>
+                </div>
+            </header>
+
+            <div class="request-list">
+
+                <article class="request-card" data-help="Request-kort: Én indgående samarbejdsanmodning fra en anden artist med fee, projekttype, filer og godkendelsesknapper.">
+                    <div class="request-card__body">
+
+                        <div class="button-group">
+                            <span class="button-group__label" data-help="Request by: Hvem der har sendt anmodningen.">Request by:</span>
+                            <div class="collaborator-card">
+                                <span class="collaborator-role">Artist</span>
+                                <div class="collaborator-image collaborator-image--initials" style="background:#9B59B6;">JB</div>
+                                <span class="collaborator-name">
+                                    <span class="collaborator-name__first">Justin</span>
+                                    <span class="collaborator-name__rest">Bieber</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="request-card__middle">
+                            <div class="request-card__info">
+                                <div class="button-group">
+                                    <span class="button-group__label" data-help="Collab Fee: Det beløb artisten tilbyder for samarbejdet.">Collab Fee</span>
+                                    <span class="info-value info-value--money">$ 50,000 USD</span>
+                                </div>
+
+                                <div class="button-group">
+                                    <span class="button-group__label" data-help="Project name: Titlen på det projekt anmodningen drejer sig om.">Project name</span>
+                                    <span class="info-value">Backseat love</span>
+                                </div>
+
+                                <div class="button-group">
+                                    <span class="button-group__label" data-help="Project Type: Type af udgivelse — fx Single, EP eller Album.">Project Type</span>
+                                    <span class="info-value">Single</span>
+                                </div>
+                            </div>
+
+                            <div class="request-card__message" data-help="Besked fra afsenderen — fremsender, motivation og evt. vedhæftet tilbud.">
+                                <p>Your passion for music is evident, and I believe our collaboration could result in something truly special. I've discussed the idea with my team, and we're all on board to explore this further. I've attached a formal offer for us to consider. Please take a look and let me know your thoughts. I'm looking forward to hearing from you and hopefully making some magic happen in the studio!</p>
+                            </div>
+                        </div>
+
+                        <div class="request-actions">
+                            <div class="button-group">
+                                <span class="button-group__label" data-help="Files: De vedhæftede filer afsenderen har delt med forespørgslen.">Files</span>
+                                <div class="action-col">
+                                    <button class="pill-btn" type="button" data-help="WAVE: Ukomprimeret lydfil vedhæftet anmodningen.">WAVE</button>
+                                    <button class="pill-btn" type="button" data-help="Sheet Music: Noder til sangen.">Sheet Music</button>
+                                    <button class="pill-btn" type="button" data-help="MP3: Komprimeret lydfil til preview.">MP3</button>
+                                    <button class="pill-btn" type="button" data-help="Lyrics: Sangtekster til sangen.">Lyrics</button>
+                                </div>
+                            </div>
+
+                            <div class="button-group button-group--royalties">
+                                <span class="button-group__label" data-help="Royalties: De rettighedstyper samarbejdet dækker.">Royalties</span>
+                                <div class="royalties-cols">
+                                    <div class="action-col">
+                                        <button class="pill-btn" type="button">Mechanical</button>
+                                        <button class="pill-btn" type="button">Performance</button>
+                                        <button class="pill-btn" type="button">Covers</button>
+                                        <button class="pill-btn" type="button">Sample</button>
+                                    </div>
+                                    <div class="action-col">
+                                        <button class="pill-btn" type="button">Synch</button>
+                                        <button class="pill-btn" type="button">Print Music</button>
+                                        <button class="pill-btn" type="button">Tutorials</button>
+                                        <button class="pill-btn" type="button">Commercial</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="button-group button-group--approve">
+                                <span class="button-group__label" data-help="Approve Collab: Vælg hvordan du vil svare på anmodningen.">Approve Collab</span>
+                                <div class="approve-col">
+                                    <button class="wide-btn wide-btn--accept" type="button" data-help="Accept terms & conditions: Accepter forslaget som det står.">Accept terms &amp; conditions</button>
+                                    <button class="wide-btn wide-btn--negotiate" type="button" data-help="Negotiate terms & conditions: Forhandl om fee, royalties eller leverancer.">Negotiate terms &amp; conditions</button>
+                                    <button class="wide-btn wide-btn--dismiss" type="button" data-help="Dismiss Request: Afvis anmodningen — afsenderen bliver underrettet.">Dismiss Request</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </article>
+
+            </div> <!-- /.request-list -->
+        </div>
+    </main>
+
+    <!-- ===== Add member modal (Bilag A — royalty share or fixed fee) ===== -->
+    <div class="release-modal-overlay" id="addMemberModal" data-add-member-modal aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="release-modal">
+            <header class="release-modal__header">
+                <h2 class="release-modal__title">Add member</h2>
+                <button type="button" class="release-modal__close" data-close-add-member aria-label="Close">&times;</button>
+            </header>
+
+            <div class="release-modal__body">
+                <div class="release-modal__field">
+                    <span class="release-modal__label">Name</span>
+                    <div class="add-member-modal__row">
+                        <input type="text" class="release-modal__date" id="addMemberFirst" placeholder="First name" autocomplete="off">
+                        <input type="text" class="release-modal__date" id="addMemberLast" placeholder="Last name" autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="release-modal__field" data-help="Vælg medlemmets rolle på projektet. Viser hvilken funktion personen står for ved release (Producer, Topliner, Mix &amp; Mastering osv.).">
+                    <span class="release-modal__label">Function</span>
+                    <select class="release-modal__select" id="addMemberFunction">
+                        <option>Artist</option>
+                        <option>Topliner</option>
+                        <option>Songwriter</option>
+                        <option>Producer</option>
+                        <option>Co-producer</option>
+                        <option>Mix &amp; Mastering</option>
+                        <option>Mix engineer</option>
+                        <option>Mastering engineer</option>
+                        <option>Audio engineer</option>
+                        <option>Backing vocalist</option>
+                        <option>Guitarist</option>
+                        <option>Bassist</option>
+                        <option>Drummer</option>
+                        <option>Pianist / Keyboardist</option>
+                    </select>
+                </div>
+
+                <div class="release-modal__field" data-help="Compensation can combine a royalty share, a fixed fee, or both — pick whichever options apply. Leaving both unchecked means the new member is contributing for free and won't receive any payout. You can still record their role and approval rights without giving them earnings.">
+                    <span class="release-modal__label">Compensation (any combination)</span>
+                    <div class="add-member-modal__radio-group">
+                        <label class="add-member-modal__radio">
+                            <input type="checkbox" name="addMemberComp" value="royalty" checked>
+                            <span class="add-member-modal__radio-text">
+                                <strong>Royalty share</strong>
+                                <small>A percentage of every royalty category. Defaults to an equal split.</small>
+                            </span>
+                        </label>
+                        <label class="add-member-modal__radio">
+                            <input type="checkbox" name="addMemberComp" value="fee">
+                            <span class="add-member-modal__radio-text">
+                                <strong>Fixed fee</strong>
+                                <small>A flat amount paid 50% on accept and 50% on release. Platform takes 10%.</small>
+                            </span>
+                        </label>
+                    </div>
+                    <p class="add-member-modal__free-note" id="freeNote" hidden>Both options unchecked — the new member will join for free, with no royalty share or fee. Useful for credits, thanks-list contributors, or volunteers.</p>
+                </div>
+
+                <div class="release-modal__field add-member-modal__share" id="shareFields" data-help="Proposed shares are sent with the invitation, set per royalty category — the new member sees them before accepting. Going above the equal-split default for any category means existing members lose more than their fair share of dilution there, so each affected member has to approve before that change takes effect. This protects against creators silently lowering people's shares before release.">
+                    <div class="add-member-modal__share-head">
+                        <span class="release-modal__label">Proposed shares (per category)</span>
+                        <button type="button" class="splits-balance-btn" id="addMemberShareReset">Reset to equal</button>
+                    </div>
+                    <div class="add-member-modal__share-list" id="addMemberShareList"></div>
+                    <p class="add-member-modal__share-warn" id="shareWarn" hidden>⚠ One or more categories are above the equal-split default — each affected member must approve before the change takes effect.</p>
+                </div>
+
+                <div class="release-modal__field add-member-modal__fee" id="feeFields" hidden>
+                    <span class="release-modal__label">Fee &amp; locked royalty</span>
+                    <div class="add-member-modal__row">
+                        <div class="add-member-modal__suffix">
+                            <input type="number" id="addMemberFee" min="0" step="100" value="5000">
+                            <span>USD</span>
+                        </div>
+                        <div class="add-member-modal__suffix">
+                            <input type="number" id="addMemberRoyalty" min="0" max="100" step="0.5" value="5">
+                            <span>%</span>
+                        </div>
+                    </div>
+                    <div class="add-member-modal__breakdown" id="feeBreakdown">
+                        <div class="add-member-modal__bd-row"><span>Platform fee (10%)</span><span data-bd="platform">500 USD</span></div>
+                        <div class="add-member-modal__bd-row"><span>Member earns total</span><span data-bd="net">4,500 USD</span></div>
+                        <div class="add-member-modal__bd-row"><span>Paid on contract acceptance</span><span data-bd="upfront">2,250 USD</span></div>
+                        <div class="add-member-modal__bd-row"><span>Paid on release</span><span data-bd="release">2,250 USD</span></div>
+                    </div>
+
+                    <div class="add-member-modal__fee-payers" data-help="Who pays the fee: split the fee between current members. The default puts the whole bill on the project creator, but you can split it across the team — each share is the % of the gross fee that member is on the hook for. Totals must always equal 100%.">
+                        <div class="splits-head">
+                            <span class="release-modal__label">Who pays the fee?</span>
+                            <button type="button" class="splits-balance-btn" data-fee-payers-balance>Split equally</button>
+                        </div>
+                        <div class="add-member-modal__fee-payers-list" data-fee-payers-list></div>
+                        <div class="add-member-modal__fee-payers-total" data-fee-payers-total>
+                            <span>Total</span>
+                            <span class="add-member-modal__fee-payers-total-num" data-fee-payers-total-num>100%</span>
+                            <span class="add-member-modal__fee-payers-total-icon" data-fee-payers-total-icon>✓</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="release-modal__actions">
+                <button type="button" class="release-modal__btn" data-close-add-member>Cancel</button>
+                <button type="button" class="release-modal__btn release-modal__btn--primary" id="addMemberConfirmBtn">Send invite</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ===== WAVE upload modal — master mix + per-stem uploads ===== -->
+    <div class="release-modal-overlay" id="waveUploadModal" data-wave-upload-modal aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="release-modal release-modal--wave">
+            <header class="release-modal__header">
+                <h2 class="release-modal__title">Upload WAVE audio</h2>
+                <div class="release-modal__header-actions">
+                    <button type="button" class="wave-upload__edit-toggle" data-wave-edit-toggle aria-pressed="false" data-help="Edit: Slå redigering til for at vise Remove-knapper på master mix og stems. Slå fra igen for at skjule dem.">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M15.2 4.4l4.4 4.4M3 21l4.6-1.1L20 7.4a1.5 1.5 0 0 0 0-2.1l-1.3-1.3a1.5 1.5 0 0 0-2.1 0L4.1 16.4 3 21z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Edit</span>
+                    </button>
+                    <button type="button" class="release-modal__close" data-close-wave-upload aria-label="Close">&times;</button>
+                </div>
+            </header>
+            <div class="release-modal__body">
+                <p class="wave-upload__intro" data-help="Stems explained: A stem is a single isolated instrument or voice from your mix — for example just the drums or just the lead vocal. When you upload separate stems, listeners on STAGECORD can mute or solo each instrument while streaming, giving them control over how they hear the song. Upload only a master mix and they hear the song as you mixed it. The more stems you provide, the richer the interactive listening experience.">
+                    Upload your master mix as one combined file, or upload one file per stem to give listeners control over the mix while streaming. <strong>The more stems you upload, the more instruments listeners can mute or solo.</strong>
+                </p>
+
+                <section class="wave-upload__group">
+                    <header class="wave-upload__group-head">
+                        <h3 class="wave-upload__group-title">Master mix</h3>
+                        <span class="wave-upload__group-hint">Optional if you upload all stems separately.</span>
+                    </header>
+                    <div class="wave-upload__slot" data-wave-slot="master">
+                        <label class="wave-upload__slot-empty">
+                            <input type="file" accept=".wav,audio/wav" data-wave-input>
+                            <span class="wave-upload__slot-icon" aria-hidden="true">+</span>
+                            <span class="wave-upload__slot-label">Drop your final mix here or <em>browse for a .wav file</em></span>
+                        </label>
+                    </div>
+                </section>
+
+                <section class="wave-upload__group">
+                    <header class="wave-upload__group-head">
+                        <h3 class="wave-upload__group-title">Individual stems</h3>
+                        <span class="wave-upload__group-hint" data-help="Each uploaded stem unlocks a mute/solo toggle for the listener during streaming. Pick whichever instrument or voice category fits the file — you can add as many as you like.">More stems = more listener control.</span>
+                    </header>
+
+                    <ul class="wave-upload__stems-list" data-wave-stems></ul>
+
+                    <div class="wave-upload__add-stem" data-wave-add-stem data-help="Pick what part of the mix this file is — vocals, drums, bass, etc. — then choose the .wav. The file will be added below with a waveform of its full length, and you can keep adding more stems for the same song.">
+                        <div class="wave-upload__add-stem-row">
+                            <select class="wave-upload__add-stem-select" data-wave-cat-select aria-label="Stem category">
+                                <option value="" disabled selected>Choose category…</option>
+                                <optgroup label="Vocals">
+                                    <option>Lead vocal</option>
+                                    <option>Male vocals</option>
+                                    <option>Female vocals</option>
+                                    <option>Backing vocals</option>
+                                    <option>Adlib</option>
+                                    <option>Vocal harmony</option>
+                                </optgroup>
+                                <optgroup label="Drums &amp; percussion">
+                                    <option>Drums (full kit)</option>
+                                    <option>Kick</option>
+                                    <option>Snare</option>
+                                    <option>Hi-hat / Cymbals</option>
+                                    <option>Toms</option>
+                                    <option>Percussion</option>
+                                </optgroup>
+                                <optgroup label="Bass">
+                                    <option>Bass</option>
+                                    <option>Sub bass</option>
+                                </optgroup>
+                                <optgroup label="Guitar">
+                                    <option>Rhythm guitar</option>
+                                    <option>Lead guitar</option>
+                                    <option>Acoustic guitar</option>
+                                </optgroup>
+                                <optgroup label="Keys">
+                                    <option>Piano</option>
+                                    <option>Synth</option>
+                                    <option>Organ</option>
+                                    <option>Pad</option>
+                                </optgroup>
+                                <optgroup label="Other">
+                                    <option>Strings</option>
+                                    <option>Brass</option>
+                                    <option>FX / Atmosphere</option>
+                                    <option value="__custom">Other (custom name)…</option>
+                                </optgroup>
+                            </select>
+                            <input type="text" class="wave-upload__add-stem-custom" data-wave-cat-custom placeholder="Custom stem name" hidden>
+                            <label class="wave-upload__add-stem-file" data-wave-add-file-label>
+                                <input type="file" accept=".wav,audio/wav" data-wave-add-input>
+                                <span class="wave-upload__add-stem-file-icon" aria-hidden="true">+</span>
+                                <span class="wave-upload__add-stem-file-label">Choose .wav</span>
+                            </label>
+                        </div>
+                        <p class="wave-upload__add-stem-error" data-wave-add-error hidden></p>
+                    </div>
+                </section>
+
+                <div class="wave-upload__progress" data-wave-progress>
+                    <div class="wave-upload__progress-bar"><span class="wave-upload__progress-fill" data-wave-progress-fill></span></div>
+                    <p class="wave-upload__progress-text" data-wave-progress-text>No stems uploaded yet — listeners will hear your mix as a single bounced track.</p>
+                </div>
+            </div>
+            <footer class="release-modal__actions">
+                <button type="button" class="release-modal__btn" data-close-wave-upload>Cancel</button>
+                <button type="button" class="release-modal__btn release-modal__btn--primary" data-confirm-wave-upload>Save uploads</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ===== Genre editor modal — pick primary + sub-genres (shared) ===== -->
+    <div class="release-modal-overlay" id="genreEditorModal" data-genre-modal aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="release-modal release-modal--genre">
+            <header class="release-modal__header">
+                <h2 class="release-modal__title" data-genre-modal-title>Edit genre</h2>
+                <button type="button" class="release-modal__close" data-close-genre aria-label="Close" data-help="Luk genre-editor uden at gemme.">&times;</button>
+            </header>
+            <div class="release-modal__body">
+                <p class="genre-editor__intro" data-help="Genre-system: Vælg én primær genre + op til 3 sub-genrer. Den primære bestemmer din eksponerings-gruppe (artister med samme primær hjælper hinanden via 'Paying it forward'). Sub-genrer hjælper algoritmen med at finde det rigtige publikum.">Vælg én <strong>primær genre</strong> og op til <strong>3 sub-genrer</strong>. Primary bestemmer din eksponerings-gruppe; sub-genrer specificerer din lyd.</p>
+
+                <section class="genre-editor__section" data-help="Primær genre: Den vigtigste genre-kategori. Bestemmer hvilken 'Paying it forward'-gruppe du tilhører — artister med samme primary deler 5% af hinandens fanbase som eksponering.">
+                    <header class="genre-editor__section-head">
+                        <h3 class="genre-editor__section-title">Primary genre</h3>
+                        <span class="genre-editor__section-hint">Vælg én</span>
+                    </header>
+                    <div class="genre-main-grid" data-genre-main-grid></div>
+                </section>
+
+                <section class="genre-editor__section" data-help="Sub-genrer: Specificér din lyd nærmere. Du kan vælge op til 3, og de behøver ikke være under samme primary — fx kan en Pop-artist også tagge Synthwave og R&amp;B for at fange flere algoritmer.">
+                    <header class="genre-editor__section-head">
+                        <h3 class="genre-editor__section-title">Sub-genres</h3>
+                        <span class="genre-editor__section-hint" data-genre-sub-counter>0 / 3 valgt</span>
+                    </header>
+                    <div class="genre-sub-grid" data-genre-sub-grid></div>
+                    <p class="genre-editor__no-main" data-genre-no-main hidden>Vælg en primær genre først for at se relevante sub-genrer — eller klik <em>Vis alle</em> for at se alle.</p>
+                </section>
+            </div>
+            <footer class="release-modal__actions">
+                <button type="button" class="release-modal__btn" data-close-genre>Cancel</button>
+                <button type="button" class="release-modal__btn" data-genre-show-all data-help="Vis alle sub-genrer på tværs af alle primaries — nyttigt hvis du vil tagge cross-genre.">Show all sub-genres</button>
+                <button type="button" class="release-modal__btn release-modal__btn--primary" data-genre-save data-help="Gem valgte genrer. Tagsene bliver synlige på artist-profilen og/eller projekt-kortet.">Save</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ===== Lyrics notebook modal — one structured notebook per team member ===== -->
+    <div class="release-modal-overlay" id="lyricsNotebookModal" data-lyrics-modal aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="release-modal release-modal--lyrics">
+            <header class="release-modal__header">
+                <h2 class="release-modal__title" data-lyrics-title>Notes &amp; Lyrics</h2>
+                <div class="release-modal__header-actions">
+                    <button type="button" class="wave-upload__edit-toggle" data-lyrics-edit-toggle aria-pressed="false" data-help="Edit-tilstand: Slå redigering til for at vise Delete-knapper på sektionerne. Slå fra igen for at skjule dem og undgå utilsigtede sletninger.">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M15.2 4.4l4.4 4.4M3 21l4.6-1.1L20 7.4a1.5 1.5 0 0 0 0-2.1l-1.3-1.3a1.5 1.5 0 0 0-2.1 0L4.1 16.4 3 21z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                        </svg>
+                        <span>Edit</span>
+                    </button>
+                    <button type="button" class="release-modal__close" data-close-lyrics aria-label="Close" data-help="Luk Notes &amp; Lyrics. Dine sektioner og rim-farver gemmes automatisk.">&times;</button>
+                </div>
+            </header>
+
+            <!-- Member tabs — switch between teammates' notebooks -->
+            <div class="lyrics-tabs" data-lyrics-tabs data-help="Member-tabs: Hver person på projektet har sit eget hæfte. Klik en tab for at se den persons tekst. Den gylde Main Lyrics-tab er den endelige tekst sammensat fra teamets bidrag."></div>
+
+            <!-- Toolbar: add section · color palette · clear colors -->
+            <div class="lyrics-toolbar">
+                <div class="lyrics-toolbar__group" data-help="Add section: Vælg en sangsektionstype (Intro, Verse, Chorus, Bridge …) og klik + Add for at tilføje den til det aktive hæfte. Vælg Custom for selv at navngive sektionen.">
+                    <label class="lyrics-toolbar__label">Add section</label>
+                    <select class="lyrics-toolbar__select" data-lyrics-add-select aria-label="Section type" data-help="Sektionstype: Vælg den del af sangen du vil skrive — Intro, Verse, Pre-Chorus, Chorus, Post-Chorus, Middle-8, Bridge, Hook, Refrain, Outro, Notes eller Custom.">
+                        <option value="" disabled selected>Choose…</option>
+                        <option value="intro">Intro</option>
+                        <option value="verse">Verse</option>
+                        <option value="pre-chorus">Pre-Chorus</option>
+                        <option value="chorus">Chorus</option>
+                        <option value="post-chorus">Post-Chorus</option>
+                        <option value="middle-8">Middle-8</option>
+                        <option value="bridge">Bridge</option>
+                        <option value="hook">Hook</option>
+                        <option value="refrain">Refrain</option>
+                        <option value="outro">Outro</option>
+                        <option value="notes">Notes</option>
+                        <option value="custom">Custom…</option>
+                    </select>
+                    <input type="text" class="lyrics-toolbar__custom" data-lyrics-add-custom placeholder="Custom name" hidden data-help="Custom-navn: Skriv et selvvalgt navn på sektionen — f.eks. 'Tag', 'Drop', eller 'Final hook'.">
+                    <button type="button" class="lyrics-toolbar__btn" data-lyrics-add-btn data-help="Tilføj sektion: Opretter den valgte sektionstype som ny sektion i det aktive hæfte og åbner den i edit-mode klar til at skrive.">+ Add</button>
+                </div>
+
+                <div class="lyrics-toolbar__group lyrics-toolbar__group--palette" data-help="Rim-palet: Vælg en farve, og klik dernæst på ord i teksten for at gruppere dem som rim. Klik samme farve igen for at slå malertilstand fra. Når flere ord deler farve, ved programmet at de rimer.">
+                    <label class="lyrics-toolbar__label">Rhyme palette</label>
+                    <div class="lyrics-palette" data-lyrics-palette data-help="Rim-farver: Klik en farve og dernæst på ord i sektionerne for at gruppere dem som rim. Samme farve på flere ord = samme rim-gruppe. Klik + for at tilføje en ny farve."></div>
+                </div>
+
+                <div class="lyrics-toolbar__group" data-help="Indstillinger: Tilpas hvordan rim-tilstanden opfører sig — fx om du skal acceptere ord der ikke åbenlyst rimer.">
+                    <button type="button" class="lyrics-toolbar__btn lyrics-toolbar__btn--ghost" data-lyrics-settings-btn data-help="Settings: Åbner indstillinger for Notes &amp; Lyrics — pt. en kontakt der bestemmer om du skal bekræfte ord der ikke åbenlyst rimer.">⚙ Settings</button>
+                </div>
+
+                <div class="lyrics-toolbar__group" data-help="Import: Hent en sektion ind i dit personlige hæfte fra dit Book of Rhymes (private tekstideer fra tidligere projekter, kategoriseret efter sektion og mood).">
+                    <button type="button" class="lyrics-toolbar__btn lyrics-toolbar__btn--ghost" data-lyrics-import-btn data-help="Import: Åbner Book of Rhymes i picker-mode. Klik et kort for at indsætte tekst-blokken som ny sektion i dit aktive hæfte.">↓ Import from Book of Rhymes</button>
+                </div>
+            </div>
+
+            <div class="release-modal__body release-modal__body--lyrics">
+                <p class="lyrics-mode-hint" data-lyrics-mode-hint data-help="Mode-hint: Hjælpetekst der fortæller dig hvad et klik på ord vil gøre lige nu — enten åbne rim-forslag eller male med den valgte farve.">Klik et ord for at se rim-forslag. Vælg en farve i paletten ovenfor og klik på ord for at markere dem som rim.</p>
+
+                <!-- Sections list — drag handles reorder; each section has type, content, optional notes -->
+                <ol class="lyrics-sections" data-lyrics-sections data-help="Sektioner: Hver sektion er en del af sangen (Intro, Verse, Chorus …). Træk drag-håndtaget (⋮⋮) for at omarrangere. Klik Edit text for at skrive."></ol>
+
+                <p class="lyrics-empty" data-lyrics-empty hidden data-help="Tom-tilstand: Det aktive hæfte har endnu ingen sektioner. Brug Add section-dropdownen ovenfor for at oprette den første.">Ingen sektioner endnu — vælg en sektionstype ovenfor og klik <em>Add</em> for at starte dit hæfte.</p>
+
+                <!-- Floating rhyme suggestion panel -->
+                <div class="lyrics-rhyme-popover" data-lyrics-rhyme-popover hidden data-help="Rim-forslag: Popover der viser foreslåede rim når du klikker et ord (uden farve aktiv). Klik et forslag for at indsætte ordet i den senest fokuserede textarea.">
+                    <header class="lyrics-rhyme-popover__head">
+                        <span class="lyrics-rhyme-popover__title">Rhymes for <strong data-lyrics-rhyme-word>—</strong></span>
+                        <button type="button" class="lyrics-rhyme-popover__close" data-lyrics-rhyme-close aria-label="Close" data-help="Luk rim-forslag uden at indsætte noget.">&times;</button>
+                    </header>
+                    <div class="lyrics-rhyme-popover__body" data-lyrics-rhyme-list></div>
+                    <p class="lyrics-rhyme-popover__hint">Tip: Klik et forslag for at indsætte det i den aktive sektion. Brug palet-farverne til at gruppere ord der rimer.</p>
+                </div>
+
+                <!-- Settings popover — toggle behaviors like rhyme confirmation -->
+                <div class="lyrics-settings-popover" data-lyrics-settings-popover hidden data-help="Notes &amp; Lyrics-indstillinger: Toggle hvordan rim-tilstanden bekræfter dine valg.">
+                    <header class="lyrics-settings-popover__head">
+                        <span class="lyrics-settings-popover__title">Notes &amp; Lyrics settings</span>
+                        <button type="button" class="lyrics-rhyme-popover__close" data-lyrics-settings-close aria-label="Close" data-help="Luk indstillinger.">&times;</button>
+                    </header>
+                    <label class="lyrics-settings-row" data-help="Bekræft ord der ikke rimer: Når slået til, beder programmet dig om at acceptere før et ord der ikke åbenlyst rimer føjes til en eksisterende farve-gruppe. Slå fra, hvis du vil male frit uden bekræftelse.">
+                        <input type="checkbox" data-lyrics-setting-confirm checked>
+                        <div>
+                            <strong>Confirm non-rhyming words</strong>
+                            <span>Når slået til: Hvis du klikker et ord der ikke rimer med ord der allerede har samme farve, bliver du spurgt om du vil acceptere alligevel.</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <footer class="release-modal__actions">
+                <button type="button" class="release-modal__btn" data-close-lyrics>Close</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ===== Book of Rhymes modal — private text library per user ===== -->
+    <div class="release-modal-overlay" id="bookOfRhymesModal" data-bor-modal aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="release-modal release-modal--bor">
+            <header class="release-modal__header">
+                <h2 class="release-modal__title" data-bor-title>Book of Rhymes</h2>
+                <button type="button" class="release-modal__close" data-close-bor aria-label="Close">&times;</button>
+            </header>
+
+            <div class="bor-toolbar">
+                <div class="bor-toolbar__group" data-help="Sektion-filter: Begræns visningen til én bestemt sangsektionstype, fx kun Verses eller kun Choruses.">
+                    <label class="bor-toolbar__label">Section</label>
+                    <select class="bor-toolbar__select" data-bor-filter-section aria-label="Filter by section type" data-help="Vælg en sektionstype for at filtrere — eller 'All sections' for at se alt.">
+                        <option value="">All sections</option>
+                    </select>
+                </div>
+                <div class="bor-toolbar__group" data-help="Mood-filter: Klik en farve-pille for at se kun poster med den stemning. Klik 'All moods' for at fjerne filteret.">
+                    <label class="bor-toolbar__label">Mood</label>
+                    <div class="bor-mood-filter" data-bor-filter-mood data-help="Mood-piller: 16 stemnings-kategorier (Romantic, Sexy, Sad, Happy, Melancholy, Energetic, Chill, Aggressive, Dreamy, Dark, Hopeful, Nostalgic, Empowering, Heartbreak, Playful, Reflective). Hver pille farver poster med den mood."></div>
+                </div>
+                <div class="bor-toolbar__group bor-toolbar__group--right" data-bor-mode-hint data-help="Tilstands-indikator: Browse betyder du gennemser dit bibliotek. Picking section betyder du er ved at vælge en post til at indsætte i et hæfte.">
+                    <span class="bor-mode-tag" data-bor-mode-tag>Browse</span>
+                </div>
+            </div>
+
+            <div class="release-modal__body release-modal__body--bor">
+                <p class="bor-intro" data-bor-intro data-help="Intro: Forklarer hvad du kan i den nuværende tilstand (Browse eller Picker).">Dit private bibliotek af tekstideer fra tidligere projekter. Klik en post for at se hele teksten — eller filtrer efter sektion og mood.</p>
+                <ul class="bor-list" data-bor-list data-help="Poster: Hver post er et stykke tekst gemt fra et tidligere projekt — sektionstype, mood, indhold og kilde-projekt vises på kortet."></ul>
+                <p class="bor-empty" data-bor-empty hidden data-help="Tom-tilstand: Du har ingen poster der matcher filteret (eller dit bibliotek er helt tomt).">Dit Book of Rhymes er tomt. Når et projekt færdiggøres, kan du gemme dine ubrugte sektioner her via knappen <em>Save unused → Book of Rhymes</em> på Main Lyrics.</p>
+            </div>
+
+            <footer class="release-modal__actions">
+                <button type="button" class="release-modal__btn" data-close-bor>Close</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ===== Save-unused dialog — pick mood per unused section ===== -->
+    <div class="release-modal-overlay" id="saveUnusedModal" data-save-unused-modal aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="release-modal release-modal--save-unused">
+            <header class="release-modal__header">
+                <h2 class="release-modal__title">Save unused sections to your Book of Rhymes</h2>
+                <button type="button" class="release-modal__close" data-close-save-unused aria-label="Close" data-help="Annullerer save-unused-flowet uden at gemme noget.">&times;</button>
+            </header>
+            <div class="release-modal__body">
+                <p class="save-unused__intro" data-help="Save-unused-flowet starter når Main Lyrics er finalized. Det viser dine sektioner der IKKE blev brugt i den endelige tekst — og giver dig mulighed for at gemme dem i dit Book of Rhymes med en mood-tag, så de er klar til genbrug i senere projekter.">Vælg hvilke af dine ubrugte sektioner du vil gemme i dit private Book of Rhymes, og tag hver enkelt med en <strong>mood</strong>. Sektionstypen (Verse, Chorus osv.) huskes automatisk.</p>
+                <ul class="save-unused__list" data-save-unused-list data-help="Liste over dine ubrugte sektioner. For hver enkelt: tjek-boks for at inkludere, mood-dropdown for at tagge stemningen, og en preview af teksten."></ul>
+                <p class="save-unused__empty" data-save-unused-empty hidden data-help="Tom-tilstand: Alle dine sektioner er kopieret til Main Lyrics, så der er intet 'ubrugt' tilbage at gemme.">Alle dine sektioner er allerede brugt i Main Lyrics — der er intet at gemme.</p>
+            </div>
+            <footer class="release-modal__actions">
+                <button type="button" class="release-modal__btn" data-close-save-unused data-help="Luk uden at gemme.">Cancel</button>
+                <button type="button" class="release-modal__btn release-modal__btn--primary" data-save-unused-confirm data-help="Gem de valgte sektioner i dit private Book of Rhymes med deres respektive mood-tags.">Save selected</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ===== Sheet Music modal — places notes onto Main Lyrics ===== -->
+    <div class="release-modal-overlay" id="sheetMusicModal" data-sheet-modal aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="release-modal release-modal--sheet">
+            <header class="release-modal__header">
+                <h2 class="release-modal__title" data-sheet-title>Sheet Music</h2>
+                <button type="button" class="release-modal__close" data-close-sheet aria-label="Close" data-help="Luk Sheet Music. Tempo, taktart, toneart og noder gemmes automatisk.">&times;</button>
+            </header>
+
+            <div class="sheet-toolbar">
+                <label class="sheet-toolbar__field" data-help="Source: Hvilken tekst du placerer noder på. Main Lyrics er den endelige tekst (kuratorisk version) — men hvis I ikke har bygget den endnu, kan du vælge en team-deltagers personlige hæfte og arbejde direkte derfra.">
+                    <span class="sheet-toolbar__label">Source</span>
+                    <select class="sheet-toolbar__input" data-sheet-source></select>
+                </label>
+                <label class="sheet-toolbar__field" data-help="Tempo: Sangens hastighed i BPM (slag pr. minut). Standard 120. Vælg lavere for ballader, højere for energiske numre.">
+                    <span class="sheet-toolbar__label">Tempo</span>
+                    <input type="number" class="sheet-toolbar__input" data-sheet-tempo min="40" max="240" step="1" value="120">
+                    <span class="sheet-toolbar__unit">BPM</span>
+                </label>
+                <label class="sheet-toolbar__field" data-help="Taktart: Antal slag pr. takt og hvilken nodeværdi der får ét slag. 4/4 er mest almindelig; 6/8 og 12/8 bruges i swung/ternære grooves; 3/4 i valser.">
+                    <span class="sheet-toolbar__label">Time</span>
+                    <select class="sheet-toolbar__input" data-sheet-time>
+                        <option>4/4</option>
+                        <option>3/4</option>
+                        <option>2/4</option>
+                        <option>6/8</option>
+                        <option>9/8</option>
+                        <option>12/8</option>
+                        <option>5/4</option>
+                        <option>7/8</option>
+                    </select>
+                </label>
+                <label class="sheet-toolbar__field" data-help="Toneart: Hvilken skala sangen er bygget på. Major (dur) virker lyst, minor (mol) mørkt. Vælg den toneart Main Lyrics' melodi-skitse hører hjemme i.">
+                    <span class="sheet-toolbar__label">Key</span>
+                    <select class="sheet-toolbar__input" data-sheet-key>
+                        <optgroup label="Major">
+                            <option value="C">C major</option>
+                            <option value="G">G major</option>
+                            <option value="D">D major</option>
+                            <option value="A">A major</option>
+                            <option value="E">E major</option>
+                            <option value="B">B major</option>
+                            <option value="F">F major</option>
+                            <option value="Bb">B♭ major</option>
+                            <option value="Eb">E♭ major</option>
+                            <option value="Ab">A♭ major</option>
+                        </optgroup>
+                        <optgroup label="Minor">
+                            <option value="Am">A minor</option>
+                            <option value="Em">E minor</option>
+                            <option value="Bm">B minor</option>
+                            <option value="F#m">F♯ minor</option>
+                            <option value="Dm">D minor</option>
+                            <option value="Gm">G minor</option>
+                            <option value="Cm">C minor</option>
+                        </optgroup>
+                    </select>
+                </label>
+                <div class="sheet-toolbar__field" data-help="Auto-fill: Genererer en simpel melodi-skitse fra tonearten — én tilfældig pitch fra skalaen pr. ord, med kvartdele som standard varighed. Erstatter ingen eksisterende noder.">
+                    <button type="button" class="sheet-toolbar__btn" data-sheet-autofill>Auto-fill skala</button>
+                </div>
+                <div class="sheet-toolbar__field sheet-toolbar__field--right" data-help="Fjerner alle noder i hele Sheet Music — tempo, taktart og toneart bevares.">
+                    <button type="button" class="sheet-toolbar__btn sheet-toolbar__btn--ghost" data-sheet-clear>Clear notes</button>
+                </div>
+            </div>
+
+            <div class="release-modal__body release-modal__body--sheet">
+                <p class="sheet-intro" data-help="Værktøj: Vælg tempo, taktart og toneart ovenfor. Klik et ord eller træk en node fra paletten ned på nodelinjen — pitch bestemmes af hvor højt/lavt du slipper noden over staffet.">Træk en nodefigur fra paletten ned på et <strong>ord</strong> på nodelinjen — pitch sættes af y-positionen, ord-tildelingen af x-positionen. Eller klik et ord direkte for at vælge pitch og varighed via popoveren.</p>
+
+                <div class="sheet-note-palette" data-help="Drag-palet: Hold museknappen nede på en nodefigur, og træk den hen på et ord på nodelinjen. Det forenklede nodebillede sætter pitch ud fra hvor højt eller lavt du slipper noden over staffet — øverst = højt, nederst = dybt.">
+                    <span class="sheet-note-palette__label">Drag onto staff</span>
+                    <div class="sheet-note-palette__item" draggable="true" data-sheet-palette-item="whole" data-help="Helnode (4 slag i 4/4): Træk hen på et ord for at placere noden — pitch bestemmes af y-position over staffet.">𝅝</div>
+                    <div class="sheet-note-palette__item" draggable="true" data-sheet-palette-item="half" data-help="Halvnode (2 slag): Træk hen på et ord for at placere noden — pitch bestemmes af y-position over staffet.">𝅗𝅥</div>
+                    <div class="sheet-note-palette__item" draggable="true" data-sheet-palette-item="quarter" data-help="Kvartnode (1 slag): Træk hen på et ord for at placere noden — pitch bestemmes af y-position over staffet.">♩</div>
+                    <div class="sheet-note-palette__item" draggable="true" data-sheet-palette-item="eighth" data-help="Ottendedelsnode (½ slag): Træk hen på et ord for at placere noden — pitch bestemmes af y-position over staffet.">♪</div>
+                    <div class="sheet-note-palette__item" draggable="true" data-sheet-palette-item="sixteenth" data-help="Sekstendedelsnode (¼ slag): Træk hen på et ord for at placere noden — pitch bestemmes af y-position over staffet.">𝅘𝅥𝅯</div>
+                    <div class="sheet-note-palette__item sheet-note-palette__item--rest" draggable="true" data-sheet-palette-item="rest" data-help="Rest (pause): Træk hen på et ord for at indsætte en pause i stedet for en node.">𝄽</div>
+                </div>
+
+                <div class="sheet-sections" data-sheet-sections></div>
+                <p class="sheet-empty" data-sheet-empty hidden data-help="Tom-tilstand: Den valgte source har ingen tekst. Skift Source ovenfor — eller skriv tekst i Notes &amp; Lyrics og kom tilbage.">Main Lyrics er tom — gå til Notes &amp; Lyrics for at sammensætte den endelige tekst først.</p>
+            </div>
+
+            <footer class="release-modal__actions">
+                <button type="button" class="release-modal__btn" data-close-sheet>Close</button>
+            </footer>
+
+            <!-- Note picker popover — pitch + duration -->
+            <div class="sheet-note-popover" data-sheet-note-popover hidden data-help="Note-vælger: Vælg pitch (oktav + nodenavn) og varighed for det aktive ord. Tryk Rest for en pause, eller Clear for at fjerne noden.">
+                <header class="sheet-note-popover__head">
+                    <span class="sheet-note-popover__title">Note for <strong data-sheet-note-word>—</strong></span>
+                    <button type="button" class="lyrics-rhyme-popover__close" data-sheet-note-close aria-label="Close" data-help="Luk node-vælger uden at ændre noget.">&times;</button>
+                </header>
+                <div class="sheet-note-popover__body">
+                    <div class="sheet-note-row" data-help="Oktav: Hvor højt eller dybt nodepalet ligger. 4 er den centrale oktav (midt-C er C4); 3 er en oktav under, 5 en oktav over.">
+                        <span class="sheet-note-row__label">Octave</span>
+                        <div class="sheet-octave-row" data-sheet-octave-row></div>
+                    </div>
+                    <div class="sheet-note-row" data-help="Pitch: Hvilken tone i den valgte oktav. C, D, E, F, G, A, B er de hvide tangenter; rækken under (♯) er de sorte. Tryk samme pitch igen for at fjerne noden.">
+                        <span class="sheet-note-row__label">Pitch</span>
+                        <div class="sheet-pitch-grid" data-sheet-pitch-grid></div>
+                    </div>
+                    <div class="sheet-note-row" data-help="Varighed: Hvor længe noden lyder, målt i nodeværdier. Helnode er længst; sekstendedele er kortest. Vælg ud fra hvor mange ord der skal være pr. takt.">
+                        <span class="sheet-note-row__label">Duration</span>
+                        <div class="sheet-duration-row" data-sheet-duration-row></div>
+                    </div>
+                    <div class="sheet-note-row" data-help="Specielle handlinger: Rest indsætter en pause i stedet for en node. Clear fjerner noden helt fra ordet.">
+                        <button type="button" class="sheet-note-special" data-sheet-rest>Rest (pause)</button>
+                        <button type="button" class="sheet-note-special sheet-note-special--clear" data-sheet-note-clear>Clear note</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Activity log modal — shows every action by every team member ===== -->
+    <div class="release-modal-overlay" id="projectLogModal" data-project-log-modal aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="release-modal release-modal--log">
+            <header class="release-modal__header">
+                <h2 class="release-modal__title" data-project-log-title>Activity log</h2>
+                <button type="button" class="release-modal__close" data-close-project-log aria-label="Close" data-help="Luk aktivitetsloggen.">&times;</button>
+            </header>
+            <div class="release-modal__body">
+                <p class="project-log__intro" data-help="Aktivitetslog: Auto-genereret historik over alle handlinger på projektet — uploads, fjernelser, godkendelser, lyrics-ændringer osv.">Hver handling fra teamet på dette projekt logges automatisk. Brug filteret for at se hvad et bestemt medlem har foretaget.</p>
+                <div class="project-log__filter" data-project-log-filter data-help="Filter-piller: Klik et medlems navn for kun at se deres handlinger. 'All members' viser alle."></div>
+                <ul class="project-log__list" data-project-log-list data-help="Log-poster: Hver post viser hvem der gjorde hvad og hvornår. Farvet tag indikerer handlingstypen (Upload, Remove, Restore, Save, Approve, Rename, Lyrics)."></ul>
+                <p class="project-log__empty" data-project-log-empty hidden data-help="Ingen aktivitet endnu — eller filtret matcher intet. Prøv at vælge 'All members'.">Ingen aktivitet endnu — handlinger vises her, så snart nogen uploader, ændrer eller godkender noget på projektet.</p>
+            </div>
+            <footer class="release-modal__actions">
+                <button type="button" class="release-modal__btn" data-close-project-log data-help="Luk loggen.">Close</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ===== Royalty splits popup — opens when a royalty pill is clicked ===== -->
+    <div class="release-modal-overlay" id="royaltySplitsPopup" data-royalty-popup aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="release-modal release-modal--royalty">
+            <header class="release-modal__header">
+                <h2 class="release-modal__title" data-royalty-popup-title>Royalty</h2>
+                <button type="button" class="release-modal__close" data-close-royalty-popup aria-label="Close">&times;</button>
+            </header>
+            <div class="release-modal__body">
+                <p class="royalty-popup__hint" data-royalty-popup-hint></p>
+
+                <div class="royalty-popup__payback" data-royalty-payback hidden data-help="Payback to original team: Hvor stor en del af hver derived brug (cover, sample, tutorial) flyder tilbage til det originale team. Resten beholder den nye creator som belønning for arbejdet. PDF-spec defaults: Covers 50%, Sample 35%, Tutorials 15% — du kan justere efter forhandling.">
+                    <div class="royalty-popup__payback-row">
+                        <span class="royalty-popup__payback-label" data-cover-payback-label>Original team payback</span>
+                        <span class="royalty-popup__input-wrap royalty-popup__input-wrap--lg">
+                            <input type="number" class="royalty-popup__input" min="0" max="100" step="0.01" inputmode="decimal" value="50" data-cover-payback>
+                            <span class="royalty-popup__input-suffix">%</span>
+                        </span>
+                    </div>
+                    <p class="royalty-popup__payback-desc">Af hver derived brug, <strong data-cover-payback-original>50%</strong> flyder tilbage til det originale team — <span data-cover-payback-creator-label>cover-artisten</span> beholder de resterende <strong data-cover-payback-cover>50%</strong>.</p>
+                </div>
+
+                <p class="royalty-popup__rule">Adjust each member’s share — the total must always equal <strong>100%</strong>.</p>
+                <div class="royalty-popup__list" data-royalty-popup-list></div>
+                <div class="royalty-popup__total" data-royalty-popup-total>
+                    <span>Total</span>
+                    <span class="royalty-popup__total-num" data-royalty-popup-total-num>100%</span>
+                    <span class="royalty-popup__total-icon" data-royalty-popup-total-icon>✓</span>
+                </div>
+            </div>
+            <footer class="release-modal__actions">
+                <button type="button" class="release-modal__btn" data-royalty-popup-balance>Balance evenly</button>
+                <button type="button" class="release-modal__btn release-modal__btn--primary" data-close-royalty-popup>Done</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ===== Release modal (Bilag A — APPROVALS FOR RELEASE) ===== -->
+    <div class="release-modal-overlay" id="releaseModal" data-release-modal aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="release-modal">
+            <header class="release-modal__header">
+                <h2 class="release-modal__title">Release project</h2>
+                <button type="button" class="release-modal__close" data-close-release aria-label="Close">&times;</button>
+            </header>
+
+            <div class="release-modal__body">
+                <div class="release-modal__field" data-help="UPC code: Universal Product Code — bliver automatisk genereret af STAGECORD og tilføjet til projektets metadata. Distributører bruger den til at identificere release på tværs af streaming-platforme.">
+                    <span class="release-modal__label">UPC code (auto-generated)</span>
+                    <div class="release-modal__upc">
+                        <span class="release-modal__upc-code" id="releaseUpcCode">8 19376 00231 7</span>
+                        <span class="release-modal__upc-tag">Generated</span>
+                    </div>
+                </div>
+
+                <div class="release-modal__field" data-help="Subject: Et projekt kan kun udgives på ét subject. Hvis artisten er tagget med flere subjects på sin profil (Musician, Podcaster, Comedian, Author), skal projektet låses til ét her.">
+                    <span class="release-modal__label">Release as subject</span>
+                    <select class="release-modal__select" id="releaseSubject">
+                        <option value="musician" selected>Musician</option>
+                        <option value="podcaster">Podcaster</option>
+                        <option value="comedian">Comedian</option>
+                        <option value="author">Author</option>
+                    </select>
+                    <span class="release-modal__hint">A project can only be released onto one subject.</span>
+                </div>
+
+                <div class="release-modal__field" data-help="Release-dato: Vælges af projektets owner. Når datoen passerer, går projektet live på alle medvirkendes artist-sider og distribueres til linkede streaming-platforme.">
+                    <span class="release-modal__label">Release date</span>
+                    <input type="date" class="release-modal__date" id="releaseDate">
+                    <span class="release-modal__hint">Goes live at 00:00 CET on the chosen date.</span>
+                </div>
+            </div>
+
+            <footer class="release-modal__actions">
+                <button type="button" class="release-modal__btn" data-close-release>Cancel</button>
+                <button type="button" class="release-modal__btn release-modal__btn--primary" id="releaseConfirmBtn">Schedule release</button>
+            </footer>
+
+            <div class="release-modal__feedback" data-release-feedback hidden></div>
+        </div>
+    </div>
+
+    <script src="../js/core.js"></script>
+    <script src="../js/modes.js"></script>
+    <script src="../js/sidebar.js"></script>
+    <script src="../js/topbar-widgets.js"></script>
+    <script src="../js/stage-badge.js"></script>
+    <script src="../js/acting-as-service.js"></script>
+    <script src="../js/stage-cards.js"></script>
+    <script src="../js/stage-label.js"></script>
+    <script src="../js/stage-resources.js"></script>
+    <script src="../js/stage-economy.js"></script>
+    <script src="../js/settings.js"></script>
+    <script src="../js/activity-feed.js"></script>
+    <script src="../js/app.js"></script>
+</body>
+</html>

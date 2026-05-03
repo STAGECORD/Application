@@ -1,0 +1,2551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAGECORD - Streaming</title>
+    <link rel="stylesheet" href="../css/sidebar.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/logo.css">
+    <link rel="stylesheet" href="../css/topbar.css">
+    <link rel="stylesheet" href="../css/artist.css">
+    <link rel="stylesheet" href="../css/streaming.css">
+    <link rel="stylesheet" href="../css/market-teaching.css">
+    <link rel="stylesheet" href="../css/instruments.css">
+    <link rel="stylesheet" href="../css/pitch-modals.css">
+</head>
+<body>
+    <!-- Left Sidebar Navigation -->
+    <aside class="sidebar" data-sidebar></aside>
+
+    <!-- Top Bar -->
+    <header class="topbar">
+        <div class="logo-container">
+            <a href="../index.html" class="logo-link">
+                <h1 class="logo">
+                    <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
+                </h1>
+            </a>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Search Artists, Concerts, Venues, Friends and much more" aria-label="Search"/>
+            <svg class="search-icon" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/>
+                <path d="M18 18L24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </div>
+
+        <button type="button" class="help-button" aria-label="Help" aria-pressed="false" data-help="Hjælpeknap.">
+            <span class="help-mark">?</span>
+        </button>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <!-- ============ Hero carousel — featured live + soon-live ============ -->
+            <section class="streaming-hero" data-help="Featured carousel: Roterer mellem aktuelle online koncerter hvert 15. sekund. Klik pilene for at gå frem/tilbage manuelt.">
+                <button type="button" class="streaming-hero__nav streaming-hero__nav--prev" aria-label="Previous featured stream">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M14 6l-6 6 6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <button type="button" class="streaming-hero__nav streaming-hero__nav--next" aria-label="Next featured stream">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M10 6l6 6-6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+
+                <div class="streaming-hero__slides">
+
+                    <!-- Slide 1 — Jokesmith Johnson live -->
+                    <article class="streaming-hero__slide is-active" data-category="comedy" style="--bg-image: url('../assets/images/artists/jokesmith-johnson-cover.png');">
+                        <div class="streaming-hero__inner">
+                            <div class="streaming-hero__main">
+                                <span class="streaming-hero__live">
+                                    <span class="streaming-hero__live-dot" aria-hidden="true"></span>
+                                    Live now · RUST, Copenhagen
+                                </span>
+                                <h1 class="streaming-hero__title">Jokesmith Johnson — Late Cellar Set</h1>
+                                <p class="streaming-hero__artist">JOKESMITH JOHNSON · stand-up · 2026.04.26</p>
+                                <div class="streaming-hero__meta">
+                                    <span>🎟️ Online Concert Pass · 79 DKK</span>
+                                    <span>⏱ 18 min in · ~32 min remaining</span>
+                                    <span>🌐 EN with auto-subtitles</span>
+                                </div>
+                                <div class="streaming-hero__cta-row">
+                                    <button type="button" class="streaming-cta streaming-cta--play"
+                                        data-event-date="Saturday, 26 April · Late Cellar Set"
+                                        data-event-venue="RUST, Copenhagen · live now"
+                                        data-event-time="On stage · 18 min in · ~32 min remaining"
+                                        data-event-description="Jokesmith Johnson — late cellar stand-up set. Tickets at the door are sold out, but you can still buy an Online Concert Pass and watch the show live from anywhere."
+                                        data-event-ticket-price="195 DKK"
+                                        data-event-viewer-price="79 DKK"
+                                        data-event-tickets-available="false">
+                                        <svg class="streaming-cta__icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                                        Watch live
+                                    </button>
+                                    <a href="../venue/index.html" class="streaming-cta streaming-cta--ghost">View venue</a>
+                                </div>
+                            </div>
+                            <div class="streaming-hero__viewers">
+                                <span class="streaming-hero__viewers-count">12,847</span>
+                                <span class="streaming-hero__viewers-label">watching live</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Slide 2 — Jeremy Freedom live -->
+                    <article class="streaming-hero__slide" style="--bg-image: url('../assets/images/artists/jeremy-freedom-cover.png');" data-category="concert">
+                        <div class="streaming-hero__inner">
+                            <div class="streaming-hero__main">
+                                <span class="streaming-hero__live">
+                                    <span class="streaming-hero__live-dot" aria-hidden="true"></span>
+                                    Live now · Mercury Lounge, NYC
+                                </span>
+                                <h1 class="streaming-hero__title">FREEDOM Tour — Brooklyn night 2</h1>
+                                <p class="streaming-hero__artist">JEREMY FREEDOM · indie · 2026.04.26</p>
+                                <div class="streaming-hero__meta">
+                                    <span>🎟️ Online Concert Pass · 119 DKK</span>
+                                    <span>⏱ 1h 12min in · encore approaching</span>
+                                    <span>🌐 EN</span>
+                                </div>
+                                <div class="streaming-hero__cta-row">
+                                    <button type="button" class="streaming-cta streaming-cta--play"
+                                        data-event-date="Saturday, 26 April · FREEDOM Brooklyn"
+                                        data-event-venue="Mercury Lounge, NYC · live now"
+                                        data-event-time="On stage · 1h 12min in · encore approaching"
+                                        data-event-description="Jeremy Freedom — FREEDOM Tour, Brooklyn night two. Sold out at the venue. Online Concert Pass available so you don't miss the encore."
+                                        data-event-ticket-price="385 DKK"
+                                        data-event-viewer-price="119 DKK"
+                                        data-event-tickets-available="false">
+                                        <svg class="streaming-cta__icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                                        Watch live
+                                    </button>
+                                    <a href="../artist/index.html?id=jeremy-freedom" class="streaming-cta streaming-cta--ghost">View artist</a>
+                                </div>
+                            </div>
+                            <div class="streaming-hero__viewers">
+                                <span class="streaming-hero__viewers-count">3,218</span>
+                                <span class="streaming-hero__viewers-label">watching live</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Slide 3 — DJ Frostbite live -->
+                    <article class="streaming-hero__slide" style="--bg-image: url('../assets/images/artists/kebu-event.jpg');" data-category="dj">
+                        <div class="streaming-hero__inner">
+                            <div class="streaming-hero__main">
+                                <span class="streaming-hero__live">
+                                    <span class="streaming-hero__live-dot" aria-hidden="true"></span>
+                                    Live now · Pumpehuset, Copenhagen
+                                </span>
+                                <h1 class="streaming-hero__title">Friday warehouse · vinyl-only set</h1>
+                                <p class="streaming-hero__artist">DJ FROSTBITE · DJ set · 2026.04.26</p>
+                                <div class="streaming-hero__meta">
+                                    <span>🎟️ Online Concert Pass · 49 DKK</span>
+                                    <span>⏱ 42 min in · ~3h remaining</span>
+                                    <span>🌐 No language barrier</span>
+                                </div>
+                                <div class="streaming-hero__cta-row">
+                                    <button type="button" class="streaming-cta streaming-cta--play"
+                                        data-event-date="Saturday, 26 April · Frostbite DJ set"
+                                        data-event-venue="Pumpehuset, Copenhagen · live now"
+                                        data-event-time="On stage · 42 min in · ~3h remaining"
+                                        data-event-description="DJ Frostbite — Friday warehouse vinyl-only set. Doors at the venue are full but the Online Concert Pass keeps the room open all night."
+                                        data-event-ticket-price="225 DKK"
+                                        data-event-viewer-price="49 DKK"
+                                        data-event-tickets-available="false">
+                                        <svg class="streaming-cta__icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                                        Watch live
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="streaming-hero__viewers">
+                                <span class="streaming-hero__viewers-count">4,162</span>
+                                <span class="streaming-hero__viewers-label">watching live</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Slide 4 — Lola Young going live soon -->
+                    <article class="streaming-hero__slide" style="--bg-image: url('../assets/images/artists/lola-young-event.jpg');" data-category="concert">
+                        <div class="streaming-hero__inner">
+                            <div class="streaming-hero__main">
+                                <span class="streaming-hero__live streaming-hero__live--soon">
+                                    Goes live in 47 min · RUST, Copenhagen
+                                </span>
+                                <h1 class="streaming-hero__title">Lola Young — soul-pop solo show</h1>
+                                <p class="streaming-hero__artist">LOLA YOUNG · soul-pop · 2026.04.26</p>
+                                <div class="streaming-hero__meta">
+                                    <span>🎟️ Online Concert Pass · 89 DKK</span>
+                                    <span>⏱ 20:30 doors · 21:00 stage</span>
+                                    <span>🌐 EN</span>
+                                </div>
+                                <div class="streaming-hero__cta-row">
+                                    <button type="button" class="streaming-cta streaming-cta--play" data-stream-action="remind">
+                                        <svg class="streaming-cta__icon" viewBox="0 0 24 24" fill="none"><path d="M12 22a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2zm6-6V11a6 6 0 0 0-5-5.91V4a1 1 0 1 0-2 0v1.09A6 6 0 0 0 6 11v5l-2 2v1h16v-1l-2-2z" fill="currentColor"/></svg>
+                                        Set reminder
+                                    </button>
+                                    <button type="button" class="streaming-cta streaming-cta--ghost"
+                                        data-event-date="Saturday, 26 April · Lola Young pre-buy"
+                                        data-event-venue="RUST, Copenhagen · pre-show"
+                                        data-event-time="Doors 20:30 · Stage 21:00"
+                                        data-event-description="Lola Young — soul-pop solo show. Pre-buy your Online Concert Pass and we'll start streaming as soon as she walks on stage."
+                                        data-event-ticket-price="245 DKK"
+                                        data-event-viewer-price="89 DKK"
+                                        data-event-tickets-available="false">Pre-buy pass</button>
+                                </div>
+                            </div>
+                            <div class="streaming-hero__viewers">
+                                <span class="streaming-hero__viewers-count">2,914</span>
+                                <span class="streaming-hero__viewers-label">waiting · live in 47m</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Slide 5 — KEBU going live tonight -->
+                    <article class="streaming-hero__slide" style="--bg-image: url('../assets/images/artists/kebu-event.jpg');" data-category="concert">
+                        <div class="streaming-hero__inner">
+                            <div class="streaming-hero__main">
+                                <span class="streaming-hero__live streaming-hero__live--soon">
+                                    Goes live in 2h 15min · RUST, Copenhagen
+                                </span>
+                                <h1 class="streaming-hero__title">KEBU — Nordic synthwave live</h1>
+                                <p class="streaming-hero__artist">KEBU · synthwave · 2026.04.26</p>
+                                <div class="streaming-hero__meta">
+                                    <span>🎟️ Online Concert Pass · 79 DKK</span>
+                                    <span>⏱ 22:15 stage</span>
+                                    <span>🌐 No language barrier</span>
+                                </div>
+                                <div class="streaming-hero__cta-row">
+                                    <button type="button" class="streaming-cta streaming-cta--play" data-stream-action="remind">
+                                        <svg class="streaming-cta__icon" viewBox="0 0 24 24" fill="none"><path d="M12 22a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2zm6-6V11a6 6 0 0 0-5-5.91V4a1 1 0 1 0-2 0v1.09A6 6 0 0 0 6 11v5l-2 2v1h16v-1l-2-2z" fill="currentColor"/></svg>
+                                        Set reminder
+                                    </button>
+                                    <button type="button" class="streaming-cta streaming-cta--ghost"
+                                        data-event-date="Saturday, 26 April · KEBU pre-buy"
+                                        data-event-venue="RUST, Copenhagen · pre-show"
+                                        data-event-time="Stage 22:15"
+                                        data-event-description="KEBU — Nordic synthwave concert. Pre-buy the Online Concert Pass and start watching the moment the first synth comes on."
+                                        data-event-ticket-price="220 DKK"
+                                        data-event-viewer-price="79 DKK"
+                                        data-event-tickets-available="false">Pre-buy pass</button>
+                                </div>
+                            </div>
+                            <div class="streaming-hero__viewers">
+                                <span class="streaming-hero__viewers-count">1,508</span>
+                                <span class="streaming-hero__viewers-label">waiting · live in 2h 15m</span>
+                            </div>
+                        </div>
+                    </article>
+
+                </div>
+
+                <div class="streaming-hero__dots" role="tablist" aria-label="Featured streams">
+                    <button type="button" class="streaming-hero__dot is-active" aria-label="Slide 1"></button>
+                    <button type="button" class="streaming-hero__dot" aria-label="Slide 2"></button>
+                    <button type="button" class="streaming-hero__dot" aria-label="Slide 3"></button>
+                    <button type="button" class="streaming-hero__dot" aria-label="Slide 4"></button>
+                    <button type="button" class="streaming-hero__dot" aria-label="Slide 5"></button>
+                </div>
+            </section>
+
+            <!-- Filter chips -->
+            <div class="streaming-filters" data-help="Filtrer indhold på platformen — vis kun den genre eller type stream du leder efter.">
+                <button type="button" class="streaming-filter is-active" data-filter="all">All</button>
+                <button type="button" class="streaming-filter" data-filter="music">Music</button>
+                <button type="button" class="streaming-filter" data-filter="concert">Concerts</button>
+                <button type="button" class="streaming-filter" data-filter="comedy">Comedy</button>
+                <button type="button" class="streaming-filter" data-filter="dance">Dance &amp; performance</button>
+                <button type="button" class="streaming-filter" data-filter="studio">Studio sessions</button>
+                <button type="button" class="streaming-filter" data-filter="podcast">Podcasts</button>
+                <button type="button" class="streaming-filter" data-filter="dj">DJ sets</button>
+            </div>
+
+            <!-- ============ Evening Pass ============ -->
+            <section class="evening-pass-banner" data-help="Evening Pass: Køb 6 timers underholdning i ét stræk. Vælg sprog og genre, så foreslår STAGECORD et back-to-back program der fylder din aften.">
+                <div class="evening-pass-banner__main">
+                    <span class="evening-pass-banner__tag">Evening Pass · new</span>
+                    <h2 class="evening-pass-banner__heading">Six hours of live entertainment, curated for your evening.</h2>
+                    <p class="evening-pass-banner__sub">Pick when you want to start, the languages you understand, and the genres you're into. STAGECORD lines up online concerts back-to-back so you don't have to think about what's next.</p>
+                    <div class="evening-pass-banner__cta-row">
+                        <button type="button" class="streaming-cta streaming-cta--play" id="openEveningPassBtn">
+                            <svg class="streaming-cta__icon" viewBox="0 0 24 24" fill="none">
+                                <rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
+                                <path d="M3 9h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            Plan my evening
+                        </button>
+                        <span class="evening-pass-banner__price">From 199 DKK · 6 hours</span>
+                    </div>
+                </div>
+                <div class="evening-pass-banner__art" aria-hidden="true">
+                    <div class="evening-pass-banner__art-tile" style="background-image: url('../assets/images/artists/jokesmith-johnson-cover.png');"></div>
+                    <div class="evening-pass-banner__art-tile" style="background-image: url('../assets/images/artists/lola-young-event.jpg');"></div>
+                    <div class="evening-pass-banner__art-tile" style="background-image: url('../assets/images/artists/jeremy-freedom-cover.png');"></div>
+                    <div class="evening-pass-banner__art-tile" style="background-image: url('../assets/images/artists/kebu-event.jpg');"></div>
+                </div>
+            </section>
+
+            <!-- ============ Live Now ============ -->
+            <section class="streaming-section" data-help="Live now: Streams der spiller på platformen lige nu. Hvert kort har en pulserende rød LIVE-indikator.">
+                <header class="streaming-section__head">
+                    <h2 class="streaming-section__heading">Live now</h2>
+                    <a href="#" class="streaming-section__view-all">View all live →</a>
+                </header>
+                <div class="streaming-row">
+
+                    <a href="#" class="streaming-card" data-category="comedy"
+                        data-event-date="Saturday, 26 April · Late Cellar Set"
+                        data-event-venue="RUST, Copenhagen · live now"
+                        data-event-time="On stage · 18 min in · ~32 min remaining"
+                        data-event-description="Jokesmith Johnson — late cellar stand-up set. Tickets at the door are sold out, but you can still buy an Online Concert Pass and watch the show live from anywhere."
+                        data-event-ticket-price="195 DKK"
+                        data-event-viewer-price="79 DKK"
+                        data-event-tickets-available="false" data-category="comedy">
+                        <div class="streaming-card__thumb" style="background-image: url('../assets/images/artists/jokesmith-johnson-cover.png');">
+                            <span class="streaming-card__live">Live</span>
+                            <span class="streaming-card__viewers">👁 12.8K</span>
+                            <div class="streaming-card__play">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Late Cellar Set</h3>
+                            <span class="streaming-card__byline">
+                                <span class="streaming-card__avatar" style="background-image: url('../assets/images/artists/jokesmith-johnson-cover.png');"></span>
+                                <span class="auto-name">Jokesmith Johnson</span>
+                            </span>
+                            <span class="streaming-card__meta">
+                                Comedy <span class="streaming-card__meta-dot">RUST</span>
+                                <span class="streaming-card__price">79 DKK</span>
+                            </span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card" data-category="dj"
+                        data-event-date="Saturday, 26 April · Frostbite DJ set"
+                        data-event-venue="Pumpehuset, Copenhagen · live now"
+                        data-event-time="On stage · 42 min in · ~3h remaining"
+                        data-event-description="DJ Frostbite — Friday warehouse vinyl-only set. Doors at the venue are full but the Online Concert Pass keeps the room open all night."
+                        data-event-ticket-price="225 DKK"
+                        data-event-viewer-price="49 DKK"
+                        data-event-tickets-available="false">
+                        <div class="streaming-card__thumb" style="background-image: url('../assets/images/artists/jokesmith-johnson-post-3.png');">
+                            <span class="streaming-card__live">Live</span>
+                            <span class="streaming-card__viewers">👁 4.1K</span>
+                            <div class="streaming-card__play">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Friday warehouse · vinyl-only set</h3>
+                            <span class="streaming-card__byline">
+                                <span class="streaming-card__avatar" style="background-image: url('../assets/images/artists/placeholder-male-3.png');"></span>
+                                <span class="auto-name">DJ Frostbite</span>
+                            </span>
+                            <span class="streaming-card__meta">
+                                DJ set <span class="streaming-card__meta-dot">Pumpehuset</span>
+                                <span class="streaming-card__price">49 DKK</span>
+                            </span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card" data-category="dance">
+                        <div class="streaming-card__thumb" style="background-image: url('../assets/images/artists/jokesmith-johnson-post-2.png');">
+                            <span class="streaming-card__live">Live</span>
+                            <span class="streaming-card__viewers">👁 1.4K</span>
+                            <div class="streaming-card__play">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Choreography drop · live rehearsal</h3>
+                            <span class="streaming-card__byline">
+                                <span class="streaming-card__avatar" style="background-image: url('../assets/images/artists/placeholder-female-2.png');"></span>
+                                <span class="auto-name">Liva Mai</span>
+                            </span>
+                            <span class="streaming-card__meta">
+                                Dance <span class="streaming-card__meta-dot">Studio · Aarhus</span>
+                                <span class="streaming-card__price">Free</span>
+                            </span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card" data-category="podcast">
+                        <div class="streaming-card__thumb" style="background-image: url('../assets/images/artists/placeholder-male-2.png');">
+                            <span class="streaming-card__live">Live</span>
+                            <span class="streaming-card__viewers">👁 612</span>
+                            <div class="streaming-card__play">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Behind The Curtain · S4E2 live</h3>
+                            <span class="streaming-card__byline">
+                                <span class="streaming-card__avatar" style="background-image: url('../assets/images/artists/jokesmith-johnson-cover.png');"></span>
+                                <span class="auto-name">Jokesmith Johnson</span>
+                            </span>
+                            <span class="streaming-card__meta">
+                                Podcast
+                                <span class="streaming-card__price">Free</span>
+                            </span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card" data-category="concert"
+                        data-event-date="Saturday, 26 April · FREEDOM Brooklyn"
+                        data-event-venue="Mercury Lounge, NYC · live now"
+                        data-event-time="On stage · 1h 12min in · encore approaching"
+                        data-event-description="Jeremy Freedom — FREEDOM Tour, Brooklyn night two. Sold out at the venue. Online Concert Pass available so you don't miss the encore."
+                        data-event-ticket-price="385 DKK"
+                        data-event-viewer-price="119 DKK"
+                        data-event-tickets-available="false" data-category="concert">
+                        <div class="streaming-card__thumb" style="background-image: url('../assets/images/artists/jeremy-freedom-cover.png');">
+                            <span class="streaming-card__live">Live</span>
+                            <span class="streaming-card__viewers">👁 3.2K</span>
+                            <div class="streaming-card__play">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">FREEDOM Tour · Brooklyn night 2</h3>
+                            <span class="streaming-card__byline">
+                                <span class="streaming-card__avatar" style="background-image: url('../assets/images/artists/jeremy-freedom-profile.png');"></span>
+                                <span class="auto-name">Jeremy Freedom</span>
+                            </span>
+                            <span class="streaming-card__meta">
+                                Concert <span class="streaming-card__meta-dot">Mercury Lounge</span>
+                                <span class="streaming-card__price">119 DKK</span>
+                            </span>
+                        </div>
+                    </a>
+
+                </div>
+            </section>
+
+            <!-- ============ Coming up ============ -->
+            <section class="streaming-section" data-help="Coming up: Kommende live-streams med tidspunkt og påmind-mig-knap.">
+                <header class="streaming-section__head">
+                    <h2 class="streaming-section__heading">Coming up this week</h2>
+                    <a href="#" class="streaming-section__view-all">View calendar →</a>
+                </header>
+                <div class="streaming-row">
+
+                    <a href="#" class="streaming-card" data-category="concert">
+                        <div class="streaming-card__thumb" style="background-image: url('../assets/images/artists/lola-young-event.jpg');">
+                            <span class="streaming-card__duration">Wed · 20:30</span>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Lola Young — soul-pop solo show</h3>
+                            <span class="streaming-card__byline">
+                                <span class="streaming-card__avatar" style="background-image: url('../assets/images/artists/lola-young-profile.jpg');"></span>
+                                <span class="auto-name">Lola Young</span>
+                            </span>
+                            <span class="streaming-card__meta">
+                                Concert <span class="streaming-card__meta-dot">RUST</span>
+                                <span class="streaming-card__price">89 DKK</span>
+                            </span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card" data-category="concert">
+                        <div class="streaming-card__thumb" style="background-image: url('../assets/images/artists/kebu-event.jpg');">
+                            <span class="streaming-card__duration">Sat · 20:30</span>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">KEBU live — synthwave concert</h3>
+                            <span class="streaming-card__byline">
+                                <span class="streaming-card__avatar" style="background-image: url('../assets/images/artists/kebu-profile.jpg');"></span>
+                                <span class="auto-name">KEBU</span>
+                            </span>
+                            <span class="streaming-card__meta">
+                                Concert <span class="streaming-card__meta-dot">RUST</span>
+                                <span class="streaming-card__price">79 DKK</span>
+                            </span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card" data-category="concert">
+                        <div class="streaming-card__thumb" style="background-image: url('../assets/images/artists/jonathan-roy-event.png');">
+                            <span class="streaming-card__duration">Sun · 20:30</span>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Jonathan Roy — Life Distortions tour</h3>
+                            <span class="streaming-card__byline">
+                                <span class="streaming-card__avatar" style="background-image: url('../assets/images/artists/jonathan-roy-profile.png');"></span>
+                                <span class="auto-name">Jonathan Roy</span>
+                            </span>
+                            <span class="streaming-card__meta">
+                                Concert <span class="streaming-card__meta-dot">RUST</span>
+                                <span class="streaming-card__price">79 DKK</span>
+                            </span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card" data-category="concert">
+                        <div class="streaming-card__thumb" style="background-image: url('../assets/images/artists/jokesmith-johnson-post-3.png');">
+                            <span class="streaming-card__duration">Sat · 22:00</span>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">MELLOW · Affilærd takeover</h3>
+                            <span class="streaming-card__byline">
+                                <span class="streaming-card__avatar" style="background-image: url('../assets/images/artists/mellow-profile.jpg');"></span>
+                                <span class="auto-name">Mellow</span>
+                            </span>
+                            <span class="streaming-card__meta">
+                                Hip-hop <span class="streaming-card__meta-dot">RUST</span>
+                                <span class="streaming-card__price">69 DKK</span>
+                            </span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card" data-category="concert">
+                        <div class="streaming-card__thumb" style="background-image: url('../assets/images/artists/girli-event.jpg');">
+                            <span class="streaming-card__duration">Fri · 20:30</span>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">GIRLI — Matriarchy listening party</h3>
+                            <span class="streaming-card__byline">
+                                <span class="streaming-card__avatar" style="background-image: url('../assets/images/artists/girli-profile.jpg');"></span>
+                                <span class="auto-name">Girli</span>
+                            </span>
+                            <span class="streaming-card__meta">
+                                Alt-pop <span class="streaming-card__meta-dot">RUST</span>
+                                <span class="streaming-card__price">89 DKK</span>
+                            </span>
+                        </div>
+                    </a>
+
+                </div>
+            </section>
+
+            <!-- ============ Recently aired ============ -->
+            <section class="streaming-section" data-help="Recently aired: Optagede streams du kan se on-demand. Inkluderer Online Concert Pass-køb der er udløbet og udvalgte gratis sessions.">
+                <header class="streaming-section__head">
+                    <h2 class="streaming-section__heading">Recently aired</h2>
+                    <a href="#" class="streaming-section__view-all">Browse all →</a>
+                </header>
+                <div class="streaming-row">
+
+                    <a href="#" class="streaming-card" data-category="concert">
+                        <div class="streaming-card__thumb" style="background-image: url('../assets/images/artists/mike-andersen-event.jpg');">
+                            <span class="streaming-card__duration">1:14:22</span>
+                            <div class="streaming-card__play">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">MIKE Andersen — full headline set</h3>
+                            <span class="streaming-card__byline">
+                                <span class="streaming-card__avatar" style="background-image: url('../assets/images/artists/mike-andersen-profile.png');"></span>
+                                <span class="auto-name">MIKE Andersen</span>
+                            </span>
+                            <span class="streaming-card__meta">
+                                Aired 2 days ago
+                                <span class="streaming-card__price">Replay free</span>
+                            </span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card" data-category="concert">
+                        <div class="streaming-card__thumb" style="background-image: url('../assets/images/artists/nick-sander-event.jpg');">
+                            <span class="streaming-card__duration">52:08</span>
+                            <div class="streaming-card__play">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Nick Sander — singer-songwriter night</h3>
+                            <span class="streaming-card__byline">
+                                <span class="streaming-card__avatar" style="background-image: url('../assets/images/artists/nick-sander-profile.jpg');"></span>
+                                <span class="auto-name">Nick Sander</span>
+                            </span>
+                            <span class="streaming-card__meta">
+                                Aired 5 days ago
+                                <span class="streaming-card__price">59 DKK</span>
+                            </span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card" data-category="comedy">
+                        <div class="streaming-card__thumb" style="background-image: url('../assets/images/artists/jokesmith-johnson-project-1.png');">
+                            <span class="streaming-card__duration">42:11</span>
+                            <div class="streaming-card__play">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Jokes On Me — Apollo Theatre</h3>
+                            <span class="streaming-card__byline">
+                                <span class="streaming-card__avatar" style="background-image: url('../assets/images/artists/jokesmith-johnson-cover.png');"></span>
+                                <span class="auto-name">Jokesmith Johnson</span>
+                            </span>
+                            <span class="streaming-card__meta">
+                                Aired last week
+                                <span class="streaming-card__price">79 DKK</span>
+                            </span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card" data-category="concert">
+                        <div class="streaming-card__thumb" style="background-image: url('../assets/images/artists/jeremy-online-performance.png');">
+                            <span class="streaming-card__duration">1:03:48</span>
+                            <div class="streaming-card__play">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">FREEDOM Tour — opening night</h3>
+                            <span class="streaming-card__byline">
+                                <span class="streaming-card__avatar" style="background-image: url('../assets/images/artists/jeremy-freedom-profile.png');"></span>
+                                <span class="auto-name">Jeremy Freedom</span>
+                            </span>
+                            <span class="streaming-card__meta">
+                                Aired last week
+                                <span class="streaming-card__price">89 DKK</span>
+                            </span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card" data-category="dance">
+                        <div class="streaming-card__thumb" style="background-image: url('../assets/images/artists/mike-andersen-event.jpg');">
+                            <span class="streaming-card__duration">28:54</span>
+                            <div class="streaming-card__play">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Camilla Step · #DanceChallenge final</h3>
+                            <span class="streaming-card__byline">
+                                <span class="streaming-card__avatar" style="background-image: url('../assets/images/artists/placeholder-female-3.png');"></span>
+                                <span class="auto-name">Camilla Step</span>
+                            </span>
+                            <span class="streaming-card__meta">
+                                Aired last week
+                                <span class="streaming-card__price">Free</span>
+                            </span>
+                        </div>
+                    </a>
+
+                </div>
+            </section>
+
+            <!-- ============ Featured concerts (large grid) ============ -->
+            <section class="streaming-section" data-help="Featured: Udvalgte koncerter du kan se on-demand i hi-res, kurateret af STAGECORD.">
+                <header class="streaming-section__head">
+                    <h2 class="streaming-section__heading">Featured concerts</h2>
+                    <a href="#" class="streaming-section__view-all">See full library →</a>
+                </header>
+                <div class="streaming-grid">
+
+                    <a href="#" class="streaming-card" data-category="comedy">
+                        <div class="streaming-card__thumb" style="background-image: url('../assets/images/artists/jokesmith-johnson-cover.png');">
+                            <span class="streaming-card__duration">1:32:48</span>
+                            <div class="streaming-card__play">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Jokesmith Johnson — Royal Albert Hall</h3>
+                            <span class="streaming-card__byline">
+                                <span class="streaming-card__avatar" style="background-image: url('../assets/images/artists/jokesmith-johnson-cover.png');"></span>
+                                <span class="auto-name">Jokesmith Johnson</span>
+                            </span>
+                            <span class="streaming-card__meta">
+                                Comedy special · 2024
+                                <span class="streaming-card__price">149 DKK</span>
+                            </span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card" data-category="concert">
+                        <div class="streaming-card__thumb" style="background-image: url('../assets/images/artists/jeremy-freedom-cover.png');">
+                            <span class="streaming-card__duration">1:02:14</span>
+                            <div class="streaming-card__play">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Jeremy Freedom — Mercury Lounge</h3>
+                            <span class="streaming-card__byline">
+                                <span class="streaming-card__avatar" style="background-image: url('../assets/images/artists/jeremy-freedom-profile.png');"></span>
+                                <span class="auto-name">Jeremy Freedom</span>
+                            </span>
+                            <span class="streaming-card__meta">
+                                Indie · 2024
+                                <span class="streaming-card__price">119 DKK</span>
+                            </span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card" data-category="concert">
+                        <div class="streaming-card__thumb" style="background-image: url('../assets/images/artists/mellow-event.jpg');">
+                            <span class="streaming-card__duration">58:32</span>
+                            <div class="streaming-card__play">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Mellow — Vega Sessions</h3>
+                            <span class="streaming-card__byline">
+                                <span class="streaming-card__avatar" style="background-image: url('../assets/images/artists/mellow-profile.jpg');"></span>
+                                <span class="auto-name">Mellow</span>
+                            </span>
+                            <span class="streaming-card__meta">
+                                Hip-hop · 2024
+                                <span class="streaming-card__price">79 DKK</span>
+                            </span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card" data-category="concert">
+                        <div class="streaming-card__thumb" style="background-image: url('../assets/images/artists/lola-young-event.jpg');">
+                            <span class="streaming-card__duration">47:19</span>
+                            <div class="streaming-card__play">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Lola Young — Roundhouse</h3>
+                            <span class="streaming-card__byline">
+                                <span class="streaming-card__avatar" style="background-image: url('../assets/images/artists/lola-young-profile.jpg');"></span>
+                                <span class="auto-name">Lola Young</span>
+                            </span>
+                            <span class="streaming-card__meta">
+                                Soul-pop · 2024
+                                <span class="streaming-card__price">99 DKK</span>
+                            </span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card" data-category="concert">
+                        <div class="streaming-card__thumb" style="background-image: url('../assets/images/artists/kebu-event.jpg');">
+                            <span class="streaming-card__duration">1:18:42</span>
+                            <div class="streaming-card__play">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">KEBU — Nordic Synth Festival</h3>
+                            <span class="streaming-card__byline">
+                                <span class="streaming-card__avatar" style="background-image: url('../assets/images/artists/kebu-profile.jpg');"></span>
+                                <span class="auto-name">KEBU</span>
+                            </span>
+                            <span class="streaming-card__meta">
+                                Synthwave · 2023
+                                <span class="streaming-card__price">79 DKK</span>
+                            </span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card" data-category="concert">
+                        <div class="streaming-card__thumb" style="background-image: url('../assets/images/artists/girli-event.jpg');">
+                            <span class="streaming-card__duration">39:24</span>
+                            <div class="streaming-card__play">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Girli — KOKO acoustic</h3>
+                            <span class="streaming-card__byline">
+                                <span class="streaming-card__avatar" style="background-image: url('../assets/images/artists/girli-profile.jpg');"></span>
+                                <span class="auto-name">Girli</span>
+                            </span>
+                            <span class="streaming-card__meta">
+                                Alt-pop · 2024
+                                <span class="streaming-card__price">79 DKK</span>
+                            </span>
+                        </div>
+                    </a>
+
+                </div>
+            </section>
+
+            <!-- ============ Music: new releases ============ -->
+            <section class="streaming-section" data-help="New releases: Frisk udgivet musik fra artister på platformen — albums, EPs og singler.">
+                <header class="streaming-section__head">
+                    <h2 class="streaming-section__heading">New releases</h2>
+                    <a href="#" class="streaming-section__view-all">Browse music →</a>
+                </header>
+                <div class="streaming-row">
+
+                    <a href="#" class="streaming-card streaming-card--album" data-category="music">
+                        <div class="streaming-card__thumb streaming-card__thumb--square" style="background-image: url('../assets/images/artists/jokesmith-johnson-project-1.png');">
+                            <div class="streaming-card__play">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Jokes On Me — Live</h3>
+                            <span class="streaming-card__byline">
+                                <span class="auto-name">Jokesmith Johnson</span>
+                            </span>
+                            <span class="streaming-card__meta">Album · 2024 · 75 min</span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card streaming-card--album" data-category="music">
+                        <div class="streaming-card__thumb streaming-card__thumb--square" style="background-image: url('../assets/images/artists/jeremy-freedom-cover.png');">
+                            <div class="streaming-card__play">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Open Window</h3>
+                            <span class="streaming-card__byline">
+                                <span class="auto-name">Jeremy Freedom</span>
+                            </span>
+                            <span class="streaming-card__meta">EP · 2024 · 24 min</span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card streaming-card--album" data-category="music">
+                        <div class="streaming-card__thumb streaming-card__thumb--square" style="background-image: url('../assets/images/artists/maya-thompson-profile.png');">
+                            <div class="streaming-card__play">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Late Night Sessions</h3>
+                            <span class="streaming-card__byline">
+                                <span class="auto-name">Maya Thompson</span>
+                            </span>
+                            <span class="streaming-card__meta">Album · 2024 · 42 min</span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card streaming-card--album" data-category="music">
+                        <div class="streaming-card__thumb streaming-card__thumb--square" style="background-image: url('../assets/images/artists/lola-young-profile.jpg');">
+                            <div class="streaming-card__play">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Soul Talk</h3>
+                            <span class="streaming-card__byline">
+                                <span class="auto-name">Lola Young</span>
+                            </span>
+                            <span class="streaming-card__meta">EP · 2024 · 28 min</span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card streaming-card--album" data-category="music">
+                        <div class="streaming-card__thumb streaming-card__thumb--square" style="background-image: url('../assets/images/artists/mellow-profile.jpg');">
+                            <div class="streaming-card__play">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Affilærd Vol. 4</h3>
+                            <span class="streaming-card__byline">
+                                <span class="auto-name">Mellow</span>
+                            </span>
+                            <span class="streaming-card__meta">Album · 2024 · 52 min</span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card streaming-card--album" data-category="music">
+                        <div class="streaming-card__thumb streaming-card__thumb--square" style="background-image: url('../assets/images/artists/kebu-profile.jpg');">
+                            <div class="streaming-card__play">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Northern Drive</h3>
+                            <span class="streaming-card__byline">
+                                <span class="auto-name">KEBU</span>
+                            </span>
+                            <span class="streaming-card__meta">Album · 2024 · 64 min</span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card streaming-card--album" data-category="music">
+                        <div class="streaming-card__thumb streaming-card__thumb--square" style="background-image: url('../assets/images/artists/jeremy-freedom-cover.png');">
+                            <div class="streaming-card__play">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Northern Lights</h3>
+                            <span class="streaming-card__byline">
+                                <span class="auto-name">Anchi Humifuku</span>
+                            </span>
+                            <span class="streaming-card__meta">Album · 2024 · 38 min</span>
+                        </div>
+                    </a>
+
+                </div>
+            </section>
+
+            <!-- ============ Music: top tracks today ============ -->
+            <section class="streaming-section" data-help="Top tracks: Mest streamede sange på platformen lige nu. Klik en track for at afspille i bottom-player'en.">
+                <header class="streaming-section__head">
+                    <h2 class="streaming-section__heading">Top tracks today</h2>
+                    <a href="#" class="streaming-section__view-all">Top 100 →</a>
+                </header>
+                <ol class="streaming-tracks-list">
+
+                    <li><a href="#" class="streaming-track" data-category="music">
+                        <span class="streaming-track__cover" style="background-image: url('../assets/images/artists/jeremy-freedom-cover.png');"></span>
+                        <div class="streaming-track__main">
+                            <div class="streaming-track__title">Manhattan Rain</div>
+                            <div class="streaming-track__byline auto-name">Anchi Humifuku</div>
+                        </div>
+                        <span class="streaming-track__plays">12.4M plays</span>
+                        <span class="streaming-track__duration">4:12</span>
+                    </a></li>
+
+                    <li><a href="#" class="streaming-track" data-category="music">
+                        <span class="streaming-track__cover" style="background-image: url('../assets/images/artists/jeremy-freedom-cover.png');"></span>
+                        <div class="streaming-track__main">
+                            <div class="streaming-track__title">Brooklyn Air (feat. Maya Thompson)</div>
+                            <div class="streaming-track__byline auto-name">Jeremy Freedom</div>
+                        </div>
+                        <span class="streaming-track__plays">5.1M plays</span>
+                        <span class="streaming-track__duration">3:48</span>
+                    </a></li>
+
+                    <li><a href="#" class="streaming-track" data-category="music">
+                        <span class="streaming-track__cover" style="background-image: url('../assets/images/artists/maya-thompson-profile.png');"></span>
+                        <div class="streaming-track__main">
+                            <div class="streaming-track__title">City Lights Are Calling</div>
+                            <div class="streaming-track__byline auto-name">Maya Thompson</div>
+                        </div>
+                        <span class="streaming-track__plays">8.4M plays</span>
+                        <span class="streaming-track__duration">4:08</span>
+                    </a></li>
+
+                    <li><a href="#" class="streaming-track" data-category="music">
+                        <span class="streaming-track__cover" style="background-image: url('../assets/images/artists/jeremy-freedom-cover.png');"></span>
+                        <div class="streaming-track__main">
+                            <div class="streaming-track__title">Velvet Hours</div>
+                            <div class="streaming-track__byline auto-name">Malik Johnson</div>
+                        </div>
+                        <span class="streaming-track__plays">1.2M plays</span>
+                        <span class="streaming-track__duration">4:12</span>
+                    </a></li>
+
+                    <li><a href="#" class="streaming-track" data-category="music">
+                        <span class="streaming-track__cover" style="background-image: url('../assets/images/artists/jeremy-freedom-profile.png');"></span>
+                        <div class="streaming-track__main">
+                            <div class="streaming-track__title">Eternaty</div>
+                            <div class="streaming-track__byline auto-name">Jeremy Freedom &amp; Maya Thompson</div>
+                        </div>
+                        <span class="streaming-track__plays">2.1M plays</span>
+                        <span class="streaming-track__duration">3:54</span>
+                    </a></li>
+
+                    <li><a href="#" class="streaming-track" data-category="music">
+                        <span class="streaming-track__cover" style="background-image: url('../assets/images/artists/mellow-profile.jpg');"></span>
+                        <div class="streaming-track__main">
+                            <div class="streaming-track__title">Stuck in the Loop</div>
+                            <div class="streaming-track__byline auto-name">Mellow</div>
+                        </div>
+                        <span class="streaming-track__plays">980K plays</span>
+                        <span class="streaming-track__duration">3:32</span>
+                    </a></li>
+
+                    <li><a href="#" class="streaming-track" data-category="music">
+                        <span class="streaming-track__cover" style="background-image: url('../assets/images/artists/jokesmith-johnson-project-2.png');"></span>
+                        <div class="streaming-track__main">
+                            <div class="streaming-track__title">Backseat Love</div>
+                            <div class="streaming-track__byline auto-name">Rathcire</div>
+                        </div>
+                        <span class="streaming-track__plays">1.4M plays</span>
+                        <span class="streaming-track__duration">3:14</span>
+                    </a></li>
+
+                    <li><a href="#" class="streaming-track" data-category="music">
+                        <span class="streaming-track__cover" style="background-image: url('../assets/images/artists/kebu-profile.jpg');"></span>
+                        <div class="streaming-track__main">
+                            <div class="streaming-track__title">Nordic Drive</div>
+                            <div class="streaming-track__byline auto-name">KEBU</div>
+                        </div>
+                        <span class="streaming-track__plays">720K plays</span>
+                        <span class="streaming-track__duration">4:48</span>
+                    </a></li>
+
+                </ol>
+            </section>
+
+            <!-- ============ Curated playlists ============ -->
+            <section class="streaming-section" data-help="Playlists: STAGECORD-kuraterede afspilningslister af musik fra platformen — sammensat på humør, genre eller hvor du er på vej hen.">
+                <header class="streaming-section__head">
+                    <h2 class="streaming-section__heading">Playlists for your night</h2>
+                    <a href="#" class="streaming-section__view-all">All playlists →</a>
+                </header>
+                <div class="streaming-row">
+
+                    <a href="#" class="streaming-card streaming-card--playlist" data-category="music">
+                        <div class="streaming-card__thumb streaming-card__thumb--square" style="background-image: url('../assets/images/artists/rust-cover.png');">
+                            <span class="streaming-playlist-badge">Playlist</span>
+                            <div class="streaming-card__play">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Late Nights at RUST</h3>
+                            <span class="streaming-card__byline">Curated by RUST</span>
+                            <span class="streaming-card__meta">24 tracks · 1h 48m</span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card streaming-card--playlist" data-category="music">
+                        <div class="streaming-card__thumb streaming-card__thumb--square" style="background-image: url('../assets/images/artists/rust-cover.png');">
+                            <span class="streaming-playlist-badge">Playlist</span>
+                            <div class="streaming-card__play">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Indie Spotlight</h3>
+                            <span class="streaming-card__byline">STAGECORD curators</span>
+                            <span class="streaming-card__meta">32 tracks · 2h 12m</span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card streaming-card--playlist" data-category="music">
+                        <div class="streaming-card__thumb streaming-card__thumb--square" style="background-image: url('../assets/images/artists/jeremy-freedom-cover.png');">
+                            <span class="streaming-playlist-badge">Playlist</span>
+                            <div class="streaming-card__play">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Synthwave All Night</h3>
+                            <span class="streaming-card__byline">Curated by KEBU</span>
+                            <span class="streaming-card__meta">40 tracks · 3h 04m</span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card streaming-card--playlist" data-category="music">
+                        <div class="streaming-card__thumb streaming-card__thumb--square" style="background-image: url('../assets/images/artists/lola-young-event.jpg');">
+                            <span class="streaming-playlist-badge">Playlist</span>
+                            <div class="streaming-card__play">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">DK Hip-hop 2024</h3>
+                            <span class="streaming-card__byline">STAGECORD curators</span>
+                            <span class="streaming-card__meta">28 tracks · 1h 32m</span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card streaming-card--playlist" data-category="music">
+                        <div class="streaming-card__thumb streaming-card__thumb--square" style="background-image: url('../assets/images/artists/lola-young-event.jpg');">
+                            <span class="streaming-playlist-badge">Playlist</span>
+                            <div class="streaming-card__play">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Sunday Acoustic</h3>
+                            <span class="streaming-card__byline">STAGECORD curators</span>
+                            <span class="streaming-card__meta">22 tracks · 1h 26m</span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card streaming-card--playlist" data-category="music">
+                        <div class="streaming-card__thumb streaming-card__thumb--square" style="background-image: url('../assets/images/artists/kebu-event.jpg');">
+                            <span class="streaming-playlist-badge">Playlist</span>
+                            <div class="streaming-card__play">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>
+                            </div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Pre-show warm-up</h3>
+                            <span class="streaming-card__byline">Curated by Mellow</span>
+                            <span class="streaming-card__meta">18 tracks · 1h 12m</span>
+                        </div>
+                    </a>
+
+                </div>
+            </section>
+
+            <!-- ============ Audio: podcasts & sessions ============ -->
+            <section class="streaming-section" data-help="Audio: Podcasts, in-studio sessions og DJ-mixes du kan høre med samme afspiller som de visuelle streams.">
+                <header class="streaming-section__head">
+                    <h2 class="streaming-section__heading">Audio · podcasts &amp; sessions</h2>
+                    <a href="#" class="streaming-section__view-all">All audio →</a>
+                </header>
+                <div class="streaming-audio">
+
+                    <a href="#" class="streaming-track" data-category="podcast">
+                        <span class="streaming-track__cover" style="background-image: url('../assets/images/artists/jokesmith-johnson-project-2.png');"></span>
+                        <div class="streaming-track__main">
+                            <div class="streaming-track__title">Behind The Curtain · S4E1 — Comeback shows</div>
+                            <div class="streaming-track__byline">Jokesmith Johnson · podcast</div>
+                        </div>
+                        <span class="streaming-track__duration">52:14</span>
+                    </a>
+
+                    <a href="#" class="streaming-track" data-category="studio">
+                        <span class="streaming-track__cover" style="background-image: url('../assets/images/artists/jeremy-online-performance.png');"></span>
+                        <div class="streaming-track__main">
+                            <div class="streaming-track__title">Jeremy Freedom — stripped session</div>
+                            <div class="streaming-track__byline">Jeremy Freedom · in-studio</div>
+                        </div>
+                        <span class="streaming-track__duration">28:42</span>
+                    </a>
+
+                    <a href="#" class="streaming-track" data-category="dj">
+                        <span class="streaming-track__cover" style="background-image: url('../assets/images/artists/girli-event.jpg');"></span>
+                        <div class="streaming-track__main">
+                            <div class="streaming-track__title">DJ Frostbite — Aalborg Late Night Mix Vol. 4</div>
+                            <div class="streaming-track__byline">DJ Frostbite · DJ set</div>
+                        </div>
+                        <span class="streaming-track__duration">1:48:30</span>
+                    </a>
+
+                    <a href="#" class="streaming-track" data-category="podcast">
+                        <span class="streaming-track__cover" style="background-image: url('../assets/images/artists/placeholder-male-1.png');"></span>
+                        <div class="streaming-track__main">
+                            <div class="streaming-track__title">Topliner Talks · Maya Thompson on co-writing</div>
+                            <div class="streaming-track__byline">Maya Thompson · interview</div>
+                        </div>
+                        <span class="streaming-track__duration">38:11</span>
+                    </a>
+
+                    <a href="#" class="streaming-track" data-category="studio">
+                        <span class="streaming-track__cover" style="background-image: url('../assets/images/artists/kebu-profile.jpg');"></span>
+                        <div class="streaming-track__main">
+                            <div class="streaming-track__title">KEBU · How my synth lab works</div>
+                            <div class="streaming-track__byline">KEBU · masterclass</div>
+                        </div>
+                        <span class="streaming-track__duration">1:05:48</span>
+                    </a>
+
+                    <a href="#" class="streaming-track" data-category="podcast">
+                        <span class="streaming-track__cover" style="background-image: url('../assets/images/artists/placeholder-male-6.png');"></span>
+                        <div class="streaming-track__main">
+                            <div class="streaming-track__title">Sara Holm · Voice on tape — episode 12</div>
+                            <div class="streaming-track__byline">Sara Holm · podcast</div>
+                        </div>
+                        <span class="streaming-track__duration">42:27</span>
+                    </a>
+
+                </div>
+            </section>
+
+            <!-- ============ Audio books — long-form narrated content ============ -->
+            <section class="streaming-section" data-help="Audio books: Lange narrative produktioner — typisk 4-15 timer pr. titel. Royalty-modellen er den samme som musik: 1 time af audio book = 12-15 song-streams (forfatter får direkte royalty fra abonnement-puljen).">
+                <header class="streaming-section__head">
+                    <h2 class="streaming-section__heading">Audio books</h2>
+                    <a href="#" class="streaming-section__view-all">Browse library →</a>
+                </header>
+                <p style="margin:-4px 0 14px;font-size:12px;color:rgba(255,255,255,0.55);" data-help="Royalty-modellen for audio books bygger oven på den samme stream-baserede pulje som musik. Forfattere får dermed sammenlignelig indtjening pr. lyttetime som musikere får pr. stream — 1 lyttet time = 12-15 streams worth.">1 listening hour = 12-15 song streams equivalent · same royalty pool as music</p>
+                <div class="streaming-grid">
+
+                    <a href="#" class="streaming-card" data-category="audiobook" data-help="The Stockholm Sessions: Memoir-audiobook narreret af forfatteren selv. 6 timer 12 minutter · ækvivalent til ~75-90 song-streams worth royalties pr. lytning.">
+                        <div class="streaming-card__thumb" style="background-image: url('../assets/images/artists/lola-young-event.jpg');">
+                            <span class="streaming-card__duration">6:12:00</span>
+                            <div class="streaming-card__play"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg></div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">The Stockholm Sessions</h3>
+                            <span class="streaming-card__byline">
+                                <span class="streaming-card__avatar" style="background-image: url('../assets/images/artists/placeholder-female-2.png');"></span>
+                                <span class="auto-name">Helena Strindberg</span>
+                            </span>
+                            <span class="streaming-card__meta">Memoir · narrated by author <span class="streaming-card__price">Included</span></span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card" data-category="audiobook" data-help="Brooklyn After Hours: Krimi-thriller af bedst-sælgende forfatter. 9 timer 47 minutter — får ækvivalent ~120-150 streams worth royalties.">
+                        <div class="streaming-card__thumb" style="background-image: url('../assets/images/artists/jokesmith-johnson-post-1.png');">
+                            <span class="streaming-card__duration">9:47:00</span>
+                            <div class="streaming-card__play"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg></div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Brooklyn After Hours</h3>
+                            <span class="streaming-card__byline">
+                                <span class="streaming-card__avatar" style="background-image: url('../assets/images/artists/placeholder-male-3.png');"></span>
+                                <span class="auto-name">Marcus Vance</span>
+                            </span>
+                            <span class="streaming-card__meta">Crime thriller · 2024 <span class="streaming-card__price">Included</span></span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card" data-category="audiobook" data-help="Code &amp; Coda: Tech-memoir om at bygge en streaming-platform. 4 timer 28 minutter.">
+                        <div class="streaming-card__thumb" style="background-image: url('../assets/images/artists/mike-andersen-event.jpg');">
+                            <span class="streaming-card__duration">4:28:00</span>
+                            <div class="streaming-card__play"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg></div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Code &amp; Coda</h3>
+                            <span class="streaming-card__byline">
+                                <span class="streaming-card__avatar" style="background-image: url('../assets/images/artists/placeholder-male-4.png');"></span>
+                                <span class="auto-name">Anders Lindgren</span>
+                            </span>
+                            <span class="streaming-card__meta">Tech memoir · self-narrated <span class="streaming-card__price">Included</span></span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card" data-category="audiobook" data-help="Northern Lights: Fantasy-trilogi første bind. 12 timer 03 minutter — den længste i biblioteket.">
+                        <div class="streaming-card__thumb" style="background-image: url('../assets/images/artists/kebu-event.jpg');">
+                            <span class="streaming-card__duration">12:03:00</span>
+                            <div class="streaming-card__play"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg></div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Northern Lights · Book One</h3>
+                            <span class="streaming-card__byline">
+                                <span class="streaming-card__avatar" style="background-image: url('../assets/images/artists/placeholder-female-4.png');"></span>
+                                <span class="auto-name">Ingrid Holmgaard</span>
+                            </span>
+                            <span class="streaming-card__meta">Fantasy · trilogy book 1 <span class="streaming-card__price">Included</span></span>
+                        </div>
+                    </a>
+
+                </div>
+            </section>
+
+            <!-- ============ Audio comedy — stand-up specials & comedy podcasts ============ -->
+            <section class="streaming-section" data-help="Audio comedy: Stand-up specials, sketch-shows og audio-only komedie. Royalty-modellen følger samme princip som audio books: 1 time af lytning = 12-15 song streams worth fra abonnement-puljen.">
+                <header class="streaming-section__head">
+                    <h2 class="streaming-section__heading">Audio comedy</h2>
+                    <a href="#" class="streaming-section__view-all">Browse all →</a>
+                </header>
+                <p style="margin:-4px 0 14px;font-size:12px;color:rgba(255,255,255,0.55);" data-help="Audio comedy får samme royalty-konvertering som audio books — 12-15 streams pr. time. Komikere kan derfor sammenligne lyttetimer direkte med musikeres streams.">1 listening hour = 12-15 song streams equivalent · same royalty pool as music</p>
+                <div class="streaming-grid">
+
+                    <a href="#" class="streaming-card" data-category="comedy-audio" data-help="Late Night Riffs: Jokesmith Johnsons audio-only komedie-show. 32 minutter pr. episode · ny episode hver fredag.">
+                        <div class="streaming-card__thumb" style="background-image: url('../assets/images/artists/jokesmith-johnson-cover.png');">
+                            <span class="streaming-card__duration">0:32:14</span>
+                            <div class="streaming-card__play"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg></div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Late Night Riffs · ep 47</h3>
+                            <span class="streaming-card__byline">
+                                <span class="streaming-card__avatar" style="background-image: url('../assets/images/artists/jokesmith-johnson-profile.png');"></span>
+                                <span class="auto-name">Jokesmith Johnson</span>
+                            </span>
+                            <span class="streaming-card__meta">Audio-only comedy · weekly <span class="streaming-card__price">Included</span></span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card" data-category="comedy-audio" data-help="Roast Tape: Improv-roast format med skiftende guests. 58 minutter — ækvivalent til ~12-15 streams worth.">
+                        <div class="streaming-card__thumb" style="background-image: url('../assets/images/artists/jokesmith-johnson-post-3.png');">
+                            <span class="streaming-card__duration">0:58:42</span>
+                            <div class="streaming-card__play"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg></div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Roast Tape · S2 finale</h3>
+                            <span class="streaming-card__byline">
+                                <span class="streaming-card__avatar" style="background-image: url('../assets/images/artists/placeholder-female-5.png');"></span>
+                                <span class="auto-name">Tara Park</span>
+                            </span>
+                            <span class="streaming-card__meta">Roast · 6 guests <span class="streaming-card__price">Included</span></span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card" data-category="comedy-audio" data-help="Sketchbook Audio: Sketch-format komedie-show, lavet specifikt til audio (ingen visuel humor).">
+                        <div class="streaming-card__thumb" style="background-image: url('../assets/images/artists/placeholder-male-2.png');">
+                            <span class="streaming-card__duration">0:24:18</span>
+                            <div class="streaming-card__play"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg></div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Sketchbook Audio · ep 12</h3>
+                            <span class="streaming-card__byline">
+                                <span class="streaming-card__avatar" style="background-image: url('../assets/images/artists/placeholder-male-2.png');"></span>
+                                <span class="auto-name">Joakim Nielsen</span>
+                            </span>
+                            <span class="streaming-card__meta">Sketch comedy · weekly <span class="streaming-card__price">Included</span></span>
+                        </div>
+                    </a>
+
+                    <a href="#" class="streaming-card" data-category="comedy-audio" data-help="Live at VEGA: Optagelse af 2024 stand-up special. 1 time 18 minutter — fuld show fra VEGA i København.">
+                        <div class="streaming-card__thumb" style="background-image: url('../assets/images/artists/mellow-event.jpg');">
+                            <span class="streaming-card__duration">1:18:05</span>
+                            <div class="streaming-card__play"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg></div>
+                        </div>
+                        <div class="streaming-card__body">
+                            <h3 class="streaming-card__title">Live at VEGA — full set</h3>
+                            <span class="streaming-card__byline">
+                                <span class="streaming-card__avatar" style="background-image: url('../assets/images/artists/jokesmith-johnson-profile.png');"></span>
+                                <span class="auto-name">Jokesmith Johnson</span>
+                            </span>
+                            <span class="streaming-card__meta">Stand-up special · 2024 <span class="streaming-card__price">Included</span></span>
+                        </div>
+                    </a>
+
+                </div>
+            </section>
+
+            <!-- ============ Music Market — marketplace for samples, beats, lyrics, open verses ============ -->
+            <section class="market" data-help="Music Market: Marketplace for samples, beats, loops, lyrics og åbne vers. Producere, songwritere og artister kan købe byggesten til deres egne projekter. Sælgere får 80% af beløbet, platformen 20%. Når du køber bliver licensen automatisk knyttet til dit køb og du må bruge materialet i projekter — royalty-splittene følger originalen.">
+                <header class="market__head">
+                    <h2 class="market__title"><span class="market__title-icon">⎈</span>Music Market</h2>
+                    <button type="button" class="market__cart" data-help="Indkøbskurv: Du kan tilføje flere items og betale samlet. Hvert item har sin egen license. Royalties til original-artister auto-splittes ved senere udgivelse via Project Card royalty-systemet.">🛒 Cart · <strong>3 items</strong> · 549 DKK</button>
+                </header>
+                <p class="market__intro">Køb <strong>samples</strong>, <strong>beats</strong>, <strong>loops</strong>, <strong>lyrics</strong>, <strong>åbne vers</strong> og <strong>stems</strong> direkte fra andre creators. Auto-license &amp; royalty-split når du udgiver projekter med købte byggesten.</p>
+
+                <div class="market__filters" data-help="Kategori-filtre: Klik for at filtrere efter type. Alle items fra alle kategorier vises som default.">
+                    <button class="market__filter is-active" type="button" data-help="Vis alt på Music Market.">All</button>
+                    <button class="market__filter" type="button" data-help="Samples: Korte audio-snippets (drum hits, vocal chops, FX). Typisk 1-8 takter.">Samples</button>
+                    <button class="market__filter" type="button" data-help="Beats: Færdige instrumental-kompositioner klar til topline/vocals. Inkluderer typisk drums, bass, melodi-elementer.">Beats</button>
+                    <button class="market__filter" type="button" data-help="Loops: Loopable instrumental-sektioner. Forskellig fra beats ved at være designet til at gentages.">Loops</button>
+                    <button class="market__filter" type="button" data-help="Lyrics: Skrevne tekster der kan købes til at performe. Inkluderer både færdige tekster og skabeloner.">Lyrics</button>
+                    <button class="market__filter" type="button" data-help="Open verses: Skrevne + indspillede vers der mangler at blive lagt på en sang. Køber kan tilføje sin egen production omkring verset.">Open verses</button>
+                    <button class="market__filter" type="button" data-help="Stems: Isolerede track-elementer (vocal stem, drum stem, bass stem) fra eksisterende sange. Bruges til remixes og masheups.">Stems</button>
+                </div>
+
+                <div class="market__grid">
+
+                    <article class="market-item" data-help="909 Trap Kit · 32 samples fra Maya Thompson. Genre Trap. Inkluderer 808s, hi-hats, snares.">
+                        <div class="market-item__thumb" style="background-image:url('../assets/images/artists/maya-thompson-profile.png');">
+                            <span class="market-item__category market-item__category--sample">Sample pack</span>
+                            <button class="market-item__play" data-help="Preview: Lyt til en 30-sek demo af alle samples.">▶</button>
+                        </div>
+                        <div class="market-item__body">
+                            <h3 class="market-item__title">909 Trap Kit · 32 samples</h3>
+                            <span class="market-item__creator auto-name">Maya Thompson</span>
+                            <div class="market-item__tags">
+                                <span class="market-item__tag">140 BPM</span>
+                                <span class="market-item__tag">F minor</span>
+                                <span class="market-item__tag">Trap</span>
+                            </div>
+                        </div>
+                        <div class="market-item__foot">
+                            <span class="market-item__price">149 DKK</span>
+                            <button class="market-item__add" data-help="Add to cart: Tilføjer item til kurven. Du kan checke ud samlet for flere items.">+ Add</button>
+                        </div>
+                    </article>
+
+                    <article class="market-item" data-help="Brooklyn Air beat · Original instrumental fra Jokesmith. Klar til vocals/topline.">
+                        <div class="market-item__thumb" style="background-image:url('../assets/images/artists/jokesmith-johnson-cover.png');">
+                            <span class="market-item__category market-item__category--beat">Beat</span>
+                            <button class="market-item__play">▶</button>
+                        </div>
+                        <div class="market-item__body">
+                            <h3 class="market-item__title">Brooklyn Air · instrumental</h3>
+                            <span class="market-item__creator auto-name">Jokesmith Johnson</span>
+                            <div class="market-item__tags">
+                                <span class="market-item__tag">96 BPM</span>
+                                <span class="market-item__tag">A minor</span>
+                                <span class="market-item__tag">Lo-fi</span>
+                            </div>
+                        </div>
+                        <div class="market-item__foot">
+                            <span class="market-item__price">449 DKK</span>
+                            <button class="market-item__add">+ Add</button>
+                        </div>
+                    </article>
+
+                    <article class="market-item" data-help="Chord progressions · Pop-loop pakke fra Anchi.">
+                        <div class="market-item__thumb" style="background-image:url('../assets/images/artists/placeholder-female-6.png');">
+                            <span class="market-item__category market-item__category--loop">Loops</span>
+                            <button class="market-item__play">▶</button>
+                        </div>
+                        <div class="market-item__body">
+                            <h3 class="market-item__title">Pop chord progressions · 12 loops</h3>
+                            <span class="market-item__creator auto-name">Anchi Humifuku</span>
+                            <div class="market-item__tags">
+                                <span class="market-item__tag">120-128 BPM</span>
+                                <span class="market-item__tag">Major keys</span>
+                                <span class="market-item__tag">Pop</span>
+                            </div>
+                        </div>
+                        <div class="market-item__foot">
+                            <span class="market-item__price">99 DKK</span>
+                            <button class="market-item__add is-added">✓ In cart</button>
+                        </div>
+                    </article>
+
+                    <article class="market-item" data-help="Open verse: Indspillet vers fra Tara Park, åbent til at sætte production omkring.">
+                        <div class="market-item__thumb" style="background-image:url('../assets/images/artists/placeholder-female-5.png');">
+                            <span class="market-item__category market-item__category--openverse">Open verse</span>
+                            <button class="market-item__play">▶</button>
+                        </div>
+                        <div class="market-item__body">
+                            <h3 class="market-item__title">Late Night Sessions · open verse</h3>
+                            <span class="market-item__creator auto-name">Tara Park</span>
+                            <div class="market-item__tags">
+                                <span class="market-item__tag">96 BPM</span>
+                                <span class="market-item__tag">D minor</span>
+                                <span class="market-item__tag">Vocal · 16 bars</span>
+                            </div>
+                        </div>
+                        <div class="market-item__foot">
+                            <span class="market-item__price">800 DKK</span>
+                            <button class="market-item__add">+ Add</button>
+                        </div>
+                    </article>
+
+                    <article class="market-item" data-help="Lyric template: 'Heart of Glass'-style narrative skrevet af Maya Thompson, royalty-fri til at performe på din egen production.">
+                        <div class="market-item__thumb" style="background-image:url('../assets/images/artists/maya-thompson-profile.png');">
+                            <span class="market-item__category market-item__category--lyrics">Lyrics</span>
+                        </div>
+                        <div class="market-item__body">
+                            <h3 class="market-item__title">"Heart of Glass" · 32-line narrative</h3>
+                            <span class="market-item__creator auto-name">Maya Thompson</span>
+                            <div class="market-item__tags">
+                                <span class="market-item__tag">English + Danish</span>
+                                <span class="market-item__tag">Pop / R&amp;B</span>
+                            </div>
+                        </div>
+                        <div class="market-item__foot">
+                            <span class="market-item__price">350 DKK</span>
+                            <button class="market-item__add is-added">✓ In cart</button>
+                        </div>
+                    </article>
+
+                    <article class="market-item" data-help="Drum stem: Isolerede trommer fra Manhattan Rain — kan re-mixes til andre productions.">
+                        <div class="market-item__thumb" style="background-image:url('../assets/images/artists/mike-andersen-event.jpg');">
+                            <span class="market-item__category market-item__category--stem">Drum stem</span>
+                            <button class="market-item__play">▶</button>
+                        </div>
+                        <div class="market-item__body">
+                            <h3 class="market-item__title">Manhattan Rain · drum stem</h3>
+                            <span class="market-item__creator auto-name">Anchi Humifuku</span>
+                            <div class="market-item__tags">
+                                <span class="market-item__tag">88 BPM</span>
+                                <span class="market-item__tag">3:08 length</span>
+                                <span class="market-item__tag">96 kHz</span>
+                            </div>
+                        </div>
+                        <div class="market-item__foot">
+                            <span class="market-item__price">220 DKK</span>
+                            <button class="market-item__add">+ Add</button>
+                        </div>
+                    </article>
+
+                    <article class="market-item" data-help="Synthwave preset pack — 24 synth-presets til Serum og Massive.">
+                        <div class="market-item__thumb" style="background-image:url('../assets/images/artists/kebu-event.jpg');">
+                            <span class="market-item__category market-item__category--sample">Sample pack</span>
+                            <button class="market-item__play">▶</button>
+                        </div>
+                        <div class="market-item__body">
+                            <h3 class="market-item__title">Synthwave preset pack · 24 patches</h3>
+                            <span class="market-item__creator auto-name">Kebu</span>
+                            <div class="market-item__tags">
+                                <span class="market-item__tag">Serum + Massive</span>
+                                <span class="market-item__tag">Synthwave</span>
+                                <span class="market-item__tag">FM &amp; analog</span>
+                            </div>
+                        </div>
+                        <div class="market-item__foot">
+                            <span class="market-item__price">189 DKK</span>
+                            <button class="market-item__add">+ Add</button>
+                        </div>
+                    </article>
+
+                    <article class="market-item" data-help="Acoustic guitar loops fra Lola Young — fingerpicked passages til indie/folk-projekter.">
+                        <div class="market-item__thumb" style="background-image:url('../assets/images/artists/lola-young-event.jpg');">
+                            <span class="market-item__category market-item__category--loop">Loops</span>
+                            <button class="market-item__play">▶</button>
+                        </div>
+                        <div class="market-item__body">
+                            <h3 class="market-item__title">Acoustic fingerpicked loops · 16 takes</h3>
+                            <span class="market-item__creator auto-name">Lola Young</span>
+                            <div class="market-item__tags">
+                                <span class="market-item__tag">72-90 BPM</span>
+                                <span class="market-item__tag">Various keys</span>
+                                <span class="market-item__tag">Indie folk</span>
+                            </div>
+                        </div>
+                        <div class="market-item__foot">
+                            <span class="market-item__price">125 DKK</span>
+                            <button class="market-item__add">+ Add</button>
+                        </div>
+                    </article>
+
+                </div>
+            </section>
+
+            <!-- ============ Instrument Exchange — sell instruments + savings goals + community donations ============ -->
+            <section class="instruments" data-help="Instrument Exchange: Salg af fysiske musikinstrumenter med serial-verifikation + community-baseret opsparing til drømme-instrumenter. 'Give it forward' lader fans donere små beløb til en andens opsparingsmål — én af platformens stærkeste sociale features.">
+                <header class="instruments__head">
+                    <h2 class="instruments__title"><span class="instruments__title-icon">🎸</span>Instrument Exchange</h2>
+                    <div class="instruments__actions">
+                        <button type="button" class="instruments__btn" data-open-list-instrument data-help="List instrument: Sælg dit eget instrument. Du angiver brand, model, condition, billede, serial number og pris. Når et købstilbud accepteres, verificerer STAGECORD serial-nummeret med en kontrolkøber-flag før betaling frigives.">+ List instrument</button>
+                        <button type="button" class="instruments__btn instruments__btn--primary" data-open-create-goal data-help="Start savings goal: Opret en opsparingsmål til et specifikt instrument. Du kan selv indbetale + andre brugere kan donere små beløb (give it forward). Når målet er nået, frigives pengene til at købe instrumentet.">★ Start savings goal</button>
+                    </div>
+                </header>
+
+                <p class="instruments__intro">Køb og sælg fysiske musikinstrumenter med <strong>verificeret serial number</strong>, eller start en <strong>opsparing</strong> til dit drømme-instrument. Andre brugere kan donere små beløb som "give it forward" — én by-opsparing er en dejlig måde at hjælpe en kommende artist på vej.</p>
+
+                <div class="instruments__tabs" role="tablist" data-help="Tab-skifter: For sale viser instrumenter til salg lige nu · Savings goals viser community-opsparinger du kan donere til + dine egne mål.">
+                    <button type="button" class="instruments__tab is-active" data-instr-tab="for-sale" role="tab">For sale<span class="instruments__tab-count">8</span></button>
+                    <button type="button" class="instruments__tab" data-instr-tab="goals" role="tab">Savings goals<span class="instruments__tab-count">4</span></button>
+                </div>
+
+                <!-- Tab 1: For sale -->
+                <div data-instr-panel="for-sale">
+                    <div class="instr-grid">
+
+                        <article class="instr-card" data-help="Fender Stratocaster · 1986 vintage · Anders Lindgren sælger. Serial verificeret med Fender database. Pris 18,500 DKK.">
+                            <div class="instr-card__thumb" style="background-image:url('../assets/images/artists/jeremy-freedom-cover.png');">
+                                <span class="instr-card__condition instr-card__condition--vintage">Vintage</span>
+                                <span class="instr-card__verified" data-help="Serial verified: Fender database har bekræftet at dette serial nummer er ægte og ikke registreret som stjålet.">✓</span>
+                            </div>
+                            <div class="instr-card__body">
+                                <div class="instr-card__name">Fender Stratocaster '86</div>
+                                <div class="instr-card__brand">Fender · Mexican model</div>
+                                <div class="instr-card__serial"><span class="instr-card__serial-label">Serial</span>E412785</div>
+                                <div class="instr-card__seller">
+                                    <span class="instr-card__seller-avatar" style="background-image:url('../assets/images/artists/placeholder-male-4.png');"></span>
+                                    <span class="auto-name">Anders Lindgren</span>
+                                </div>
+                            </div>
+                            <div class="instr-card__foot">
+                                <span class="instr-card__price">18,500 DKK</span>
+                                <span class="instr-card__actions">
+                                    <button class="instr-card__save" data-instr-target="Fender Stratocaster '86" data-instr-price="18500">+ Goal</button>
+                                    <button class="instr-card__buy" data-open-buy-instrument data-instr-name="Fender Stratocaster '86" data-instr-serial="E412785" data-instr-price="18500">Buy</button>
+                                </span>
+                            </div>
+                        </article>
+
+                        <article class="instr-card" data-help="Roland Juno-60 · klassisk analog synth fra 1982. Kebu sælger sin private samling.">
+                            <div class="instr-card__thumb" style="background-image:url('../assets/images/artists/kebu-event.jpg');">
+                                <span class="instr-card__condition instr-card__condition--vintage">Vintage</span>
+                                <span class="instr-card__verified">✓</span>
+                            </div>
+                            <div class="instr-card__body">
+                                <div class="instr-card__name">Roland Juno-60</div>
+                                <div class="instr-card__brand">Roland · 1982 analog poly-synth</div>
+                                <div class="instr-card__serial"><span class="instr-card__serial-label">Serial</span>JU8024112</div>
+                                <div class="instr-card__seller">
+                                    <span class="instr-card__seller-avatar" style="background-image:url('../assets/images/artists/kebu-profile.jpg');"></span>
+                                    <span class="auto-name">Kebu</span>
+                                </div>
+                            </div>
+                            <div class="instr-card__foot">
+                                <span class="instr-card__price">14,200 DKK</span>
+                                <span class="instr-card__actions">
+                                    <button class="instr-card__save" data-instr-target="Roland Juno-60" data-instr-price="14200">+ Goal</button>
+                                    <button class="instr-card__buy" data-open-buy-instrument data-instr-name="Roland Juno-60" data-instr-serial="JU8024112" data-instr-price="14200">Buy</button>
+                                </span>
+                            </div>
+                        </article>
+
+                        <article class="instr-card">
+                            <div class="instr-card__thumb" style="background-image:url('../assets/images/artists/jokesmith-johnson-cover.png');">
+                                <span class="instr-card__condition instr-card__condition--used">Used</span>
+                                <span class="instr-card__verified">✓</span>
+                            </div>
+                            <div class="instr-card__body">
+                                <div class="instr-card__name">Gibson Les Paul Standard</div>
+                                <div class="instr-card__brand">Gibson · 2018 · Heritage Cherry</div>
+                                <div class="instr-card__serial"><span class="instr-card__serial-label">Serial</span>180062734</div>
+                                <div class="instr-card__seller">
+                                    <span class="instr-card__seller-avatar" style="background-image:url('../assets/images/artists/jeremy-freedom-profile.png');"></span>
+                                    <span class="auto-name">Jeremy Freedom</span>
+                                </div>
+                            </div>
+                            <div class="instr-card__foot">
+                                <span class="instr-card__price">22,800 DKK</span>
+                                <span class="instr-card__actions">
+                                    <button class="instr-card__save" data-instr-target="Gibson Les Paul Standard" data-instr-price="22800">+ Goal</button>
+                                    <button class="instr-card__buy" data-open-buy-instrument data-instr-name="Gibson Les Paul Standard" data-instr-serial="180062734" data-instr-price="22800">Buy</button>
+                                </span>
+                            </div>
+                        </article>
+
+                        <article class="instr-card">
+                            <div class="instr-card__thumb" style="background-image:url('../assets/images/artists/kebu-event.jpg');">
+                                <span class="instr-card__condition instr-card__condition--new">As new</span>
+                                <span class="instr-card__verified">✓</span>
+                            </div>
+                            <div class="instr-card__body">
+                                <div class="instr-card__name">Korg MS-20 Mini</div>
+                                <div class="instr-card__brand">Korg · 2023 reissue</div>
+                                <div class="instr-card__serial"><span class="instr-card__serial-label">Serial</span>MS20-2023-0123</div>
+                                <div class="instr-card__seller">
+                                    <span class="instr-card__seller-avatar" style="background-image:url('../assets/images/artists/kebu-profile.jpg');"></span>
+                                    <span class="auto-name">Kebu</span>
+                                </div>
+                            </div>
+                            <div class="instr-card__foot">
+                                <span class="instr-card__price">4,200 DKK</span>
+                                <span class="instr-card__actions">
+                                    <button class="instr-card__save" data-instr-target="Korg MS-20 Mini" data-instr-price="4200">+ Goal</button>
+                                    <button class="instr-card__buy" data-open-buy-instrument data-instr-name="Korg MS-20 Mini" data-instr-serial="MS20-2023-0123" data-instr-price="4200">Buy</button>
+                                </span>
+                            </div>
+                        </article>
+
+                        <article class="instr-card">
+                            <div class="instr-card__thumb" style="background-image:url('../assets/images/artists/maya-thompson-profile.png');">
+                                <span class="instr-card__condition instr-card__condition--used">Used</span>
+                                <span class="instr-card__verified">✓</span>
+                            </div>
+                            <div class="instr-card__body">
+                                <div class="instr-card__name">Yamaha U1 Upright Piano</div>
+                                <div class="instr-card__brand">Yamaha · serviceret 2024</div>
+                                <div class="instr-card__serial"><span class="instr-card__serial-label">Serial</span>YA-4567890</div>
+                                <div class="instr-card__seller">
+                                    <span class="instr-card__seller-avatar" style="background-image:url('../assets/images/artists/maya-thompson-profile.png');"></span>
+                                    <span class="auto-name">Maya Thompson</span>
+                                </div>
+                            </div>
+                            <div class="instr-card__foot">
+                                <span class="instr-card__price">32,000 DKK</span>
+                                <span class="instr-card__actions">
+                                    <button class="instr-card__save" data-instr-target="Yamaha U1 Piano" data-instr-price="32000">+ Goal</button>
+                                    <button class="instr-card__buy" data-open-buy-instrument data-instr-name="Yamaha U1 Piano" data-instr-serial="YA-4567890" data-instr-price="32000">Buy</button>
+                                </span>
+                            </div>
+                        </article>
+
+                        <article class="instr-card">
+                            <div class="instr-card__thumb" style="background-image:url('../assets/images/artists/jokesmith-johnson-post-3.png');">
+                                <span class="instr-card__condition instr-card__condition--new">As new</span>
+                                <span class="instr-card__verified">✓</span>
+                            </div>
+                            <div class="instr-card__body">
+                                <div class="instr-card__name">Akai MPC One</div>
+                                <div class="instr-card__brand">Akai Professional · 2024</div>
+                                <div class="instr-card__serial"><span class="instr-card__serial-label">Serial</span>AKM01-2024-1142</div>
+                                <div class="instr-card__seller">
+                                    <span class="instr-card__seller-avatar" style="background-image:url('../assets/images/artists/placeholder-male-4.png');"></span>
+                                    <span class="auto-name">Anders Lindgren</span>
+                                </div>
+                            </div>
+                            <div class="instr-card__foot">
+                                <span class="instr-card__price">5,800 DKK</span>
+                                <span class="instr-card__actions">
+                                    <button class="instr-card__save" data-instr-target="Akai MPC One" data-instr-price="5800">+ Goal</button>
+                                    <button class="instr-card__buy" data-open-buy-instrument data-instr-name="Akai MPC One" data-instr-serial="AKM01-2024-1142" data-instr-price="5800">Buy</button>
+                                </span>
+                            </div>
+                        </article>
+
+                        <article class="instr-card">
+                            <div class="instr-card__thumb" style="background-image:url('../assets/images/artists/lola-young-event.jpg');">
+                                <span class="instr-card__condition instr-card__condition--used">Used</span>
+                                <span class="instr-card__verified">✓</span>
+                            </div>
+                            <div class="instr-card__body">
+                                <div class="instr-card__name">DW Collector's Drum Kit</div>
+                                <div class="instr-card__brand">DW · 2019 · 5-piece</div>
+                                <div class="instr-card__serial"><span class="instr-card__serial-label">Serial</span>DW-2019-887</div>
+                                <div class="instr-card__seller">
+                                    <span class="instr-card__seller-avatar" style="background-image:url('../assets/images/artists/placeholder-female-4.png');"></span>
+                                    <span class="auto-name">Sara Holm</span>
+                                </div>
+                            </div>
+                            <div class="instr-card__foot">
+                                <span class="instr-card__price">19,500 DKK</span>
+                                <span class="instr-card__actions">
+                                    <button class="instr-card__save" data-instr-target="DW Collector's Drum Kit" data-instr-price="19500">+ Goal</button>
+                                    <button class="instr-card__buy" data-open-buy-instrument data-instr-name="DW Collector's Drum Kit" data-instr-serial="DW-2019-887" data-instr-price="19500">Buy</button>
+                                </span>
+                            </div>
+                        </article>
+
+                        <article class="instr-card">
+                            <div class="instr-card__thumb" style="background-image:url('../assets/images/artists/placeholder-female-6.png');">
+                                <span class="instr-card__condition instr-card__condition--used">Used</span>
+                                <span class="instr-card__verified">✓</span>
+                            </div>
+                            <div class="instr-card__body">
+                                <div class="instr-card__name">Neumann U87 Vocal Mic</div>
+                                <div class="instr-card__brand">Neumann · industri-standard</div>
+                                <div class="instr-card__serial"><span class="instr-card__serial-label">Serial</span>U87-0098234</div>
+                                <div class="instr-card__seller">
+                                    <span class="instr-card__seller-avatar" style="background-image:url('../assets/images/artists/placeholder-female-6.png');"></span>
+                                    <span class="auto-name">Anchi Humifuku</span>
+                                </div>
+                            </div>
+                            <div class="instr-card__foot">
+                                <span class="instr-card__price">14,800 DKK</span>
+                                <span class="instr-card__actions">
+                                    <button class="instr-card__save" data-instr-target="Neumann U87 mic" data-instr-price="14800">+ Goal</button>
+                                    <button class="instr-card__buy" data-open-buy-instrument data-instr-name="Neumann U87 mic" data-instr-serial="U87-0098234" data-instr-price="14800">Buy</button>
+                                </span>
+                            </div>
+                        </article>
+
+                    </div>
+                </div>
+
+                <!-- Tab 2: Savings goals -->
+                <div data-instr-panel="goals" hidden>
+                    <div class="goal-grid">
+
+                        <article class="goal-card is-mine" data-help="Din egen opsparing til Fender Stratocaster '86. Du har indbetalt 6,420 DKK indtil videre — 14 supportere har doneret resten. Du kan stadig indbetale selv eller dele dit goal til Wall/Explore for flere donations.">
+                            <header class="goal-card__head">
+                                <span class="goal-card__avatar" style="background-image:url('../assets/images/artists/jokesmith-johnson-profile.png');"></span>
+                                <div class="goal-card__main">
+                                    <div class="goal-card__owner auto-name">Jokesmith Johnson</div>
+                                    <div class="goal-card__instrument">Fender Stratocaster '86 · 18,500 DKK</div>
+                                </div>
+                                <span class="goal-card__mine-tag">You</span>
+                            </header>
+                            <div class="goal-card__progress-bar"><div class="goal-card__progress-fill" style="width:34.7%;"></div></div>
+                            <div class="goal-card__progress-meta">
+                                <span><span class="goal-card__progress-current">6,420 DKK</span><span class="goal-card__progress-target"> / 18,500</span></span>
+                                <span class="goal-card__progress-pct">34.7%</span>
+                            </div>
+                            <div class="goal-card__supporters">
+                                <span class="goal-card__supporter-avatars">
+                                    <span class="goal-card__supporter" style="background:#FF8AC8;">SF</span>
+                                    <span class="goal-card__supporter" style="background:#7DD3C0;">ML</span>
+                                    <span class="goal-card__supporter" style="background:#A370F0;">JN</span>
+                                    <span class="goal-card__supporter" style="background:#FFB547;">TP</span>
+                                </span>
+                                <span class="goal-card__supporters-count"><strong>14 supporters</strong> · including you</span>
+                            </div>
+                            <div class="goal-card__actions">
+                                <button class="goal-card__btn" data-help="Top up: Indbetal mere fra din egen pung. Trækkes fra dit kort/MobilePay og lægges direkte oven i din opsparing.">+ Top up</button>
+                                <button class="goal-card__btn goal-card__btn--secondary" data-help="Share: Post linket til dit goal på din Wall, eller del direkte til en specifik entourage. Flere supporters = hurtigere mål.">↗ Share</button>
+                            </div>
+                        </article>
+
+                        <article class="goal-card" data-help="Tara Park's opsparing til Roland Juno-60 til at opgradere live-setup. 22% nået på 8 supporters. Klik Donate for at give it forward.">
+                            <header class="goal-card__head">
+                                <span class="goal-card__avatar" style="background-image:url('../assets/images/artists/placeholder-female-5.png');"></span>
+                                <div class="goal-card__main">
+                                    <div class="goal-card__owner auto-name">Tara Park</div>
+                                    <div class="goal-card__instrument">Roland Juno-60 · 14,200 DKK</div>
+                                </div>
+                            </header>
+                            <p class="goal-card__msg">"Save up to upgrade my live setup — analog Juno-60 will replace the digital sim I've been touring with. 5 years of dreaming. 🙏"</p>
+                            <div class="goal-card__progress-bar"><div class="goal-card__progress-fill" style="width:22.4%;"></div></div>
+                            <div class="goal-card__progress-meta">
+                                <span><span class="goal-card__progress-current">3,180 DKK</span><span class="goal-card__progress-target"> / 14,200</span></span>
+                                <span class="goal-card__progress-pct">22.4%</span>
+                            </div>
+                            <div class="goal-card__supporters">
+                                <span class="goal-card__supporter-avatars">
+                                    <span class="goal-card__supporter" style="background:#4A90E2;">JJ</span>
+                                    <span class="goal-card__supporter" style="background:#7DD3C0;">AH</span>
+                                    <span class="goal-card__supporter" style="background:#FFB547;">MT</span>
+                                </span>
+                                <span class="goal-card__supporters-count"><strong>8 supporters</strong></span>
+                            </div>
+                            <div class="goal-card__actions">
+                                <button class="goal-card__btn" data-open-donate data-donate-to="Tara Park" data-donate-instrument="Roland Juno-60" data-help="Donate: Giv et lille beløb til Tara's drøm. Quick-amount knapper (10/25/50/100 DKK) eller custom. Optional besked. Give it forward.">♡ Donate</button>
+                                <button class="goal-card__btn goal-card__btn--secondary">↗ Share</button>
+                            </div>
+                        </article>
+
+                        <article class="goal-card" data-help="Joakim Nielsen's opsparing til sin første MPC. Halvt vej (51%) på 18 supporters — tæt på drømmen.">
+                            <header class="goal-card__head">
+                                <span class="goal-card__avatar" style="background-image:url('../assets/images/artists/placeholder-male-2.png');"></span>
+                                <div class="goal-card__main">
+                                    <div class="goal-card__owner auto-name">Joakim Nielsen</div>
+                                    <div class="goal-card__instrument">Akai MPC One · 5,800 DKK</div>
+                                </div>
+                            </header>
+                            <p class="goal-card__msg">"My first ever MPC — I've been writing beats on a borrowed laptop for 2 years. Halfway there thanks to the Brooklyn Crew ❤"</p>
+                            <div class="goal-card__progress-bar"><div class="goal-card__progress-fill" style="width:50.9%;"></div></div>
+                            <div class="goal-card__progress-meta">
+                                <span><span class="goal-card__progress-current">2,950 DKK</span><span class="goal-card__progress-target"> / 5,800</span></span>
+                                <span class="goal-card__progress-pct">50.9%</span>
+                            </div>
+                            <div class="goal-card__supporters">
+                                <span class="goal-card__supporter-avatars">
+                                    <span class="goal-card__supporter" style="background:#FF6A55;">JN</span>
+                                    <span class="goal-card__supporter" style="background:#FFC400;">JJ</span>
+                                    <span class="goal-card__supporter" style="background:#A370F0;">ML</span>
+                                    <span class="goal-card__supporter" style="background:#43C47A;">+15</span>
+                                </span>
+                                <span class="goal-card__supporters-count"><strong>18 supporters</strong></span>
+                            </div>
+                            <div class="goal-card__actions">
+                                <button class="goal-card__btn" data-open-donate data-donate-to="Joakim Nielsen" data-donate-instrument="Akai MPC One">♡ Donate</button>
+                                <button class="goal-card__btn goal-card__btn--secondary">↗ Share</button>
+                            </div>
+                        </article>
+
+                        <article class="goal-card is-funded" data-help="Liva Mai's opsparing til vocal mic — næsten færdig (90%). Når 100% nås frigives pengene automatisk + STAGECORD bestiller mic'en og leverer til Liva's adresse.">
+                            <header class="goal-card__head">
+                                <span class="goal-card__avatar" style="background-image:url('../assets/images/artists/placeholder-female-1.png');"></span>
+                                <div class="goal-card__main">
+                                    <div class="goal-card__owner auto-name">Liva Mai</div>
+                                    <div class="goal-card__instrument">Shure SM7B Vocal Mic · 8,000 DKK</div>
+                                </div>
+                                <span class="goal-card__funded-badge">90% · close!</span>
+                            </header>
+                            <p class="goal-card__msg">"Recording at home for content creation — closer to the dream every day. Need 800 DKK more. 🎤"</p>
+                            <div class="goal-card__progress-bar"><div class="goal-card__progress-fill" style="width:90%;"></div></div>
+                            <div class="goal-card__progress-meta">
+                                <span><span class="goal-card__progress-current">7,200 DKK</span><span class="goal-card__progress-target"> / 8,000</span></span>
+                                <span class="goal-card__progress-pct">90.0%</span>
+                            </div>
+                            <div class="goal-card__supporters">
+                                <span class="goal-card__supporter-avatars">
+                                    <span class="goal-card__supporter" style="background:#FF8AC8;">JJ</span>
+                                    <span class="goal-card__supporter" style="background:#7DD3C0;">SF</span>
+                                    <span class="goal-card__supporter" style="background:#A370F0;">+30</span>
+                                </span>
+                                <span class="goal-card__supporters-count"><strong>32 supporters</strong></span>
+                            </div>
+                            <div class="goal-card__actions">
+                                <button class="goal-card__btn" data-open-donate data-donate-to="Liva Mai" data-donate-instrument="Shure SM7B mic">♡ Help finish</button>
+                                <button class="goal-card__btn goal-card__btn--secondary">↗ Share</button>
+                            </div>
+                        </article>
+
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- Hidden event helpers — picked up by app.js's
+             `.artist-calendar__day--event` click handler so the live cards
+             and Watch live CTA can open the same purchase modal as the
+             venue and artist pages. -->
+        <div hidden aria-hidden="true">
+            <button type="button" class="artist-calendar__day--event"
+                data-event-date="Saturday, 26 April · Late Cellar Set"
+                data-event-venue="RUST, Copenhagen · live now"
+                data-event-time="On stage · 18 min in · ~32 min remaining"
+                data-event-description="Jokesmith Johnson — late cellar stand-up set. Tickets at the door are sold out, but you can still buy an Online Concert Pass and watch the show live from anywhere."
+                data-event-ticket-price="195 DKK"
+                data-event-viewer-price="79 DKK"
+                data-event-tickets-available="false"></button>
+            <button type="button" class="artist-calendar__day--event"
+                data-event-date="Saturday, 26 April · Frostbite DJ set"
+                data-event-venue="Pumpehuset, Copenhagen · live now"
+                data-event-time="On stage · 42 min in · ~3h remaining"
+                data-event-description="DJ Frostbite — Friday warehouse vinyl-only set. Doors at the venue are full but the Online Concert Pass keeps the room open all night."
+                data-event-ticket-price="225 DKK"
+                data-event-viewer-price="49 DKK"
+                data-event-tickets-available="false"></button>
+            <button type="button" class="artist-calendar__day--event"
+                data-event-date="Saturday, 26 April · FREEDOM Brooklyn"
+                data-event-venue="Mercury Lounge, NYC · live now"
+                data-event-time="On stage · 1h 12min in · encore approaching"
+                data-event-description="Jeremy Freedom — FREEDOM Tour, Brooklyn night two. Sold out at the venue. Online Concert Pass available so you don't miss the encore."
+                data-event-ticket-price="385 DKK"
+                data-event-viewer-price="119 DKK"
+                data-event-tickets-available="false"></button>
+        </div>
+    </main>
+
+    <!-- ============ Event details modal — Online Concert Pass purchase ============ -->
+    <div class="modal-overlay" id="eventModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="eventModalDate">
+        <div class="modal event-modal">
+            <header class="modal__header">
+                <div class="event-modal__title">
+                    <span class="event-modal__date" id="eventModalDate">Date</span>
+                    <span class="event-modal__venue" id="eventModalVenue">Venue</span>
+                </div>
+                <button type="button" class="modal__close" aria-label="Close" data-close-modal>&times;</button>
+            </header>
+
+            <div class="event-modal__body">
+                <div class="event-modal__time" id="eventModalTime"></div>
+                <p class="event-modal__description" id="eventModalDescription"></p>
+            </div>
+
+            <div class="event-modal__options">
+                <div class="event-modal__option" id="eventModalTicketOption">
+                    <div class="event-modal__option-label">Concert ticket</div>
+                    <div class="event-modal__option-price" id="eventModalTicketPrice">— DKK</div>
+                    <button type="button" class="wide-btn wide-btn--accept" id="eventModalTicketBtn">Buy ticket</button>
+                    <p class="event-modal__option-note">Includes physical entry with a personal QR-code.</p>
+                </div>
+
+                <div class="event-modal__option" id="eventModalViewerOption">
+                    <div class="event-modal__option-label">Online viewer access</div>
+                    <div class="event-modal__option-price" id="eventModalViewerPrice">— DKK</div>
+                    <button type="button" class="wide-btn wide-btn--buy" id="eventModalViewerBtn">Buy online access</button>
+                    <p class="event-modal__option-note">Stream the show live from any device — even if you don't have a physical ticket.</p>
+                </div>
+            </div>
+
+            <div class="event-modal__entourage">
+                <h3 class="event-modal__entourage-title">Buy for your entourage</h3>
+                <p class="event-modal__entourage-note">
+                    If your entourage has approved group ticket purchases, you can buy
+                    online passes for everyone at once. Each member is charged their
+                    own share and the pass appears in their account immediately.
+                </p>
+                <div class="event-modal__entourage-row">
+                    <select class="event-modal__entourage-select" id="eventModalEntouragePick" aria-label="Select entourage">
+                        <option value="">Select your entourage…</option>
+                        <option value="brooklyn" data-members="4">Brooklyn Crew · 4 members</option>
+                        <option value="comedy" data-members="6">Comedy Connoisseurs · 6 members</option>
+                        <option value="studio" data-members="3">Studio Squad · 3 members</option>
+                        <option value="duo" data-members="2">Tour Duo · 2 members</option>
+                        <option value="warehouse" data-members="9">Warehouse Friends · 9 members</option>
+                    </select>
+                    <div class="event-modal__entourage-total" id="eventModalEntourageTotal">— DKK</div>
+                </div>
+                <button type="button" class="wide-btn wide-btn--accept" id="eventModalEntourageBtn" disabled>Buy for entourage</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ Evening Pass modal ============ -->
+    <div class="modal-overlay" id="eveningPassModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="eveningPassModalTitle">
+        <div class="modal evening-pass-modal">
+            <header class="modal__header">
+                <div>
+                    <h2 class="evening-pass-modal__title" id="eveningPassModalTitle">Plan your Evening Pass</h2>
+                    <p class="evening-pass-modal__sub">Six hours of online concerts back-to-back. Tell us when, in which languages, and the kinds of shows — STAGECORD picks the rest.</p>
+                </div>
+                <button type="button" class="modal__close" aria-label="Close" data-close-evening>&times;</button>
+            </header>
+
+            <div class="evening-pass-modal__body">
+                <div class="evening-pass-modal__grid">
+                    <!-- Filters column -->
+                    <div class="evening-pass-modal__filters">
+                        <section class="evening-pass-step">
+                            <h3 class="evening-pass-step__title"><span class="evening-pass-step__num">1</span> When does your evening start?</h3>
+                            <div class="evening-pass-times">
+                                <label class="evening-pass-time"><input type="radio" name="passStart" value="now" checked><span>Start now</span></label>
+                                <label class="evening-pass-time"><input type="radio" name="passStart" value="20:00"><span>20:00</span></label>
+                                <label class="evening-pass-time"><input type="radio" name="passStart" value="21:00"><span>21:00</span></label>
+                                <label class="evening-pass-time"><input type="radio" name="passStart" value="22:00"><span>22:00</span></label>
+                            </div>
+                        </section>
+
+                        <section class="evening-pass-step">
+                            <h3 class="evening-pass-step__title"><span class="evening-pass-step__num">2</span> Languages</h3>
+                            <p class="evening-pass-step__hint">Shows in any language with no spoken word (DJ sets, dance, instrumental) are always eligible.</p>
+                            <div class="evening-pass-chips">
+                                <label class="evening-pass-chip"><input type="checkbox" data-lang="en" checked><span>English</span></label>
+                                <label class="evening-pass-chip"><input type="checkbox" data-lang="da" checked><span>Danish</span></label>
+                                <label class="evening-pass-chip"><input type="checkbox" data-lang="sv"><span>Swedish</span></label>
+                                <label class="evening-pass-chip"><input type="checkbox" data-lang="no"><span>Norwegian</span></label>
+                                <label class="evening-pass-chip"><input type="checkbox" data-lang="de"><span>German</span></label>
+                                <label class="evening-pass-chip"><input type="checkbox" data-lang="fr"><span>French</span></label>
+                                <label class="evening-pass-chip"><input type="checkbox" data-lang="es"><span>Spanish</span></label>
+                            </div>
+                        </section>
+
+                        <section class="evening-pass-step">
+                            <h3 class="evening-pass-step__title"><span class="evening-pass-step__num">3</span> Genres &amp; formats</h3>
+                            <div class="evening-pass-chips">
+                                <label class="evening-pass-chip"><input type="checkbox" data-genre="concert" checked><span>Concert</span></label>
+                                <label class="evening-pass-chip"><input type="checkbox" data-genre="comedy" checked><span>Comedy</span></label>
+                                <label class="evening-pass-chip"><input type="checkbox" data-genre="dj"><span>DJ set</span></label>
+                                <label class="evening-pass-chip"><input type="checkbox" data-genre="dance"><span>Dance</span></label>
+                                <label class="evening-pass-chip"><input type="checkbox" data-genre="podcast"><span>Podcast</span></label>
+                                <label class="evening-pass-chip"><input type="checkbox" data-genre="studio"><span>Studio session</span></label>
+                                <label class="evening-pass-chip"><input type="checkbox" data-genre="electronic"><span>Electronic / synthwave</span></label>
+                                <label class="evening-pass-chip"><input type="checkbox" data-genre="hiphop"><span>Hip-hop / R&amp;B</span></label>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- Program preview column -->
+                    <aside class="evening-pass-modal__program">
+                        <header class="evening-pass-program__head">
+                            <span class="evening-pass-program__tag">Suggested program</span>
+                            <h3 class="evening-pass-program__title">Your evening, scheduled</h3>
+                            <p class="evening-pass-program__hint" id="eveningPassRange">Updates as you adjust filters.</p>
+                        </header>
+                        <ol class="evening-pass-program__list" id="eveningPassProgram">
+                            <!-- populated by JS -->
+                        </ol>
+                        <div class="evening-pass-program__empty" id="eveningPassEmpty" hidden>
+                            No matching shows. Try widening your languages or genres.
+                        </div>
+                    </aside>
+                </div>
+            </div>
+
+            <footer class="evening-pass-modal__footer">
+                <div class="evening-pass-modal__total">
+                    <span class="evening-pass-modal__total-label">Evening Pass total</span>
+                    <span class="evening-pass-modal__total-value" id="eveningPassTotal">0 DKK</span>
+                    <span class="evening-pass-modal__total-meta" id="eveningPassMeta">— shows · — minutes booked</span>
+                </div>
+                <div class="evening-pass-modal__actions">
+                    <button type="button" class="wide-btn" data-close-evening>Cancel</button>
+                    <button type="button" class="wide-btn wide-btn--accept" id="eveningPassConfirm">Book Evening Pass</button>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ============ Persistent bottom player ============ -->
+    <div class="streaming-player" data-help="Mini-player: Den aktuelle stream forsætter at spille i bunden af siden mens du browser. Pause / spol / lyd-volumen.">
+        <div class="streaming-player__cover" style="background-image: url('../assets/images/artists/jokesmith-johnson-cover.png');"></div>
+        <div class="streaming-player__main">
+            <div class="streaming-player__title">Late Cellar Set</div>
+            <div class="streaming-player__byline auto-name">Jokesmith Johnson</div>
+        </div>
+
+        <div class="streaming-player__controls">
+            <button type="button" class="streaming-player__btn" aria-label="Skip back">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 17V7l-9 5 9 5zM5 7h2v10H5z"/></svg>
+            </button>
+            <button type="button" class="streaming-player__btn streaming-player__btn--play" id="streamingPlayBtn" aria-label="Pause">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" data-icon="pause"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+            </button>
+            <button type="button" class="streaming-player__btn" aria-label="Skip forward">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M5 7v10l9-5-9-5zm12 0h2v10h-2z"/></svg>
+            </button>
+        </div>
+
+        <div class="streaming-player__progress">
+            <span class="streaming-player__time">18:42</span>
+            <div class="streaming-player__bar"><div class="streaming-player__bar-fill"></div></div>
+            <span class="streaming-player__time">49:30</span>
+        </div>
+
+        <div class="streaming-player__volume">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M3 10v4h4l5 5V5L7 10H3zm13.5 2c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+            </svg>
+            <div class="streaming-player__volume-bar"><div class="streaming-player__volume-fill"></div></div>
+        </div>
+    </div>
+
+    <script src="../js/core.js"></script>
+    <script src="../js/modes.js"></script>
+    <script src="../js/sidebar.js"></script>
+    <script src="../js/topbar-widgets.js"></script>
+    <script src="../js/stage-badge.js"></script>
+    <script src="../js/acting-as-service.js"></script>
+    <script src="../js/stage-cards.js"></script>
+    <script src="../js/stage-label.js"></script>
+    <script src="../js/stage-resources.js"></script>
+    <script src="../js/stage-economy.js"></script>
+    <script src="../js/settings.js"></script>
+    <script src="../js/activity-feed.js"></script>
+    <script src="../js/app.js"></script>
+    <script>
+    // Sync the bottom-bar with the current "now playing" track if one is
+    // saved in localStorage (e.g. user just minimized from the song page).
+    (function() {
+        const player = document.querySelector('.streaming-player');
+        if (!player) return;
+        let track = null;
+        try {
+            const raw = localStorage.getItem('stagecord:nowPlaying');
+            if (raw) track = JSON.parse(raw);
+        } catch (e) {}
+        if (track) {
+            const cover  = player.querySelector('.streaming-player__cover');
+            const title  = player.querySelector('.streaming-player__title');
+            const byline = player.querySelector('.streaming-player__byline');
+            if (cover && track.cover)  cover.style.backgroundImage = "url('" + track.cover + "')";
+            if (title && track.title)  title.textContent = track.title;
+            if (byline && track.artist) byline.textContent = track.artist;
+        }
+
+        // Add an expand button so the user can return to the full song page.
+        if (!player.querySelector('[data-action="expand-song"]')) {
+            const expandBtn = document.createElement('button');
+            expandBtn.type = 'button';
+            expandBtn.className = 'streaming-player__btn streaming-player__expand';
+            expandBtn.setAttribute('aria-label', 'Open full player');
+            expandBtn.dataset.action = 'expand-song';
+            expandBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 15l6-6 6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+            expandBtn.addEventListener('click', function() {
+                window.location.href = 'song/index.html';
+            });
+            player.appendChild(expandBtn);
+        }
+    })();
+
+    // Toggle play/pause icon on the bottom-player play button.
+    (function() {
+        const btn = document.getElementById('streamingPlayBtn');
+        if (!btn) return;
+        const playIcon = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5z"/></svg>';
+        const pauseIcon = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
+        // Initialize from localStorage if available
+        let playing = true;
+        try { playing = (localStorage.getItem('stagecord:isPlaying') || 'true') === 'true'; } catch (e) {}
+        btn.innerHTML = playing ? pauseIcon : playIcon;
+        btn.setAttribute('aria-label', playing ? 'Pause' : 'Play');
+        btn.addEventListener('click', function() {
+            playing = !playing;
+            btn.innerHTML = playing ? pauseIcon : playIcon;
+            btn.setAttribute('aria-label', playing ? 'Pause' : 'Play');
+            try { localStorage.setItem('stagecord:isPlaying', playing ? 'true' : 'false'); } catch (e) {}
+        });
+    })();
+
+    // Wire live cards + hero "Watch live" CTA to the existing event-modal.
+    // Each card carries its own data-event-* attributes; on click we find
+    // the matching hidden helper-day and dispatch a click on it, which
+    // app.js picks up and opens the Online Concert Pass purchase flow.
+    (function() {
+        document.querySelectorAll('[data-event-date]').forEach(function(el) {
+            // Skip the helper days themselves (they live in a hidden block
+            // and have no need to wire a click forwarder).
+            if (el.classList.contains('artist-calendar__day--event')) return;
+            el.addEventListener('click', function(e) {
+                e.preventDefault();
+                const day = document.querySelector(
+                    '.artist-calendar__day--event[data-event-date="' +
+                    el.dataset.eventDate.replace(/"/g, '\\"') + '"]'
+                );
+                if (day) day.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+            });
+        });
+    })();
+
+    // Hero carousel — auto-advance every 15s, prev/next nav, dot indicators.
+    // Pauses while the cursor is on the hero (so users can read), restarts
+    // on mouseleave or after manual nav.
+    (function() {
+        const hero = document.querySelector('.streaming-hero');
+        if (!hero) return;
+        const slides = Array.from(hero.querySelectorAll('.streaming-hero__slide'));
+        const dots = Array.from(hero.querySelectorAll('.streaming-hero__dot'));
+        const prevBtn = hero.querySelector('.streaming-hero__nav--prev');
+        const nextBtn = hero.querySelector('.streaming-hero__nav--next');
+        if (slides.length === 0) return;
+
+        let index = slides.findIndex(function(s) { return s.classList.contains('is-active'); });
+        if (index < 0) index = 0;
+
+        let timer = null;
+        const INTERVAL = 15000;
+
+        function show(i) {
+            slides.forEach(function(s, k) { s.classList.toggle('is-active', k === i); });
+            dots.forEach(function(d, k) { d.classList.toggle('is-active', k === i); });
+            index = i;
+        }
+        function next() { show((index + 1) % slides.length); }
+        function prev() { show((index - 1 + slides.length) % slides.length); }
+        function startAuto() { stopAuto(); timer = setInterval(next, INTERVAL); }
+        function stopAuto()  { if (timer) { clearInterval(timer); timer = null; } }
+        function resetAuto() { stopAuto(); startAuto(); }
+
+        if (prevBtn) prevBtn.addEventListener('click', function() { prev(); resetAuto(); });
+        if (nextBtn) nextBtn.addEventListener('click', function() { next(); resetAuto(); });
+        dots.forEach(function(d, k) {
+            d.addEventListener('click', function() { show(k); resetAuto(); });
+        });
+        hero.addEventListener('mouseenter', stopAuto);
+        hero.addEventListener('mouseleave', startAuto);
+
+        // Pause when tab not visible (don't burn cycles in the background).
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) stopAuto();
+            else startAuto();
+        });
+
+        startAuto();
+    })();
+
+    // Category filter chips — toggle the active chip and hide cards/tracks
+    // whose data-category doesn't match. Sections that end up empty are
+    // hidden too. The carousel hero stays untouched (it's "featured" content
+    // that crosses categories).
+    (function() {
+        const chips = document.querySelectorAll('.streaming-filter[data-filter]');
+        if (!chips.length) return;
+
+        function apply(value) {
+            chips.forEach(function(c) {
+                c.classList.toggle('is-active', c.dataset.filter === value);
+            });
+
+            const items = document.querySelectorAll(
+                '.streaming-card[data-category], .streaming-track[data-category]'
+            );
+            items.forEach(function(el) {
+                const ok = (value === 'all') || (el.dataset.category === value);
+                el.hidden = !ok;
+            });
+
+            // Hide whole section if every taggable item inside it is hidden.
+            document.querySelectorAll('.streaming-section').forEach(function(section) {
+                const tagged = section.querySelectorAll('[data-category]');
+                if (tagged.length === 0) return;
+                const visible = Array.from(tagged).some(function(el) { return !el.hidden; });
+                section.hidden = !visible;
+            });
+
+            // Evening Pass promotes online concert passes — only relevant
+            // when the user is browsing concerts or the unfiltered view.
+            const eveningBanner = document.querySelector('.evening-pass-banner');
+            if (eveningBanner) {
+                eveningBanner.hidden = !(value === 'all' || value === 'concert');
+            }
+        }
+
+        chips.forEach(function(c) {
+            c.addEventListener('click', function() { apply(c.dataset.filter); });
+        });
+    })();
+
+    // Set-reminder buttons (soon-live slides) — flip to a confirmation state.
+    document.querySelectorAll('[data-stream-action="remind"]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const original = btn.innerHTML;
+            btn.innerHTML = '<svg class="streaming-cta__icon" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Reminder set';
+            btn.disabled = true;
+            setTimeout(function() {
+                btn.innerHTML = original;
+                btn.disabled = false;
+            }, 2400);
+        });
+    });
+
+    // Evening Pass — modal flow + dynamic program suggestion.
+    (function() {
+        const overlay = document.getElementById('eveningPassModal');
+        const openBtn = document.getElementById('openEveningPassBtn');
+        const programEl = document.getElementById('eveningPassProgram');
+        const emptyEl = document.getElementById('eveningPassEmpty');
+        const totalEl = document.getElementById('eveningPassTotal');
+        const metaEl = document.getElementById('eveningPassMeta');
+        const rangeEl = document.getElementById('eveningPassRange');
+        const confirmBtn = document.getElementById('eveningPassConfirm');
+        if (!overlay || !openBtn) return;
+
+        // Show catalog used to compose suggestions. Each show has a duration
+        // (minutes), genre, languages it's offered in, price for an Online
+        // Concert Pass, and a friendly title/artist line.
+        const CATALOG = [
+            { id: 'jokesmith-late',   title: 'Jokesmith Johnson — Late Cellar Set',     genres: ['comedy'],                  langs: ['en'],     duration: 50,  price: 79 },
+            { id: 'lola-young',       title: 'Lola Young — soul-pop solo show',         genres: ['concert'],                 langs: ['en'],     duration: 90,  price: 89 },
+            { id: 'kebu',             title: 'KEBU — Nordic synthwave live',            genres: ['concert','electronic'],    langs: ['no-language'], duration: 100, price: 79 },
+            { id: 'jeremy-freedom',   title: 'Jeremy Freedom — FREEDOM Tour Brooklyn',  genres: ['concert'],                 langs: ['en'],     duration: 110, price: 119 },
+            { id: 'frostbite-dj',     title: 'DJ Frostbite — Friday warehouse',         genres: ['dj','electronic'],         langs: ['no-language'], duration: 180, price: 49 },
+            { id: 'mike-andersen',    title: 'MIKE Andersen — alt-rap headline',        genres: ['concert','hiphop'],        langs: ['en'],     duration: 75,  price: 79 },
+            { id: 'mellow',           title: 'Mellow — Affilærd takeover',              genres: ['concert','hiphop'],        langs: ['da'],     duration: 70,  price: 69 },
+            { id: 'nick-sander',      title: 'Nick Sander — singer-songwriter night',   genres: ['concert'],                 langs: ['da','en'],duration: 60,  price: 59 },
+            { id: 'girli',            title: 'Girli — Matriarchy listening party',      genres: ['concert'],                 langs: ['en'],     duration: 55,  price: 89 },
+            { id: 'jokesmith-podcast',title: 'Behind The Curtain · S4E2 live',          genres: ['podcast','comedy'],        langs: ['en'],     duration: 45,  price: 0  },
+            { id: 'liva-dance',       title: 'Camilla Step — choreography rehearsal',   genres: ['dance'],                   langs: ['no-language'], duration: 40, price: 0  },
+            { id: 'maya-studio',      title: 'Maya Thompson — vocal studio session',    genres: ['studio'],                  langs: ['en'],     duration: 50,  price: 39 },
+            { id: 'sara-podcast',     title: 'Sara Holm · Voice on tape',               genres: ['podcast'],                 langs: ['da'],     duration: 45,  price: 0  },
+            { id: 'frostbite-late',   title: 'DJ Frostbite — late night vinyl mix',     genres: ['dj','electronic'],         langs: ['no-language'], duration: 90, price: 39 }
+        ];
+
+        // 6 hours = 360 minutes
+        const TARGET_MINUTES = 360;
+
+        function getSelectedLangs() {
+            return Array.from(document.querySelectorAll('input[data-lang]:checked')).map(function(i) { return i.dataset.lang; });
+        }
+        function getSelectedGenres() {
+            return Array.from(document.querySelectorAll('input[data-genre]:checked')).map(function(i) { return i.dataset.genre; });
+        }
+        function getStartTime() {
+            const checked = document.querySelector('input[name="passStart"]:checked');
+            const v = checked ? checked.value : 'now';
+            if (v === 'now') {
+                const now = new Date();
+                // Round up to next 5-minute mark for visual cleanliness.
+                now.setMinutes(Math.ceil(now.getMinutes() / 5) * 5, 0, 0);
+                return now;
+            }
+            const [h, m] = v.split(':').map(Number);
+            const t = new Date();
+            t.setHours(h, m, 0, 0);
+            return t;
+        }
+
+        function fmtTime(d) {
+            const h = String(d.getHours()).padStart(2, '0');
+            const m = String(d.getMinutes()).padStart(2, '0');
+            return h + ':' + m;
+        }
+        function fmtDuration(min) {
+            if (min < 60) return min + ' min';
+            const h = Math.floor(min / 60);
+            const r = min % 60;
+            return r ? (h + 'h ' + r + 'm') : (h + 'h');
+        }
+        function escape(s) {
+            return s.replace(/[&<>"']/g, function(c) {
+                return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+            });
+        }
+
+        function pickProgram() {
+            const langs = getSelectedLangs();
+            const genres = getSelectedGenres();
+
+            // Filter catalog: must overlap on at least one genre, AND either
+            // be language-free (DJ/dance/instrumental) or speak one of the
+            // selected languages.
+            const eligible = CATALOG.filter(function(s) {
+                const genreOk = s.genres.some(function(g) { return genres.indexOf(g) !== -1; });
+                if (!genreOk) return false;
+                const langOk = s.langs.indexOf('no-language') !== -1
+                    || s.langs.some(function(l) { return langs.indexOf(l) !== -1; });
+                return langOk;
+            });
+
+            // Greedy fill towards target — sort by descending duration so we
+            // hit closer to 6h with fewer shows; then deterministic by id.
+            eligible.sort(function(a, b) {
+                if (b.duration !== a.duration) return b.duration - a.duration;
+                return a.id.localeCompare(b.id);
+            });
+
+            const picked = [];
+            let total = 0;
+            const used = new Set();
+            for (let i = 0; i < eligible.length; i++) {
+                const s = eligible[i];
+                if (used.has(s.id)) continue;
+                if (total + s.duration > TARGET_MINUTES + 30) continue; // allow a small overshoot
+                picked.push(s);
+                used.add(s.id);
+                total += s.duration;
+                if (total >= TARGET_MINUTES) break;
+            }
+            // If we didn't hit target, top up with shorter shows we may have skipped.
+            if (total < TARGET_MINUTES) {
+                eligible.sort(function(a, b) { return a.duration - b.duration; });
+                for (let i = 0; i < eligible.length && total < TARGET_MINUTES; i++) {
+                    const s = eligible[i];
+                    if (used.has(s.id)) continue;
+                    if (total + s.duration > TARGET_MINUTES + 30) continue;
+                    picked.push(s);
+                    used.add(s.id);
+                    total += s.duration;
+                }
+            }
+            return picked;
+        }
+
+        function renderProgram() {
+            const start = getStartTime();
+            const picked = pickProgram();
+            programEl.innerHTML = '';
+            if (picked.length === 0) {
+                emptyEl.hidden = false;
+                totalEl.textContent = '0 DKK';
+                metaEl.textContent = '— shows · — minutes booked';
+                rangeEl.textContent = 'Pick at least one genre to see a program.';
+                confirmBtn.disabled = true;
+                return;
+            }
+            emptyEl.hidden = true;
+            confirmBtn.disabled = false;
+
+            let cursor = new Date(start);
+            let totalMin = 0;
+            let totalPrice = 0;
+            picked.forEach(function(s) {
+                const startStr = fmtTime(cursor);
+                const end = new Date(cursor.getTime() + s.duration * 60000);
+                const endStr = fmtTime(end);
+                const li = document.createElement('li');
+                li.className = 'evening-pass-program__item';
+                li.innerHTML =
+                    '<span class="evening-pass-program__time">' + startStr + '<br>' + endStr + '</span>' +
+                    '<div class="evening-pass-program__meta">' +
+                        '<div class="evening-pass-program__meta-title">' + escape(s.title) + '</div>' +
+                        '<div class="evening-pass-program__meta-sub">' +
+                            escape(s.genres.join(' · ')) + ' · ' + fmtDuration(s.duration) +
+                            (s.price === 0 ? ' · Free' : ' · ' + s.price + ' DKK') +
+                        '</div>' +
+                    '</div>';
+                programEl.appendChild(li);
+                cursor = end;
+                totalMin += s.duration;
+                totalPrice += s.price;
+            });
+
+            // Apply Evening Pass discount: 199 DKK floor or sum of show prices, whichever lower.
+            const passPrice = Math.max(199, Math.round(totalPrice * 0.55));
+            totalEl.textContent = passPrice + ' DKK';
+            metaEl.textContent = picked.length + ' shows · ' + fmtDuration(totalMin) + ' booked · ' + Math.round((totalPrice - passPrice)) + ' DKK saved vs. single tickets';
+            rangeEl.textContent = 'From ' + fmtTime(start) + ' to ' + fmtTime(cursor) + ' · ' + fmtDuration(totalMin);
+        }
+
+        function open() {
+            renderProgram();
+            overlay.classList.add('open');
+            overlay.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+        function close() {
+            overlay.classList.remove('open');
+            overlay.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+
+        openBtn.addEventListener('click', open);
+        overlay.querySelectorAll('[data-close-evening]').forEach(function(b) {
+            b.addEventListener('click', close);
+        });
+        overlay.addEventListener('click', function(e) { if (e.target === overlay) close(); });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && overlay.classList.contains('open')) close();
+        });
+
+        // Re-render program on any filter change.
+        overlay.addEventListener('change', function(e) {
+            if (e.target.matches('input[data-lang], input[data-genre], input[name="passStart"]')) {
+                renderProgram();
+            }
+        });
+
+        confirmBtn.addEventListener('click', function() {
+            const original = confirmBtn.textContent;
+            confirmBtn.textContent = 'Evening Pass booked ✓';
+            confirmBtn.disabled = true;
+            setTimeout(function() {
+                close();
+                confirmBtn.textContent = original;
+                confirmBtn.disabled = false;
+            }, 1600);
+        });
+    })();
+    </script>
+
+    <!-- ===== List instrument modal — sell your own ===== -->
+    <div class="release-modal-overlay" id="listInstrumentModal" data-list-instrument-modal aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="release-modal release-modal--instr">
+            <header class="release-modal__header">
+                <h2 class="release-modal__title">List instrument for sale</h2>
+                <button type="button" class="release-modal__close" data-close-list-instr aria-label="Close" data-help="Annullér uden at oprette listing.">&times;</button>
+            </header>
+            <div class="release-modal__body">
+                <form class="instr-form">
+                    <div class="instr-form__row">
+                        <div class="instr-form__field">
+                            <label class="instr-form__label" data-help="Brand: Producent (Fender, Roland, Korg, Akai osv.). Bruges også til auto-verification af serial-nummer mod producentens database.">Brand</label>
+                            <input type="text" class="instr-form__input" placeholder="e.g. Fender">
+                        </div>
+                        <div class="instr-form__field">
+                            <label class="instr-form__label" data-help="Model: Specifik model-betegnelse (Stratocaster, Juno-60, MPC One osv.).">Model</label>
+                            <input type="text" class="instr-form__input" placeholder="e.g. Stratocaster">
+                        </div>
+                    </div>
+                    <div class="instr-form__field">
+                        <label class="instr-form__label" data-help="Serial number: Det unikke nummer på din enhed. STAGECORD verificerer det med producentens database hvis det er et kendt brand. Skjuler ikke serial fra køber — det er en del af verifikationen.">Serial number (required)</label>
+                        <input type="text" class="instr-form__input instr-form__input--serial" placeholder="e.g. E412785" required>
+                        <span class="instr-form__hint">Vi auto-verificerer serial mod brand-databasen og tjekker om instrumentet er registreret som stjålet.</span>
+                    </div>
+                    <div class="instr-form__row">
+                        <div class="instr-form__field">
+                            <label class="instr-form__label">Condition</label>
+                            <select class="instr-form__select">
+                                <option>As new (still in box)</option>
+                                <option>Like new (used &lt; 6 months)</option>
+                                <option>Used (regular wear)</option>
+                                <option>Vintage (pre-1990)</option>
+                                <option>For parts / not working</option>
+                            </select>
+                        </div>
+                        <div class="instr-form__field">
+                            <label class="instr-form__label">Price (DKK)</label>
+                            <input type="number" class="instr-form__input" placeholder="e.g. 14200" min="0">
+                        </div>
+                    </div>
+                    <div class="instr-form__field">
+                        <label class="instr-form__label">Description</label>
+                        <textarea class="instr-form__textarea" placeholder="Year of purchase, modifications, included accessories, why you're selling…"></textarea>
+                    </div>
+                </form>
+            </div>
+            <footer class="release-modal__actions">
+                <button type="button" class="release-modal__btn" data-close-list-instr>Cancel</button>
+                <button type="button" class="release-modal__btn release-modal__btn--primary" data-list-instr-submit data-help="Publish listing: Dit instrument vises i Instrument Exchange. Når en køber accepterer købstilbud, bliver serial verifikation udført før betaling frigives.">Publish listing</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ===== Buy instrument modal — confirm with serial number ===== -->
+    <div class="release-modal-overlay" id="buyInstrumentModal" data-buy-instrument-modal aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="release-modal release-modal--instr">
+            <header class="release-modal__header">
+                <h2 class="release-modal__title">Buy instrument · serial verification</h2>
+                <button type="button" class="release-modal__close" data-close-buy-instr aria-label="Close">&times;</button>
+            </header>
+            <div class="release-modal__body">
+                <p style="margin:0;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.72);" data-help="Serial verification: Du skal indtaste serial-nummeret på det instrument du vil købe. Det skal matche det sælgeren angav — hvis match, frigives købet. Hvis ikke match, blokeres handelen indtil sælger uploader bevis.">For at fuldføre købet skal du indtaste <strong>serial-nummeret</strong> præcist som det står på sælgerens listing. STAGECORD verificerer match før betaling frigives.</p>
+
+                <div class="instr-form" style="margin-top:14px;">
+                    <div class="instr-form__field">
+                        <label class="instr-form__label">Item</label>
+                        <input type="text" class="instr-form__input" data-buy-item readonly style="opacity:0.85;">
+                    </div>
+                    <div class="instr-form__field">
+                        <label class="instr-form__label">Price</label>
+                        <input type="text" class="instr-form__input" data-buy-price readonly style="opacity:0.85;">
+                    </div>
+                    <div class="instr-form__field">
+                        <label class="instr-form__label" data-help="Indtast serial-nummeret på instrumentet — bruges til at verificere at sælger og køber refererer til samme enhed.">Confirm serial number</label>
+                        <input type="text" class="instr-form__input instr-form__input--serial" data-buy-serial-input placeholder="Type the serial exactly as listed">
+                    </div>
+
+                    <!-- Verification result banner -->
+                    <div class="instr-form__verify" data-buy-verify hidden></div>
+                </div>
+            </div>
+            <footer class="release-modal__actions">
+                <button type="button" class="release-modal__btn" data-close-buy-instr>Cancel</button>
+                <button type="button" class="release-modal__btn release-modal__btn--primary" data-buy-instr-confirm data-help="Confirm purchase: Frigiver betaling til sælger når serial-match er verificeret. Hvis ikke match, blokeres handelen indtil yderligere bevis er uploaded.">Confirm purchase</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ===== Create savings goal modal ===== -->
+    <div class="release-modal-overlay" id="createGoalModal" data-create-goal-modal aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="release-modal release-modal--instr">
+            <header class="release-modal__header">
+                <h2 class="release-modal__title">Start savings goal</h2>
+                <button type="button" class="release-modal__close" data-close-create-goal aria-label="Close">&times;</button>
+            </header>
+            <div class="release-modal__body">
+                <p style="margin:0;font-size:13px;line-height:1.5;color:rgba(255,255,255,0.72);" data-help="Savings goal: Opret en opsparing til et specifikt instrument. Du kan selv indbetale + andre brugere kan donere små beløb. Når målet er nået, frigives pengene til at købe instrumentet (køb sker via samme serial-verificerede flow).">Opret en opsparing til et specifikt instrument. Andre brugere kan donere som "give it forward". Pengene er låst til instrument-købet — ikke kontant udbetaling.</p>
+
+                <div class="instr-form" style="margin-top:14px;">
+                    <div class="instr-form__field">
+                        <label class="instr-form__label">Target instrument</label>
+                        <input type="text" class="instr-form__input" data-goal-target placeholder="e.g. Roland Juno-60">
+                    </div>
+                    <div class="instr-form__field">
+                        <label class="instr-form__label">Goal amount (DKK)</label>
+                        <input type="number" class="instr-form__input" data-goal-amount placeholder="14200" min="100">
+                    </div>
+                    <div class="instr-form__field">
+                        <label class="instr-form__label" data-help="Personlig besked: Forklar hvorfor du vil have dette instrument og hvad det betyder for dig. Højere donation-rate når historien er ægte og tydelig.">Why this instrument? (optional)</label>
+                        <textarea class="instr-form__textarea" data-goal-msg placeholder="Save up to upgrade my live setup — this synth has been my dream for 5 years…"></textarea>
+                    </div>
+                </div>
+            </div>
+            <footer class="release-modal__actions">
+                <button type="button" class="release-modal__btn" data-close-create-goal>Cancel</button>
+                <button type="button" class="release-modal__btn release-modal__btn--primary" data-create-goal-submit>Start goal</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- ===== Donate modal — give it forward ===== -->
+    <div class="release-modal-overlay" id="donateModal" data-donate-modal aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="release-modal release-modal--instr">
+            <header class="release-modal__header">
+                <h2 class="release-modal__title" data-donate-title>Donate · give it forward</h2>
+                <button type="button" class="release-modal__close" data-close-donate aria-label="Close">&times;</button>
+            </header>
+            <div class="release-modal__body">
+                <p class="section-intro" data-help="Give it forward: Donér et lille beløb til en andens opsparing. Pengene går direkte til deres goal — ikke til platformen. STAGECORD tager ingen fee på donations. Som donor bliver du auto-listet som supporter på goal-kortet.">Donér et lille beløb til <strong data-donate-recipient>—</strong>'s opsparing. Pengene går direkte til deres goal. STAGECORD tager ingen fee på donations. Du bliver listet som supporter på goal-kortet.</p>
+
+                <div class="donate-amounts" data-help="Quick-amounts: Klik et af de 4 beløb for hurtig donation. Eller indtast et custom-beløb længere nede.">
+                    <button type="button" class="donate-amount" data-donate-amt="10">10 DKK</button>
+                    <button type="button" class="donate-amount is-selected" data-donate-amt="25">25 DKK</button>
+                    <button type="button" class="donate-amount" data-donate-amt="50">50 DKK</button>
+                    <button type="button" class="donate-amount" data-donate-amt="100">100 DKK</button>
+                </div>
+
+                <div class="instr-form__field" style="margin-bottom:10px;">
+                    <label class="instr-form__label">Or custom amount</label>
+                    <input type="number" class="instr-form__input" data-donate-custom placeholder="Custom amount in DKK" min="1">
+                </div>
+
+                <div class="instr-form__field" style="margin-bottom:14px;">
+                    <label class="instr-form__label" data-help="Optional message: Vises som kommentar på goal-kortet sammen med dit donation-beløb. Holdt kort og positivt.">Message (optional)</label>
+                    <input type="text" class="instr-form__input" data-donate-msg placeholder="Cheering you on — go get that synth!">
+                </div>
+
+                <div class="donate-summary" data-help="Donations-summary: Det samlede beløb der trækkes fra dit kort/MobilePay og overføres direkte til mottagerens opsparingsmål.">
+                    <div class="donate-summary__amount" data-donate-total>25 DKK</div>
+                    <div class="donate-summary__label">Donerer til <strong data-donate-instrument-label>—</strong>'s opsparing</div>
+                </div>
+            </div>
+            <footer class="release-modal__actions">
+                <button type="button" class="release-modal__btn" data-close-donate>Cancel</button>
+                <button type="button" class="release-modal__btn release-modal__btn--primary" data-donate-confirm>♡ Send donation</button>
+            </footer>
+        </div>
+    </div>
+</body>
+</html>

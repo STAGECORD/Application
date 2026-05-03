@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAGECORD — Join the Beta</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/logo.css">
+    <link rel="stylesheet" href="../css/start.css">
+</head>
+<body class="start-body">
+
+    <header class="start-topbar">
+        <a href="index.html" class="start-topbar__logo">
+            <h1 class="logo">
+                <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
+            </h1>
+            <span class="start-topbar__beta">Beta</span>
+        </a>
+
+        <nav class="start-topbar__links">
+            <a href="#about" class="start-topbar__link">About</a>
+            <a href="#waitlist" class="start-topbar__link">Waitlist</a>
+            <a href="#signin" class="start-topbar__link start-topbar__link--cta">I have an invite</a>
+        </nav>
+    </header>
+
+    <main class="start-main">
+        <!-- Hero -->
+        <section class="start-hero" id="about">
+            <div class="start-hero__inner">
+                <span class="start-hero__eyebrow">Closed Beta · 2026</span>
+                <h2 class="start-hero__title">
+                    Rights and licensing<br>for sound, dance<br>and <span class="start-hero__title-accent">creative work.</span>
+                </h2>
+                <p class="start-hero__subtitle">
+                    STAGECORD is where creators keep their catalogue and their terms in one place — and let the people who want to use the work license it directly. Whether you make music, choreography, performance, score or voice, your rights stay with you and every deal closes between you and the buyer.
+                </p>
+
+                <ul class="start-hero__pillars">
+                    <li><strong>Creators</strong> — register your catalogue, set your terms, license your work directly</li>
+                    <li><strong>Buyers</strong> — venues, filmmakers, advertisers and brands license straight from the source</li>
+                    <li><strong>Audiences</strong> — follow the people you love and watch their work, live or on stream</li>
+                </ul>
+            </div>
+
+            <div class="start-hero__art" aria-hidden="true">
+                <div class="start-hero__art-tile start-hero__art-tile--a"></div>
+                <div class="start-hero__art-tile start-hero__art-tile--b"></div>
+                <div class="start-hero__art-tile start-hero__art-tile--c"></div>
+                <div class="start-hero__art-tile start-hero__art-tile--d"></div>
+            </div>
+        </section>
+
+        <!-- Two-column action panel -->
+        <section class="start-panels">
+            <!-- Waitlist -->
+            <article class="start-panel start-panel--waitlist" id="waitlist">
+                <header class="start-panel__head">
+                    <span class="start-panel__tag">No invite yet?</span>
+                    <h3 class="start-panel__title">Join the waitlist</h3>
+                    <p class="start-panel__subtitle">We're letting people in slowly while we tune the platform. Drop your email and we'll send you an invite when your role is up next.</p>
+
+                    <div class="start-counter" data-help="Live tæller: Antal kreative der har tilmeldt sig ventelisten. Vælg en kontotype for at se tallet for lige netop den rolle — ellers vises samlet sum.">
+                        <span class="start-counter__pulse" aria-hidden="true"></span>
+                        <span class="start-counter__number">0</span>
+                        <span class="start-counter__label">creators already on the waitlist</span>
+                    </div>
+                </header>
+
+                <form class="start-form" id="waitlistForm" novalidate>
+                    <label class="start-field">
+                        <span class="start-field__label">Your email</span>
+                        <input type="email" name="email" placeholder="you@band.com" required autocomplete="email">
+                    </label>
+
+                    <fieldset class="start-roles">
+                        <legend class="start-field__label">I'm joining as a…</legend>
+                        <div class="start-roles__grid">
+                            <label class="start-role"><input type="radio" name="role" value="artist"><span>Artist</span></label>
+                            <label class="start-role"><input type="radio" name="role" value="fan"><span>Fan</span></label>
+                            <label class="start-role"><input type="radio" name="role" value="venue"><span>Venue</span></label>
+                            <label class="start-role"><input type="radio" name="role" value="manager"><span>Manager / Label</span></label>
+                            <label class="start-role"><input type="radio" name="role" value="sponsor"><span>Sponsor / Brand</span></label>
+                            <label class="start-role"><input type="radio" name="role" value="licensor"><span>Media licensor</span></label>
+                        </div>
+                    </fieldset>
+
+                    <label class="start-field start-field--check">
+                        <input type="checkbox" name="updates">
+                        <span>Send me product updates and news while I wait.</span>
+                    </label>
+
+                    <button type="submit" class="start-cta start-cta--primary start-cta--block">Notify me when it's my turn</button>
+                </form>
+            </article>
+
+            <!-- Sign in -->
+            <article class="start-panel start-panel--signin" id="signin">
+                <header class="start-panel__head">
+                    <span class="start-panel__tag start-panel__tag--invite">Got an invite?</span>
+                    <h3 class="start-panel__title">Sign in</h3>
+                    <p class="start-panel__subtitle">Use the email your invite was sent to plus your invite code. Already have an account from an earlier wave? Sign in with email and password.</p>
+                </header>
+
+                <form class="start-form" id="signinForm" novalidate>
+                    <label class="start-field">
+                        <span class="start-field__label">Email</span>
+                        <input type="email" name="email" placeholder="you@band.com" required autocomplete="email">
+                    </label>
+
+                    <label class="start-field">
+                        <span class="start-field__label">Invite code <span class="start-field__hint">(or password if you've signed up before)</span></span>
+                        <input type="text" name="code" placeholder="STAGE-XXXX-XXXX" autocomplete="one-time-code">
+                    </label>
+
+                    <div class="start-form__row">
+                        <label class="start-field start-field--check">
+                            <input type="checkbox" name="remember" checked>
+                            <span>Stay signed in on this device</span>
+                        </label>
+                        <a href="../login/index.html" class="start-form__link">Need help signing in?</a>
+                    </div>
+
+                    <button type="submit" class="start-cta start-cta--primary start-cta--block">Continue</button>
+
+                    <p class="start-form__footnote">No invite? <a href="#waitlist">Join the waitlist instead</a>.</p>
+                </form>
+            </article>
+        </section>
+
+        <!-- Feature highlights -->
+        <section class="start-features">
+            <h3 class="start-features__heading">What's in the Beta</h3>
+            <div class="start-features__grid">
+                <div class="start-feature">
+                    <span class="start-feature__icon" aria-hidden="true">⌁</span>
+                    <h4>Pitch venues directly</h4>
+                    <p>Send proposals to open slots at venues you actually want to play. Attach demos, dates, fee terms — all in one go.</p>
+                </div>
+                <div class="start-feature">
+                    <span class="start-feature__icon" aria-hidden="true">◎</span>
+                    <h4>Tickets without scalpers</h4>
+                    <p>QR-coded tickets that only resell at face value through the platform. If you can't go, convert to an online viewer pass.</p>
+                </div>
+                <div class="start-feature">
+                    <span class="start-feature__icon" aria-hidden="true">▶</span>
+                    <h4>Stream the show</h4>
+                    <p>Sold-out, far away, or just on the couch — buy an Online Concert Pass and watch the show live with the rest of the crowd.</p>
+                </div>
+                <div class="start-feature">
+                    <span class="start-feature__icon" aria-hidden="true">♪</span>
+                    <h4>License with the artist</h4>
+                    <p>Filmmakers, advertisers and game studios pitch directly to artists for sync rights — usage, term and price spelled out up front.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ teaser -->
+        <section class="start-faq">
+            <h3 class="start-faq__heading">A few things people ask</h3>
+            <details class="start-faq__item">
+                <summary>When does the Beta open?</summary>
+                <p>We're letting people in by role across 2026. Artists and venues first, then fans, then sponsors and licensors. Joining the waitlist puts you in that queue.</p>
+            </details>
+            <details class="start-faq__item">
+                <summary>Is it free?</summary>
+                <p>Beta access is free for fans, artists and venues. Sponsor and licensor accounts are billed when a deal closes — no subscriptions, no platform fees.</p>
+            </details>
+            <details class="start-faq__item">
+                <summary>What happens to my invite if I don't use it?</summary>
+                <p>Invites are valid for 14 days from issue. After that we recycle them back into the waitlist so others can get in.</p>
+            </details>
+            <details class="start-faq__item">
+                <summary>I'm a label / manager — same flow?</summary>
+                <p>Yes. Pick "Manager / Label" on the waitlist and we'll send you a manager invite that lets you bring your roster of artist accounts onto the platform.</p>
+            </details>
+        </section>
+    </main>
+
+    <footer class="start-footer">
+        <div class="start-footer__inner">
+            <p class="start-footer__brand">STAGECORD &nbsp;<span>·</span>&nbsp; Closed Beta · 2026</p>
+            <nav class="start-footer__nav">
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+                <a href="#">Press</a>
+                <a href="mailto:hello@stagecord.com">hello@stagecord.com</a>
+            </nav>
+        </div>
+    </footer>
+
+    <!-- Loads the global STAGECORD brand auto-formatter (formatStagecord)
+         and the universal name formatter so inline mentions render with the
+         correct logo typography even outside the in-app sidebar. -->
+    <script src="../js/core.js"></script>
+    <script src="../js/modes.js"></script>
+    <script src="../js/sidebar.js"></script>
+    <script src="../js/topbar-widgets.js"></script>
+    <script src="../js/stage-badge.js"></script>
+    <script src="../js/acting-as-service.js"></script>
+    <script src="../js/stage-cards.js"></script>
+    <script src="../js/stage-label.js"></script>
+    <script src="../js/stage-resources.js"></script>
+    <script src="../js/stage-economy.js"></script>
+    <script src="../js/settings.js"></script>
+    <script src="../js/activity-feed.js"></script>
+    <script src="../js/app.js"></script>
+    <script>
+    // Friendly demo handlers — flip submit button to a confirmation state.
+    function flashSuccess(form, message) {
+        const btn = form.querySelector('button[type="submit"]');
+        if (!btn) return;
+        const original = btn.textContent;
+        btn.textContent = message;
+        btn.disabled = true;
+        btn.classList.add('is-success');
+        setTimeout(function() {
+            btn.textContent = original;
+            btn.disabled = false;
+            btn.classList.remove('is-success');
+        }, 2200);
+    }
+
+    // Animated count-up for the waitlist counter. Defaults to the platform-wide
+    // total; switches to a role-specific count + label when the user picks a
+    // role in the waitlist form. Bumps by 1 on submit.
+    (function() {
+        const numEl = document.querySelector('.start-counter__number');
+        const labelEl = document.querySelector('.start-counter__label');
+        if (!numEl || !labelEl) return;
+
+        // Per-role counts. Sum equals the total displayed on first view.
+        const COUNTS = {
+            artist:   { n: 1180, label: 'artists already on the waitlist' },
+            fan:      { n:  968, label: 'fans already on the waitlist' },
+            venue:    { n:  268, label: 'venues already on the waitlist' },
+            manager:  { n:  184, label: 'managers & labels already on the waitlist' },
+            sponsor:  { n:  134, label: 'sponsors already on the waitlist' },
+            licensor: { n:  113, label: 'licensors already on the waitlist' }
+        };
+        const TOTAL = Object.values(COUNTS).reduce(function(s, r) { return s + r.n; }, 0);
+        const TOTAL_LABEL = 'creators already on the waitlist';
+
+        const fmt = function(n) { return n.toLocaleString('en-US'); };
+
+        function runCountUp(to, duration) {
+            const start = performance.now();
+            const from = parseInt((numEl.textContent || '0').replace(/,/g, ''), 10) || 0;
+            function tick(now) {
+                const t = Math.min(1, (now - start) / duration);
+                const eased = 1 - Math.pow(1 - t, 3);   // ease-out cubic
+                numEl.textContent = fmt(Math.round(from + (to - from) * eased));
+                if (t < 1) requestAnimationFrame(tick);
+            }
+            requestAnimationFrame(tick);
+        }
+
+        // First view: animate from 0 → TOTAL once the counter scrolls in.
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting && !numEl.dataset.animated) {
+                    numEl.dataset.animated = '1';
+                    labelEl.textContent = TOTAL_LABEL;
+                    runCountUp(TOTAL, 1400);
+                }
+            });
+        }, { threshold: 0.4 });
+        observer.observe(numEl);
+
+        // Switch counter when the user picks a role.
+        document.querySelectorAll('input[name="role"]').forEach(function(input) {
+            input.addEventListener('change', function() {
+                const data = COUNTS[input.value];
+                if (!data) return;
+                labelEl.textContent = data.label;
+                runCountUp(data.n, 700);
+            });
+        });
+
+        // Expose so submit handlers can bump the count by 1 on signup.
+        window.__bumpWaitlistCounter = function() {
+            const current = parseInt((numEl.textContent || '0').replace(/,/g, ''), 10) || 0;
+            runCountUp(current + 1, 500);
+        };
+    })();
+
+    document.getElementById('waitlistForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        flashSuccess(this, "You're on the list — see you soon ✓");
+        if (window.__bumpWaitlistCounter) window.__bumpWaitlistCounter();
+    });
+    document.getElementById('signinForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const code = this.code && this.code.value.trim();
+        // For the prototype: accept any non-empty code and route to the app.
+        if (code) {
+            window.location.href = '../overview/index.html';
+        } else {
+            flashSuccess(this, 'Please add your invite code or password');
+        }
+    });
+    </script>
+</body>
+</html>
