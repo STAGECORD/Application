@@ -36,7 +36,7 @@
     }
 
     async function loadCount() {
-        if (!countEl) return;
+        if (!countEl || !window.supabaseClient) return;
         const { data, error } = await window.supabaseClient.rpc('get_waitlist_count');
         if (error) {
             console.error('Failed to load waitlist count:', error);
@@ -66,32 +66,44 @@
         submitBtn.disabled = true;
         submitBtn.textContent = 'Sending...';
 
-        const message = wantsUpdates ? 'wants_updates: true' : null;
-
-        const { error } = await window.supabaseClient
-            .from('waitlist')
-            .insert([{ name, email, role, message }]);
+        let response, data;
+        try {
+            response = await fetch('/api/waitlist', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, role, wantsUpdates })
+            });
+            data = await response.json().catch(() => ({}));
+        } catch (err) {
+            console.error('Waitlist request failed:', err);
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalLabel;
+            setFeedback('Network problem — please try again.', 'error');
+            return;
+        }
 
         submitBtn.disabled = false;
 
-        if (error) {
-            if (error.code === '23505') {
-                submitBtn.textContent = "You're already on the list ✓";
-                setFeedback("You're already on the list — we'll be in touch.", 'success');
-                form.reset();
-            } else {
-                submitBtn.textContent = originalLabel;
-                setFeedback('Something went wrong. Please try again in a moment.', 'error');
-                console.error('Waitlist insert error:', error);
-            }
+        if (!response.ok) {
+            submitBtn.textContent = originalLabel;
+            setFeedback(data.error || 'Something went wrong. Please try again.', 'error');
+            return;
+        }
+
+        if (data.duplicate) {
+            submitBtn.textContent = "You're already on the list ✓";
+            setFeedback("You're already on the list — we'll be in touch.", 'success');
+            form.reset();
             return;
         }
 
         submitBtn.textContent = "You're on the list — see you soon ✓";
-        setFeedback("You're on the list! We'll email you when your invite is ready.", 'success');
+        const confirmText = data.emailed
+            ? "You're on the list — check your inbox for confirmation."
+            : "You're on the list! We'll email you when your invite is ready.";
+        setFeedback(confirmText, 'success');
         form.reset();
 
-        // Bump counter by 1 (and refresh from server in background to stay in sync)
         if (countEl) {
             const current = parseInt((countEl.textContent || '0').replace(/,/g, ''), 10) || 0;
             animateCount(current + 1, 500);
