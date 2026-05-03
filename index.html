@@ -3,83 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STAGECORD - Join the Waitlist</title>
-    <meta name="description" content="Join the STAGECORD waitlist. Be among the first to try the new platform for artists and fans.">
+    <title>STAGECORD — Join the Beta</title>
+    <meta name="description" content="STAGECORD is where creators keep their catalogue and their terms in one place. Join the beta waitlist.">
     <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/topbar.css">
-    <link rel="stylesheet" href="css/signup.css">
+    <link rel="stylesheet" href="css/logo.css">
+    <link rel="stylesheet" href="css/start.css">
     <link rel="stylesheet" href="css/waitlist.css">
 </head>
-<body class="signup-body">
+<body class="start-body">
 
-    <header class="signup-topbar">
-        <a href="/" class="signup-topbar__logo">
-            <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
+    <header class="start-topbar">
+        <a href="/" class="start-topbar__logo">
+            <h1 class="logo">
+                <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
+            </h1>
+            <span class="start-topbar__beta">Beta</span>
         </a>
+
+        <nav class="start-topbar__links">
+            <a href="#about" class="start-topbar__link">About</a>
+            <a href="#waitlist" class="start-topbar__link">Waitlist</a>
+        </nav>
     </header>
 
-    <main class="signup-page">
+    <main class="start-main">
+        <!-- Hero -->
+        <section class="start-hero" id="about">
+            <div class="start-hero__inner">
+                <span class="start-hero__eyebrow">Closed Beta · 2026</span>
+                <h2 class="start-hero__title">
+                    Rights and licensing<br>for sound, dance<br>and <span class="start-hero__title-accent">creative work.</span>
+                </h2>
+                <p class="start-hero__subtitle">
+                    STAGECORD is where creators keep their catalogue and their terms in one place — and let the people who want to use the work license it directly. Whether you make music, choreography, performance, score or voice, your rights stay with you and every deal closes between you and the buyer.
+                </p>
 
-        <aside class="signup-art" aria-hidden="true">
-            <div class="signup-art__image signup-art__image--headphones"></div>
-            <div class="signup-art__image signup-art__image--portrait"></div>
-            <div class="signup-art__image signup-art__image--guitar"></div>
-        </aside>
+                <ul class="start-hero__pillars">
+                    <li><strong>Creators</strong> — register your catalogue, set your terms, license your work directly</li>
+                    <li><strong>Buyers</strong> — venues, filmmakers, advertisers and brands license straight from the source</li>
+                    <li><strong>Audiences</strong> — follow the people you love and watch their work, live or on stream</li>
+                </ul>
+            </div>
 
-        <section class="signup-form-wrap">
-            <h1 class="signup-welcome">Join the <strong>STAGE</strong>CORD waitlist</h1>
-            <p class="signup-subtitle">Be among the first to try STAGECORD. We're inviting early users in batches — leave your details and we'll reach out when it's your turn.</p>
-
-            <form class="signup-form" id="waitlistForm" novalidate>
-                <div class="signup-field">
-                    <label class="signup-field__label" for="wl-name">Your name<span aria-hidden="true">*</span></label>
-                    <div class="signup-field__input-wrap">
-                        <input id="wl-name" type="text" name="name" placeholder="Full name" autocomplete="name" required>
-                        <svg class="signup-field__icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/>
-                            <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                    </div>
-                </div>
-
-                <div class="signup-field">
-                    <label class="signup-field__label" for="wl-email">Email<span aria-hidden="true">*</span></label>
-                    <div class="signup-field__input-wrap">
-                        <input id="wl-email" type="email" name="email" placeholder="Enter your email address" autocomplete="email" required>
-                        <svg class="signup-field__icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <rect x="3" y="6" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2"/>
-                            <path d="M3 8l9 6 9-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                </div>
-
-                <div class="signup-field">
-                    <label class="signup-field__label" for="wl-role">I'm a<span aria-hidden="true">*</span></label>
-                    <div class="signup-field__input-wrap">
-                        <select id="wl-role" name="role" required>
-                            <option value="" disabled selected>Choose what describes you best</option>
-                            <option value="artist">Artist</option>
-                            <option value="fan">General user / Fan</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="signup-field">
-                    <label class="signup-field__label" for="wl-message">Anything you want us to know? <span class="signup-field__optional">(optional)</span></label>
-                    <div class="signup-field__input-wrap signup-field__input-wrap--textarea">
-                        <textarea id="wl-message" name="message" rows="3" placeholder="What are you hoping STAGECORD can help you with?"></textarea>
-                    </div>
-                </div>
-
-                <p class="signup-terms">By joining the waitlist you agree to receive an email from us when your invite is ready.</p>
-
-                <button type="submit" class="signup-submit" id="waitlistSubmit">Join waitlist</button>
-
-                <div class="waitlist-feedback" id="waitlistFeedback" role="status" aria-live="polite"></div>
-            </form>
+            <div class="start-hero__art" aria-hidden="true">
+                <div class="start-hero__art-tile start-hero__art-tile--a"></div>
+                <div class="start-hero__art-tile start-hero__art-tile--b"></div>
+                <div class="start-hero__art-tile start-hero__art-tile--c"></div>
+                <div class="start-hero__art-tile start-hero__art-tile--d"></div>
+            </div>
         </section>
 
+        <!-- Two-column action panel -->
+        <section class="start-panels">
+            <!-- Waitlist -->
+            <article class="start-panel start-panel--waitlist" id="waitlist">
+                <header class="start-panel__head">
+                    <span class="start-panel__tag">No invite yet?</span>
+                    <h3 class="start-panel__title">Join the waitlist</h3>
+                    <p class="start-panel__subtitle">We're letting people in slowly while we tune the platform. Drop your details and we'll send you an invite when your role is up next.</p>
+                </header>
+
+                <form class="start-form" id="waitlistForm" novalidate>
+                    <label class="start-field">
+                        <span class="start-field__label">Your name</span>
+                        <input type="text" name="name" placeholder="Full name" required autocomplete="name">
+                    </label>
+
+                    <label class="start-field">
+                        <span class="start-field__label">Your email</span>
+                        <input type="email" name="email" placeholder="you@band.com" required autocomplete="email">
+                    </label>
+
+                    <fieldset class="start-roles">
+                        <legend class="start-field__label">I'm joining as a…</legend>
+                        <div class="start-roles__grid">
+                            <label class="start-role"><input type="radio" name="role" value="artist" required><span>Artist</span></label>
+                            <label class="start-role"><input type="radio" name="role" value="fan" required><span>General user / Fan</span></label>
+                        </div>
+                    </fieldset>
+
+                    <label class="start-field start-field--check">
+                        <input type="checkbox" name="updates">
+                        <span>Send me product updates and news while I wait.</span>
+                    </label>
+
+                    <button type="submit" class="start-cta start-cta--primary start-cta--block" id="waitlistSubmit">Notify me when it's my turn</button>
+
+                    <div class="waitlist-feedback" id="waitlistFeedback" role="status" aria-live="polite"></div>
+                </form>
+            </article>
+
+            <!-- What's coming (replaces signin while auth is not built yet) -->
+            <article class="start-panel start-panel--signin">
+                <header class="start-panel__head">
+                    <span class="start-panel__tag start-panel__tag--invite">What's next</span>
+                    <h3 class="start-panel__title">When you get the invite</h3>
+                    <p class="start-panel__subtitle">We're rolling access out role-by-role. Here's what your invite unlocks the moment it lands in your inbox.</p>
+                </header>
+
+                <ul class="start-hero__pillars">
+                    <li><strong>Profile</strong> — claim your handle, upload your catalogue, set your terms</li>
+                    <li><strong>Direct deals</strong> — accept licensing pitches and book gigs without middlemen</li>
+                    <li><strong>Live stream</strong> — sell tickets and Online Concert Passes for your shows</li>
+                    <li><strong>Collaborate</strong> — invite producers, dancers and visual artists into shared projects</li>
+                </ul>
+
+                <p class="start-form__footnote" style="margin-top: 18px;">Already on the list? You'll get an email at <strong>hello@stagecord.com</strong> when your wave opens.</p>
+            </article>
+        </section>
+
+        <!-- Feature highlights -->
+        <section class="start-features">
+            <h3 class="start-features__heading">What's in the Beta</h3>
+            <div class="start-features__grid">
+                <div class="start-feature">
+                    <span class="start-feature__icon" aria-hidden="true">⌁</span>
+                    <h4>Pitch venues directly</h4>
+                    <p>Send proposals to open slots at venues you actually want to play. Attach demos, dates, fee terms — all in one go.</p>
+                </div>
+                <div class="start-feature">
+                    <span class="start-feature__icon" aria-hidden="true">◎</span>
+                    <h4>Tickets without scalpers</h4>
+                    <p>QR-coded tickets that only resell at face value through the platform. If you can't go, convert to an online viewer pass.</p>
+                </div>
+                <div class="start-feature">
+                    <span class="start-feature__icon" aria-hidden="true">▶</span>
+                    <h4>Stream the show</h4>
+                    <p>Sold-out, far away, or just on the couch — buy an Online Concert Pass and watch the show live with the rest of the crowd.</p>
+                </div>
+                <div class="start-feature">
+                    <span class="start-feature__icon" aria-hidden="true">♪</span>
+                    <h4>License with the artist</h4>
+                    <p>Filmmakers, advertisers and game studios pitch directly to artists for sync rights — usage, term and price spelled out up front.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ teaser -->
+        <section class="start-faq">
+            <h3 class="start-faq__heading">A few things people ask</h3>
+            <details class="start-faq__item">
+                <summary>When does the Beta open?</summary>
+                <p>We're letting people in by role across 2026. Artists first, then general users / fans. Joining the waitlist puts you in that queue.</p>
+            </details>
+            <details class="start-faq__item">
+                <summary>Is it free?</summary>
+                <p>Beta access is free for everyone on the list. When the platform opens commercially, fans and artists will keep a free tier.</p>
+            </details>
+            <details class="start-faq__item">
+                <summary>What happens to my invite if I don't use it?</summary>
+                <p>Invites are valid for 14 days from issue. After that we recycle them back into the waitlist so others can get in.</p>
+            </details>
+            <details class="start-faq__item">
+                <summary>Can I sign up as something other than Artist or Fan?</summary>
+                <p>Right now we're only opening the waitlist for artists and general users. Manager, label, venue and licensor accounts come in the next wave.</p>
+            </details>
+        </section>
     </main>
+
+    <footer class="start-footer">
+        <div class="start-footer__inner">
+            <p class="start-footer__brand">STAGECORD &nbsp;<span>·</span>&nbsp; Closed Beta · 2026</p>
+            <nav class="start-footer__nav">
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+                <a href="mailto:hello@stagecord.com">hello@stagecord.com</a>
+            </nav>
+        </div>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase.js"></script>
