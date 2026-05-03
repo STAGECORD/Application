@@ -4,6 +4,7 @@
 
     const submitBtn = document.getElementById('waitlistSubmit') || form.querySelector('button[type="submit"]');
     const feedback = document.getElementById('waitlistFeedback');
+    const countEl = document.getElementById('waitlistCount');
 
     function setFeedback(message, kind) {
         if (!feedback) return;
@@ -16,6 +17,36 @@
         const checked = form.querySelector('input[name="role"]:checked');
         return checked ? checked.value : '';
     }
+
+    function fmt(n) {
+        return n.toLocaleString('en-US');
+    }
+
+    function animateCount(to, duration) {
+        if (!countEl) return;
+        const from = parseInt((countEl.textContent || '0').replace(/,/g, ''), 10) || 0;
+        const start = performance.now();
+        function tick(now) {
+            const t = Math.min(1, (now - start) / duration);
+            const eased = 1 - Math.pow(1 - t, 3);
+            countEl.textContent = fmt(Math.round(from + (to - from) * eased));
+            if (t < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+    }
+
+    async function loadCount() {
+        if (!countEl) return;
+        const { data, error } = await window.supabaseClient.rpc('get_waitlist_count');
+        if (error) {
+            console.error('Failed to load waitlist count:', error);
+            return;
+        }
+        const n = typeof data === 'number' ? data : parseInt(data, 10) || 0;
+        animateCount(n, 1200);
+    }
+
+    loadCount();
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -59,5 +90,12 @@
         submitBtn.textContent = "You're on the list — see you soon ✓";
         setFeedback("You're on the list! We'll email you when your invite is ready.", 'success');
         form.reset();
+
+        // Bump counter by 1 (and refresh from server in background to stay in sync)
+        if (countEl) {
+            const current = parseInt((countEl.textContent || '0').replace(/,/g, ''), 10) || 0;
+            animateCount(current + 1, 500);
+            setTimeout(loadCount, 1500);
+        }
     });
 })();
