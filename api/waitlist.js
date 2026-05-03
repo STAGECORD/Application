@@ -1,7 +1,6 @@
 const SUPABASE_URL = 'https://jkleiomqhmrnpsflyuoz.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_Q3FwltyNkd42CJ7gJ8meoA_txr9jqEW';
-const FROM_EMAIL = 'STAGECORD <hello@stagecord.com>';
-const REPLY_TO = 'oliver@oliverkofoed.com';
+const FROM_EMAIL = 'STAGECORD <noreply@stagecord.com>';
 
 const ALLOWED_ROLES = ['artist', 'fan'];
 
@@ -70,7 +69,6 @@ export default async function handler(req, res) {
         body: JSON.stringify({
             from: FROM_EMAIL,
             to: [email],
-            reply_to: REPLY_TO,
             subject: "You're on the STAGECORD waitlist",
             html: buildEmailHtml(name, roleLabel),
             text: buildEmailText(name, roleLabel)
@@ -102,7 +100,7 @@ We're letting people in role-by-role across 2026, and we'll send you an invite t
 A few things to expect:
 - We'll only email you when there's something real to share
 - Your invite will land in this inbox — keep an eye out
-- Reply to this email if you have questions
+- This is an automated message — please don't reply
 
 See you soon,
 The STAGECORD team
@@ -147,7 +145,7 @@ function buildEmailHtml(name, roleLabel) {
               <ul style="margin:0;padding:0 0 0 18px;color:#D1D6E0;font-size:15px;line-height:1.7;">
                 <li>We'll only email you when there's something real to share.</li>
                 <li>Your invite will land in this inbox — keep an eye out.</li>
-                <li>Reply to this email if you have questions.</li>
+                <li>This is an automated message — please don't reply.</li>
               </ul>
             </td></tr>
           </table>
