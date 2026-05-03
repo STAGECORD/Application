@@ -56,7 +56,7 @@ export default async function handler(req, res) {
 
     const apiKey = process.env.RESEND_API_KEY;
     if (!apiKey) {
-        console.warn('RESEND_API_KEY missing — saved to waitlist but no email sent.');
+        console.warn('RESEND_API_KEY missing — saved to waitlist but no email sent. Available env keys:', Object.keys(process.env).filter(k => !k.startsWith('AWS_')).join(', '));
         return res.status(200).json({ ok: true, emailed: false });
     }
 
