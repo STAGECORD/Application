@@ -38,11 +38,13 @@
     }
 
     const { data, error: rpcError } = await sb.rpc('validate_invite', { p_token: token });
+    console.log('validate_invite response:', { data, rpcError });
 
     if (rpcError || !data || !data.valid) {
         const reason = data?.reason;
         let msg = 'This invite link is not valid.';
-        if (reason === 'used') msg = 'This invite has already been used. Try logging in instead.';
+        if (rpcError) msg = `Could not verify invite (${rpcError.code || rpcError.message || 'unknown error'}).`;
+        else if (reason === 'used') msg = 'This invite has already been used. Try logging in instead.';
         else if (reason === 'unknown') msg = 'This invite link is not recognized. Did you copy the full URL?';
         disableForm(msg);
         const link = document.createElement('p');
