@@ -26,7 +26,8 @@ export default async function handler(req, res) {
 
     if (!fetchRes.ok) {
         const errText = await fetchRes.text().catch(() => '');
-        return res.status(500).json({ error: 'Lookup failed', detail: errText.slice(0, 200) });
+        console.error('list-waitlist supabase fetch failed:', fetchRes.status, errText.slice(0, 400));
+        return res.status(500).json({ error: 'Lookup failed', status: fetchRes.status, detail: errText.slice(0, 400) });
     }
 
     const rows = await fetchRes.json();

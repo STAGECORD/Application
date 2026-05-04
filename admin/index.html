@@ -118,7 +118,14 @@
                     return;
                 }
                 if (!res.ok) {
-                    tbody.innerHTML = `<tr><td colspan="5" class="err">Error loading list (${res.status})</td></tr>`;
+                    let detail = '';
+                    try {
+                        const j = await res.json();
+                        detail = j.detail || j.error || JSON.stringify(j);
+                    } catch {
+                        detail = await res.text().catch(() => '');
+                    }
+                    tbody.innerHTML = `<tr><td colspan="5" class="err">Error ${res.status}: ${detail.slice(0,400).replace(/[<>&"']/g,(c)=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]))}</td></tr>`;
                     return;
                 }
                 const { rows } = await res.json();
