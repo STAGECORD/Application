@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/topbar.css">
     <link rel="stylesheet" href="../css/signup.css">
+    <link rel="stylesheet" href="../css/waitlist.css">
 </head>
 <body class="signup-body">
 
@@ -71,9 +72,11 @@
                         <button type="button" class="login-forgot-link" data-login-forgot data-help="Forgot password: Send et nulstillings-link til den email du oprettede med.">Forgot password?</button>
                     </div>
 
-                    <button type="submit" class="signup-submit">Log in</button>
+                    <button type="submit" class="signup-submit" id="loginSubmit">Log in</button>
 
                     <p class="signup-login">Don't have an account? <a href="../signup/index.html">Sign up</a></p>
+
+                    <div class="waitlist-feedback" id="loginFeedback" role="status" aria-live="polite"></div>
                 </form>
             </div>
 
@@ -94,9 +97,11 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="signup-submit">Send reset link</button>
+                    <button type="submit" class="signup-submit" id="forgotSubmit">Send reset link</button>
 
                     <p class="signup-login"><button type="button" class="login-back-link" data-login-back>← Back to log in</button></p>
+
+                    <div class="waitlist-feedback" id="forgotFeedback" role="status" aria-live="polite"></div>
                 </form>
             </div>
 
@@ -122,18 +127,8 @@
 
     </main>
 
-    <script src="../js/core.js"></script>
-    <script src="../js/modes.js"></script>
-    <script src="../js/sidebar.js"></script>
-    <script src="../js/topbar-widgets.js"></script>
-    <script src="../js/stage-badge.js"></script>
-    <script src="../js/acting-as-service.js"></script>
-    <script src="../js/stage-cards.js"></script>
-    <script src="../js/stage-label.js"></script>
-    <script src="../js/stage-resources.js"></script>
-    <script src="../js/stage-economy.js"></script>
-    <script src="../js/settings.js"></script>
-    <script src="../js/activity-feed.js"></script>
-    <script src="../js/app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase.js"></script>
+    <script src="../js/login.js"></script>
 </body>
 </html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAGECORD — Set new password</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/topbar.css">
+    <link rel="stylesheet" href="../css/signup.css">
+    <link rel="stylesheet" href="../css/waitlist.css">
+</head>
+<body class="signup-body">
+
+    <header class="signup-topbar">
+        <a href="/" class="signup-topbar__logo">
+            <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
+        </a>
+    </header>
+
+    <main class="signup-page">
+
+        <aside class="signup-art" aria-hidden="true">
+            <div class="signup-art__image signup-art__image--headphones"></div>
+            <div class="signup-art__image signup-art__image--portrait"></div>
+            <div class="signup-art__image signup-art__image--guitar"></div>
+        </aside>
+
+        <section class="signup-form-wrap">
+            <h1 class="signup-welcome">Set a new <strong>password</strong></h1>
+            <p class="signup-subtitle" id="resetSubtitle">Enter a new password below to finish resetting your account.</p>
+
+            <form class="signup-form" id="resetForm" novalidate>
+                <div class="signup-field">
+                    <label class="signup-field__label" for="reset-password">New password<span aria-hidden="true">*</span></label>
+                    <div class="signup-field__input-wrap">
+                        <input id="reset-password" type="password" name="password" placeholder="At least 8 characters" autocomplete="new-password" required>
+                    </div>
+                </div>
+
+                <div class="signup-field">
+                    <label class="signup-field__label" for="reset-password-confirm">Confirm new password<span aria-hidden="true">*</span></label>
+                    <div class="signup-field__input-wrap">
+                        <input id="reset-password-confirm" type="password" name="passwordConfirm" placeholder="Retype your new password" autocomplete="new-password" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="signup-submit" id="resetSubmit">Save new password</button>
+
+                <p class="signup-login">Remembered it after all? <a href="../login/index.html">Back to log in</a></p>
+
+                <div class="waitlist-feedback" id="resetFeedback" role="status" aria-live="polite"></div>
+            </form>
+        </section>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase.js"></script>
+    <script>
+    (async function () {
+        const sb = window.supabaseClient;
+        const form = document.getElementById('resetForm');
+        const submitBtn = document.getElementById('resetSubmit');
+        const feedback = document.getElementById('resetFeedback');
+        const subtitle = document.getElementById('resetSubtitle');
+
+        function setFeedback(message, kind) {
+            feedback.textContent = message;
+            feedback.classList.remove('is-success', 'is-error');
+            if (kind) feedback.classList.add('is-' + kind);
+        }
+
+        // Supabase auto-detects the recovery token in the URL hash and exchanges it
+        // for a session. Wait briefly and check that we have one.
+        await new Promise((r) => setTimeout(r, 200));
+        const { data: { session } } = await sb.auth.getSession();
+
+        if (!session) {
+            subtitle.innerHTML = 'This reset link is invalid or expired. <a href="../login/index.html" style="color:#FFFFFF;">Request a new one</a>.';
+            form.style.display = 'none';
+            return;
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            setFeedback('', null);
+
+            const password = form.elements['password']?.value || '';
+            const passwordConfirm = form.elements['passwordConfirm']?.value || '';
+
+            if (password.length < 8) {
+                setFeedback('Password must be at least 8 characters.', 'error');
+                return;
+            }
+            if (password !== passwordConfirm) {
+                setFeedback('Passwords do not match.', 'error');
+                return;
+            }
+
+            const original = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Saving...';
+
+            const { error } = await sb.auth.updateUser({ password });
+
+            if (error) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = original;
+                setFeedback(error.message || 'Could not set password.', 'error');
+                return;
+            }
+
+            window.location.href = '/welcome/';
+        });
+    })();
+    </script>
+</body>
+</html>
