@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>STAGECORD — Admin</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/logo.css">
+    <link rel="stylesheet" href="../css/start.css">
+    <link rel="stylesheet" href="../css/waitlist.css">
+    <style>
+        .admin-wrap { max-width: 960px; margin: 0 auto; padding: 24px; }
+        .admin-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 24px; margin-bottom: 20px; }
+        .admin-card h2 { margin: 0 0 12px 0; color: #FFFFFF; font-weight: 600; }
+        .admin-card p { color: #D1D6E0; font-size: 14px; }
+        .admin-input, .admin-textarea {
+            width: 100%; box-sizing: border-box;
+            background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 8px; padding: 10px 14px; color: #FFFFFF;
+            font-family: inherit; font-size: 14px;
+        }
+        .admin-textarea { min-height: 90px; resize: vertical; }
+        .admin-btn {
+            background: #FFFFFF; color: #0B0B0F; border: none; border-radius: 999px;
+            padding: 10px 20px; font-weight: 600; cursor: pointer; font-size: 14px;
+        }
+        .admin-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .admin-btn--ghost { background: transparent; color: #FFFFFF; border: 1px solid rgba(255,255,255,0.2); }
+        .admin-row { display: flex; gap: 10px; align-items: center; margin-top: 12px; flex-wrap: wrap; }
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+        .admin-table th, .admin-table td { padding: 10px 8px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06); color: #D1D6E0; }
+        .admin-table th { color: #7E89A6; text-transform: uppercase; letter-spacing: 0.05em; font-size: 11px; }
+        .admin-table tr.is-used { opacity: 0.5; }
+        .admin-table .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; }
+        .admin-table .badge--sent { background: rgba(56,134,252,0.2); color: #6FA8FF; }
+        .admin-table .badge--used { background: rgba(0,169,17,0.2); color: #5CD66B; }
+        .admin-results { margin-top: 12px; font-size: 13px; }
+        .admin-results .ok { color: #5CD66B; }
+        .admin-results .err { color: #FF6B6B; }
+    </style>
+</head>
+<body class="start-body">
+
+    <header class="start-topbar">
+        <a href="/" class="start-topbar__logo">
+            <h1 class="logo">
+                <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
+            </h1>
+            <span class="start-topbar__beta">Admin</span>
+        </a>
+    </header>
+
+    <main class="admin-wrap">
+        <div class="admin-card" id="authCard">
+            <h2>Admin access</h2>
+            <p>Paste the admin secret you set in Vercel as <code>ADMIN_SECRET</code>. It's saved locally in this browser only.</p>
+            <div class="admin-row">
+                <input type="password" class="admin-input" id="secretInput" placeholder="ADMIN_SECRET" style="flex:1;min-width:200px;">
+                <button class="admin-btn" id="saveSecret">Save & continue</button>
+            </div>
+            <p id="secretFeedback" style="margin-top: 10px; min-height: 18px;"></p>
+        </div>
+
+        <div class="admin-card" id="waitlistCard" hidden>
+            <h2>Waitlist</h2>
+            <p>Click <strong>Send invite</strong> next to anyone you want to let into the beta. They'll get an email with a single-use link.</p>
+            <div class="admin-row">
+                <button class="admin-btn admin-btn--ghost" id="refreshBtn">Refresh list</button>
+                <button class="admin-btn admin-btn--ghost" id="logoutBtn">Forget secret</button>
+            </div>
+            <table class="admin-table" id="waitlistTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="waitlistBody">
+                    <tr><td colspan="5">Loading…</td></tr>
+                </tbody>
+            </table>
+            <div class="admin-results" id="results"></div>
+        </div>
+    </main>
+
+    <script>
+    (function () {
+        const SECRET_KEY = 'stagecord_admin_secret';
+        const authCard = document.getElementById('authCard');
+        const waitlistCard = document.getElementById('waitlistCard');
+        const secretInput = document.getElementById('secretInput');
+        const saveSecretBtn = document.getElementById('saveSecret');
+        const secretFeedback = document.getElementById('secretFeedback');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const tbody = document.getElementById('waitlistBody');
+        const results = document.getElementById('results');
+
+        function getSecret() { return localStorage.getItem(SECRET_KEY) || ''; }
+        function setSecret(v) { localStorage.setItem(SECRET_KEY, v); }
+        function clearSecret() { localStorage.removeItem(SECRET_KEY); }
+
+        async function loadList() {
+            const secret = getSecret();
+            if (!secret) return;
+            tbody.innerHTML = '<tr><td colspan="5">Loading…</td></tr>';
+            try {
+                const res = await fetch('/api/list-waitlist', {
+                    headers: { 'Authorization': `Bearer ${secret}` }
+                });
+                if (res.status === 401) {
+                    clearSecret();
+                    showAuth('Wrong secret — try again.');
+                    return;
+                }
+                if (!res.ok) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="err">Error loading list (${res.status})</td></tr>`;
+                    return;
+                }
+                const { rows } = await res.json();
+                renderList(rows);
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="5" class="err">Network error: ${err.message}</td></tr>`;
+            }
+        }
+
+        function fmtRole(r) {
+            return r === 'artist' ? 'Artist' : (r === 'fan' ? 'Fan' : r);
+        }
+
+        function renderList(rows) {
+            if (!rows || rows.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5">Waitlist is empty.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = rows.map((row) => {
+                let status = '<span style="color:#7E89A6;">Pending</span>';
+                if (row.invite_used_at) {
+                    status = '<span class="badge badge--used">Joined</span>';
+                } else if (row.invite_sent_at) {
+                    status = '<span class="badge badge--sent">Invited</span>';
+                }
+                const name = row.name ? row.name.replace(/[<>&"']/g,(c)=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c])) : '';
+                const email = row.email.replace(/[<>&"']/g,(c)=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));
+                const action = row.invite_used_at
+                    ? ''
+                    : `<button class="admin-btn" data-send="${email}">${row.invite_sent_at ? 'Resend' : 'Send invite'}</button>`;
+                return `<tr class="${row.invite_used_at ? 'is-used' : ''}">
+                    <td>${name}</td>
+                    <td>${email}</td>
+                    <td>${fmtRole(row.role)}</td>
+                    <td>${status}</td>
+                    <td>${action}</td>
+                </tr>`;
+            }).join('');
+
+            tbody.querySelectorAll('[data-send]').forEach((btn) => {
+                btn.addEventListener('click', () => sendInvite(btn.getAttribute('data-send'), btn));
+            });
+        }
+
+        async function sendInvite(email, btn) {
+            const secret = getSecret();
+            if (!secret) return;
+            btn.disabled = true;
+            const original = btn.textContent;
+            btn.textContent = 'Sending…';
+            try {
+                const res = await fetch('/api/send-invites', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${secret}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ emails: [email] })
+                });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) {
+                    btn.disabled = false;
+                    btn.textContent = original;
+                    appendResult(`<span class="err">✗ ${email}: ${data.error || res.status}</span>`);
+                    return;
+                }
+                const row = (data.results || []).find((r) => r.email === email);
+                if (row && row.ok) {
+                    btn.textContent = 'Sent ✓';
+                    appendResult(`<span class="ok">✓ ${email}: invite sent</span>`);
+                    setTimeout(loadList, 800);
+                } else {
+                    btn.disabled = false;
+                    btn.textContent = original;
+                    appendResult(`<span class="err">✗ ${email}: ${row?.error || 'unknown error'}</span>`);
+                }
+            } catch (err) {
+                btn.disabled = false;
+                btn.textContent = original;
+                appendResult(`<span class="err">✗ ${email}: ${err.message}</span>`);
+            }
+        }
+
+        function appendResult(html) {
+            const div = document.createElement('div');
+            div.innerHTML = html;
+            results.prepend(div);
+        }
+
+        function showAuth(message) {
+            authCard.hidden = false;
+            waitlistCard.hidden = true;
+            secretFeedback.textContent = message || '';
+            secretFeedback.style.color = '#FF6B6B';
+            secretInput.value = '';
+            secretInput.focus();
+        }
+
+        function showAdmin() {
+            authCard.hidden = true;
+            waitlistCard.hidden = false;
+            loadList();
+        }
+
+        saveSecretBtn.addEventListener('click', () => {
+            const v = secretInput.value.trim();
+            if (!v) return;
+            setSecret(v);
+            showAdmin();
+        });
+        secretInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') saveSecretBtn.click();
+        });
+        refreshBtn.addEventListener('click', loadList);
+        logoutBtn.addEventListener('click', () => {
+            clearSecret();
+            showAuth();
+        });
+
+        if (getSecret()) showAdmin();
+        else showAuth();
+    })();
+    </script>
+</body>
+</html>
