@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/topbar.css">
     <link rel="stylesheet" href="../css/signup.css">
+    <link rel="stylesheet" href="../css/waitlist.css">
 </head>
 <body class="signup-body">
 
@@ -123,26 +124,18 @@
 
                 <p class="signup-terms" data-help="Ved at oprette en konto accepterer du STAGECORD's vilkår — link til de fulde vilkår tilføjes senere.">By signing up, you agree to STAGECORD's terms &amp; conditions</p>
 
-                <button type="submit" class="signup-submit">Sign up</button>
+                <button type="submit" class="signup-submit" id="signupSubmit">Sign up</button>
 
                 <p class="signup-login">Already have an account? <a href="../login/index.html">Log in</a></p>
+
+                <div class="waitlist-feedback" id="signupFeedback" role="status" aria-live="polite"></div>
             </form>
         </section>
 
     </main>
 
-    <script src="../js/core.js"></script>
-    <script src="../js/modes.js"></script>
-    <script src="../js/sidebar.js"></script>
-    <script src="../js/topbar-widgets.js"></script>
-    <script src="../js/stage-badge.js"></script>
-    <script src="../js/acting-as-service.js"></script>
-    <script src="../js/stage-cards.js"></script>
-    <script src="../js/stage-label.js"></script>
-    <script src="../js/stage-resources.js"></script>
-    <script src="../js/stage-economy.js"></script>
-    <script src="../js/settings.js"></script>
-    <script src="../js/activity-feed.js"></script>
-    <script src="../js/app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase.js"></script>
+    <script src="../js/signup.js"></script>
 </body>
 </html>

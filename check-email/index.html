@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAGECORD — Check your email</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/logo.css">
+    <link rel="stylesheet" href="../css/start.css">
+</head>
+<body class="start-body">
+
+    <header class="start-topbar">
+        <a href="/" class="start-topbar__logo">
+            <h1 class="logo">
+                <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
+            </h1>
+            <span class="start-topbar__beta">Beta</span>
+        </a>
+    </header>
+
+    <main class="start-main">
+        <section class="start-panels" style="grid-template-columns: 1fr; max-width: 600px; margin: 0 auto;">
+            <article class="start-panel start-panel--waitlist">
+                <header class="start-panel__head">
+                    <span class="start-panel__tag">Almost there</span>
+                    <h3 class="start-panel__title">Check your email</h3>
+                    <p class="start-panel__subtitle" id="checkEmailBody">
+                        We've sent a confirmation link to your inbox. Click it to activate your account and finish signing in.
+                    </p>
+                </header>
+
+                <ul class="start-hero__pillars" style="margin-top: 8px;">
+                    <li><strong>Can't find it?</strong> Check your spam or junk folder.</li>
+                    <li><strong>Wrong email?</strong> <a href="../signup/index.html" style="color:#FFFFFF;">Go back and sign up again</a>.</li>
+                    <li><strong>Already confirmed?</strong> <a href="../login/index.html" style="color:#FFFFFF;">Log in here</a>.</li>
+                </ul>
+            </article>
+        </section>
+    </main>
+
+    <footer class="start-footer">
+        <div class="start-footer__inner">
+            <p class="start-footer__brand">STAGECORD &nbsp;<span>·</span>&nbsp; Closed Beta · 2026</p>
+            <nav class="start-footer__nav">
+                <a href="/">Home</a>
+                <a href="mailto:hello@stagecord.com">hello@stagecord.com</a>
+            </nav>
+        </div>
+    </footer>
+
+    <script>
+    (function () {
+        const params = new URLSearchParams(window.location.search);
+        const email = params.get('email');
+        if (email) {
+            const body = document.getElementById('checkEmailBody');
+            if (body) {
+                body.innerHTML = `We've sent a confirmation link to <strong style="color:#FFFFFF;">${email.replace(/[<>&"']/g, (c)=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]))}</strong>. Click it to activate your account and finish signing in.`;
+            }
+        }
+    })();
+    </script>
+</body>
+</html>

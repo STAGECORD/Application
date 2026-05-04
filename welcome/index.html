@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAGECORD — Welcome</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/logo.css">
+    <link rel="stylesheet" href="../css/start.css">
+</head>
+<body class="start-body">
+
+    <header class="start-topbar">
+        <a href="/" class="start-topbar__logo">
+            <h1 class="logo">
+                <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
+            </h1>
+            <span class="start-topbar__beta">Beta</span>
+        </a>
+
+        <nav class="start-topbar__links">
+            <button id="signOutBtn" class="start-topbar__link start-topbar__link--cta" style="border:none;background:transparent;cursor:pointer;font:inherit;">Sign out</button>
+        </nav>
+    </header>
+
+    <main class="start-main">
+        <section class="start-hero" style="grid-template-columns: 1fr; text-align: left;">
+            <div class="start-hero__inner">
+                <span class="start-hero__eyebrow">Closed Beta · 2026</span>
+                <h2 class="start-hero__title" id="welcomeTitle">
+                    Welcome to <span class="start-hero__title-accent">STAGECORD</span>.
+                </h2>
+                <p class="start-hero__subtitle" id="welcomeBody">
+                    Your account is live. The full dashboard is still being built — for now, hang tight while we open up the next features for your role.
+                </p>
+
+                <ul class="start-hero__pillars">
+                    <li><strong>Profile</strong> — claim your handle, upload your catalogue, set your terms <em style="opacity:0.6;">(coming soon)</em></li>
+                    <li><strong>Collaborate</strong> — invite producers, dancers and visual artists into shared projects <em style="opacity:0.6;">(coming soon)</em></li>
+                </ul>
+
+                <p style="margin-top:24px;font-size:14px;color:#7E89A6;">
+                    Logged in as <span id="userEmail" style="color:#FFFFFF;">…</span>
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="start-footer">
+        <div class="start-footer__inner">
+            <p class="start-footer__brand">STAGECORD &nbsp;<span>·</span>&nbsp; Closed Beta · 2026</p>
+            <nav class="start-footer__nav">
+                <a href="/">Home</a>
+                <a href="mailto:hello@stagecord.com">hello@stagecord.com</a>
+            </nav>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase.js"></script>
+    <script>
+    (async function () {
+        const { data: { session } } = await window.supabaseClient.auth.getSession();
+        if (!session) {
+            window.location.href = '/login/';
+            return;
+        }
+        const user = session.user;
+        const meta = user.user_metadata || {};
+        const forename = meta.forename || '';
+        const titleEl = document.getElementById('welcomeTitle');
+        if (forename && titleEl) {
+            titleEl.innerHTML = `Welcome, <span class="start-hero__title-accent">${forename.replace(/[<>&"']/g,(c)=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]))}</span>.`;
+        }
+        const emailEl = document.getElementById('userEmail');
+        if (emailEl) emailEl.textContent = user.email || '';
+
+        document.getElementById('signOutBtn').addEventListener('click', async () => {
+            await window.supabaseClient.auth.signOut();
+            window.location.href = '/';
+        });
+    })();
+    </script>
+</body>
+</html>
