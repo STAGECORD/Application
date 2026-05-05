@@ -2,7 +2,7 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/u/:username", "destination": "/u/index.html?username=:username" }
+    { "source": "/u/:username", "destination": "/u?username=:username" }
   ],
   "headers": [
     {
