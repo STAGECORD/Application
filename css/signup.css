@@ -4,8 +4,14 @@
    ===================================================== */
 
 body.signup-body {
-    background: #242424;
-    color: #FFFFFF;
+    /* Match the start-body palette so /signup/, /login/ and /reset-password/
+       sit on the same faded-blue → black background as the rest of the app. */
+    background:
+        radial-gradient(ellipse 110% 70% at 50% -10%, rgba(56, 134, 252, 0.22) 0%, transparent 60%),
+        linear-gradient(180deg, #0B1A38 0%, #060B1A 55%, #02040C 100%);
+    background-attachment: fixed;
+    background-color: #02040C;
+    color: #F1F1F4;
     margin: 0;
     padding: 0;
     min-height: 100vh;
