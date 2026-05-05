@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>STAGECORD — Your profile</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/logo.css">
+    <link rel="stylesheet" href="../css/start.css">
+    <link rel="stylesheet" href="../css/waitlist.css">
+    <style>
+        .profile-wrap { max-width: 720px; margin: 0 auto; padding: 24px 24px 60px; }
+        .profile-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 28px; margin-bottom: 20px; }
+        .profile-card h2 { margin: 0 0 18px 0; color: #FFFFFF; font-weight: 600; font-size: 20px; }
+        .profile-row { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
+        .profile-avatar-block { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+        .profile-avatar {
+            width: 120px; height: 120px; border-radius: 50%;
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; cursor: pointer; position: relative;
+            background-size: cover; background-position: center;
+        }
+        .profile-avatar__placeholder {
+            color: #5A6480; font-size: 12px; text-align: center;
+            text-transform: uppercase; letter-spacing: 0.08em;
+        }
+        .profile-avatar__overlay {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.6);
+            display: none; align-items: center; justify-content: center;
+            color: #FFFFFF; font-size: 13px;
+        }
+        .profile-avatar:hover .profile-avatar__overlay { display: flex; }
+        .profile-avatar input[type="file"] { display: none; }
+        .profile-avatar__hint { color: #7E89A6; font-size: 12px; text-align: center; }
+
+        .profile-fields { flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 14px; }
+        .profile-field { display: flex; flex-direction: column; gap: 6px; }
+        .profile-field label {
+            font-size: 12px; color: #7E89A6;
+            text-transform: uppercase; letter-spacing: 0.06em;
+        }
+        .profile-field input, .profile-field textarea {
+            background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 8px; padding: 11px 14px; color: #FFFFFF;
+            font-family: inherit; font-size: 15px;
+            width: 100%; box-sizing: border-box;
+        }
+        .profile-field input:read-only { opacity: 0.6; cursor: not-allowed; }
+        .profile-field textarea { min-height: 96px; resize: vertical; }
+        .profile-field__hint { font-size: 12px; color: #5A6480; }
+
+        .profile-actions {
+            display: flex; gap: 12px; align-items: center;
+            margin-top: 24px; flex-wrap: wrap;
+        }
+        .profile-btn {
+            background: #FFFFFF; color: #0B0B0F; border: none;
+            border-radius: 999px; padding: 11px 22px;
+            font-weight: 600; cursor: pointer; font-size: 14px;
+        }
+        .profile-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .profile-btn--ghost { background: transparent; color: #FFFFFF; border: 1px solid rgba(255,255,255,0.2); }
+        .profile-feedback {
+            font-size: 14px; margin-left: 4px;
+            min-height: 18px;
+        }
+        .profile-feedback.is-success { color: #5CD66B; }
+        .profile-feedback.is-error { color: #FF6B6B; }
+    </style>
+</head>
+<body class="start-body">
+
+    <header class="start-topbar">
+        <a href="/welcome/" class="start-topbar__logo">
+            <h1 class="logo">
+                <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
+            </h1>
+            <span class="start-topbar__beta">Beta</span>
+        </a>
+
+        <nav class="start-topbar__links">
+            <a href="/welcome/" class="start-topbar__link">Back</a>
+            <button id="signOutBtn" class="start-topbar__link start-topbar__link--cta" style="border:none;background:transparent;cursor:pointer;font:inherit;">Sign out</button>
+        </nav>
+    </header>
+
+    <main class="profile-wrap">
+        <div class="profile-card">
+            <h2>Your profile</h2>
+
+            <form id="profileForm">
+                <div class="profile-row">
+                    <div class="profile-avatar-block">
+                        <label class="profile-avatar" id="avatarTrigger" title="Click to upload">
+                            <span class="profile-avatar__placeholder" id="avatarPlaceholder">No photo</span>
+                            <span class="profile-avatar__overlay">Change photo</span>
+                            <input type="file" id="avatarInput" accept="image/jpeg,image/png,image/webp">
+                        </label>
+                        <span class="profile-avatar__hint">JPG, PNG or WebP<br>Max 5 MB</span>
+                    </div>
+
+                    <div class="profile-fields">
+                        <div class="profile-field">
+                            <label for="profile-email">Email</label>
+                            <input id="profile-email" type="email" readonly>
+                            <span class="profile-field__hint">Your email is tied to your account and can't be changed here.</span>
+                        </div>
+
+                        <div class="profile-field">
+                            <label for="profile-forename">First name</label>
+                            <input id="profile-forename" type="text" autocomplete="given-name" required>
+                        </div>
+
+                        <div class="profile-field">
+                            <label for="profile-surname">Last name</label>
+                            <input id="profile-surname" type="text" autocomplete="family-name" required>
+                        </div>
+
+                        <div class="profile-field">
+                            <label for="profile-username">Username</label>
+                            <input id="profile-username" type="text" autocomplete="username" placeholder="A handle other users see (optional)">
+                        </div>
+
+                        <div class="profile-field">
+                            <label for="profile-bio">Bio</label>
+                            <textarea id="profile-bio" placeholder="A short line about you — optional, shown on your public profile."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-actions">
+                    <button type="submit" class="profile-btn" id="profileSave">Save changes</button>
+                    <button type="button" class="profile-btn profile-btn--ghost" id="profileCancel">Cancel</button>
+                    <span class="profile-feedback" id="profileFeedback" role="status" aria-live="polite"></span>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer class="start-footer">
+        <div class="start-footer__inner">
+            <p class="start-footer__brand">STAGECORD &nbsp;<span>·</span>&nbsp; Closed Beta · 2026</p>
+            <nav class="start-footer__nav">
+                <a href="/welcome/">Home</a>
+                <a href="mailto:hello@stagecord.com">hello@stagecord.com</a>
+            </nav>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase.js"></script>
+    <script src="../js/profile.js"></script>
+</body>
+</html>
