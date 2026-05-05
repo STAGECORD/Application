@@ -111,7 +111,12 @@
         }
 
         const params = new URLSearchParams(window.location.search);
-        const username = (params.get('username') || params.get('u') || '').trim();
+        let username = (params.get('username') || params.get('u') || '').trim();
+        if (!username) {
+            // /u/<username> via vercel rewrite — pull from path segment
+            const pathMatch = window.location.pathname.match(/^\/u\/([^\/?#]+)/);
+            if (pathMatch) username = decodeURIComponent(pathMatch[1]).trim();
+        }
 
         const { data: { session } } = await sb.auth.getSession();
         const ownUsername = session?.user?.user_metadata?.username || null;
