@@ -140,33 +140,33 @@ body.signup-body .help-button.active .help-mark {
     box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5);
 }
 
-/* Big guitar photo — centered, fills most of the area */
+/* Street wall with guitar — sits at the back, fills most of the area */
 .signup-art__image--guitar {
     top: 60px;
     left: 24px;
     right: 24px;
     bottom: 70px;
-    background: linear-gradient(135deg, #34495e 0%, #c0392b 50%, #f39c12 100%);
+    background-image: url("../assets/images/auth/street-guitar.png");
     z-index: 1;
 }
 
-/* Portrait — small, top-right corner overlapping guitar */
+/* Female portrait — square, top-right corner overlapping the wall */
 .signup-art__image--portrait {
     top: 0;
     right: 0;
-    width: 56%;
-    height: 200px;
-    background: linear-gradient(135deg, #ff6b9d 0%, #c44569 60%, #2c3e50 100%);
+    width: 50%;
+    aspect-ratio: 1;
+    background-image: url("../assets/images/auth/female.png");
     z-index: 2;
 }
 
-/* Headphones / boombox — small, bottom-left corner overlapping guitar */
+/* Retro boom blaster — bottom-left corner overlapping the wall */
 .signup-art__image--headphones {
     bottom: 0;
     left: 0;
-    width: 45%;
-    height: 150px;
-    background: linear-gradient(135deg, #ff8a8a 0%, #c0392b 70%);
+    width: 48%;
+    aspect-ratio: 5 / 4;
+    background-image: url("../assets/images/auth/boom-blaster.png");
     z-index: 2;
 }
 
