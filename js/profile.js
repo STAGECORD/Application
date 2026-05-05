@@ -64,6 +64,18 @@
         bioInput.value = profile.bio || '';
         originalAvatarUrl = profile.avatar_url || null;
         if (originalAvatarUrl) setAvatarPreview(originalAvatarUrl);
+        updatePublicProfileLink(profile.username);
+    }
+
+    function updatePublicProfileLink(username) {
+        const link = document.getElementById('viewPublicProfileLink');
+        if (!link) return;
+        if (username) {
+            link.href = `/u/${encodeURIComponent(username)}`;
+            link.style.display = '';
+        } else {
+            link.style.display = 'none';
+        }
     }
 
     avatarInput.addEventListener('change', () => {
@@ -166,6 +178,7 @@
         originalAvatarUrl = newAvatarUrl;
         pendingAvatarFile = null;
         avatarInput.value = '';
+        updatePublicProfileLink(username);
         setFeedback('Saved ✓', 'success');
     });
 

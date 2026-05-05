@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAGECORD — Profile</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/logo.css">
+    <link rel="stylesheet" href="../css/start.css">
+    <style>
+        .pp-wrap { max-width: 720px; margin: 0 auto; padding: 32px 24px 60px; }
+        .pp-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 36px;
+        }
+        .pp-header { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
+        .pp-avatar {
+            width: 128px; height: 128px; border-radius: 50%;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            background-size: cover; background-position: center;
+            flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+        }
+        .pp-avatar__initial {
+            color: #5A6480; font-size: 42px; font-weight: 600;
+        }
+        .pp-meta { flex: 1; min-width: 220px; }
+        .pp-name { margin: 0 0 4px 0; color: #FFFFFF; font-size: 28px; font-weight: 600; line-height: 1.2; }
+        .pp-handle { margin: 0 0 14px 0; color: #7E89A6; font-size: 15px; }
+        .pp-role-tag {
+            display: inline-block; padding: 4px 12px; border-radius: 999px;
+            background: rgba(56,134,252,0.18); color: #6FA8FF;
+            font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em;
+        }
+        .pp-bio {
+            margin: 28px 0 0 0; padding: 24px 0 0 0;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            color: #D1D6E0; font-size: 16px; line-height: 1.6;
+            white-space: pre-wrap;
+        }
+        .pp-empty {
+            text-align: center; padding: 60px 20px;
+            color: #7E89A6;
+        }
+        .pp-empty h2 {
+            margin: 0 0 12px 0; color: #FFFFFF;
+            font-size: 24px; font-weight: 600;
+        }
+        .pp-empty a {
+            color: #FFFFFF; text-decoration: underline;
+        }
+        .pp-cta-row {
+            display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap;
+        }
+        .pp-btn {
+            background: #FFFFFF; color: #0B0B0F;
+            padding: 11px 22px; border-radius: 999px;
+            text-decoration: none; font-weight: 600; font-size: 14px;
+        }
+        .pp-btn--ghost {
+            background: transparent; color: #FFFFFF;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body class="start-body">
+
+    <header class="start-topbar">
+        <a href="/" class="start-topbar__logo">
+            <h1 class="logo">
+                <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
+            </h1>
+            <span class="start-topbar__beta">Beta</span>
+        </a>
+
+        <nav class="start-topbar__links" id="ppTopbarNav">
+            <!-- populated based on auth state -->
+        </nav>
+    </header>
+
+    <main class="pp-wrap">
+        <div id="ppContent">
+            <div class="pp-empty">Loading profile…</div>
+        </div>
+    </main>
+
+    <footer class="start-footer">
+        <div class="start-footer__inner">
+            <p class="start-footer__brand">STAGECORD &nbsp;<span>·</span>&nbsp; Closed Beta · 2026</p>
+            <nav class="start-footer__nav">
+                <a href="/">Home</a>
+                <a href="mailto:hello@stagecord.com">hello@stagecord.com</a>
+            </nav>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase.js"></script>
+    <script>
+    (async function () {
+        const sb = window.supabaseClient;
+        const content = document.getElementById('ppContent');
+        const nav = document.getElementById('ppTopbarNav');
+
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>"']/g, (c) => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[c]));
+        }
+
+        const params = new URLSearchParams(window.location.search);
+        const username = (params.get('username') || params.get('u') || '').trim();
+
+        const { data: { session } } = await sb.auth.getSession();
+        const ownUsername = session?.user?.user_metadata?.username || null;
+
+        if (session) {
+            nav.innerHTML = `
+                <a href="/welcome/" class="start-topbar__link">Home</a>
+                <a href="/profile/" class="start-topbar__link">Edit profile</a>
+            `;
+        } else {
+            nav.innerHTML = `
+                <a href="/login/" class="start-topbar__link">Log in</a>
+                <a href="/" class="start-topbar__link start-topbar__link--cta">Join the waitlist</a>
+            `;
+        }
+
+        if (!username) {
+            content.innerHTML = `
+                <div class="pp-empty">
+                    <h2>No profile selected</h2>
+                    <p>Open a STAGECORD profile by visiting <code>/u/&lt;username&gt;</code>.</p>
+                </div>
+            `;
+            return;
+        }
+
+        const { data, error } = await sb.rpc('get_public_profile', { p_username: username });
+
+        if (error) {
+            console.error('get_public_profile failed:', error);
+            content.innerHTML = `
+                <div class="pp-empty">
+                    <h2>Couldn't load profile</h2>
+                    <p>Try refreshing — if the problem sticks, drop us a line at hello@stagecord.com.</p>
+                </div>
+            `;
+            return;
+        }
+
+        if (!data || data.length === 0 || !data[0]) {
+            content.innerHTML = `
+                <div class="pp-empty">
+                    <h2>Profile not found</h2>
+                    <p>No STAGECORD member uses the username <strong style="color:#FFFFFF;">${escapeHtml(username)}</strong>.</p>
+                    <p style="margin-top:16px;">${session ? '' : '<a href="/">Join the waitlist →</a>'}</p>
+                </div>
+            `;
+            document.title = 'STAGECORD — Profile not found';
+            return;
+        }
+
+        const profile = data[0];
+        const fullName = [profile.forename, profile.surname].filter(Boolean).join(' ') || profile.username || 'STAGECORD member';
+        const roleLabel = profile.role === 'artist' ? 'Artist' : (profile.role === 'fan' ? 'Fan' : profile.role);
+        const initial = (fullName[0] || '?').toUpperCase();
+
+        document.title = `${fullName} · STAGECORD`;
+
+        const avatarHtml = profile.avatar_url
+            ? `<div class="pp-avatar" style="background-image:url('${escapeHtml(profile.avatar_url)}');"></div>`
+            : `<div class="pp-avatar"><span class="pp-avatar__initial">${escapeHtml(initial)}</span></div>`;
+
+        const bioHtml = profile.bio
+            ? `<div class="pp-bio">${escapeHtml(profile.bio)}</div>`
+            : '';
+
+        const isOwn = ownUsername && ownUsername.toLowerCase() === username.toLowerCase();
+        const ownCtas = isOwn ? `
+            <div class="pp-cta-row">
+                <a href="/profile/" class="pp-btn">Edit your profile</a>
+                <a href="/welcome/" class="pp-btn pp-btn--ghost">Back to dashboard</a>
+            </div>
+        ` : '';
+
+        content.innerHTML = `
+            <div class="pp-card">
+                <div class="pp-header">
+                    ${avatarHtml}
+                    <div class="pp-meta">
+                        <h2 class="pp-name">${escapeHtml(fullName)}</h2>
+                        <p class="pp-handle">@${escapeHtml(profile.username || username)}</p>
+                        ${roleLabel ? `<span class="pp-role-tag">${escapeHtml(roleLabel)}</span>` : ''}
+                    </div>
+                </div>
+                ${bioHtml}
+                ${ownCtas}
+            </div>
+        `;
+    })();
+    </script>
+</body>
+</html>

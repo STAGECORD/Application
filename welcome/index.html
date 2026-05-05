@@ -65,6 +65,7 @@
 
                 <ul class="start-hero__pillars">
                     <li><strong>Profile</strong> — set your name, handle, photo and bio. <a href="/profile/" class="welcome-edit-link">Edit your profile →</a></li>
+                    <li id="publicProfilePillar" style="display:none;"><strong>Public page</strong> — share your STAGECORD profile with the world. <a href="#" id="publicProfileLink" class="welcome-edit-link">View your public profile →</a></li>
                     <li><strong>Collaborate</strong> — invite producers, dancers and visual artists into shared projects <em style="opacity:0.6;">(coming soon)</em></li>
                 </ul>
 
@@ -108,9 +109,18 @@
 
         const { data: profile } = await sb
             .from('profiles')
-            .select('forename, surname, avatar_url')
+            .select('forename, surname, username, avatar_url')
             .eq('id', user.id)
             .single();
+
+        if (profile?.username) {
+            const pillar = document.getElementById('publicProfilePillar');
+            const link = document.getElementById('publicProfileLink');
+            if (pillar && link) {
+                link.href = `/u/${encodeURIComponent(profile.username)}`;
+                pillar.style.display = '';
+            }
+        }
 
         const fallbackForename = (user.user_metadata || {}).forename || '';
         const forename = profile?.forename || fallbackForename;
