@@ -13,6 +13,7 @@ Disallow: /profile/
 Disallow: /members/
 Disallow: /tracks/
 Disallow: /events/
+Disallow: /inbox/
 Disallow: /artist/
 Disallow: /ar/
 Disallow: /collabs/

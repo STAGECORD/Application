@@ -410,6 +410,7 @@
                 <div class="pp-follow-row" id="ppFollowRow">
                     <span class="pp-follow-stat"><strong id="ppFollowerCount">—</strong>followers</span>
                     <span class="pp-follow-stat"><strong id="ppFollowingCount">—</strong>following</span>
+                    <button id="ppMessageBtn" class="pp-follow-btn pp-follow-btn--following" style="display:none;">Message</button>
                     <button id="ppFollowBtn" class="pp-follow-btn" style="display:none;">Follow</button>
                 </div>
                 ${bioHtml}
@@ -441,6 +442,27 @@
                 btn.classList.toggle('pp-follow-btn--following', isFollowing);
                 btn.dataset.following = isFollowing ? '1' : '';
             }
+        }
+
+        const messageBtn = document.getElementById('ppMessageBtn');
+        if (messageBtn && session && !isOwn) {
+            messageBtn.style.display = '';
+            messageBtn.style.marginLeft = '0';
+            messageBtn.addEventListener('click', async () => {
+                messageBtn.disabled = true;
+                messageBtn.textContent = 'Opening…';
+                const { data, error: convoErr } = await sb.rpc('start_or_get_conversation', {
+                    p_target_username: profile.username || username
+                });
+                if (convoErr) {
+                    console.error('start_or_get_conversation failed:', convoErr);
+                    alert('Could not start conversation: ' + (convoErr.message || ''));
+                    messageBtn.disabled = false;
+                    messageBtn.textContent = 'Message';
+                    return;
+                }
+                window.location.href = `/inbox/?c=${encodeURIComponent(data)}`;
+            });
         }
 
         const followBtn = document.getElementById('ppFollowBtn');
