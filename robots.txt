@@ -11,6 +11,7 @@ Disallow: /check-email/
 Disallow: /reset-password/
 Disallow: /profile/
 Disallow: /members/
+Disallow: /tracks/
 Disallow: /artist/
 Disallow: /ar/
 Disallow: /collabs/

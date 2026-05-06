@@ -102,6 +102,27 @@
             padding: 32px 20px; text-align: center;
             color: #7E89A6; font-size: 14px;
         }
+
+        .pp-tracks { margin-top: 28px; }
+        .pp-track {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 10px;
+        }
+        .pp-track__head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .pp-track__title { margin: 0; color: #FFFFFF; font-size: 15px; font-weight: 600; flex: 1; min-width: 0; }
+        .pp-track__time { color: #5A6480; font-size: 12px; }
+        .pp-track__desc {
+            margin: 0 0 8px 0; color: #D1D6E0;
+            font-size: 14px; line-height: 1.5;
+            white-space: pre-wrap;
+        }
+        .pp-track audio {
+            width: 100%; margin-top: 4px;
+            filter: invert(0.85) hue-rotate(180deg);
+        }
     </style>
 </head>
 <body class="start-body">
@@ -243,6 +264,7 @@
                 ${bioHtml}
                 ${ownCtas}
             </div>
+            <section class="pp-tracks" id="ppTracks"></section>
             <section class="pp-posts" id="ppPosts">
                 <div class="pp-posts__empty">Loading posts…</div>
             </section>
@@ -256,6 +278,42 @@
             if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
             if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
             return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function fmtDuration(secs) {
+            if (!secs && secs !== 0) return '';
+            const m = Math.floor(secs / 60);
+            const s = Math.floor(secs % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
+        const tracksEl = document.getElementById('ppTracks');
+        const { data: tracks, error: tracksErr } = await sb.rpc('get_user_tracks', {
+            p_username: profile.username || username,
+            p_limit: 50
+        });
+
+        if (tracksErr) {
+            console.error('get_user_tracks failed:', tracksErr);
+        } else if (tracks && tracks.length > 0) {
+            const tracksHtml = tracks.map((t) => {
+                const dur = t.duration_seconds ? ` · ${fmtDuration(t.duration_seconds)}` : '';
+                const desc = t.description
+                    ? `<p class="pp-track__desc">${escapeHtml(t.description)}</p>`
+                    : '';
+                return `<article class="pp-track">
+                    <header class="pp-track__head">
+                        <h3 class="pp-track__title">${escapeHtml(t.title)}</h3>
+                        <span class="pp-track__time">${escapeHtml(timeAgo(t.created_at))}${dur}</span>
+                    </header>
+                    ${desc}
+                    <audio controls preload="none" src="${escapeHtml(t.audio_url)}"></audio>
+                </article>`;
+            }).join('');
+            tracksEl.innerHTML = `
+                <h3 class="pp-posts__heading">Music <span class="pp-posts__count">${tracks.length}</span></h3>
+                ${tracksHtml}
+            `;
         }
 
         const postsEl = document.getElementById('ppPosts');
