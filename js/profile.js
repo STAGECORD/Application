@@ -11,14 +11,17 @@
     const surInput = document.getElementById('profile-surname');
     const userInput = document.getElementById('profile-username');
     const bioInput = document.getElementById('profile-bio');
+    const usernameHint = document.getElementById('usernameHint');
 
     const avatar = document.getElementById('avatarTrigger');
     const avatarInput = document.getElementById('avatarInput');
     const avatarPlaceholder = document.getElementById('avatarPlaceholder');
+    const removeAvatarBtn = document.getElementById('removeAvatarBtn');
 
     const signOutBtn = document.getElementById('signOutBtn');
 
     const MAX_AVATAR_BYTES = 5 * 1024 * 1024;
+    const USERNAME_RE = /^[a-z0-9][a-z0-9_-]{2,29}$/;
 
     function setFeedback(message, kind) {
         feedback.textContent = message;
@@ -30,10 +33,34 @@
         if (url) {
             avatar.style.backgroundImage = `url("${url}")`;
             avatarPlaceholder.style.display = 'none';
+            if (removeAvatarBtn) removeAvatarBtn.style.display = '';
         } else {
             avatar.style.backgroundImage = '';
             avatarPlaceholder.style.display = '';
+            if (removeAvatarBtn) removeAvatarBtn.style.display = 'none';
         }
+    }
+
+    function setUsernameHint(text, kind) {
+        if (!usernameHint) return;
+        usernameHint.textContent = text;
+        usernameHint.style.color = kind === 'error' ? '#FF6B6B'
+            : kind === 'success' ? '#5CD66B'
+            : '#5A6480';
+    }
+
+    function validateUsername(value) {
+        if (!value) return { ok: true, msg: 'Optional. Used for your shareable profile URL.' };
+        if (value.length < 3) return { ok: false, msg: 'Too short — minimum 3 characters.' };
+        if (value.length > 30) return { ok: false, msg: 'Too long — maximum 30 characters.' };
+        if (!USERNAME_RE.test(value)) return { ok: false, msg: 'Lowercase letters, numbers, _ or - only. Cannot start with _ or -.' };
+        return { ok: true, msg: `Profile URL: stagecord.com/u/${value}` };
+    }
+
+    function avatarPathFromUrl(url) {
+        if (!url) return null;
+        const m = url.match(/\/storage\/v1\/object\/public\/avatars\/(.+)$/);
+        return m ? decodeURIComponent(m[1]) : null;
     }
 
     const { data: { session } } = await sb.auth.getSession();
@@ -63,8 +90,10 @@
         userInput.value = profile.username || '';
         bioInput.value = profile.bio || '';
         originalAvatarUrl = profile.avatar_url || null;
-        if (originalAvatarUrl) setAvatarPreview(originalAvatarUrl);
+        setAvatarPreview(originalAvatarUrl);
         updatePublicProfileLink(profile.username);
+        const v = validateUsername(profile.username || '');
+        setUsernameHint(v.msg, v.ok ? null : 'error');
     }
 
     function updatePublicProfileLink(username) {
@@ -77,6 +106,18 @@
             link.style.display = 'none';
         }
     }
+
+    userInput.addEventListener('input', () => {
+        const before = userInput.value;
+        const after = before.toLowerCase().replace(/\s+/g, '');
+        if (after !== before) {
+            const pos = userInput.selectionStart;
+            userInput.value = after;
+            try { userInput.setSelectionRange(pos, pos); } catch {}
+        }
+        const v = validateUsername(userInput.value);
+        setUsernameHint(v.msg, v.ok ? (userInput.value ? 'success' : null) : 'error');
+    });
 
     avatarInput.addEventListener('change', () => {
         const file = avatarInput.files?.[0];
@@ -98,6 +139,42 @@
         setFeedback('Click "Save changes" to upload this photo.', null);
     });
 
+    if (removeAvatarBtn) {
+        removeAvatarBtn.addEventListener('click', async () => {
+            if (!confirm('Remove your profile picture?')) return;
+
+            removeAvatarBtn.disabled = true;
+            const originalText = removeAvatarBtn.textContent;
+            removeAvatarBtn.textContent = 'Removing…';
+
+            const path = avatarPathFromUrl(originalAvatarUrl);
+            if (path) {
+                const { error: delErr } = await sb.storage.from('avatars').remove([path]);
+                if (delErr) console.warn('Could not delete storage object (continuing anyway):', delErr);
+            }
+
+            const { error: updErr } = await sb
+                .from('profiles')
+                .update({ avatar_url: null, updated_at: new Date().toISOString() })
+                .eq('id', userId);
+
+            removeAvatarBtn.disabled = false;
+            removeAvatarBtn.textContent = originalText;
+
+            if (updErr) {
+                console.error('Failed to clear avatar_url:', updErr);
+                setFeedback('Could not remove photo — try again.', 'error');
+                return;
+            }
+
+            originalAvatarUrl = null;
+            pendingAvatarFile = null;
+            avatarInput.value = '';
+            setAvatarPreview(null);
+            setFeedback('Photo removed.', 'success');
+        });
+    }
+
     cancelBtn.addEventListener('click', () => {
         if (profile) {
             foreInput.value = profile.forename || '';
@@ -108,6 +185,8 @@
         pendingAvatarFile = null;
         avatarInput.value = '';
         setAvatarPreview(originalAvatarUrl);
+        const v = validateUsername(userInput.value);
+        setUsernameHint(v.msg, v.ok ? null : 'error');
         setFeedback('Changes discarded.', null);
     });
 
@@ -120,8 +199,21 @@
         const username = userInput.value.trim();
         const bio = bioInput.value.trim();
 
-        if (!forename || !surname) {
-            setFeedback('First and last name are required.', 'error');
+        if (!forename) {
+            setFeedback('First name is required.', 'error');
+            foreInput.focus();
+            return;
+        }
+        if (!surname) {
+            setFeedback('Last name is required.', 'error');
+            surInput.focus();
+            return;
+        }
+
+        const v = validateUsername(username);
+        if (!v.ok) {
+            setFeedback(`Username: ${v.msg}`, 'error');
+            userInput.focus();
             return;
         }
 
@@ -142,12 +234,17 @@
                 console.error('Avatar upload failed:', upErr);
                 saveBtn.disabled = false;
                 saveBtn.textContent = originalLabel;
-                setFeedback(`Avatar upload failed: ${upErr.message || 'try again'}`, 'error');
+                setFeedback(`Photo upload failed: ${upErr.message || 'please try again'}.`, 'error');
                 return;
             }
 
             const { data: pub } = sb.storage.from('avatars').getPublicUrl(path);
             newAvatarUrl = pub.publicUrl;
+
+            const oldPath = avatarPathFromUrl(originalAvatarUrl);
+            if (oldPath && oldPath !== path) {
+                sb.storage.from('avatars').remove([oldPath]).catch(() => {});
+            }
         }
 
         const updates = {
@@ -169,8 +266,13 @@
 
         if (saveErr) {
             console.error('Profile save failed:', saveErr);
-            let msg = saveErr.message || 'Could not save profile.';
-            if (saveErr.code === '23505') msg = 'That username is already taken.';
+            let msg = saveErr.message || 'Could not save your profile.';
+            if (saveErr.code === '23505') {
+                msg = `That username is already taken — try another one.`;
+                userInput.focus();
+            } else if (/invalid input syntax/i.test(msg)) {
+                msg = 'One of the fields contains invalid data — please check and try again.';
+            }
             setFeedback(msg, 'error');
             return;
         }
