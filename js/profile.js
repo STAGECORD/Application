@@ -20,6 +20,13 @@
     const removeAvatarBtn = document.getElementById('removeAvatarBtn');
     const avatarWrap = avatar?.parentElement;
 
+    const coverWrap = document.getElementById('coverWrap');
+    const coverTrigger = document.getElementById('coverTrigger');
+    const coverInput = document.getElementById('coverInput');
+    const coverPlaceholder = document.getElementById('coverPlaceholder');
+    const coverOverlay = document.getElementById('coverOverlay');
+    const coverRemoveBtn = document.getElementById('coverRemove');
+
     const signOutBtn = document.getElementById('signOutBtn');
 
     const MAX_AVATAR_BYTES = 5 * 1024 * 1024;
@@ -67,6 +74,21 @@
         return m ? decodeURIComponent(m[1]) : null;
     }
 
+    function setCoverPreview(url) {
+        if (!coverTrigger) return;
+        if (url) {
+            coverTrigger.style.backgroundImage = `url("${url}")`;
+            coverPlaceholder.style.display = 'none';
+            if (coverOverlay) coverOverlay.textContent = 'Change cover';
+            if (coverWrap) coverWrap.classList.add('has-cover');
+        } else {
+            coverTrigger.style.backgroundImage = '';
+            coverPlaceholder.style.display = '';
+            if (coverOverlay) coverOverlay.textContent = 'Add cover photo';
+            if (coverWrap) coverWrap.classList.remove('has-cover');
+        }
+    }
+
     const { data: { session } } = await sb.auth.getSession();
     if (!session) {
         window.location.href = '/login/';
@@ -78,10 +100,12 @@
 
     let originalAvatarUrl = null;
     let pendingAvatarFile = null;
+    let originalCoverUrl = null;
+    let pendingCoverFile = null;
 
     const { data: profile, error: loadErr } = await sb
         .from('profiles')
-        .select('forename, surname, username, bio, avatar_url')
+        .select('forename, surname, username, bio, avatar_url, cover_url')
         .eq('id', userId)
         .single();
 
@@ -94,7 +118,9 @@
         userInput.value = profile.username || '';
         bioInput.value = profile.bio || '';
         originalAvatarUrl = profile.avatar_url || null;
+        originalCoverUrl = profile.cover_url || null;
         setAvatarPreview(originalAvatarUrl);
+        setCoverPreview(originalCoverUrl);
         updatePublicProfileLink(profile.username);
         const v = validateUsername(profile.username || '');
         setUsernameHint(v.msg, v.ok ? null : 'error');
@@ -143,6 +169,61 @@
         setFeedback('Click "Save changes" to upload this photo.', null);
     });
 
+    if (coverInput) {
+        coverInput.addEventListener('change', () => {
+            const file = coverInput.files?.[0];
+            if (!file) return;
+            if (!/^image\/(jpeg|png|webp)$/.test(file.type)) {
+                setFeedback('Cover: pick a JPG, PNG or WebP image.', 'error');
+                coverInput.value = '';
+                return;
+            }
+            if (file.size > MAX_AVATAR_BYTES) {
+                setFeedback('Cover image is over 5 MB — pick a smaller one.', 'error');
+                coverInput.value = '';
+                return;
+            }
+            pendingCoverFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => setCoverPreview(e.target.result);
+            reader.readAsDataURL(file);
+            setFeedback('Click "Save changes" to upload this cover.', null);
+        });
+    }
+
+    if (coverRemoveBtn) {
+        coverRemoveBtn.addEventListener('click', async () => {
+            if (!confirm('Remove your cover photo?')) return;
+
+            coverRemoveBtn.disabled = true;
+
+            const path = avatarPathFromUrl(originalCoverUrl);
+            if (path) {
+                const { error: delErr } = await sb.storage.from('avatars').remove([path]);
+                if (delErr) console.warn('Could not delete cover storage object:', delErr);
+            }
+
+            const { error: updErr } = await sb
+                .from('profiles')
+                .update({ cover_url: null, updated_at: new Date().toISOString() })
+                .eq('id', userId);
+
+            coverRemoveBtn.disabled = false;
+
+            if (updErr) {
+                console.error('Failed to clear cover_url:', updErr);
+                setFeedback('Could not remove cover — try again.', 'error');
+                return;
+            }
+
+            originalCoverUrl = null;
+            pendingCoverFile = null;
+            coverInput.value = '';
+            setCoverPreview(null);
+            setFeedback('Cover removed.', 'success');
+        });
+    }
+
     if (removeAvatarBtn) {
         removeAvatarBtn.addEventListener('click', async () => {
             if (!confirm('Remove your profile picture?')) return;
@@ -189,6 +270,9 @@
         pendingAvatarFile = null;
         avatarInput.value = '';
         setAvatarPreview(originalAvatarUrl);
+        pendingCoverFile = null;
+        coverInput.value = '';
+        setCoverPreview(originalCoverUrl);
         const v = validateUsername(userInput.value);
         setUsernameHint(v.msg, v.ok ? null : 'error');
         setFeedback('Changes discarded.', null);
@@ -251,12 +335,39 @@
             }
         }
 
+        let newCoverUrl = originalCoverUrl;
+
+        if (pendingCoverFile) {
+            const ext = (pendingCoverFile.name.split('.').pop() || 'jpg').toLowerCase();
+            const path = `${userId}/cover-${Date.now()}.${ext}`;
+            const { error: upErr } = await sb.storage
+                .from('avatars')
+                .upload(path, pendingCoverFile, { cacheControl: '3600', upsert: false });
+
+            if (upErr) {
+                console.error('Cover upload failed:', upErr);
+                saveBtn.disabled = false;
+                saveBtn.textContent = originalLabel;
+                setFeedback(`Cover upload failed: ${upErr.message || 'please try again'}.`, 'error');
+                return;
+            }
+
+            const { data: pub } = sb.storage.from('avatars').getPublicUrl(path);
+            newCoverUrl = pub.publicUrl;
+
+            const oldCoverPath = avatarPathFromUrl(originalCoverUrl);
+            if (oldCoverPath && oldCoverPath !== path) {
+                sb.storage.from('avatars').remove([oldCoverPath]).catch(() => {});
+            }
+        }
+
         const updates = {
             forename,
             surname,
             username: username || null,
             bio: bio || null,
             avatar_url: newAvatarUrl,
+            cover_url: newCoverUrl,
             updated_at: new Date().toISOString()
         };
 
@@ -282,8 +393,11 @@
         }
 
         originalAvatarUrl = newAvatarUrl;
+        originalCoverUrl = newCoverUrl;
         pendingAvatarFile = null;
+        pendingCoverFile = null;
         avatarInput.value = '';
+        coverInput.value = '';
         updatePublicProfileLink(username);
         setFeedback('Saved ✓', 'success');
     });

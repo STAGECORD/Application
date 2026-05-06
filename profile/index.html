@@ -84,6 +84,48 @@
         }
         .profile-feedback.is-success { color: #5CD66B; }
         .profile-feedback.is-error { color: #FF6B6B; }
+
+        .cover-wrap {
+            position: relative;
+            margin-bottom: 18px;
+        }
+        .cover-photo {
+            display: block; cursor: pointer;
+            width: 100%; height: 180px; border-radius: 12px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            background-size: cover; background-position: center;
+            position: relative; overflow: hidden;
+        }
+        .cover-photo__placeholder {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            color: #5A6480; font-size: 13px;
+            text-transform: uppercase; letter-spacing: 0.08em;
+        }
+        .cover-photo__overlay {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.55);
+            display: none; align-items: center; justify-content: center;
+            color: #FFFFFF; font-size: 14px;
+        }
+        .cover-photo:hover .cover-photo__overlay { display: flex; }
+        .cover-photo input[type="file"] { display: none; }
+        .cover-remove {
+            display: none;
+            position: absolute; top: 10px; right: 10px;
+            width: 30px; height: 30px; border-radius: 50%;
+            background: #1a1f2e; color: #FFFFFF;
+            border: 1px solid rgba(255,255,255,0.18);
+            font-size: 18px; line-height: 1; cursor: pointer; padding: 0;
+            font-family: inherit;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            z-index: 2;
+        }
+        .cover-remove:hover {
+            background: #2a3142; border-color: rgba(255,107,107,0.6); color: #FF6B6B;
+        }
+        .cover-wrap.has-cover .cover-remove { display: block; }
+        .cover-hint { color: #7E89A6; font-size: 12px; margin-top: 6px; }
     </style>
 </head>
 <body class="start-body">
@@ -110,6 +152,16 @@
             </h2>
 
             <form id="profileForm">
+                <div class="cover-wrap" id="coverWrap">
+                    <label class="cover-photo" id="coverTrigger" title="Click to upload cover">
+                        <span class="cover-photo__placeholder" id="coverPlaceholder">Click to add a cover photo</span>
+                        <span class="cover-photo__overlay" id="coverOverlay">Change cover</span>
+                        <input type="file" id="coverInput" accept="image/jpeg,image/png,image/webp">
+                    </label>
+                    <button type="button" id="coverRemove" class="cover-remove" aria-label="Remove cover">×</button>
+                </div>
+                <p class="cover-hint">Recommended size: 1500 × 500 pixels. JPG, PNG or WebP up to 5 MB.</p>
+
                 <div class="profile-row">
                     <div class="profile-avatar-block">
                         <div class="profile-avatar-wrap">

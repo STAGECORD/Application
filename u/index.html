@@ -9,12 +9,21 @@
     <link rel="stylesheet" href="../css/start.css">
     <style>
         .pp-wrap { max-width: 720px; margin: 0 auto; padding: 32px 24px 60px; }
+        .pp-cover {
+            width: 100%; height: 200px;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            background-size: cover; background-position: center;
+            margin-bottom: 12px;
+        }
         .pp-card {
             background: rgba(255,255,255,0.04);
             border: 1px solid rgba(255,255,255,0.08);
             border-radius: 16px;
             padding: 36px;
         }
+        .pp-card.has-cover { margin-top: -50px; position: relative; z-index: 2; backdrop-filter: blur(2px); }
         .pp-header { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
         .pp-avatar {
             width: 128px; height: 128px; border-radius: 50%;
@@ -288,6 +297,10 @@
             ? `<div class="pp-avatar" style="background-image:url('${escapeHtml(profile.avatar_url)}');"></div>`
             : `<div class="pp-avatar"><span class="pp-avatar__initial">${escapeHtml(initial)}</span></div>`;
 
+        const coverHtml = profile.cover_url
+            ? `<div class="pp-cover" style="background-image:url('${escapeHtml(profile.cover_url)}');"></div>`
+            : '';
+
         const bioHtml = profile.bio
             ? `<div class="pp-bio">${escapeHtml(profile.bio)}</div>`
             : '';
@@ -301,7 +314,8 @@
         ` : '';
 
         content.innerHTML = `
-            <div class="pp-card">
+            ${coverHtml}
+            <div class="pp-card${profile.cover_url ? ' has-cover' : ''}">
                 <div class="pp-header">
                     ${avatarHtml}
                     <div class="pp-meta">
