@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>STAGECORD — Members</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/logo.css">
+    <link rel="stylesheet" href="../css/start.css">
+    <style>
+        .members-wrap { max-width: 1080px; margin: 0 auto; padding: 32px 24px 60px; }
+        .members-header { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; }
+        .members-header h1 { margin: 0; color: #FFFFFF; font-size: 28px; font-weight: 600; }
+        .members-header .members-count { color: #7E89A6; font-size: 14px; }
+        .members-search {
+            margin-bottom: 24px;
+            background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 999px; padding: 11px 18px; color: #FFFFFF;
+            font-family: inherit; font-size: 15px;
+            width: 100%; max-width: 360px; box-sizing: border-box;
+        }
+        .members-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+        }
+        .member-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 20px;
+            text-decoration: none;
+            color: inherit;
+            transition: border-color 0.15s ease, transform 0.15s ease;
+            display: flex; flex-direction: column; gap: 12px;
+        }
+        .member-card:hover {
+            border-color: rgba(255,255,255,0.2);
+            transform: translateY(-1px);
+        }
+        .member-card__top { display: flex; align-items: center; gap: 14px; }
+        .member-card__avatar {
+            width: 56px; height: 56px; border-radius: 50%;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            background-size: cover; background-position: center;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            color: #5A6480; font-size: 22px; font-weight: 600;
+        }
+        .member-card__name { margin: 0; color: #FFFFFF; font-size: 16px; font-weight: 600; line-height: 1.2; }
+        .member-card__handle { margin: 4px 0 0 0; color: #7E89A6; font-size: 13px; }
+        .member-card__role {
+            display: inline-block; padding: 2px 10px; border-radius: 999px;
+            font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+            background: rgba(56,134,252,0.18); color: #6FA8FF;
+            align-self: flex-start;
+        }
+        .member-card__role--fan { background: rgba(255,168,57,0.16); color: #FFB066; }
+        .member-card__bio {
+            color: #D1D6E0; font-size: 13px; line-height: 1.5;
+            margin: 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 0;
+        }
+        .members-empty {
+            text-align: center; padding: 60px 20px;
+            color: #7E89A6; font-size: 15px;
+        }
+    </style>
+</head>
+<body class="start-body">
+
+    <header class="start-topbar">
+        <a href="/welcome/" class="start-topbar__logo">
+            <h1 class="logo">
+                <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
+            </h1>
+            <span class="start-topbar__beta">Beta</span>
+        </a>
+
+        <nav class="start-topbar__links">
+            <a href="/welcome/" class="start-topbar__link">Home</a>
+            <a href="/profile/" class="start-topbar__link">Profile</a>
+            <button id="signOutBtn" class="start-topbar__link start-topbar__link--cta" style="border:none;background:transparent;cursor:pointer;font:inherit;">Sign out</button>
+        </nav>
+    </header>
+
+    <main class="members-wrap">
+        <div class="members-header">
+            <h1>Members</h1>
+            <span class="members-count" id="membersCount"></span>
+        </div>
+
+        <input type="search" class="members-search" id="membersSearch" placeholder="Search by name or username…" autocomplete="off">
+
+        <div id="membersContent">
+            <div class="members-empty">Loading members…</div>
+        </div>
+    </main>
+
+    <footer class="start-footer">
+        <div class="start-footer__inner">
+            <p class="start-footer__brand">STAGECORD &nbsp;<span>·</span>&nbsp; Closed Beta · 2026</p>
+            <nav class="start-footer__nav">
+                <a href="/welcome/">Home</a>
+                <a href="mailto:hello@stagecord.com">hello@stagecord.com</a>
+            </nav>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase.js"></script>
+    <script>
+    (async function () {
+        const sb = window.supabaseClient;
+        const content = document.getElementById('membersContent');
+        const countEl = document.getElementById('membersCount');
+        const searchInput = document.getElementById('membersSearch');
+
+        const { data: { session } } = await sb.auth.getSession();
+        if (!session) {
+            window.location.href = '/login/';
+            return;
+        }
+
+        document.getElementById('signOutBtn').addEventListener('click', async () => {
+            await sb.auth.signOut();
+            window.location.href = '/';
+        });
+
+        function escapeHtml(s) {
+            return String(s).replace(/[&<>"']/g, (c) => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[c]));
+        }
+
+        const { data: rows, error } = await sb.rpc('list_public_profiles');
+
+        if (error) {
+            console.error('list_public_profiles failed:', error);
+            content.innerHTML = `<div class="members-empty">Couldn't load members: ${escapeHtml(error.message || error.code || 'unknown error')}</div>`;
+            return;
+        }
+
+        const members = (rows || []).filter((r) => r && r.username);
+
+        if (members.length === 0) {
+            content.innerHTML = `<div class="members-empty">No public profiles yet. Be the first — set a username on <a href="/profile/" style="color:#FFFFFF;">your profile</a>.</div>`;
+            return;
+        }
+
+        countEl.textContent = `${members.length} ${members.length === 1 ? 'member' : 'members'}`;
+
+        function render(list) {
+            if (list.length === 0) {
+                content.innerHTML = `<div class="members-empty">No matches.</div>`;
+                return;
+            }
+            content.innerHTML = `<div class="members-grid">${list.map((m) => {
+                const name = [m.forename, m.surname].filter(Boolean).join(' ') || m.username;
+                const initial = (name[0] || '?').toUpperCase();
+                const avatarHtml = m.avatar_url
+                    ? `<div class="member-card__avatar" style="background-image:url('${escapeHtml(m.avatar_url)}');"></div>`
+                    : `<div class="member-card__avatar">${escapeHtml(initial)}</div>`;
+                const roleClass = m.role === 'fan' ? ' member-card__role--fan' : '';
+                const roleLabel = m.role === 'artist' ? 'Artist' : (m.role === 'fan' ? 'Fan' : m.role);
+                return `<a class="member-card" href="/u/${encodeURIComponent(m.username)}">
+                    <div class="member-card__top">
+                        ${avatarHtml}
+                        <div>
+                            <h3 class="member-card__name">${escapeHtml(name)}</h3>
+                            <p class="member-card__handle">@${escapeHtml(m.username)}</p>
+                        </div>
+                    </div>
+                    ${roleLabel ? `<span class="member-card__role${roleClass}">${escapeHtml(roleLabel)}</span>` : ''}
+                    ${m.bio ? `<p class="member-card__bio">${escapeHtml(m.bio)}</p>` : ''}
+                </a>`;
+            }).join('')}</div>`;
+        }
+
+        render(members);
+
+        let searchDebounce = null;
+        searchInput.addEventListener('input', () => {
+            clearTimeout(searchDebounce);
+            const q = searchInput.value.trim().toLowerCase();
+            searchDebounce = setTimeout(() => {
+                if (!q) {
+                    render(members);
+                    countEl.textContent = `${members.length} ${members.length === 1 ? 'member' : 'members'}`;
+                    return;
+                }
+                const filtered = members.filter((m) => {
+                    const haystack = [m.forename, m.surname, m.username, m.bio]
+                        .filter(Boolean).join(' ').toLowerCase();
+                    return haystack.includes(q);
+                });
+                render(filtered);
+                countEl.textContent = `${filtered.length} of ${members.length} ${members.length === 1 ? 'member' : 'members'}`;
+            }, 120);
+        });
+    })();
+    </script>
+</body>
+</html>
