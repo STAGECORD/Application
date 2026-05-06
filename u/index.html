@@ -123,6 +123,26 @@
             width: 100%; margin-top: 4px;
             filter: invert(0.85) hue-rotate(180deg);
         }
+
+        .pp-follow-row {
+            display: flex; gap: 18px; margin-top: 14px;
+            color: #D1D6E0; font-size: 14px; align-items: center; flex-wrap: wrap;
+        }
+        .pp-follow-stat strong { color: #FFFFFF; font-weight: 600; margin-right: 4px; }
+        .pp-follow-btn {
+            background: #FFFFFF; color: #0B0B0F; border: none;
+            border-radius: 999px; padding: 8px 18px;
+            font-weight: 600; cursor: pointer; font-size: 13px;
+            margin-left: auto;
+        }
+        .pp-follow-btn:disabled { opacity: 0.6; cursor: wait; }
+        .pp-follow-btn--following {
+            background: transparent; color: #FFFFFF;
+            border: 1px solid rgba(255,255,255,0.24);
+        }
+        .pp-follow-btn--following:hover {
+            background: rgba(255,107,107,0.12); border-color: rgba(255,107,107,0.6); color: #FF6B6B;
+        }
     </style>
 </head>
 <body class="start-body">
@@ -261,6 +281,11 @@
                         ${roleLabel ? `<span class="pp-role-tag">${escapeHtml(roleLabel)}</span>` : ''}
                     </div>
                 </div>
+                <div class="pp-follow-row" id="ppFollowRow">
+                    <span class="pp-follow-stat"><strong id="ppFollowerCount">—</strong>followers</span>
+                    <span class="pp-follow-stat"><strong id="ppFollowingCount">—</strong>following</span>
+                    <button id="ppFollowBtn" class="pp-follow-btn" style="display:none;">Follow</button>
+                </div>
                 ${bioHtml}
                 ${ownCtas}
             </div>
@@ -269,6 +294,49 @@
                 <div class="pp-posts__empty">Loading posts…</div>
             </section>
         `;
+
+        async function loadFollowSummary() {
+            const { data: summary, error: sumErr } = await sb.rpc('get_follow_summary', {
+                p_username: profile.username || username
+            });
+            if (sumErr) {
+                console.error('get_follow_summary failed:', sumErr);
+                return;
+            }
+            const row = (summary && summary[0]) || {};
+            document.getElementById('ppFollowerCount').textContent = (row.follower_count ?? 0) + ' ';
+            document.getElementById('ppFollowingCount').textContent = (row.following_count ?? 0) + ' ';
+            const btn = document.getElementById('ppFollowBtn');
+            if (session && !isOwn) {
+                const isFollowing = !!row.viewer_is_following;
+                btn.style.display = '';
+                btn.textContent = isFollowing ? 'Following' : 'Follow';
+                btn.classList.toggle('pp-follow-btn--following', isFollowing);
+                btn.dataset.following = isFollowing ? '1' : '';
+            }
+        }
+
+        const followBtn = document.getElementById('ppFollowBtn');
+        if (followBtn && session && !isOwn) {
+            followBtn.addEventListener('click', async () => {
+                followBtn.disabled = true;
+                const wasFollowing = followBtn.dataset.following === '1';
+                followBtn.textContent = wasFollowing ? 'Unfollowing…' : 'Following…';
+                const { data, error: tErr } = await sb.rpc('toggle_follow', {
+                    p_target_username: profile.username || username
+                });
+                followBtn.disabled = false;
+                if (tErr) {
+                    console.error('toggle_follow failed:', tErr);
+                    followBtn.textContent = wasFollowing ? 'Following' : 'Follow';
+                    alert('Could not update follow: ' + (tErr.message || 'try again'));
+                    return;
+                }
+                await loadFollowSummary();
+            });
+        }
+
+        loadFollowSummary();
 
         function timeAgo(iso) {
             const t = new Date(iso).getTime();
