@@ -70,7 +70,14 @@
     const composerSubmit = document.getElementById('composerSubmit');
     const composerCounter = document.getElementById('composerCounter');
     const composerFeedback = document.getElementById('composerFeedback');
+    const composerImageInput = document.getElementById('composerImageInput');
+    const composerImagePreview = document.getElementById('composerImagePreview');
+    const composerImagePreviewImg = document.getElementById('composerImagePreviewImg');
+    const composerImageRemove = document.getElementById('composerImageRemove');
     const feedContainer = document.getElementById('feedContainer');
+
+    const MAX_POST_IMAGE_BYTES = 5 * 1024 * 1024;
+    let pendingImageFile = null;
 
     function setComposerFeedback(message, kind) {
         composerFeedback.textContent = message || '';
@@ -85,8 +92,47 @@
         composerCounter.classList.toggle('is-warning', len > 800 && len <= 1000);
         composerCounter.classList.toggle('is-error', len > 1000);
         const trimmed = v.trim();
-        composerSubmit.disabled = trimmed.length === 0 || trimmed.length > 1000;
+        const hasImage = !!pendingImageFile;
+        composerSubmit.disabled = (trimmed.length === 0 && !hasImage) || trimmed.length > 1000;
     }
+
+    function setPendingImage(file) {
+        pendingImageFile = file;
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                composerImagePreviewImg.src = e.target.result;
+                composerImagePreview.style.display = '';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            composerImagePreviewImg.src = '';
+            composerImagePreview.style.display = 'none';
+            composerImageInput.value = '';
+        }
+        updateComposerState();
+    }
+
+    composerImageInput.addEventListener('change', () => {
+        const file = composerImageInput.files?.[0];
+        if (!file) return;
+        if (!/^image\/(jpeg|png|webp)$/.test(file.type)) {
+            setComposerFeedback('Pick a JPG, PNG or WebP image.', 'error');
+            composerImageInput.value = '';
+            return;
+        }
+        if (file.size > MAX_POST_IMAGE_BYTES) {
+            setComposerFeedback('Image is over 5 MB — pick a smaller one.', 'error');
+            composerImageInput.value = '';
+            return;
+        }
+        setComposerFeedback('', null);
+        setPendingImage(file);
+    });
+
+    composerImageRemove.addEventListener('click', () => {
+        setPendingImage(null);
+    });
 
     composerInput.addEventListener('input', () => {
         updateComposerState();
@@ -96,15 +142,34 @@
 
     composerSubmit.addEventListener('click', async () => {
         const content = composerInput.value.trim();
-        if (!content) return;
+        if (!content && !pendingImageFile) return;
 
         composerSubmit.disabled = true;
         composerSubmit.textContent = 'Posting…';
         setComposerFeedback('', null);
 
+        let imageUrl = null;
+        if (pendingImageFile) {
+            const ext = (pendingImageFile.name.split('.').pop() || 'jpg').toLowerCase();
+            const path = `${user.id}/post-${Date.now()}.${ext}`;
+            const { error: upErr } = await sb.storage
+                .from('post-images')
+                .upload(path, pendingImageFile, { cacheControl: '3600', upsert: false });
+            if (upErr) {
+                console.error('Post image upload failed:', upErr);
+                composerSubmit.textContent = 'Post';
+                setComposerFeedback(`Image upload failed: ${upErr.message || 'try again'}`, 'error');
+                updateComposerState();
+                return;
+            }
+            const { data: pub } = sb.storage.from('post-images').getPublicUrl(path);
+            imageUrl = pub.publicUrl;
+        }
+
         const { error } = await sb.from('posts').insert({
             user_id: user.id,
-            content
+            content: content || ' ',
+            image_url: imageUrl
         });
 
         composerSubmit.textContent = 'Post';
@@ -117,6 +182,7 @@
         }
 
         composerInput.value = '';
+        setPendingImage(null);
         updateComposerState();
         setComposerFeedback('Posted ✓', 'success');
         setTimeout(() => setComposerFeedback('', null), 2200);
@@ -172,6 +238,13 @@
             ? `<button class="post__delete" data-delete-post="${escapeHtml(p.id)}" aria-label="Delete">×</button>`
             : '';
 
+        const contentHtml = p.content && p.content.trim()
+            ? `<p class="post__content">${escapeHtml(p.content)}</p>`
+            : '';
+        const imageHtml = p.image_url
+            ? `<img class="post__image" src="${escapeHtml(p.image_url)}" alt="">`
+            : '';
+
         return `<article class="post">
             <header class="post__head">
                 ${avatarHtml}
@@ -182,7 +255,8 @@
                 <span class="post__time">${escapeHtml(timeAgo(p.created_at))}</span>
                 ${deleteBtn}
             </header>
-            <p class="post__content">${escapeHtml(p.content)}</p>
+            ${contentHtml}
+            ${imageHtml}
         </article>`;
     }
 
