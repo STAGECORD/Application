@@ -1,6 +1,11 @@
 // Shared comments UI used by /welcome/ feed and /u/<username> posts.
 // Inject the markup once after a post card is in the DOM, then call
 // window.STAGECORD_Comments.attach({ post element, postId, currentUserId }).
+//
+// Replies are flat (single level): clicking "Reply" on a top-level comment
+// opens an inline composer that posts a child comment with
+// parent_comment_id pointing at that top. Replies don't get their own
+// reply button — to keep threads readable.
 window.STAGECORD_Comments = (function () {
     const sb = window.supabaseClient;
 
@@ -20,7 +25,7 @@ window.STAGECORD_Comments = (function () {
         return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     }
 
-    function renderComment(c, currentUserId) {
+    function renderComment(c, currentUserId, isReply) {
         const name = [c.forename, c.surname].filter(Boolean).join(' ') || c.username || 'STAGECORD member';
         const initial = (name[0] || '?').toUpperCase();
         const avatarHtml = c.avatar_url
@@ -33,7 +38,10 @@ window.STAGECORD_Comments = (function () {
         const deleteBtn = isOwn
             ? `<button class="cm__delete" data-delete-comment="${escapeHtml(c.id)}" aria-label="Delete">×</button>`
             : '';
-        return `<div class="cm">
+        const replyBtn = !isReply && currentUserId
+            ? `<button class="cm__reply-btn" data-reply-to="${escapeHtml(c.id)}">Reply</button>`
+            : '';
+        return `<div class="cm${isReply ? ' cm--reply' : ''}" data-comment-id="${escapeHtml(c.id)}">
             ${avatarHtml}
             <div class="cm__body">
                 <div class="cm__head">
@@ -42,8 +50,83 @@ window.STAGECORD_Comments = (function () {
                     ${deleteBtn}
                 </div>
                 <p class="cm__content">${escapeHtml(c.content)}</p>
+                ${replyBtn}
+                <div class="cm__reply-composer" data-reply-composer hidden></div>
             </div>
         </div>`;
+    }
+
+    function attachDeleteHandlers(scope, thread, postId, currentUserId) {
+        scope.querySelectorAll('[data-delete-comment]').forEach((btn) => {
+            btn.addEventListener('click', async () => {
+                if (!confirm('Delete this comment?')) return;
+                const id = btn.getAttribute('data-delete-comment');
+                const { error } = await sb.from('post_comments').delete().eq('id', id);
+                if (error) {
+                    alert('Could not delete: ' + (error.message || 'try again'));
+                    return;
+                }
+                loadAndRender(thread, postId, currentUserId);
+                refreshCount(thread, postId);
+            });
+        });
+    }
+
+    function attachReplyHandlers(scope, thread, postId, currentUserId) {
+        scope.querySelectorAll('[data-reply-to]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const parentId = btn.getAttribute('data-reply-to');
+                const composer = btn.parentElement.querySelector('[data-reply-composer]');
+                if (!composer) return;
+
+                if (!composer.hidden && composer.innerHTML.trim()) {
+                    composer.hidden = true;
+                    composer.innerHTML = '';
+                    return;
+                }
+
+                composer.innerHTML = `
+                    <input type="text" class="cm-composer__input" placeholder="Write a reply…" maxlength="500">
+                    <button type="button" class="cm-composer__btn" disabled>Reply</button>
+                `;
+                composer.hidden = false;
+
+                const input = composer.querySelector('.cm-composer__input');
+                const submitBtn = composer.querySelector('.cm-composer__btn');
+                input.focus();
+                input.addEventListener('input', () => {
+                    submitBtn.disabled = input.value.trim().length === 0;
+                });
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !submitBtn.disabled) {
+                        e.preventDefault();
+                        submitBtn.click();
+                    }
+                });
+                submitBtn.addEventListener('click', async () => {
+                    const content = input.value.trim();
+                    if (!content) return;
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = '…';
+                    const { error } = await sb.from('post_comments').insert({
+                        post_id: postId,
+                        user_id: currentUserId,
+                        content,
+                        parent_comment_id: parentId
+                    });
+                    submitBtn.textContent = 'Reply';
+                    if (error) {
+                        console.error('Reply insert failed:', error);
+                        alert('Could not post reply: ' + (error.message || 'try again'));
+                        return;
+                    }
+                    composer.innerHTML = '';
+                    composer.hidden = true;
+                    await loadAndRender(thread, postId, currentUserId);
+                    refreshCount(thread, postId);
+                });
+            });
+        });
     }
 
     async function loadAndRender(thread, postId, currentUserId) {
@@ -59,20 +142,26 @@ window.STAGECORD_Comments = (function () {
             list.innerHTML = `<div class="cm-empty">No comments yet.</div>`;
             return;
         }
-        list.innerHTML = comments.map((c) => renderComment(c, currentUserId)).join('');
-        list.querySelectorAll('[data-delete-comment]').forEach((btn) => {
-            btn.addEventListener('click', async () => {
-                if (!confirm('Delete this comment?')) return;
-                const id = btn.getAttribute('data-delete-comment');
-                const { error } = await sb.from('post_comments').delete().eq('id', id);
-                if (error) {
-                    alert('Could not delete: ' + (error.message || 'try again'));
-                    return;
-                }
-                loadAndRender(thread, postId, currentUserId);
-                refreshCount(thread, postId);
-            });
+
+        const tops = comments.filter((c) => !c.parent_comment_id);
+        const repliesByParent = {};
+        comments.filter((c) => c.parent_comment_id).forEach((r) => {
+            (repliesByParent[r.parent_comment_id] ||= []).push(r);
         });
+
+        list.innerHTML = tops.map((top) => {
+            const replies = repliesByParent[top.id] || [];
+            const replyHtml = replies
+                .map((r) => renderComment(r, currentUserId, true))
+                .join('');
+            const repliesBlock = replies.length
+                ? `<div class="cm-replies">${replyHtml}</div>`
+                : '';
+            return renderComment(top, currentUserId, false) + repliesBlock;
+        }).join('');
+
+        attachDeleteHandlers(list, thread, postId, currentUserId);
+        attachReplyHandlers(list, thread, postId, currentUserId);
     }
 
     async function refreshCount(thread, postId) {
@@ -128,40 +217,43 @@ window.STAGECORD_Comments = (function () {
         });
 
         if (currentUserId) {
-            const input = thread.querySelector('.cm-composer__input');
-            const btn = thread.querySelector('.cm-composer__btn');
-            input.addEventListener('input', () => {
-                btn.disabled = input.value.trim().length === 0;
-            });
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' && !btn.disabled) {
-                    e.preventDefault();
-                    btn.click();
-                }
-            });
-            btn.addEventListener('click', async () => {
-                const content = input.value.trim();
-                if (!content) return;
-                btn.disabled = true;
-                btn.textContent = '…';
-                const { error } = await sb.from('post_comments').insert({
-                    post_id: postId,
-                    user_id: currentUserId,
-                    content
+            const input = thread.querySelector('.cm-composer > .cm-composer__input');
+            const btn = thread.querySelector('.cm-composer > .cm-composer__btn');
+            if (input && btn) {
+                input.addEventListener('input', () => {
+                    btn.disabled = input.value.trim().length === 0;
                 });
-                btn.textContent = 'Post';
-                if (error) {
-                    console.error('Comment insert failed:', error);
-                    alert('Could not post comment: ' + (error.message || 'try again'));
-                    return;
-                }
-                input.value = '';
-                btn.disabled = true;
-                if (thread.hidden) thread.hidden = false;
-                await loadAndRender(thread, postId, currentUserId);
-                thread.dataset.loaded = '1';
-                refreshCount(thread, postId);
-            });
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !btn.disabled) {
+                        e.preventDefault();
+                        btn.click();
+                    }
+                });
+                btn.addEventListener('click', async () => {
+                    const content = input.value.trim();
+                    if (!content) return;
+                    btn.disabled = true;
+                    btn.textContent = '…';
+                    const { error } = await sb.from('post_comments').insert({
+                        post_id: postId,
+                        user_id: currentUserId,
+                        content,
+                        parent_comment_id: null
+                    });
+                    btn.textContent = 'Post';
+                    if (error) {
+                        console.error('Comment insert failed:', error);
+                        alert('Could not post comment: ' + (error.message || 'try again'));
+                        return;
+                    }
+                    input.value = '';
+                    btn.disabled = true;
+                    if (thread.hidden) thread.hidden = false;
+                    await loadAndRender(thread, postId, currentUserId);
+                    thread.dataset.loaded = '1';
+                    refreshCount(thread, postId);
+                });
+            }
         }
     }
 
