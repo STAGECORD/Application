@@ -85,6 +85,20 @@
             filter: invert(0.85) hue-rotate(180deg);
         }
         .tracks-empty { text-align: center; padding: 24px 20px; color: #7E89A6; font-size: 14px; }
+        .like-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: transparent; border: none;
+            color: #7E89A6; cursor: pointer;
+            padding: 6px 10px; border-radius: 999px;
+            font-family: inherit; font-size: 13px;
+            transition: color 0.15s ease, background 0.15s ease;
+        }
+        .like-btn:hover { background: rgba(255,255,255,0.05); color: #FFFFFF; }
+        .like-btn--active { color: #FF6B6B; }
+        .like-btn--active:hover { color: #FF6B6B; background: rgba(255,107,107,0.08); }
+        .like-btn__icon { display: inline-flex; }
+        .like-btn__label { color: inherit; opacity: 0.85; }
+        .track__actions { display: flex; align-items: center; gap: 4px; margin-top: 10px; }
     </style>
 </head>
 <body class="start-body">
@@ -164,6 +178,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase.js"></script>
+    <script src="../js/likes.js"></script>
     <script src="../js/tracks.js"></script>
 </body>
 </html>

@@ -206,16 +206,32 @@
 
         feedContainer.innerHTML = `<div class="feed-list">${rows.map(renderPost).join('')}</div>`;
 
-        if (window.STAGECORD_Comments) {
-            feedContainer.querySelectorAll('[data-post-id]').forEach((postEl) => {
-                const postId = postEl.getAttribute('data-post-id');
+        rows.forEach((p) => {
+            const postEl = feedContainer.querySelector(`[data-post-id="${p.id}"]`);
+            if (!postEl) return;
+
+            if (window.STAGECORD_Likes) {
+                const actions = postEl.querySelector('.post__actions');
+                if (actions) {
+                    window.STAGECORD_Likes.render({
+                        container: actions,
+                        targetType: 'post',
+                        targetId: p.id,
+                        initialCount: Number(p.like_count) || 0,
+                        initiallyLiked: !!p.viewer_has_liked,
+                        currentUserId: user.id
+                    });
+                }
+            }
+
+            if (window.STAGECORD_Comments) {
                 window.STAGECORD_Comments.attach({
                     postElement: postEl,
-                    postId,
+                    postId: p.id,
                     currentUserId: user.id
                 });
-            });
-        }
+            }
+        });
 
         feedContainer.querySelectorAll('[data-delete-post]').forEach((btn) => {
             btn.addEventListener('click', async (e) => {
@@ -268,6 +284,7 @@
             </header>
             ${contentHtml}
             ${imageHtml}
+            <div class="post__actions"></div>
         </article>`;
     }
 

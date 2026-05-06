@@ -192,12 +192,27 @@
 
         countEl.textContent = `${rows.length} ${rows.length === 1 ? 'track' : 'tracks'}`;
 
+        const trackIds = rows.map((r) => r.id);
+        const likeCounts = {};
+        const ownLikes = new Set();
+        if (trackIds.length > 0) {
+            const { data: allLikes } = await sb
+                .from('likes')
+                .select('target_id, user_id')
+                .eq('target_type', 'track')
+                .in('target_id', trackIds);
+            (allLikes || []).forEach((l) => {
+                likeCounts[l.target_id] = (likeCounts[l.target_id] || 0) + 1;
+                if (l.user_id === user.id) ownLikes.add(l.target_id);
+            });
+        }
+
         listEl.innerHTML = rows.map((t) => {
             const desc = t.description
                 ? `<p class="track__desc">${escapeHtml(t.description)}</p>`
                 : '';
             const dur = t.duration_seconds ? ` · ${fmtDuration(t.duration_seconds)}` : '';
-            return `<article class="track">
+            return `<article class="track" data-track-id="${escapeHtml(t.id)}">
                 <header class="track__head">
                     <h3 class="track__title">${escapeHtml(t.title)}</h3>
                     <span class="track__time">${escapeHtml(timeAgo(t.created_at))}${dur}</span>
@@ -205,8 +220,24 @@
                 </header>
                 ${desc}
                 <audio controls preload="none" src="${escapeHtml(t.audio_url)}"></audio>
+                <div class="track__actions"></div>
             </article>`;
         }).join('');
+
+        rows.forEach((t) => {
+            const trackEl = listEl.querySelector(`[data-track-id="${t.id}"]`);
+            if (!trackEl || !window.STAGECORD_Likes) return;
+            const actions = trackEl.querySelector('.track__actions');
+            if (!actions) return;
+            window.STAGECORD_Likes.render({
+                container: actions,
+                targetType: 'track',
+                targetId: t.id,
+                initialCount: likeCounts[t.id] || 0,
+                initiallyLiked: ownLikes.has(t.id),
+                currentUserId: user.id
+            });
+        });
 
         listEl.querySelectorAll('[data-delete-track]').forEach((btn) => {
             btn.addEventListener('click', async () => {

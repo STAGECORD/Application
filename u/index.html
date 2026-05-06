@@ -235,6 +235,20 @@
             font-weight: 600; cursor: pointer; font-size: 13px;
         }
         .cm-composer__btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .like-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: transparent; border: none;
+            color: #7E89A6; cursor: pointer;
+            padding: 6px 10px; border-radius: 999px;
+            font-family: inherit; font-size: 13px;
+            transition: color 0.15s ease, background 0.15s ease;
+        }
+        .like-btn:hover { background: rgba(255,255,255,0.05); color: #FFFFFF; }
+        .like-btn--active { color: #FF6B6B; }
+        .like-btn--active:hover { color: #FF6B6B; background: rgba(255,107,107,0.08); }
+        .like-btn__icon { display: inline-flex; }
+        .like-btn__label { color: inherit; opacity: 0.85; }
+        .pp-actions { display: flex; align-items: center; gap: 4px; margin-top: 10px; }
         .cm__reply-btn {
             background: transparent; border: none; color: #7E89A6;
             cursor: pointer; font-size: 12px; padding: 4px 0;
@@ -283,6 +297,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase.js"></script>
+    <script src="../js/likes.js"></script>
     <script src="../js/comments.js"></script>
     <script>
     (async function () {
@@ -526,19 +541,36 @@
                 const desc = t.description
                     ? `<p class="pp-track__desc">${escapeHtml(t.description)}</p>`
                     : '';
-                return `<article class="pp-track">
+                return `<article class="pp-track" data-track-id="${escapeHtml(t.id)}">
                     <header class="pp-track__head">
                         <h3 class="pp-track__title">${escapeHtml(t.title)}</h3>
                         <span class="pp-track__time">${escapeHtml(timeAgo(t.created_at))}${dur}</span>
                     </header>
                     ${desc}
                     <audio controls preload="none" src="${escapeHtml(t.audio_url)}"></audio>
+                    <div class="pp-actions"></div>
                 </article>`;
             }).join('');
             tracksEl.innerHTML = `
                 <h3 class="pp-posts__heading">Music <span class="pp-posts__count">${tracks.length}</span></h3>
                 ${tracksHtml}
             `;
+
+            const trackViewerId = (await sb.auth.getSession()).data.session?.user?.id || null;
+            tracks.forEach((t) => {
+                const trackEl = tracksEl.querySelector(`[data-track-id="${t.id}"]`);
+                if (!trackEl || !window.STAGECORD_Likes) return;
+                const actions = trackEl.querySelector('.pp-actions');
+                if (!actions) return;
+                window.STAGECORD_Likes.render({
+                    container: actions,
+                    targetType: 'track',
+                    targetId: t.id,
+                    initialCount: Number(t.like_count) || 0,
+                    initiallyLiked: !!t.viewer_has_liked,
+                    currentUserId: trackViewerId
+                });
+            });
         }
 
         const postsEl = document.getElementById('ppPosts');
@@ -578,6 +610,7 @@
                 </header>
                 ${contentBlock}
                 ${imageBlock}
+                <div class="pp-actions"></div>
             </article>`;
         }).join('');
 
@@ -586,17 +619,33 @@
             ${cards}
         `;
 
-        if (window.STAGECORD_Comments) {
-            const currentUserId = session?.user?.id || null;
-            postsEl.querySelectorAll('[data-post-id]').forEach((postEl) => {
-                const postId = postEl.getAttribute('data-post-id');
+        const currentUserId = session?.user?.id || null;
+        posts.forEach((p) => {
+            const postEl = postsEl.querySelector(`[data-post-id="${p.id}"]`);
+            if (!postEl) return;
+
+            if (window.STAGECORD_Likes) {
+                const actions = postEl.querySelector('.pp-actions');
+                if (actions) {
+                    window.STAGECORD_Likes.render({
+                        container: actions,
+                        targetType: 'post',
+                        targetId: p.id,
+                        initialCount: Number(p.like_count) || 0,
+                        initiallyLiked: !!p.viewer_has_liked,
+                        currentUserId
+                    });
+                }
+            }
+
+            if (window.STAGECORD_Comments) {
                 window.STAGECORD_Comments.attach({
                     postElement: postEl,
-                    postId,
+                    postId: p.id,
                     currentUserId
                 });
-            });
-        }
+            }
+        });
     })();
     </script>
 </body>
