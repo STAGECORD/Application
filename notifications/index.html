@@ -3,170 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STAGECORD - Notifications</title>
-    <link rel="stylesheet" href="../css/sidebar.css">
+    <meta name="robots" content="noindex, nofollow">
+    <title>STAGECORD — Notifications</title>
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/logo.css">
-    <link rel="stylesheet" href="../css/topbar.css">
-    <link rel="stylesheet" href="../css/notifications.css">
-</head>
-<body>
-    <aside class="sidebar" data-sidebar></aside>
+    <link rel="stylesheet" href="../css/start.css">
+    <style>
+        .notif-wrap { max-width: 720px; margin: 0 auto; padding: 32px 24px 60px; }
+        .notif-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; gap: 12px; flex-wrap: wrap; }
+        .notif-head h1 { margin: 0; color: #FFFFFF; font-size: 26px; font-weight: 600; }
+        .notif-mark-btn {
+            background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #FFFFFF;
+            border-radius: 999px; padding: 8px 16px;
+            font-size: 13px; cursor: pointer; font-family: inherit;
+        }
+        .notif-mark-btn:hover { background: rgba(255,255,255,0.05); }
+        .notif-list { display: flex; flex-direction: column; gap: 10px; }
+        .notif-empty { padding: 50px 20px; text-align: center; color: #7E89A6; }
 
-    <header class="topbar">
-        <div class="logo-container">
-            <a href="../index.html" class="logo-link">
-                <h1 class="logo"><span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span></h1>
-            </a>
-        </div>
-        <div class="search-bar">
-            <input type="text" class="search-input" placeholder="Search Artists, Concerts, Venues, Friends and much more" aria-label="Search"/>
-            <svg class="search-icon" viewBox="0 0 28 28" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/><path d="M18 18L24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        </div>
-        <button type="button" class="help-button" aria-label="Help" aria-pressed="false" data-help="Hjælpeknap."><span class="help-mark">?</span></button>
+        .notif {
+            display: flex; gap: 12px; align-items: flex-start;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 14px 16px;
+            text-decoration: none; color: inherit;
+            transition: border-color 0.15s ease;
+        }
+        .notif:hover { border-color: rgba(255,255,255,0.16); }
+        .notif--unread { border-color: rgba(56,134,252,0.32); background: rgba(56,134,252,0.06); }
+        .notif__avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+            background-size: cover; background-position: center;
+            display: flex; align-items: center; justify-content: center;
+            color: #5A6480; font-size: 15px; font-weight: 600;
+            flex-shrink: 0;
+        }
+        .notif__body { flex: 1; min-width: 0; }
+        .notif__text {
+            color: #D1D6E0; font-size: 14px; line-height: 1.4;
+            margin: 0;
+        }
+        .notif__text strong { color: #FFFFFF; font-weight: 600; }
+        .notif__time { color: #5A6480; font-size: 12px; margin-top: 4px; }
+        .notif__dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #FF6B6B;
+            margin-top: 8px; flex-shrink: 0;
+            opacity: 0;
+        }
+        .notif--unread .notif__dot { opacity: 1; }
+    </style>
+</head>
+<body class="start-body">
+
+    <header class="start-topbar">
+        <a href="/welcome/" class="start-topbar__logo">
+            <h1 class="logo">
+                <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
+            </h1>
+            <span class="start-topbar__beta">Beta</span>
+        </a>
+
+        <nav class="start-topbar__links">
+            <a href="/welcome/" class="start-topbar__link">Home</a>
+            <a href="/inbox/" class="start-topbar__link">Inbox</a>
+            <a href="/profile/" class="start-topbar__link">Profile</a>
+            <button id="signOutBtn" class="start-topbar__link start-topbar__link--cta" style="border:none;background:transparent;cursor:pointer;font:inherit;">Sign out</button>
+        </nav>
     </header>
 
-    <main class="main-content">
-        <div class="content-wrapper">
+    <main class="notif-wrap">
+        <div class="notif-head">
+            <h1>Notifications</h1>
+            <button class="notif-mark-btn" id="markAllBtn" hidden>Mark all read</button>
+        </div>
 
-            <header class="notifications-header">
-                <h1 class="notifications-header__heading">Notifications</h1>
-                <p class="notifications-header__subtitle">Pitch responses, ticket purchases, mentions and platform activity — all in one feed.</p>
-
-                <nav class="notifications-tabs" role="tablist">
-                    <button type="button" class="notifications-tab is-active">All<span class="topbar-notify__count" style="position:static;margin-left:6px;box-shadow:none;">12</span></button>
-                    <button type="button" class="notifications-tab">Tickets</button>
-                    <button type="button" class="notifications-tab">Pitch &amp; collabs</button>
-                    <button type="button" class="notifications-tab">Social</button>
-                    <button type="button" class="notifications-tab">Royalties &amp; payouts</button>
-                </nav>
-            </header>
-
-            <div class="notifications-list">
-                <a class="topbar-notify-item topbar-notify-item--unread" href="../streaming/song/index.html">
-                    <span class="topbar-notify-item__icon">🎟</span>
-                    <div class="topbar-notify-item__main">
-                        Your <strong>Late Cellar Set</strong> Online Concert Pass is live now — start watching to catch the encore.
-                        <span class="topbar-notify-item__time">2 minutes ago</span>
-                    </div>
-                    <button type="button" class="notifications-list__action notifications-list__action--accept">Watch live</button>
-                </a>
-
-                <a class="topbar-notify-item topbar-notify-item--unread" href="../pitch/index.html">
-                    <span class="topbar-notify-item__icon">✓</span>
-                    <div class="topbar-notify-item__main">
-                        <strong>RUST</strong> accepted your pitch for <strong>30 November</strong> — pre-stream marketing kicks off Monday.
-                        <span class="topbar-notify-item__time">38 minutes ago</span>
-                    </div>
-                    <button type="button" class="notifications-list__action">View pitch</button>
-                </a>
-
-                <a class="topbar-notify-item topbar-notify-item--unread" href="../entourage/index.html">
-                    <span class="topbar-notify-item__icon">👥</span>
-                    <div class="topbar-notify-item__main">
-                        <strong class="auto-name">Tara Park</strong> invited you to <strong>Synthwave Crew</strong> entourage — 3 members, KEBU show in 12 days.
-                        <span class="topbar-notify-item__time">2 hours ago</span>
-                    </div>
-                    <span style="display:flex;gap:8px;">
-                        <button type="button" class="notifications-list__action notifications-list__action--accept">Accept</button>
-                        <button type="button" class="notifications-list__action">Decline</button>
-                    </span>
-                </a>
-
-                <a class="topbar-notify-item" href="../streaming/song/index.html">
-                    <span class="topbar-notify-item__icon">★</span>
-                    <div class="topbar-notify-item__main">
-                        <strong class="auto-name">Jokesmith Johnson</strong> just dropped a new bit — <em>"Late Cellar Set"</em>. Stems available for licensing.
-                        <span class="topbar-notify-item__time">5 hours ago</span>
-                    </div>
-                    <button type="button" class="notifications-list__action">Listen</button>
-                </a>
-
-                <a class="topbar-notify-item" href="../fan/index.html">
-                    <span class="topbar-notify-item__icon">↗</span>
-                    <div class="topbar-notify-item__main">
-                        <strong class="auto-name">Line Rasmussen</strong> reposted your <em>VEGA</em> photo — 84 new likes.
-                        <span class="topbar-notify-item__time">Yesterday</span>
-                    </div>
-                </a>
-
-                <a class="topbar-notify-item" href="../streaming/index.html">
-                    <span class="topbar-notify-item__icon">🎵</span>
-                    <div class="topbar-notify-item__main">
-                        <strong class="auto-name">Anchi Humifuku</strong> released the remix of <em>Manhattan Rain</em> featuring Maya Thompson.
-                        <span class="topbar-notify-item__time">2 days ago</span>
-                    </div>
-                </a>
-
-                <a class="topbar-notify-item" href="../sales/index.html">
-                    <span class="topbar-notify-item__icon">💸</span>
-                    <div class="topbar-notify-item__main">
-                        Royalty payout sent to your account — <strong>2,148 DKK</strong> for last month's streams across 7 platforms.
-                        <span class="topbar-notify-item__time">3 days ago</span>
-                    </div>
-                    <button type="button" class="notifications-list__action">Statement</button>
-                </a>
-
-                <a class="topbar-notify-item" href="../inbox/index.html">
-                    <span class="topbar-notify-item__icon">🎤</span>
-                    <div class="topbar-notify-item__main">
-                        <strong class="auto-name">Maya Thompson</strong> tagged you in a co-write session — open in inbox to accept.
-                        <span class="topbar-notify-item__time">4 days ago</span>
-                    </div>
-                </a>
-
-                <a class="topbar-notify-item" href="../venue/index.html">
-                    <span class="topbar-notify-item__icon">🏛</span>
-                    <div class="topbar-notify-item__main">
-                        <strong>RUST</strong> opened a new pitch slot for <strong>15 December</strong> — Open Mic, all genres welcome.
-                        <span class="topbar-notify-item__time">5 days ago</span>
-                    </div>
-                </a>
-
-                <a class="topbar-notify-item" href="#">
-                    <span class="topbar-notify-item__icon">🎬</span>
-                    <div class="topbar-notify-item__main">
-                        <strong>Nordisk Film</strong> sent a license quote for <em>Brooklyn Air</em> — 38,400 DKK · Film · 3 years · EU.
-                        <span class="topbar-notify-item__time">1 week ago</span>
-                    </div>
-                    <button type="button" class="notifications-list__action">Review</button>
-                </a>
-
-                <a class="topbar-notify-item" href="../sales/index.html">
-                    <span class="topbar-notify-item__icon">💸</span>
-                    <div class="topbar-notify-item__main">
-                        Online concert pass sold — <strong>Live Cellar Set</strong> · 79 DKK · royalty 39 DKK.
-                        <span class="topbar-notify-item__time">1 week ago</span>
-                    </div>
-                </a>
-
-                <a class="topbar-notify-item" href="../fan/martin/index.html">
-                    <span class="topbar-notify-item__icon">+</span>
-                    <div class="topbar-notify-item__main">
-                        <strong class="auto-name">Mike Shritslerz</strong> sent you a friend request.
-                        <span class="topbar-notify-item__time">1 week ago</span>
-                    </div>
-                    <span style="display:flex;gap:8px;">
-                        <button type="button" class="notifications-list__action notifications-list__action--accept">Accept</button>
-                        <button type="button" class="notifications-list__action">Ignore</button>
-                    </span>
-                </a>
-            </div>
+        <div class="notif-list" id="notifList">
+            <div class="notif-empty">Loading…</div>
         </div>
     </main>
 
-    <script src="../js/core.js"></script>
-    <script src="../js/modes.js"></script>
-    <script src="../js/sidebar.js"></script>
-    <script src="../js/topbar-widgets.js"></script>
-    <script src="../js/stage-badge.js"></script>
-    <script src="../js/acting-as-service.js"></script>
-    <script src="../js/stage-cards.js"></script>
-    <script src="../js/stage-label.js"></script>
-    <script src="../js/stage-resources.js"></script>
-    <script src="../js/stage-economy.js"></script>
-    <script src="../js/settings.js"></script>
-    <script src="../js/activity-feed.js"></script>
-    <script src="../js/app.js"></script>
+    <footer class="start-footer">
+        <div class="start-footer__inner">
+            <p class="start-footer__brand">STAGECORD &nbsp;<span>·</span>&nbsp; Closed Beta · 2026</p>
+            <nav class="start-footer__nav">
+                <a href="/welcome/">Home</a>
+                <a href="mailto:hello@stagecord.com">hello@stagecord.com</a>
+            </nav>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase.js"></script>
+    <script src="../js/notifications-bell.js"></script>
+    <script>
+    (async function () {
+        const sb = window.supabaseClient;
+
+        const { data: { session } } = await sb.auth.getSession();
+        if (!session) {
+            window.location.href = '/login/';
+            return;
+        }
+
+        document.getElementById('signOutBtn').addEventListener('click', async () => {
+            await sb.auth.signOut();
+            window.location.href = '/';
+        });
+
+        const listEl = document.getElementById('notifList');
+        const markAllBtn = document.getElementById('markAllBtn');
+
+        function escapeHtml(s) {
+            return String(s).replace(/[<>&"']/g, (c) => ({
+                '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;'
+            }[c]));
+        }
+
+        function timeAgo(iso) {
+            const t = new Date(iso).getTime();
+            const diff = (Date.now() - t) / 1000;
+            if (diff < 60) return 'just now';
+            if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+            if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
+            return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        function notifVerb(type) {
+            switch (type) {
+                case 'follow': return 'started following you';
+                case 'like_post': return 'liked your post';
+                case 'like_track': return 'liked your track';
+                case 'comment': return 'commented on your post';
+                case 'reply': return 'replied to your comment';
+                case 'message': return 'sent you a message';
+                default: return type;
+            }
+        }
+
+        function notifLink(n) {
+            switch (n.type) {
+                case 'follow':
+                case 'like_post':
+                case 'like_track':
+                case 'comment':
+                case 'reply':
+                    return n.actor_username ? `/u/${encodeURIComponent(n.actor_username)}` : '/welcome/';
+                case 'message':
+                    return n.target_id ? `/inbox/?c=${encodeURIComponent(n.target_id)}` : '/inbox/';
+                default:
+                    return '#';
+            }
+        }
+
+        const { data: rows, error } = await sb.rpc('get_my_notifications', { p_limit: 100 });
+
+        if (error) {
+            console.error('get_my_notifications failed:', error);
+            listEl.innerHTML = `<div class="notif-empty">Couldn't load notifications: ${escapeHtml(error.message || '')}</div>`;
+            return;
+        }
+
+        if (!rows || rows.length === 0) {
+            listEl.innerHTML = `<div class="notif-empty">No notifications yet. Follows, likes, comments and messages will land here.</div>`;
+            return;
+        }
+
+        const hasUnread = rows.some((n) => !n.read_at);
+        if (hasUnread) markAllBtn.hidden = false;
+
+        listEl.innerHTML = rows.map((n) => {
+            const name = [n.actor_forename, n.actor_surname].filter(Boolean).join(' ') || n.actor_username || 'Someone';
+            const initial = (name[0] || '?').toUpperCase();
+            const avatarHtml = n.actor_avatar_url
+                ? `<div class="notif__avatar" style="background-image:url('${escapeHtml(n.actor_avatar_url)}');"></div>`
+                : `<div class="notif__avatar">${escapeHtml(initial)}</div>`;
+            return `<a class="notif${!n.read_at ? ' notif--unread' : ''}" href="${escapeHtml(notifLink(n))}">
+                ${avatarHtml}
+                <div class="notif__body">
+                    <p class="notif__text"><strong>${escapeHtml(name)}</strong> ${escapeHtml(notifVerb(n.type))}.</p>
+                    <div class="notif__time">${escapeHtml(timeAgo(n.created_at))}</div>
+                </div>
+                <span class="notif__dot"></span>
+            </a>`;
+        }).join('');
+
+        markAllBtn.addEventListener('click', async () => {
+            markAllBtn.disabled = true;
+            markAllBtn.textContent = 'Marking…';
+            const { error } = await sb.rpc('mark_notifications_read');
+            markAllBtn.disabled = false;
+            if (error) {
+                console.error(error);
+                markAllBtn.textContent = 'Mark all read';
+                return;
+            }
+            listEl.querySelectorAll('.notif--unread').forEach((el) => el.classList.remove('notif--unread'));
+            markAllBtn.hidden = true;
+        });
+
+        // Auto-mark all as read on visit (so the bell clears)
+        sb.rpc('mark_notifications_read').catch(() => {});
+    })();
+    </script>
 </body>
 </html>
