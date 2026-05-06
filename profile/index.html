@@ -15,6 +15,7 @@
         .profile-card h2 { margin: 0 0 18px 0; color: #FFFFFF; font-weight: 600; font-size: 20px; }
         .profile-row { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
         .profile-avatar-block { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+        .profile-avatar-wrap { position: relative; width: 120px; height: 120px; }
         .profile-avatar {
             width: 120px; height: 120px; border-radius: 50%;
             background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
@@ -34,6 +35,21 @@
         .profile-avatar:hover .profile-avatar__overlay { display: flex; }
         .profile-avatar input[type="file"] { display: none; }
         .profile-avatar__hint { color: #7E89A6; font-size: 12px; text-align: center; }
+        .profile-avatar__remove {
+            display: none;
+            position: absolute; top: -4px; right: -4px;
+            width: 28px; height: 28px; border-radius: 50%;
+            background: #1a1f2e; color: #FFFFFF;
+            border: 1px solid rgba(255,255,255,0.18);
+            font-size: 18px; line-height: 1; cursor: pointer; padding: 0;
+            font-family: inherit;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            z-index: 2;
+        }
+        .profile-avatar__remove:hover {
+            background: #2a3142; border-color: rgba(255,107,107,0.6); color: #FF6B6B;
+        }
+        .profile-avatar-wrap.has-photo .profile-avatar__remove { display: block; }
 
         .profile-fields { flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 14px; }
         .profile-field { display: flex; flex-direction: column; gap: 6px; }
@@ -96,13 +112,15 @@
             <form id="profileForm">
                 <div class="profile-row">
                     <div class="profile-avatar-block">
-                        <label class="profile-avatar" id="avatarTrigger" title="Click to upload">
-                            <span class="profile-avatar__placeholder" id="avatarPlaceholder">No photo</span>
-                            <span class="profile-avatar__overlay">Change photo</span>
-                            <input type="file" id="avatarInput" accept="image/jpeg,image/png,image/webp">
-                        </label>
-                        <span class="profile-avatar__hint">JPG, PNG or WebP<br>Max 5 MB</span>
-                        <button type="button" id="removeAvatarBtn" class="profile-btn profile-btn--ghost" style="display:none;font-size:12px;padding:6px 14px;">Remove photo</button>
+                        <div class="profile-avatar-wrap">
+                            <label class="profile-avatar" id="avatarTrigger" title="Click to upload">
+                                <span class="profile-avatar__placeholder" id="avatarPlaceholder">No photo</span>
+                                <span class="profile-avatar__overlay" id="avatarOverlay">Change photo</span>
+                                <input type="file" id="avatarInput" accept="image/jpeg,image/png,image/webp">
+                            </label>
+                            <button type="button" id="removeAvatarBtn" class="profile-avatar__remove" aria-label="Remove photo" title="Remove photo">×</button>
+                        </div>
+                        <span class="profile-avatar__hint">JPG, PNG or WebP · Max 5 MB</span>
                     </div>
 
                     <div class="profile-fields">

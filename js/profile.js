@@ -16,7 +16,9 @@
     const avatar = document.getElementById('avatarTrigger');
     const avatarInput = document.getElementById('avatarInput');
     const avatarPlaceholder = document.getElementById('avatarPlaceholder');
+    const avatarOverlay = document.getElementById('avatarOverlay');
     const removeAvatarBtn = document.getElementById('removeAvatarBtn');
+    const avatarWrap = avatar?.parentElement;
 
     const signOutBtn = document.getElementById('signOutBtn');
 
@@ -33,11 +35,13 @@
         if (url) {
             avatar.style.backgroundImage = `url("${url}")`;
             avatarPlaceholder.style.display = 'none';
-            if (removeAvatarBtn) removeAvatarBtn.style.display = '';
+            if (avatarOverlay) avatarOverlay.textContent = 'Change photo';
+            if (avatarWrap) avatarWrap.classList.add('has-photo');
         } else {
             avatar.style.backgroundImage = '';
             avatarPlaceholder.style.display = '';
-            if (removeAvatarBtn) removeAvatarBtn.style.display = 'none';
+            if (avatarOverlay) avatarOverlay.textContent = 'Add photo';
+            if (avatarWrap) avatarWrap.classList.remove('has-photo');
         }
     }
 
