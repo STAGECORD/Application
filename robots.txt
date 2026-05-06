@@ -12,6 +12,7 @@ Disallow: /reset-password/
 Disallow: /profile/
 Disallow: /members/
 Disallow: /tracks/
+Disallow: /events/
 Disallow: /artist/
 Disallow: /ar/
 Disallow: /collabs/

@@ -143,6 +143,35 @@
         .pp-follow-btn--following:hover {
             background: rgba(255,107,107,0.12); border-color: rgba(255,107,107,0.6); color: #FF6B6B;
         }
+
+        .pp-events { margin-top: 28px; }
+        .pp-event {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            display: grid;
+            grid-template-columns: 56px 1fr;
+            gap: 14px;
+            align-items: center;
+        }
+        .pp-event__date {
+            background: rgba(56,134,252,0.12);
+            border: 1px solid rgba(56,134,252,0.24);
+            border-radius: 10px;
+            padding: 6px 4px;
+            text-align: center;
+        }
+        .pp-event__day { color: #FFFFFF; font-size: 20px; font-weight: 700; line-height: 1; }
+        .pp-event__month { color: #6FA8FF; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; }
+        .pp-event__title { margin: 0; color: #FFFFFF; font-size: 15px; font-weight: 600; }
+        .pp-event__where { color: #D1D6E0; font-size: 13px; margin-top: 3px; }
+        .pp-event__time { color: #7E89A6; font-size: 12px; margin-top: 2px; }
+        .pp-event__ticket {
+            color: #FFFFFF; text-decoration: underline;
+            font-size: 13px; margin-top: 6px; display: inline-block;
+        }
     </style>
 </head>
 <body class="start-body">
@@ -289,6 +318,7 @@
                 ${bioHtml}
                 ${ownCtas}
             </div>
+            <section class="pp-events" id="ppEvents"></section>
             <section class="pp-tracks" id="ppTracks"></section>
             <section class="pp-posts" id="ppPosts">
                 <div class="pp-posts__empty">Loading posts…</div>
@@ -353,6 +383,51 @@
             const m = Math.floor(secs / 60);
             const s = Math.floor(secs % 60).toString().padStart(2, '0');
             return `${m}:${s}`;
+        }
+
+        function fmtEventDate(iso) {
+            const d = new Date(iso);
+            return {
+                day: d.getDate(),
+                month: d.toLocaleDateString('en-US', { month: 'short' }),
+                time: d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
+                full: d.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })
+            };
+        }
+
+        const eventsEl = document.getElementById('ppEvents');
+        const { data: events, error: evErr } = await sb.rpc('get_user_events', {
+            p_username: profile.username || username,
+            p_upcoming_only: true,
+            p_limit: 20
+        });
+
+        if (evErr) {
+            console.error('get_user_events failed:', evErr);
+        } else if (events && events.length > 0) {
+            const eventsHtml = events.map((e) => {
+                const f = fmtEventDate(e.starts_at);
+                const where = [e.venue_name, e.city].filter(Boolean).map(escapeHtml).join(' · ');
+                const ticket = e.ticket_url
+                    ? `<a class="pp-event__ticket" href="${escapeHtml(e.ticket_url)}" target="_blank" rel="noopener">Tickets ↗</a>`
+                    : '';
+                return `<article class="pp-event">
+                    <div class="pp-event__date">
+                        <div class="pp-event__day">${f.day}</div>
+                        <div class="pp-event__month">${escapeHtml(f.month)}</div>
+                    </div>
+                    <div>
+                        <h3 class="pp-event__title">${escapeHtml(e.title)}</h3>
+                        ${where ? `<div class="pp-event__where">${where}</div>` : ''}
+                        <div class="pp-event__time">${escapeHtml(f.full)} · ${escapeHtml(f.time)}</div>
+                        ${ticket}
+                    </div>
+                </article>`;
+            }).join('');
+            eventsEl.innerHTML = `
+                <h3 class="pp-posts__heading">Upcoming events <span class="pp-posts__count">${events.length}</span></h3>
+                ${eventsHtml}
+            `;
         }
 
         const tracksEl = document.getElementById('ppTracks');

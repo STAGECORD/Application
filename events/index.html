@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>STAGECORD — Your events</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/logo.css">
+    <link rel="stylesheet" href="../css/start.css">
+    <style>
+        .events-wrap { max-width: 720px; margin: 0 auto; padding: 32px 24px 60px; }
+        .events-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        .events-card h2 { margin: 0 0 14px 0; color: #FFFFFF; font-weight: 600; font-size: 18px; }
+        .events-card h2 .events-card__sub { color: #7E89A6; font-size: 13px; font-weight: 400; margin-left: 8px; }
+
+        .ev-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+        .ev-field label {
+            font-size: 12px; color: #7E89A6;
+            text-transform: uppercase; letter-spacing: 0.06em;
+        }
+        .ev-field input, .ev-field textarea {
+            background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 8px; padding: 10px 14px; color: #FFFFFF;
+            font-family: inherit; font-size: 15px;
+            width: 100%; box-sizing: border-box;
+        }
+        .ev-field textarea { min-height: 70px; resize: vertical; }
+        .ev-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        @media (max-width: 520px) { .ev-field-row { grid-template-columns: 1fr; } }
+
+        .ev-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 6px; }
+        .ev-btn {
+            background: #FFFFFF; color: #0B0B0F; border: none;
+            border-radius: 999px; padding: 10px 22px;
+            font-weight: 600; cursor: pointer; font-size: 14px;
+        }
+        .ev-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .ev-feedback { font-size: 13px; min-height: 16px; }
+        .ev-feedback.is-success { color: #5CD66B; }
+        .ev-feedback.is-error { color: #FF6B6B; }
+
+        .ev-item {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 10px;
+            display: grid;
+            grid-template-columns: 64px 1fr auto;
+            gap: 14px;
+            align-items: start;
+        }
+        .ev-item--past { opacity: 0.55; }
+        .ev-item__date {
+            background: rgba(56,134,252,0.12);
+            border: 1px solid rgba(56,134,252,0.24);
+            border-radius: 10px;
+            padding: 8px 4px;
+            text-align: center;
+            min-width: 64px;
+        }
+        .ev-item__day { color: #FFFFFF; font-size: 22px; font-weight: 700; line-height: 1; }
+        .ev-item__month { color: #6FA8FF; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; }
+        .ev-item__main { min-width: 0; }
+        .ev-item__title { margin: 0; color: #FFFFFF; font-size: 15px; font-weight: 600; line-height: 1.3; }
+        .ev-item__where { color: #D1D6E0; font-size: 13px; margin-top: 4px; }
+        .ev-item__time { color: #7E89A6; font-size: 12px; margin-top: 4px; }
+        .ev-item__desc {
+            margin: 8px 0 0 0; color: #D1D6E0;
+            font-size: 13px; line-height: 1.5;
+            white-space: pre-wrap;
+        }
+        .ev-item__ticket {
+            display: inline-block; margin-top: 8px;
+            color: #FFFFFF; text-decoration: underline;
+            font-size: 13px;
+        }
+        .ev-item__delete {
+            background: transparent; border: none; color: #5A6480;
+            cursor: pointer; font-size: 16px; padding: 4px 8px;
+        }
+        .ev-item__delete:hover { color: #FF6B6B; }
+        .ev-empty { text-align: center; padding: 24px 20px; color: #7E89A6; font-size: 14px; }
+    </style>
+</head>
+<body class="start-body">
+
+    <header class="start-topbar">
+        <a href="/welcome/" class="start-topbar__logo">
+            <h1 class="logo">
+                <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
+            </h1>
+            <span class="start-topbar__beta">Beta</span>
+        </a>
+
+        <nav class="start-topbar__links">
+            <a href="/welcome/" class="start-topbar__link">Home</a>
+            <a href="/members/" class="start-topbar__link">Members</a>
+            <a href="/tracks/" class="start-topbar__link">Tracks</a>
+            <a href="/profile/" class="start-topbar__link">Profile</a>
+            <button id="signOutBtn" class="start-topbar__link start-topbar__link--cta" style="border:none;background:transparent;cursor:pointer;font:inherit;">Sign out</button>
+        </nav>
+    </header>
+
+    <main class="events-wrap">
+        <div class="events-card">
+            <h2>Add an event <span class="events-card__sub">Gigs, releases, listening parties — anything dated.</span></h2>
+
+            <form id="eventForm">
+                <div class="ev-field">
+                    <label for="ev-title">Title</label>
+                    <input id="ev-title" type="text" maxlength="200" placeholder="e.g. Live at Vega" required>
+                </div>
+
+                <div class="ev-field-row">
+                    <div class="ev-field">
+                        <label for="ev-date">Date &amp; time</label>
+                        <input id="ev-date" type="datetime-local" required>
+                    </div>
+                    <div class="ev-field">
+                        <label for="ev-venue">Venue</label>
+                        <input id="ev-venue" type="text" maxlength="200" placeholder="e.g. Vega Main Hall">
+                    </div>
+                </div>
+
+                <div class="ev-field-row">
+                    <div class="ev-field">
+                        <label for="ev-city">City</label>
+                        <input id="ev-city" type="text" maxlength="100" placeholder="e.g. Copenhagen">
+                    </div>
+                    <div class="ev-field">
+                        <label for="ev-ticket">Ticket link <span style="opacity:0.6;">(optional)</span></label>
+                        <input id="ev-ticket" type="url" maxlength="500" placeholder="https://…">
+                    </div>
+                </div>
+
+                <div class="ev-field">
+                    <label for="ev-desc">Notes <span style="opacity:0.6;">(optional)</span></label>
+                    <textarea id="ev-desc" maxlength="1000" placeholder="Doors, support acts, dress code, anything fans should know."></textarea>
+                </div>
+
+                <div class="ev-row">
+                    <button type="submit" class="ev-btn" id="evSubmit" disabled>Add event</button>
+                    <span class="ev-feedback" id="evFeedback" role="status" aria-live="polite"></span>
+                </div>
+            </form>
+        </div>
+
+        <div class="events-card">
+            <h2>Your events <span class="events-card__sub" id="evCount"></span></h2>
+            <div id="evList">
+                <div class="ev-empty">Loading…</div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="start-footer">
+        <div class="start-footer__inner">
+            <p class="start-footer__brand">STAGECORD &nbsp;<span>·</span>&nbsp; Closed Beta · 2026</p>
+            <nav class="start-footer__nav">
+                <a href="/welcome/">Home</a>
+                <a href="mailto:hello@stagecord.com">hello@stagecord.com</a>
+            </nav>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase.js"></script>
+    <script src="../js/events.js"></script>
+</body>
+</html>
