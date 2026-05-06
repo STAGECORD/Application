@@ -169,12 +169,16 @@
                     : `<div class="member-card__avatar">${escapeHtml(initial)}</div>`;
                 const roleClass = m.role === 'fan' ? ' member-card__role--fan' : '';
                 const roleLabel = m.role === 'artist' ? 'Artist' : (m.role === 'fan' ? 'Fan' : m.role);
+                const pc = Number(m.post_count) || 0;
+                const postCountHtml = pc > 0
+                    ? ` · ${pc} ${pc === 1 ? 'post' : 'posts'}`
+                    : '';
                 return `<a class="member-card" href="/u/${encodeURIComponent(m.username)}">
                     <div class="member-card__top">
                         ${avatarHtml}
                         <div>
                             <h3 class="member-card__name">${escapeHtml(name)}</h3>
-                            <p class="member-card__handle">@${escapeHtml(m.username)}</p>
+                            <p class="member-card__handle">@${escapeHtml(m.username)}${postCountHtml}</p>
                         </div>
                     </div>
                     ${roleLabel ? `<span class="member-card__role${roleClass}">${escapeHtml(roleLabel)}</span>` : ''}
