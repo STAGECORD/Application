@@ -181,6 +181,60 @@
             color: #FFFFFF; text-decoration: underline;
             font-size: 13px; margin-top: 6px; display: inline-block;
         }
+
+        /* Comments — same look as in /welcome/ */
+        .cm-toggle {
+            display: block; width: 100%;
+            background: transparent; border: none;
+            color: #7E89A6; font-size: 13px;
+            text-align: left; padding: 10px 0 0 0;
+            cursor: pointer; font-family: inherit;
+            margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        .cm-toggle:hover { color: #FFFFFF; }
+        .cm-thread {
+            margin-top: 12px; padding-top: 12px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        .cm-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+        .cm-empty { color: #7E89A6; font-size: 13px; padding: 6px 0; }
+        .cm { display: flex; gap: 10px; align-items: flex-start; }
+        .cm__avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+            background-size: cover; background-position: center;
+            display: flex; align-items: center; justify-content: center;
+            color: #5A6480; font-size: 13px; font-weight: 600;
+            flex-shrink: 0;
+        }
+        .cm__body { flex: 1; min-width: 0; }
+        .cm__head { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; font-size: 13px; }
+        .cm__author { color: #FFFFFF; font-weight: 600; text-decoration: none; }
+        .cm__author:hover { text-decoration: underline; }
+        .cm__time { color: #5A6480; font-size: 12px; }
+        .cm__delete {
+            background: transparent; border: none; color: #5A6480;
+            cursor: pointer; font-size: 14px; padding: 2px 6px;
+            margin-left: auto;
+        }
+        .cm__delete:hover { color: #FF6B6B; }
+        .cm__content {
+            margin: 0; color: #D1D6E0; font-size: 14px; line-height: 1.5;
+            white-space: pre-wrap; word-wrap: break-word;
+        }
+        .cm-composer { display: flex; gap: 8px; align-items: center; }
+        .cm-composer__input {
+            flex: 1; min-width: 0;
+            background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 999px; padding: 9px 14px; color: #FFFFFF;
+            font-family: inherit; font-size: 14px;
+        }
+        .cm-composer__btn {
+            background: #FFFFFF; color: #0B0B0F; border: none;
+            border-radius: 999px; padding: 8px 16px;
+            font-weight: 600; cursor: pointer; font-size: 13px;
+        }
+        .cm-composer__btn:disabled { opacity: 0.5; cursor: not-allowed; }
     </style>
 </head>
 <body class="start-body">
@@ -216,6 +270,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase.js"></script>
+    <script src="../js/comments.js"></script>
     <script>
     (async function () {
         const sb = window.supabaseClient;
@@ -503,7 +558,7 @@
             const imageBlock = p.image_url
                 ? `<img class="pp-post__image" src="${escapeHtml(p.image_url)}" alt="">`
                 : '';
-            return `<article class="pp-post">
+            return `<article class="pp-post" data-post-id="${escapeHtml(p.id)}">
                 <header class="pp-post__head">
                     <span>@${escapeHtml(p.username || username)}</span>
                     <span class="pp-post__time">${escapeHtml(timeAgo(p.created_at))}</span>
@@ -517,6 +572,18 @@
             <h3 class="pp-posts__heading">Posts <span class="pp-posts__count">${posts.length}</span></h3>
             ${cards}
         `;
+
+        if (window.STAGECORD_Comments) {
+            const currentUserId = session?.user?.id || null;
+            postsEl.querySelectorAll('[data-post-id]').forEach((postEl) => {
+                const postId = postEl.getAttribute('data-post-id');
+                window.STAGECORD_Comments.attach({
+                    postElement: postEl,
+                    postId,
+                    currentUserId
+                });
+            });
+        }
     })();
     </script>
 </body>

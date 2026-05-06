@@ -206,6 +206,17 @@
 
         feedContainer.innerHTML = `<div class="feed-list">${rows.map(renderPost).join('')}</div>`;
 
+        if (window.STAGECORD_Comments) {
+            feedContainer.querySelectorAll('[data-post-id]').forEach((postEl) => {
+                const postId = postEl.getAttribute('data-post-id');
+                window.STAGECORD_Comments.attach({
+                    postElement: postEl,
+                    postId,
+                    currentUserId: user.id
+                });
+            });
+        }
+
         feedContainer.querySelectorAll('[data-delete-post]').forEach((btn) => {
             btn.addEventListener('click', async (e) => {
                 e.preventDefault();
@@ -245,7 +256,7 @@
             ? `<img class="post__image" src="${escapeHtml(p.image_url)}" alt="">`
             : '';
 
-        return `<article class="post">
+        return `<article class="post" data-post-id="${escapeHtml(p.id)}">
             <header class="post__head">
                 ${avatarHtml}
                 <div style="display:flex;flex-direction:column;gap:2px;min-width:0;">
