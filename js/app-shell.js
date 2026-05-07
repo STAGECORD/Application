@@ -56,7 +56,7 @@
     try {
         const { data } = await sb
             .from('profiles')
-            .select('forename, surname, username, avatar_url')
+            .select('forename, surname, username, avatar_url, role')
             .eq('id', user.id)
             .single();
         profile = data;
