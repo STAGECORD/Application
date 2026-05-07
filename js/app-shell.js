@@ -1,0 +1,160 @@
+// Renders the shared sidebar + topbar shell on every authenticated page.
+// Pages opt in by adding <body class="app-body"> and a single empty
+// <div data-app-shell></div> placeholder right after <body>.
+(async function () {
+    const sb = window.supabaseClient;
+    if (!sb) return;
+
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) {
+        window.location.href = '/login/';
+        return;
+    }
+    const user = session.user;
+
+    function escapeHtml(s) {
+        return String(s).replace(/[<>&"']/g, (c) => ({
+            '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;'
+        }[c]));
+    }
+
+    const NAV = [
+        { label: 'Home', href: '/welcome/', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>` },
+        { label: 'Inbox', href: '/inbox/', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5h13l3.5 7v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6l3.5-7z"/></svg>` },
+        { label: 'Notifications', href: '/notifications/', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>` },
+        { label: 'Members', href: '/members/', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>` },
+        { label: 'Tracks', href: '/tracks/', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>` },
+        { label: 'Events', href: '/events/', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>` },
+        { label: 'Profile', href: '/profile/', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>` }
+    ];
+
+    const path = window.location.pathname.replace(/\/+$/, '/') || '/';
+    function isActive(href) {
+        const h = href.replace(/\/+$/, '/');
+        if (h === '/welcome/') return path === '/welcome/' || path === '/welcome';
+        return path.startsWith(h);
+    }
+
+    const slot = document.querySelector('[data-app-shell]');
+    if (!slot) return;
+
+    // Attempt to load profile for sidebar identity card
+    let profile = null;
+    try {
+        const { data } = await sb
+            .from('profiles')
+            .select('forename, surname, username, avatar_url')
+            .eq('id', user.id)
+            .single();
+        profile = data;
+    } catch (_) { /* fine without */ }
+
+    const fullName = [profile?.forename, profile?.surname].filter(Boolean).join(' ')
+        || profile?.username
+        || user.email
+        || 'You';
+    const initial = (fullName[0] || '?').toUpperCase();
+    const meAvatarHtml = profile?.avatar_url
+        ? `<div class="app-sidebar__me-avatar" style="background-image:url('${escapeHtml(profile.avatar_url)}');"></div>`
+        : `<div class="app-sidebar__me-avatar">${escapeHtml(initial)}</div>`;
+    const meHandle = profile?.username ? `@${profile.username}` : user.email || '';
+    const meHref = profile?.username ? `/u/${encodeURIComponent(profile.username)}` : '/profile/';
+
+    const topbarTitle = slot.getAttribute('data-page-title') || '';
+
+    slot.innerHTML = `
+        <aside class="app-sidebar" data-app-sidebar>
+            <a class="app-sidebar__logo" href="/welcome/">
+                <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
+                <span class="app-sidebar__beta">Beta</span>
+            </a>
+
+            <a class="app-sidebar__me" href="${escapeHtml(meHref)}">
+                ${meAvatarHtml}
+                <div style="min-width:0;flex:1;">
+                    <div class="app-sidebar__me-name">${escapeHtml(fullName)}</div>
+                    <div class="app-sidebar__me-handle">${escapeHtml(meHandle)}</div>
+                </div>
+            </a>
+
+            <nav class="app-sidebar__nav">
+                ${NAV.map((n) => `
+                    <a class="app-sidebar__nav-item${isActive(n.href) ? ' is-active' : ''}" href="${n.href}" data-nav-slug="${escapeHtml(n.label.toLowerCase())}">
+                        ${n.icon}
+                        <span>${escapeHtml(n.label)}</span>
+                        ${n.label === 'Notifications' ? '<span class="nav-badge" data-app-bell hidden></span>' : ''}
+                        ${n.label === 'Inbox' ? '<span class="nav-badge" data-app-inbox hidden></span>' : ''}
+                    </a>
+                `).join('')}
+            </nav>
+
+            <div class="app-sidebar__spacer"></div>
+
+            <button class="app-sidebar__signout" id="appSignOut">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                <span>Sign out</span>
+            </button>
+        </aside>
+
+        <header class="app-topbar">
+            <div class="app-topbar__title">${escapeHtml(topbarTitle)}</div>
+            <div class="app-topbar__actions"></div>
+        </header>
+    `;
+
+    document.getElementById('appSignOut').addEventListener('click', async () => {
+        await sb.auth.signOut();
+        window.location.href = '/';
+    });
+
+    // Notification + inbox badges — poll periodically
+    const bellBadge = slot.querySelector('[data-app-bell]');
+    const inboxBadge = slot.querySelector('[data-app-inbox]');
+
+    async function refreshBadges() {
+        try {
+            const { count: notifCount } = await sb
+                .from('notifications')
+                .select('*', { count: 'exact', head: true })
+                .eq('user_id', user.id)
+                .is('read_at', null);
+            if (bellBadge) {
+                if ((notifCount || 0) > 0) {
+                    bellBadge.textContent = notifCount > 99 ? '99+' : String(notifCount);
+                    bellBadge.hidden = false;
+                } else {
+                    bellBadge.hidden = true;
+                }
+            }
+        } catch (_) { /* ignore */ }
+
+        try {
+            const { data: convos } = await sb.rpc('get_my_conversations');
+            const totalUnread = (convos || []).reduce((sum, c) => sum + (Number(c.unread_count) || 0), 0);
+            if (inboxBadge) {
+                if (totalUnread > 0) {
+                    inboxBadge.textContent = totalUnread > 99 ? '99+' : String(totalUnread);
+                    inboxBadge.hidden = false;
+                } else {
+                    inboxBadge.hidden = true;
+                }
+            }
+        } catch (_) { /* ignore */ }
+    }
+
+    refreshBadges();
+    setInterval(() => { if (!document.hidden) refreshBadges(); }, 30000);
+
+    // Expose for pages that want to update the topbar title later
+    window.STAGECORD_AppShell = {
+        setTitle(title) {
+            const el = document.querySelector('.app-topbar__title');
+            if (el) el.textContent = title;
+        },
+        refreshBadges
+    };
+})();

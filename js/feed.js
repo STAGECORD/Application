@@ -27,10 +27,13 @@
         return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     }
 
-    document.getElementById('signOutBtn').addEventListener('click', async () => {
-        await sb.auth.signOut();
-        window.location.href = '/';
-    });
+    const signOutBtn = document.getElementById('signOutBtn');
+    if (signOutBtn) {
+        signOutBtn.addEventListener('click', async () => {
+            await sb.auth.signOut();
+            window.location.href = '/';
+        });
+    }
 
     const { data: profile } = await sb
         .from('profiles')
