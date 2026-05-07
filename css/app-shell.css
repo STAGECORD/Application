@@ -25,14 +25,14 @@ body.app-body * { box-sizing: border-box; }
     top: 0;
     left: 0;
     bottom: 0;
-    width: 220px;
+    width: 180px;
     background: #000000;
     border-right: 1px solid rgba(255, 255, 255, 0.05);
     z-index: 100;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    padding: 22px 16px 24px 18px;
+    padding: 22px 14px 24px 16px;
 }
 
 .app-sidebar__logo {
@@ -181,7 +181,7 @@ body.app-body * { box-sizing: border-box; }
 .app-topbar {
     position: fixed;
     top: 0;
-    left: 220px;
+    left: 180px;
     right: 0;
     height: 60px;
     background: rgba(10, 18, 36, 0.7);
@@ -209,7 +209,7 @@ body.app-body * { box-sizing: border-box; }
    Use margin-top (not padding-top) so per-page padding on the same
    element doesn't clobber the topbar offset. */
 .app-main {
-    margin-left: 220px;
+    margin-left: 180px;
     margin-top: 60px;
     min-height: calc(100vh - 60px);
 }
