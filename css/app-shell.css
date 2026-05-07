@@ -96,25 +96,15 @@ body.app-body * { box-sizing: border-box; }
 }
 .app-sidebar__me-name {
     color: #FFFFFF;
-    font-weight: 300;
-    font-size: 14px;
+    font-size: 15px;
     line-height: 1.25;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    word-break: break-word;
 }
 .app-sidebar__me-name strong {
     font-weight: 700;
 }
-.app-sidebar__me-handle {
-    color: #7E89A6;
+.app-sidebar__me-surname {
     font-weight: 300;
-    font-size: 12px;
-    line-height: 1.2;
-    margin-top: 3px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 /* Nav items */

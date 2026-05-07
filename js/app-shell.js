@@ -55,15 +55,14 @@
         || profile?.username
         || user.email
         || 'You';
-    // First name bold, surname normal/light — STAGECORD typography rule.
+    // First name on its own line in bold, surname on the next line in light.
     const meNameHtml = fore
-        ? `<strong>${escapeHtml(fore)}</strong>${sur ? ' ' + escapeHtml(sur) : ''}`
+        ? `<strong>${escapeHtml(fore)}</strong>${sur ? `<br><span class="app-sidebar__me-surname">${escapeHtml(sur)}</span>` : ''}`
         : escapeHtml(fullNameFallback);
     const initial = (fore[0] || fullNameFallback[0] || '?').toUpperCase();
     const meAvatarHtml = profile?.avatar_url
         ? `<div class="app-sidebar__me-avatar" style="background-image:url('${escapeHtml(profile.avatar_url)}');"></div>`
         : `<div class="app-sidebar__me-avatar">${escapeHtml(initial)}</div>`;
-    const meHandle = profile?.username ? `@${profile.username}` : user.email || '';
     const meHref = profile?.username ? `/u/${encodeURIComponent(profile.username)}` : '/profile/';
 
     const topbarTitle = slot.getAttribute('data-page-title') || '';
@@ -79,7 +78,6 @@
                 ${meAvatarHtml}
                 <div class="app-sidebar__me-text">
                     <div class="app-sidebar__me-name">${meNameHtml}</div>
-                    <div class="app-sidebar__me-handle">${escapeHtml(meHandle)}</div>
                 </div>
             </a>
 
