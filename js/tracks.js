@@ -229,17 +229,22 @@
 
         rows.forEach((t) => {
             const trackEl = listEl.querySelector(`[data-track-id="${t.id}"]`);
-            if (!trackEl || !window.STAGECORD_Likes) return;
+            if (!trackEl) return;
             const actions = trackEl.querySelector('.track__actions');
             if (!actions) return;
-            window.STAGECORD_Likes.render({
-                container: actions,
-                targetType: 'track',
-                targetId: t.id,
-                initialCount: likeCounts[t.id] || 0,
-                initiallyLiked: ownLikes.has(t.id),
-                currentUserId: user.id
-            });
+            if (window.STAGECORD_Likes) {
+                window.STAGECORD_Likes.render({
+                    container: actions,
+                    targetType: 'track',
+                    targetId: t.id,
+                    initialCount: likeCounts[t.id] || 0,
+                    initiallyLiked: ownLikes.has(t.id),
+                    currentUserId: user.id
+                });
+            }
+            if (window.STAGECORD_AddToPlaylist) {
+                actions.appendChild(window.STAGECORD_AddToPlaylist.makeButton(t.id));
+            }
         });
 
         listEl.querySelectorAll('[data-delete-track]').forEach((btn) => {

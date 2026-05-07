@@ -39,6 +39,7 @@ Disallow: /pitch/
 Disallow: /photos/
 Disallow: /projects/
 Disallow: /notifications/
+Disallow: /playlists/
 Disallow: /resources/
 Disallow: /demo.html
 Disallow: /design/

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>STAGECORD — Playlists</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/logo.css">
+    <link rel="stylesheet" href="../css/start.css">
+    <link rel="stylesheet" href="../css/app-shell.css">
+    <style>
+        .pl-wrap { max-width: 880px; margin: 0 auto; padding: 32px 24px 60px; }
+        .pl-head {
+            display: flex; align-items: baseline; gap: 16px;
+            margin-bottom: 24px; flex-wrap: wrap;
+        }
+        .pl-head h1 { margin: 0; color: #FFFFFF; font-size: 26px; font-weight: 600; flex: 1; }
+        .pl-btn {
+            background: #FFFFFF; color: #0B0B0F; border: none;
+            border-radius: 999px; padding: 9px 18px;
+            font-weight: 600; cursor: pointer; font-size: 13px;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+        }
+        .pl-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .pl-btn--ghost {
+            background: transparent; color: #FFFFFF;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .pl-btn--danger:hover {
+            background: rgba(255,107,107,0.12); border-color: rgba(255,107,107,0.6); color: #FF6B6B;
+        }
+
+        .pl-empty {
+            background: rgba(255,255,255,0.02);
+            border: 1px dashed rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 50px 20px; text-align: center;
+            color: #7E89A6; font-size: 14px;
+        }
+
+        .pl-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 14px;
+        }
+        .pl-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 18px;
+            display: flex; flex-direction: column; gap: 8px;
+            text-decoration: none; color: inherit;
+            transition: border-color 0.15s ease, transform 0.15s ease;
+        }
+        .pl-card:hover {
+            border-color: rgba(255,255,255,0.2);
+            transform: translateY(-1px);
+        }
+        .pl-card__icon {
+            width: 100%; aspect-ratio: 1.6 / 1;
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(56,134,252,0.18), rgba(255,176,102,0.14));
+            display: flex; align-items: center; justify-content: center;
+            color: rgba(255,255,255,0.55);
+            margin-bottom: 4px;
+        }
+        .pl-card__name { color: #FFFFFF; font-weight: 600; font-size: 15px; line-height: 1.3; }
+        .pl-card__meta { color: #7E89A6; font-size: 13px; }
+        .pl-card__desc {
+            color: #D1D6E0; font-size: 13px; line-height: 1.5;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Detail view */
+        .pl-detail__head {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 18px;
+        }
+        .pl-detail__name {
+            margin: 0 0 6px 0; color: #FFFFFF; font-size: 26px; font-weight: 600; line-height: 1.2;
+        }
+        .pl-detail__owner { color: #7E89A6; font-size: 14px; }
+        .pl-detail__owner a { color: #FFFFFF; text-decoration: none; }
+        .pl-detail__owner a:hover { text-decoration: underline; }
+        .pl-detail__owner strong { font-weight: 700; }
+        .pl-detail__desc {
+            margin: 14px 0 0 0; color: #D1D6E0; font-size: 14px; line-height: 1.5;
+            white-space: pre-wrap;
+        }
+        .pl-detail__actions { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+
+        .pl-track {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 8px;
+        }
+        .pl-track__head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .pl-track__title { margin: 0; color: #FFFFFF; font-weight: 600; font-size: 15px; flex: 1; min-width: 0; }
+        .pl-track__artist { color: #7E89A6; font-size: 13px; }
+        .pl-track__artist a { color: inherit; text-decoration: none; }
+        .pl-track__artist a:hover { color: #FFFFFF; }
+        .pl-track__remove {
+            background: transparent; border: none; color: #5A6480;
+            cursor: pointer; font-size: 16px; padding: 4px 8px;
+            font-family: inherit;
+        }
+        .pl-track__remove:hover { color: #FF6B6B; }
+        .pl-track audio { width: 100%; margin-top: 4px; filter: invert(0.85) hue-rotate(180deg); }
+
+        /* Modal for "New playlist" */
+        .pl-modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(2, 4, 12, 0.72);
+            display: none; align-items: center; justify-content: center;
+            z-index: 200; padding: 20px;
+        }
+        .pl-modal-overlay.is-open { display: flex; }
+        .pl-modal {
+            width: 100%; max-width: 460px;
+            background: #0B1A38; border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px; padding: 24px;
+        }
+        .pl-modal h2 { margin: 0 0 14px 0; color: #FFFFFF; font-size: 18px; font-weight: 600; }
+        .pl-modal-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+        .pl-modal-field label {
+            font-size: 12px; color: #7E89A6;
+            text-transform: uppercase; letter-spacing: 0.06em;
+        }
+        .pl-modal-field input, .pl-modal-field textarea {
+            background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 8px; padding: 10px 14px; color: #FFFFFF;
+            font-family: inherit; font-size: 14px;
+            width: 100%; box-sizing: border-box;
+        }
+        .pl-modal-field textarea { min-height: 70px; resize: vertical; }
+        .pl-modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px; }
+        .pl-modal-error { color: #FF6B6B; font-size: 13px; min-height: 18px; }
+    </style>
+</head>
+<body class="app-body">
+
+    <div data-app-shell data-page-title="Playlists"></div>
+
+    <main class="app-main"><div class="pl-wrap">
+        <div id="plContent">
+            <div class="pl-empty">Loading…</div>
+        </div>
+    </div></main>
+
+    <!-- Create-playlist modal -->
+    <div class="pl-modal-overlay" id="plModal">
+        <div class="pl-modal">
+            <h2 id="plModalTitle">New playlist</h2>
+            <form id="plModalForm">
+                <div class="pl-modal-field">
+                    <label for="pl-name">Name</label>
+                    <input id="pl-name" type="text" maxlength="200" placeholder="e.g. Late-night demos" required>
+                </div>
+                <div class="pl-modal-field">
+                    <label for="pl-desc">Description <span style="opacity:0.6;">(optional)</span></label>
+                    <textarea id="pl-desc" maxlength="1000" placeholder="A short note about what this playlist is for."></textarea>
+                </div>
+                <div class="pl-modal-error" id="plModalError"></div>
+                <div class="pl-modal-actions">
+                    <button type="button" class="pl-btn pl-btn--ghost" id="plModalCancel">Cancel</button>
+                    <button type="submit" class="pl-btn" id="plModalSubmit">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase.js"></script>
+    <script src="../js/format.js"></script>
+    <script src="../js/app-shell.js"></script>
+    <script src="../js/playlists.js"></script>
+</body>
+</html>
