@@ -245,6 +245,9 @@
             if (window.STAGECORD_AddToPlaylist) {
                 actions.appendChild(window.STAGECORD_AddToPlaylist.makeButton(t.id));
             }
+            if (window.STAGECORD_AddToProject) {
+                actions.appendChild(window.STAGECORD_AddToProject.makeButton(t.id));
+            }
         });
 
         listEl.querySelectorAll('[data-delete-track]').forEach((btn) => {

@@ -37,9 +37,10 @@
         { label: 'Inbox', href: '/inbox/', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5h13l3.5 7v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6l3.5-7z"/></svg>` },
         { label: 'Notifications', href: '/notifications/', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>` },
         { label: 'Members', href: '/members/', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>` },
-        { label: 'Tracks', href: '/tracks/', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>` },
+        { label: 'Tracks', href: '/tracks/', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`, artistOnly: true },
         { label: 'Playlists', href: '/playlists/', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3.5" cy="6" r="1.5"/><circle cx="3.5" cy="12" r="1.5"/><circle cx="3.5" cy="18" r="1.5"/></svg>` },
-        { label: 'Events', href: '/events/', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>` },
+        { label: 'Projects', href: '/projects/', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7h6l2 3h12v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7z"/><path d="M2 7V5a2 2 0 0 1 2-2h4l2 3"/></svg>`, artistOnly: true },
+        { label: 'Events', href: '/events/', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`, artistOnly: true },
         { label: 'Profile', href: '/profile/', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>` }
     ];
 
@@ -61,6 +62,8 @@
         profile = data;
     } catch (_) { /* fine without */ }
 
+    const userRole = profile?.role || 'fan';
+    const isArtist = userRole === 'artist';
     const fore = profile?.forename || '';
     const sur = profile?.surname || '';
     const fullNameFallback = [fore, sur].filter(Boolean).join(' ')
@@ -89,7 +92,7 @@
             </a>
 
             <nav class="app-sidebar__nav">
-                ${NAV.map((n) => `
+                ${NAV.filter((n) => !n.artistOnly || isArtist).map((n) => `
                     <a class="app-sidebar__nav-item${isActive(n.href) ? ' is-active' : ''}" href="${n.href}" data-nav-slug="${escapeHtml(n.label.toLowerCase())}">
                         ${n.icon}
                         <span>${escapeHtml(n.label)}</span>
