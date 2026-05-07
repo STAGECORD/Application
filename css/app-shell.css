@@ -82,12 +82,12 @@ body.app-body * { box-sizing: border-box; }
 }
 .app-sidebar__me:hover { background: rgba(255, 255, 255, 0.05); }
 .app-sidebar__me-avatar {
-    width: 64px; height: 64px; border-radius: 50%;
+    width: 88px; height: 88px; border-radius: 50%;
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.12);
     background-size: cover; background-position: center;
     display: flex; align-items: center; justify-content: center;
-    color: #5A6480; font-size: 22px; font-weight: 600;
+    color: #5A6480; font-size: 30px; font-weight: 600;
     flex-shrink: 0;
 }
 .app-sidebar__me-text {
