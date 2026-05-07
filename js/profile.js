@@ -10,6 +10,7 @@
     const foreInput = document.getElementById('profile-forename');
     const surInput = document.getElementById('profile-surname');
     const userInput = document.getElementById('profile-username');
+    const roleInput = document.getElementById('profile-role');
     const bioInput = document.getElementById('profile-bio');
     const usernameHint = document.getElementById('usernameHint');
 
@@ -105,7 +106,7 @@
 
     const { data: profile, error: loadErr } = await sb
         .from('profiles')
-        .select('forename, surname, username, bio, avatar_url, cover_url')
+        .select('forename, surname, username, role, bio, avatar_url, cover_url')
         .eq('id', userId)
         .single();
 
@@ -116,6 +117,7 @@
         foreInput.value = profile.forename || '';
         surInput.value = profile.surname || '';
         userInput.value = profile.username || '';
+        if (roleInput) roleInput.value = profile.role || 'fan';
         bioInput.value = profile.bio || '';
         originalAvatarUrl = profile.avatar_url || null;
         originalCoverUrl = profile.cover_url || null;
@@ -265,6 +267,7 @@
             foreInput.value = profile.forename || '';
             surInput.value = profile.surname || '';
             userInput.value = profile.username || '';
+            if (roleInput) roleInput.value = profile.role || 'fan';
             bioInput.value = profile.bio || '';
         }
         pendingAvatarFile = null;
@@ -361,10 +364,12 @@
             }
         }
 
+        const role = roleInput ? roleInput.value : (profile?.role || 'fan');
         const updates = {
             forename,
             surname,
             username: username || null,
+            role,
             bio: bio || null,
             avatar_url: newAvatarUrl,
             cover_url: newCoverUrl,
