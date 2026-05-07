@@ -69,11 +69,6 @@
 
     slot.innerHTML = `
         <aside class="app-sidebar" data-app-sidebar>
-            <a class="app-sidebar__logo" href="/welcome/">
-                <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
-                <span class="app-sidebar__beta">Beta</span>
-            </a>
-
             <a class="app-sidebar__me" href="${escapeHtml(meHref)}">
                 ${meAvatarHtml}
                 <div class="app-sidebar__me-text">
@@ -105,6 +100,10 @@
         </aside>
 
         <header class="app-topbar">
+            <a class="app-topbar__logo" href="/welcome/">
+                <span><span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span></span>
+                <span class="app-topbar__beta">Beta</span>
+            </a>
             <div class="app-topbar__title">${escapeHtml(topbarTitle)}</div>
             <div class="app-topbar__actions"></div>
         </header>
