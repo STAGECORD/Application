@@ -66,44 +66,52 @@ body.app-body * { box-sizing: border-box; }
     text-transform: uppercase;
 }
 
-/* User mini-card at top of sidebar */
+/* User mini-card at top of sidebar — avatar centered, text underneath on 2 lines */
 .app-sidebar__me {
     display: flex;
+    flex-direction: column;
     align-items: center;
     gap: 10px;
-    padding: 10px 8px;
+    padding: 14px 8px 16px 8px;
     margin: 0 -8px 18px -8px;
     border-radius: 10px;
     text-decoration: none;
     color: inherit;
     transition: background 0.15s ease;
+    text-align: center;
 }
 .app-sidebar__me:hover { background: rgba(255, 255, 255, 0.05); }
 .app-sidebar__me-avatar {
-    width: 32px; height: 32px; border-radius: 50%;
+    width: 64px; height: 64px; border-radius: 50%;
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.12);
     background-size: cover; background-position: center;
     display: flex; align-items: center; justify-content: center;
-    color: #5A6480; font-size: 13px; font-weight: 600;
+    color: #5A6480; font-size: 22px; font-weight: 600;
     flex-shrink: 0;
+}
+.app-sidebar__me-text {
+    width: 100%;
+    min-width: 0;
 }
 .app-sidebar__me-name {
     color: #FFFFFF;
-    font-weight: 600;
-    font-size: 13px;
-    line-height: 1.2;
-    flex: 1;
-    min-width: 0;
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 1.25;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
+.app-sidebar__me-name strong {
+    font-weight: 700;
+}
 .app-sidebar__me-handle {
     color: #7E89A6;
-    font-size: 11px;
+    font-weight: 300;
+    font-size: 12px;
     line-height: 1.2;
-    margin-top: 2px;
+    margin-top: 3px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -207,11 +215,13 @@ body.app-body * { box-sizing: border-box; }
     gap: 14px;
 }
 
-/* ---------- Main content ---------- */
+/* ---------- Main content ----------
+   Use margin-top (not padding-top) so per-page padding on the same
+   element doesn't clobber the topbar offset. */
 .app-main {
     margin-left: 220px;
-    padding-top: 60px;
-    min-height: 100vh;
+    margin-top: 60px;
+    min-height: calc(100vh - 60px);
 }
 
 /* ---------- Mobile ---------- */
@@ -253,7 +263,8 @@ body.app-body * { box-sizing: border-box; }
     .app-topbar { left: 0; height: 54px; }
     .app-main {
         margin-left: 0;
-        padding-top: 54px;
+        margin-top: 54px;
         padding-bottom: 80px; /* room for bottom nav */
+        min-height: calc(100vh - 54px);
     }
 }

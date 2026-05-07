@@ -49,11 +49,17 @@
         profile = data;
     } catch (_) { /* fine without */ }
 
-    const fullName = [profile?.forename, profile?.surname].filter(Boolean).join(' ')
+    const fore = profile?.forename || '';
+    const sur = profile?.surname || '';
+    const fullNameFallback = [fore, sur].filter(Boolean).join(' ')
         || profile?.username
         || user.email
         || 'You';
-    const initial = (fullName[0] || '?').toUpperCase();
+    // First name bold, surname normal/light — STAGECORD typography rule.
+    const meNameHtml = fore
+        ? `<strong>${escapeHtml(fore)}</strong>${sur ? ' ' + escapeHtml(sur) : ''}`
+        : escapeHtml(fullNameFallback);
+    const initial = (fore[0] || fullNameFallback[0] || '?').toUpperCase();
     const meAvatarHtml = profile?.avatar_url
         ? `<div class="app-sidebar__me-avatar" style="background-image:url('${escapeHtml(profile.avatar_url)}');"></div>`
         : `<div class="app-sidebar__me-avatar">${escapeHtml(initial)}</div>`;
@@ -71,8 +77,8 @@
 
             <a class="app-sidebar__me" href="${escapeHtml(meHref)}">
                 ${meAvatarHtml}
-                <div style="min-width:0;flex:1;">
-                    <div class="app-sidebar__me-name">${escapeHtml(fullName)}</div>
+                <div class="app-sidebar__me-text">
+                    <div class="app-sidebar__me-name">${meNameHtml}</div>
                     <div class="app-sidebar__me-handle">${escapeHtml(meHandle)}</div>
                 </div>
             </a>
