@@ -8,10 +8,13 @@
     }
     const user = session.user;
 
-    document.getElementById('signOutBtn').addEventListener('click', async () => {
-        await sb.auth.signOut();
-        window.location.href = '/';
-    });
+    const signOutBtn = document.getElementById('signOutBtn');
+    if (signOutBtn) {
+        signOutBtn.addEventListener('click', async () => {
+            await sb.auth.signOut();
+            window.location.href = '/';
+        });
+    }
 
     const inboxListEl = document.getElementById('inboxList');
     const inboxThreadEl = document.getElementById('inboxThread');

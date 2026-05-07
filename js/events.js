@@ -8,10 +8,13 @@
     }
     const user = session.user;
 
-    document.getElementById('signOutBtn').addEventListener('click', async () => {
-        await sb.auth.signOut();
-        window.location.href = '/';
-    });
+    const signOutBtn = document.getElementById('signOutBtn');
+    if (signOutBtn) {
+        signOutBtn.addEventListener('click', async () => {
+            await sb.auth.signOut();
+            window.location.href = '/';
+        });
+    }
 
     const titleInput = document.getElementById('ev-title');
     const dateInput = document.getElementById('ev-date');

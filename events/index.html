@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/logo.css">
     <link rel="stylesheet" href="../css/start.css">
+    <link rel="stylesheet" href="../css/app-shell.css">
     <style>
         .events-wrap { max-width: 720px; margin: 0 auto; padding: 32px 24px 60px; }
         .events-card {
@@ -90,26 +91,11 @@
         .ev-empty { text-align: center; padding: 24px 20px; color: #7E89A6; font-size: 14px; }
     </style>
 </head>
-<body class="start-body">
+<body class="app-body">
 
-    <header class="start-topbar">
-        <a href="/welcome/" class="start-topbar__logo">
-            <h1 class="logo">
-                <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
-            </h1>
-            <span class="start-topbar__beta">Beta</span>
-        </a>
+    <div data-app-shell data-page-title="Events"></div>
 
-        <nav class="start-topbar__links">
-            <a href="/welcome/" class="start-topbar__link">Home</a>
-            <a href="/members/" class="start-topbar__link">Members</a>
-            <a href="/tracks/" class="start-topbar__link">Tracks</a>
-            <a href="/profile/" class="start-topbar__link">Profile</a>
-            <button id="signOutBtn" class="start-topbar__link start-topbar__link--cta" style="border:none;background:transparent;cursor:pointer;font:inherit;">Sign out</button>
-        </nav>
-    </header>
-
-    <main class="events-wrap">
+    <main class="app-main"><div class="events-wrap">
         <div class="events-card">
             <h2>Add an event <span class="events-card__sub">Gigs, releases, listening parties — anything dated.</span></h2>
 
@@ -159,21 +145,11 @@
                 <div class="ev-empty">Loading…</div>
             </div>
         </div>
-    </main>
-
-    <footer class="start-footer">
-        <div class="start-footer__inner">
-            <p class="start-footer__brand">STAGECORD &nbsp;<span>·</span>&nbsp; Closed Beta · 2026</p>
-            <nav class="start-footer__nav">
-                <a href="/welcome/">Home</a>
-                <a href="mailto:hello@stagecord.com">hello@stagecord.com</a>
-            </nav>
-        </div>
-    </footer>
+    </div></main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase.js"></script>
-    <script src="../js/notifications-bell.js"></script>
+    <script src="../js/app-shell.js"></script>
     <script src="../js/events.js"></script>
 </body>
 </html>

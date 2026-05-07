@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/logo.css">
     <link rel="stylesheet" href="../css/start.css">
+    <link rel="stylesheet" href="../css/app-shell.css">
     <style>
         .tracks-wrap { max-width: 720px; margin: 0 auto; padding: 32px 24px 60px; }
         .tracks-card {
@@ -101,25 +102,11 @@
         .track__actions { display: flex; align-items: center; gap: 4px; margin-top: 10px; }
     </style>
 </head>
-<body class="start-body">
+<body class="app-body">
 
-    <header class="start-topbar">
-        <a href="/welcome/" class="start-topbar__logo">
-            <h1 class="logo">
-                <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
-            </h1>
-            <span class="start-topbar__beta">Beta</span>
-        </a>
+    <div data-app-shell data-page-title="Tracks"></div>
 
-        <nav class="start-topbar__links">
-            <a href="/welcome/" class="start-topbar__link">Home</a>
-            <a href="/members/" class="start-topbar__link">Members</a>
-            <a href="/profile/" class="start-topbar__link">Profile</a>
-            <button id="signOutBtn" class="start-topbar__link start-topbar__link--cta" style="border:none;background:transparent;cursor:pointer;font:inherit;">Sign out</button>
-        </nav>
-    </header>
-
-    <main class="tracks-wrap">
+    <main class="app-main"><div class="tracks-wrap">
         <div class="tracks-card">
             <h2>Upload a track <span class="tracks-card__sub">MP3, WAV, M4A or OGG · max 50 MB</span></h2>
 
@@ -164,21 +151,11 @@
                 <div class="tracks-empty">Loading…</div>
             </div>
         </div>
-    </main>
-
-    <footer class="start-footer">
-        <div class="start-footer__inner">
-            <p class="start-footer__brand">STAGECORD &nbsp;<span>·</span>&nbsp; Closed Beta · 2026</p>
-            <nav class="start-footer__nav">
-                <a href="/welcome/">Home</a>
-                <a href="mailto:hello@stagecord.com">hello@stagecord.com</a>
-            </nav>
-        </div>
-    </footer>
+    </div></main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase.js"></script>
-    <script src="../js/notifications-bell.js"></script>
+    <script src="../js/app-shell.js"></script>
     <script src="../js/likes.js"></script>
     <script src="../js/tracks.js"></script>
 </body>

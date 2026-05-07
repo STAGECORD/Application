@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/logo.css">
     <link rel="stylesheet" href="../css/start.css">
+    <link rel="stylesheet" href="../css/app-shell.css">
     <style>
         .notif-wrap { max-width: 720px; margin: 0 auto; padding: 32px 24px 60px; }
         .notif-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; gap: 12px; flex-wrap: wrap; }
@@ -56,25 +57,11 @@
         .notif--unread .notif__dot { opacity: 1; }
     </style>
 </head>
-<body class="start-body">
+<body class="app-body">
 
-    <header class="start-topbar">
-        <a href="/welcome/" class="start-topbar__logo">
-            <h1 class="logo">
-                <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
-            </h1>
-            <span class="start-topbar__beta">Beta</span>
-        </a>
+    <div data-app-shell data-page-title="Notifications"></div>
 
-        <nav class="start-topbar__links">
-            <a href="/welcome/" class="start-topbar__link">Home</a>
-            <a href="/inbox/" class="start-topbar__link">Inbox</a>
-            <a href="/profile/" class="start-topbar__link">Profile</a>
-            <button id="signOutBtn" class="start-topbar__link start-topbar__link--cta" style="border:none;background:transparent;cursor:pointer;font:inherit;">Sign out</button>
-        </nav>
-    </header>
-
-    <main class="notif-wrap">
+    <main class="app-main"><div class="notif-wrap">
         <div class="notif-head">
             <h1>Notifications</h1>
             <button class="notif-mark-btn" id="markAllBtn" hidden>Mark all read</button>
@@ -83,21 +70,11 @@
         <div class="notif-list" id="notifList">
             <div class="notif-empty">Loading…</div>
         </div>
-    </main>
-
-    <footer class="start-footer">
-        <div class="start-footer__inner">
-            <p class="start-footer__brand">STAGECORD &nbsp;<span>·</span>&nbsp; Closed Beta · 2026</p>
-            <nav class="start-footer__nav">
-                <a href="/welcome/">Home</a>
-                <a href="mailto:hello@stagecord.com">hello@stagecord.com</a>
-            </nav>
-        </div>
-    </footer>
+    </div></main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase.js"></script>
-    <script src="../js/notifications-bell.js"></script>
+    <script src="../js/app-shell.js"></script>
     <script>
     (async function () {
         const sb = window.supabaseClient;
@@ -108,10 +85,13 @@
             return;
         }
 
-        document.getElementById('signOutBtn').addEventListener('click', async () => {
-            await sb.auth.signOut();
-            window.location.href = '/';
-        });
+        const signOutBtn = document.getElementById('signOutBtn');
+        if (signOutBtn) {
+            signOutBtn.addEventListener('click', async () => {
+                await sb.auth.signOut();
+                window.location.href = '/';
+            });
+        }
 
         const listEl = document.getElementById('notifList');
         const markAllBtn = document.getElementById('markAllBtn');

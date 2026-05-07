@@ -402,8 +402,10 @@
         setFeedback('Saved ✓', 'success');
     });
 
-    signOutBtn.addEventListener('click', async () => {
-        await sb.auth.signOut();
-        window.location.href = '/';
-    });
+    if (signOutBtn) {
+        signOutBtn.addEventListener('click', async () => {
+            await sb.auth.signOut();
+            window.location.href = '/';
+        });
+    }
 })();

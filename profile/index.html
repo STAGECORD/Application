@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../css/logo.css">
     <link rel="stylesheet" href="../css/start.css">
     <link rel="stylesheet" href="../css/waitlist.css">
+    <link rel="stylesheet" href="../css/app-shell.css">
     <style>
         .profile-wrap { max-width: 720px; margin: 0 auto; padding: 24px 24px 60px; }
         .profile-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 28px; margin-bottom: 20px; }
@@ -128,23 +129,11 @@
         .cover-hint { color: #7E89A6; font-size: 12px; margin-top: 6px; }
     </style>
 </head>
-<body class="start-body">
+<body class="app-body">
 
-    <header class="start-topbar">
-        <a href="/welcome/" class="start-topbar__logo">
-            <h1 class="logo">
-                <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
-            </h1>
-            <span class="start-topbar__beta">Beta</span>
-        </a>
+    <div data-app-shell data-page-title="Profile"></div>
 
-        <nav class="start-topbar__links">
-            <a href="/welcome/" class="start-topbar__link">Back</a>
-            <button id="signOutBtn" class="start-topbar__link start-topbar__link--cta" style="border:none;background:transparent;cursor:pointer;font:inherit;">Sign out</button>
-        </nav>
-    </header>
-
-    <main class="profile-wrap">
+    <main class="app-main"><div class="profile-wrap">
         <div class="profile-card">
             <h2 style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
                 <span>Your profile</span>
@@ -208,21 +197,11 @@
                 </div>
             </form>
         </div>
-    </main>
-
-    <footer class="start-footer">
-        <div class="start-footer__inner">
-            <p class="start-footer__brand">STAGECORD &nbsp;<span>·</span>&nbsp; Closed Beta · 2026</p>
-            <nav class="start-footer__nav">
-                <a href="/welcome/">Home</a>
-                <a href="mailto:hello@stagecord.com">hello@stagecord.com</a>
-            </nav>
-        </div>
-    </footer>
+    </div></main>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase.js"></script>
-    <script src="../js/notifications-bell.js"></script>
+    <script src="../js/app-shell.js"></script>
     <script src="../js/profile.js"></script>
 </body>
 </html>
