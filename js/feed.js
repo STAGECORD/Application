@@ -252,8 +252,10 @@
     }
 
     function renderPost(p) {
-        const name = [p.forename, p.surname].filter(Boolean).join(' ') || p.username || 'STAGECORD member';
-        const initial = (name[0] || '?').toUpperCase();
+        const F = window.STAGECORD;
+        const plainName = F.plainName(p.forename, p.surname, p.username);
+        const styledName = F.formatName(p.forename, p.surname, p.username);
+        const initial = (plainName[0] || '?').toUpperCase();
         const avatarHtml = p.avatar_url
             ? `<div class="post__avatar" style="background-image:url('${escapeHtml(p.avatar_url)}');"></div>`
             : `<div class="post__avatar">${escapeHtml(initial)}</div>`;
@@ -261,8 +263,8 @@
             ? `<a class="post__handle" href="/u/${encodeURIComponent(p.username)}" style="text-decoration:none;">@${escapeHtml(p.username)}</a>`
             : `<span class="post__handle">no handle yet</span>`;
         const authorLink = p.username
-            ? `<a href="/u/${encodeURIComponent(p.username)}" class="post__author">${escapeHtml(name)}</a>`
-            : `<span class="post__author">${escapeHtml(name)}</span>`;
+            ? `<a href="/u/${encodeURIComponent(p.username)}" class="post__author">${styledName}</a>`
+            : `<span class="post__author">${styledName}</span>`;
         const isOwn = p.user_id === user.id;
         const deleteBtn = isOwn
             ? `<button class="post__delete" data-delete-post="${escapeHtml(p.id)}" aria-label="Delete">×</button>`

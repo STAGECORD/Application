@@ -211,8 +211,10 @@ body.app-body * { box-sizing: border-box; }
 
 /* ---------- Main content ----------
    Use margin-top (not padding-top) so per-page padding on the same
-   element doesn't clobber the topbar offset. */
-.app-main {
+   element doesn't clobber the topbar offset.
+   Scoped to body.app-body so pages that fall back to the public layout
+   (e.g. /u/ for logged-out viewers) don't get a phantom offset. */
+body.app-body .app-main {
     margin-left: 158px;
     margin-top: 60px;
     min-height: calc(100vh - 60px);
@@ -255,7 +257,7 @@ body.app-body * { box-sizing: border-box; }
     .app-sidebar__nav-item.is-active { background: transparent; color: #6FA8FF; }
     .app-sidebar__spacer { display: none; }
     .app-topbar { left: 0; height: 54px; }
-    .app-main {
+    body.app-body .app-main {
         margin-left: 0;
         margin-top: 54px;
         padding-bottom: 80px; /* room for bottom nav */

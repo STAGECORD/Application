@@ -122,7 +122,8 @@
         }
         .cm__body { flex: 1; min-width: 0; }
         .cm__head { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; font-size: 13px; }
-        .cm__author { color: #FFFFFF; font-weight: 600; text-decoration: none; }
+        .cm__author { color: #FFFFFF; font-weight: 300; text-decoration: none; }
+        .cm__author strong { font-weight: 700; }
         .cm__author:hover { text-decoration: underline; }
         .cm__time { color: #5A6480; font-size: 12px; }
         .cm__delete {
@@ -200,7 +201,8 @@
             color: #5A6480; font-size: 16px; font-weight: 600;
             flex-shrink: 0;
         }
-        .post__author { color: #FFFFFF; font-size: 14px; font-weight: 600; text-decoration: none; }
+        .post__author { color: #FFFFFF; font-size: 14px; font-weight: 300; text-decoration: none; }
+        .post__author strong { font-weight: 700; }
         .post__handle { color: #7E89A6; font-size: 13px; }
         .post__time { color: #5A6480; font-size: 12px; margin-left: auto; }
         .post__delete {
@@ -292,6 +294,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase.js"></script>
+    <script src="../js/format.js"></script>
     <script src="../js/app-shell.js"></script>
     <script src="../js/likes.js"></script>
     <script src="../js/comments.js"></script>

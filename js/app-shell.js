@@ -5,12 +5,26 @@
     const sb = window.supabaseClient;
     if (!sb) return;
 
+    const slot = document.querySelector('[data-app-shell]');
+    if (!slot) return;
+
+    const publicAllowed = slot.hasAttribute('data-public-allowed');
+
     const { data: { session } } = await sb.auth.getSession();
     if (!session) {
+        if (publicAllowed) return; // page handles its own logged-out layout
         window.location.href = '/login/';
         return;
     }
     const user = session.user;
+
+    // Switch body styling to app-body so layout offsets kick in.
+    if (!document.body.classList.contains('app-body')) {
+        document.body.classList.add('app-body');
+    }
+    document.body.classList.remove('start-body');
+    // Hide marketing fallback bits when shell takes over.
+    document.querySelectorAll('[data-public-only]').forEach((el) => { el.style.display = 'none'; });
 
     function escapeHtml(s) {
         return String(s).replace(/[<>&"']/g, (c) => ({
@@ -34,9 +48,6 @@
         if (h === '/welcome/') return path === '/welcome/' || path === '/welcome';
         return path.startsWith(h);
     }
-
-    const slot = document.querySelector('[data-app-shell]');
-    if (!slot) return;
 
     // Attempt to load profile for sidebar identity card
     let profile = null;

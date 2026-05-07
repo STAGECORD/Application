@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/logo.css">
     <link rel="stylesheet" href="../css/start.css">
+    <link rel="stylesheet" href="../css/app-shell.css">
     <style>
         .pp-wrap { max-width: 720px; margin: 0 auto; padding: 32px 24px 60px; }
         .pp-cover {
@@ -36,7 +37,8 @@
             color: #5A6480; font-size: 42px; font-weight: 600;
         }
         .pp-meta { flex: 1; min-width: 220px; }
-        .pp-name { margin: 0 0 4px 0; color: #FFFFFF; font-size: 28px; font-weight: 600; line-height: 1.2; }
+        .pp-name { margin: 0 0 4px 0; color: #FFFFFF; font-size: 28px; font-weight: 300; line-height: 1.2; }
+        .pp-name strong { font-weight: 700; }
         .pp-handle { margin: 0 0 14px 0; color: #7E89A6; font-size: 15px; }
         .pp-role-tag {
             display: inline-block; padding: 4px 12px; border-radius: 999px;
@@ -209,7 +211,8 @@
         }
         .cm__body { flex: 1; min-width: 0; }
         .cm__head { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; font-size: 13px; }
-        .cm__author { color: #FFFFFF; font-weight: 600; text-decoration: none; }
+        .cm__author { color: #FFFFFF; font-weight: 300; text-decoration: none; }
+        .cm__author strong { font-weight: 700; }
         .cm__author:hover { text-decoration: underline; }
         .cm__time { color: #5A6480; font-size: 12px; }
         .cm__delete {
@@ -266,7 +269,12 @@
 </head>
 <body class="start-body">
 
-    <header class="start-topbar">
+    <!-- App-shell renders sidebar+topbar here when the viewer is logged in.
+         When logged out, the placeholder stays empty and we fall back to
+         the marketing-style start-topbar below. -->
+    <div data-app-shell data-public-allowed data-page-title=""></div>
+
+    <header class="start-topbar" data-public-only>
         <a href="/" class="start-topbar__logo">
             <h1 class="logo">
                 <span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span>
@@ -279,13 +287,13 @@
         </nav>
     </header>
 
-    <main class="pp-wrap">
+    <main class="app-main"><div class="pp-wrap">
         <div id="ppContent">
             <div class="pp-empty">Loading profile…</div>
         </div>
-    </main>
+    </div></main>
 
-    <footer class="start-footer">
+    <footer class="start-footer" data-public-only>
         <div class="start-footer__inner">
             <p class="start-footer__brand">STAGECORD &nbsp;<span>·</span>&nbsp; Closed Beta · 2026</p>
             <nav class="start-footer__nav">
@@ -297,7 +305,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase.js"></script>
-    <script src="../js/notifications-bell.js"></script>
+    <script src="../js/format.js"></script>
+    <script src="../js/app-shell.js"></script>
     <script src="../js/likes.js"></script>
     <script src="../js/comments.js"></script>
     <script>
@@ -371,11 +380,13 @@
         }
 
         const profile = data[0];
-        const fullName = [profile.forename, profile.surname].filter(Boolean).join(' ') || profile.username || 'STAGECORD member';
+        const F = window.STAGECORD;
+        const plainFull = F.plainName(profile.forename, profile.surname, profile.username);
+        const styledFull = F.formatName(profile.forename, profile.surname, profile.username);
         const roleLabel = profile.role === 'artist' ? 'Artist' : (profile.role === 'fan' ? 'Fan' : profile.role);
-        const initial = (fullName[0] || '?').toUpperCase();
+        const initial = (plainFull[0] || '?').toUpperCase();
 
-        document.title = `${fullName} · STAGECORD`;
+        document.title = `${plainFull} · STAGECORD`;
 
         const avatarHtml = profile.avatar_url
             ? `<div class="pp-avatar" style="background-image:url('${escapeHtml(profile.avatar_url)}');"></div>`
@@ -403,7 +414,7 @@
                 <div class="pp-header">
                     ${avatarHtml}
                     <div class="pp-meta">
-                        <h2 class="pp-name">${escapeHtml(fullName)}</h2>
+                        <h2 class="pp-name">${styledFull}</h2>
                         <p class="pp-handle">@${escapeHtml(profile.username || username)}</p>
                         ${roleLabel ? `<span class="pp-role-tag">${escapeHtml(roleLabel)}</span>` : ''}
                     </div>

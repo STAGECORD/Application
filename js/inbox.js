@@ -93,8 +93,10 @@
             return;
         }
         conversationsListEl.innerHTML = conversationsCache.map((c) => {
-            const name = [c.other_forename, c.other_surname].filter(Boolean).join(' ') || c.other_username || 'STAGECORD member';
-            const initial = (name[0] || '?').toUpperCase();
+            const F = window.STAGECORD;
+            const plainName = F ? F.plainName(c.other_forename, c.other_surname, c.other_username) : ([c.other_forename, c.other_surname].filter(Boolean).join(' ') || c.other_username || 'STAGECORD member');
+            const styledName = F ? F.formatName(c.other_forename, c.other_surname, c.other_username) : escapeHtml(plainName);
+            const initial = (plainName[0] || '?').toUpperCase();
             const avatarHtml = c.other_avatar_url
                 ? `<div class="convo__avatar" style="background-image:url('${escapeHtml(c.other_avatar_url)}');"></div>`
                 : `<div class="convo__avatar">${escapeHtml(initial)}</div>`;
@@ -108,7 +110,7 @@
                 ${avatarHtml}
                 <div class="convo__main">
                     <div class="convo__top">
-                        <span class="convo__name">${escapeHtml(name)}</span>
+                        <span class="convo__name">${styledName}</span>
                         <span class="convo__time">${escapeHtml(timeAgo(c.last_message_at))}</span>
                         ${unread}
                     </div>
@@ -132,10 +134,11 @@
 
         const meta = conversationsCache.find((c) => c.conversation_id === convoId);
         if (meta) {
-            const name = [meta.other_forename, meta.other_surname].filter(Boolean).join(' ') || meta.other_username || 'STAGECORD member';
+            const F = window.STAGECORD;
+            const styledName = F ? F.formatName(meta.other_forename, meta.other_surname, meta.other_username) : escapeHtml([meta.other_forename, meta.other_surname].filter(Boolean).join(' ') || meta.other_username || 'STAGECORD member');
             const link = meta.other_username
-                ? `<a href="/u/${encodeURIComponent(meta.other_username)}" style="color:#FFFFFF;text-decoration:none;">${escapeHtml(name)}</a>`
-                : escapeHtml(name);
+                ? `<a href="/u/${encodeURIComponent(meta.other_username)}" style="color:#FFFFFF;text-decoration:none;">${styledName}</a>`
+                : styledName;
             threadTitleEl.innerHTML = link;
         } else {
             threadTitleEl.textContent = '…';

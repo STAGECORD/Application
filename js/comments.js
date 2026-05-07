@@ -26,14 +26,16 @@ window.STAGECORD_Comments = (function () {
     }
 
     function renderComment(c, currentUserId, isReply) {
-        const name = [c.forename, c.surname].filter(Boolean).join(' ') || c.username || 'STAGECORD member';
-        const initial = (name[0] || '?').toUpperCase();
+        const F = window.STAGECORD;
+        const plainName = F ? F.plainName(c.forename, c.surname, c.username) : ([c.forename, c.surname].filter(Boolean).join(' ') || c.username || 'STAGECORD member');
+        const styledName = F ? F.formatName(c.forename, c.surname, c.username) : escapeHtml(plainName);
+        const initial = (plainName[0] || '?').toUpperCase();
         const avatarHtml = c.avatar_url
             ? `<div class="cm__avatar" style="background-image:url('${escapeHtml(c.avatar_url)}');"></div>`
             : `<div class="cm__avatar">${escapeHtml(initial)}</div>`;
         const handleLink = c.username
-            ? `<a class="cm__author" href="/u/${encodeURIComponent(c.username)}">${escapeHtml(name)}</a>`
-            : `<span class="cm__author">${escapeHtml(name)}</span>`;
+            ? `<a class="cm__author" href="/u/${encodeURIComponent(c.username)}">${styledName}</a>`
+            : `<span class="cm__author">${styledName}</span>`;
         const isOwn = c.user_id === currentUserId;
         const deleteBtn = isOwn
             ? `<button class="cm__delete" data-delete-comment="${escapeHtml(c.id)}" aria-label="Delete">×</button>`

@@ -46,7 +46,7 @@
             color: #D1D6E0; font-size: 14px; line-height: 1.4;
             margin: 0;
         }
-        .notif__text strong { color: #FFFFFF; font-weight: 600; }
+        .notif__text strong { color: #FFFFFF; font-weight: 700; }
         .notif__time { color: #5A6480; font-size: 12px; margin-top: 4px; }
         .notif__dot {
             width: 8px; height: 8px; border-radius: 50%;
@@ -74,6 +74,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase.js"></script>
+    <script src="../js/format.js"></script>
     <script src="../js/app-shell.js"></script>
     <script>
     (async function () {
@@ -156,15 +157,18 @@
         if (hasUnread) markAllBtn.hidden = false;
 
         listEl.innerHTML = rows.map((n) => {
-            const name = [n.actor_forename, n.actor_surname].filter(Boolean).join(' ') || n.actor_username || 'Someone';
-            const initial = (name[0] || '?').toUpperCase();
+            const F = window.STAGECORD;
+            const plainName = F ? F.plainName(n.actor_forename, n.actor_surname, n.actor_username || 'Someone') : ([n.actor_forename, n.actor_surname].filter(Boolean).join(' ') || n.actor_username || 'Someone');
+            // Bold forename + light surname for the actor, then the verb in normal weight.
+            const styledName = F ? F.formatName(n.actor_forename, n.actor_surname, n.actor_username || 'Someone') : `<strong>${escapeHtml(plainName)}</strong>`;
+            const initial = (plainName[0] || '?').toUpperCase();
             const avatarHtml = n.actor_avatar_url
                 ? `<div class="notif__avatar" style="background-image:url('${escapeHtml(n.actor_avatar_url)}');"></div>`
                 : `<div class="notif__avatar">${escapeHtml(initial)}</div>`;
             return `<a class="notif${!n.read_at ? ' notif--unread' : ''}" href="${escapeHtml(notifLink(n))}">
                 ${avatarHtml}
                 <div class="notif__body">
-                    <p class="notif__text"><strong>${escapeHtml(name)}</strong> ${escapeHtml(notifVerb(n.type))}.</p>
+                    <p class="notif__text">${styledName} ${escapeHtml(notifVerb(n.type))}.</p>
                     <div class="notif__time">${escapeHtml(timeAgo(n.created_at))}</div>
                 </div>
                 <span class="notif__dot"></span>

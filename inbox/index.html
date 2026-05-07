@@ -67,8 +67,10 @@
             display: flex; align-items: center; gap: 8px;
             font-size: 14px;
         }
-        .convo__name { color: #FFFFFF; font-weight: 600; flex: 1; min-width: 0;
+        .convo__name { color: #FFFFFF; font-weight: 300; flex: 1; min-width: 0;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .convo__name strong { font-weight: 700; }
+        .inbox-card__head strong { font-weight: 700; }
         .convo__time { color: #5A6480; font-size: 12px; flex-shrink: 0; }
         .convo__preview {
             color: #7E89A6; font-size: 13px;
@@ -171,6 +173,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase.js"></script>
+    <script src="../js/format.js"></script>
     <script src="../js/app-shell.js"></script>
     <script src="../js/inbox.js"></script>
 </body>

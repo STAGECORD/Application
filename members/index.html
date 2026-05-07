@@ -50,7 +50,8 @@
             flex-shrink: 0;
             color: #5A6480; font-size: 22px; font-weight: 600;
         }
-        .member-card__name { margin: 0; color: #FFFFFF; font-size: 16px; font-weight: 600; line-height: 1.2; }
+        .member-card__name { margin: 0; color: #FFFFFF; font-size: 16px; font-weight: 300; line-height: 1.2; }
+        .member-card__name strong { font-weight: 700; }
         .member-card__handle { margin: 4px 0 0 0; color: #7E89A6; font-size: 13px; }
         .member-card__role {
             display: inline-block; padding: 2px 10px; border-radius: 999px;
@@ -93,6 +94,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase.js"></script>
+    <script src="../js/format.js"></script>
     <script src="../js/app-shell.js"></script>
     <script>
     (async function () {
@@ -144,8 +146,10 @@
                 return;
             }
             content.innerHTML = `<div class="members-grid">${list.map((m) => {
-                const name = [m.forename, m.surname].filter(Boolean).join(' ') || m.username;
-                const initial = (name[0] || '?').toUpperCase();
+                const F = window.STAGECORD;
+                const plainName = F.plainName(m.forename, m.surname, m.username);
+                const styledName = F.formatName(m.forename, m.surname, m.username);
+                const initial = (plainName[0] || '?').toUpperCase();
                 const avatarHtml = m.avatar_url
                     ? `<div class="member-card__avatar" style="background-image:url('${escapeHtml(m.avatar_url)}');"></div>`
                     : `<div class="member-card__avatar">${escapeHtml(initial)}</div>`;
@@ -159,7 +163,7 @@
                     <div class="member-card__top">
                         ${avatarHtml}
                         <div>
-                            <h3 class="member-card__name">${escapeHtml(name)}</h3>
+                            <h3 class="member-card__name">${styledName}</h3>
                             <p class="member-card__handle">@${escapeHtml(m.username)}${postCountHtml}</p>
                         </div>
                     </div>
