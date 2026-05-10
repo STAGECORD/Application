@@ -12,11 +12,18 @@
     const content = document.getElementById('pjContent');
     const modal = document.getElementById('pjModal');
     const modalForm = document.getElementById('pjModalForm');
+    const modalHeading = document.getElementById('pjModalTitle');
     const modalTitle = document.getElementById('pj-title');
     const modalDesc = document.getElementById('pj-desc');
+    const modalStatusField = document.getElementById('pjStatusField');
+    const modalStatusInput = document.getElementById('pj-status-input');
     const modalError = document.getElementById('pjModalError');
     const modalSubmit = document.getElementById('pjModalSubmit');
     const modalCancel = document.getElementById('pjModalCancel');
+
+    // mode: 'create' (default) or 'edit' (with existing project bound)
+    let modalMode = 'create';
+    let editingProject = null;
 
     const escapeHtml = F.escapeHtml;
 
@@ -37,9 +44,27 @@
     }
 
     function openModal() {
+        modalMode = 'create';
+        editingProject = null;
+        modalHeading.textContent = 'New project';
         modalError.textContent = '';
         modalTitle.value = '';
         modalDesc.value = '';
+        modalStatusField.style.display = 'none';
+        modalSubmit.textContent = 'Create';
+        modal.classList.add('is-open');
+        modalTitle.focus();
+    }
+    function openEditModal(p) {
+        modalMode = 'edit';
+        editingProject = p;
+        modalHeading.textContent = 'Edit project';
+        modalError.textContent = '';
+        modalTitle.value = p.title || '';
+        modalDesc.value = p.description || '';
+        modalStatusInput.value = p.status || 'in_progress';
+        modalStatusField.style.display = '';
+        modalSubmit.textContent = 'Save changes';
         modal.classList.add('is-open');
         modalTitle.focus();
     }
@@ -52,6 +77,28 @@
         const title = modalTitle.value.trim();
         const desc = modalDesc.value.trim();
         if (!title) { modalError.textContent = 'Title is required.'; return; }
+
+        if (modalMode === 'edit' && editingProject) {
+            modalSubmit.disabled = true;
+            modalSubmit.textContent = 'Saving…';
+            const { error } = await sb.rpc('update_project', {
+                p_project_id: editingProject.id,
+                p_title: title,
+                p_description: desc || null,
+                p_status: modalStatusInput.value,
+                p_cover_url: editingProject.cover_url || null
+            });
+            modalSubmit.disabled = false;
+            modalSubmit.textContent = 'Save changes';
+            if (error) {
+                modalError.textContent = error.message || 'Could not save changes.';
+                return;
+            }
+            closeModal();
+            renderDetail(editingProject.id);
+            return;
+        }
+
         modalSubmit.disabled = true;
         modalSubmit.textContent = 'Creating…';
         const { data, error } = await sb.rpc('create_project', { p_title: title, p_description: desc || null });
@@ -203,11 +250,13 @@
         const ownerActions = isOwner ? `
             <div class="pj-detail__actions">
                 <a class="pj-btn pj-btn--ghost" href="/projects/">← Back</a>
+                <button class="pj-btn" id="editProjectBtn">Edit</button>
                 <button class="pj-btn pj-btn--ghost pj-btn--danger" id="deleteProjectBtn">Delete project</button>
             </div>
         ` : isMember ? `
             <div class="pj-detail__actions">
                 <a class="pj-btn pj-btn--ghost" href="/projects/">← Back</a>
+                <button class="pj-btn" id="editProjectBtn">Edit</button>
                 <button class="pj-btn pj-btn--ghost pj-btn--danger" id="leaveProjectBtn">Leave project</button>
             </div>
         ` : `
@@ -216,7 +265,16 @@
             </div>
         `;
 
+        const coverArea = isMember ? `
+            <div class="pj-cover-area" id="pjCoverArea"${p.cover_url ? ` style="background-image:url('${escapeHtml(p.cover_url)}');"` : ''}>
+                <span class="pj-cover-area__placeholder" id="pjCoverPlaceholder"${p.cover_url ? ' style="display:none;"' : ''}>Click to add a cover</span>
+                <span class="pj-cover-area__overlay">${p.cover_url ? 'Change cover' : 'Add cover'}</span>
+                <input type="file" id="pjCoverInput" accept="image/jpeg,image/png,image/webp">
+            </div>
+        ` : (p.cover_url ? `<div class="pj-cover-area pj-cover-area--readonly" style="background-image:url('${escapeHtml(p.cover_url)}');"></div>` : '');
+
         content.innerHTML = `
+            ${coverArea}
             <div class="pj-detail__head">
                 <div class="pj-detail__title-row">
                     <h1 class="pj-detail__title">${escapeHtml(p.title)}</h1>
@@ -240,6 +298,11 @@
         `;
 
         // Wire actions
+        const editBtn = document.getElementById('editProjectBtn');
+        if (editBtn && isMember) {
+            editBtn.addEventListener('click', () => openEditModal(p));
+        }
+
         if (isOwner) {
             const delBtn = document.getElementById('deleteProjectBtn');
             if (delBtn) {
@@ -255,6 +318,48 @@
                     window.location.href = '/projects/';
                 });
             }
+        }
+
+        // Cover upload — any member can change it
+        const coverInput = document.getElementById('pjCoverInput');
+        if (coverInput && isMember) {
+            coverInput.addEventListener('change', async () => {
+                const file = coverInput.files?.[0];
+                if (!file) return;
+                if (!/^image\/(jpeg|png|webp)$/.test(file.type)) {
+                    alert('Pick a JPG, PNG or WebP image.');
+                    coverInput.value = '';
+                    return;
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Cover image is over 5 MB — pick a smaller one.');
+                    coverInput.value = '';
+                    return;
+                }
+                const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+                const path = `${user.id}/project-${id}-${Date.now()}.${ext}`;
+                const { error: upErr } = await sb.storage
+                    .from('avatars')
+                    .upload(path, file, { cacheControl: '3600', upsert: false });
+                if (upErr) {
+                    alert('Upload failed: ' + (upErr.message || 'try again'));
+                    return;
+                }
+                const { data: pub } = sb.storage.from('avatars').getPublicUrl(path);
+                const newUrl = pub.publicUrl;
+                const { error: saveErr } = await sb.rpc('update_project', {
+                    p_project_id: id,
+                    p_title: p.title,
+                    p_description: p.description,
+                    p_status: p.status,
+                    p_cover_url: newUrl
+                });
+                if (saveErr) {
+                    alert('Cover saved to storage but project update failed: ' + (saveErr.message || ''));
+                    return;
+                }
+                renderDetail(id);
+            });
         }
 
         const leaveBtn = document.getElementById('leaveProjectBtn');

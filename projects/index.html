@@ -176,6 +176,42 @@
         .pj-modal-field textarea { min-height: 80px; resize: vertical; }
         .pj-modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
         .pj-modal-error { color: #FF6B6B; font-size: 13px; min-height: 18px; margin-bottom: 6px; }
+
+        .pj-cover-area {
+            position: relative;
+            width: 100%; height: 180px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            background-size: cover; background-position: center;
+            margin-bottom: 18px;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        .pj-cover-area__placeholder {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            color: #5A6480; font-size: 13px;
+            text-transform: uppercase; letter-spacing: 0.08em;
+        }
+        .pj-cover-area__overlay {
+            position: absolute; inset: 0;
+            background: rgba(0,0,0,0.55);
+            display: none; align-items: center; justify-content: center;
+            color: #FFFFFF; font-size: 14px;
+        }
+        .pj-cover-area:hover .pj-cover-area__overlay { display: flex; }
+        .pj-cover-area input { display: none; }
+        .pj-cover-area--readonly { cursor: default; }
+        .pj-cover-area--readonly:hover .pj-cover-area__overlay { display: none; }
+
+        .pj-status-select {
+            background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 8px; padding: 10px 14px; color: #FFFFFF;
+            font-family: inherit; font-size: 14px;
+            width: 100%; box-sizing: border-box;
+        }
+        .pj-status-select option { background: #0B1A38; }
     </style>
 </head>
 <body class="app-body">
@@ -190,7 +226,7 @@
 
     <div class="pj-modal-overlay" id="pjModal">
         <div class="pj-modal">
-            <h2>New project</h2>
+            <h2 id="pjModalTitle">New project</h2>
             <form id="pjModalForm">
                 <div class="pj-modal-field">
                     <label for="pj-title">Title</label>
@@ -199,6 +235,14 @@
                 <div class="pj-modal-field">
                     <label for="pj-desc">Description <span style="opacity:0.6;">(optional)</span></label>
                     <textarea id="pj-desc" maxlength="2000" placeholder="What is this project about? Who's involved? When are you releasing it?"></textarea>
+                </div>
+                <div class="pj-modal-field" id="pjStatusField" style="display:none;">
+                    <label for="pj-status-input">Status</label>
+                    <select id="pj-status-input" class="pj-status-select">
+                        <option value="in_progress">In progress</option>
+                        <option value="released">Released</option>
+                        <option value="archived">Archived</option>
+                    </select>
                 </div>
                 <div class="pj-modal-error" id="pjModalError"></div>
                 <div class="pj-modal-actions">

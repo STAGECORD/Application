@@ -121,6 +121,7 @@
                 case 'comment': return 'commented on your post';
                 case 'reply': return 'replied to your comment';
                 case 'message': return 'sent you a message';
+                case 'project_added': return 'added you to a project';
                 default: return type;
             }
         }
@@ -135,6 +136,8 @@
                     return n.actor_username ? `/u/${encodeURIComponent(n.actor_username)}` : '/welcome/';
                 case 'message':
                     return n.target_id ? `/inbox/?c=${encodeURIComponent(n.target_id)}` : '/inbox/';
+                case 'project_added':
+                    return n.target_id ? `/projects/?id=${encodeURIComponent(n.target_id)}` : '/projects/';
                 default:
                     return '#';
             }
