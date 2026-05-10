@@ -194,15 +194,14 @@
         const royaltyConfigured = new Set((royalties || []).map((r) => r.royalty_type));
         const approvalSet = new Set((approvals || []).map((a) => a.user_id));
 
-        function fileBtnHtml(cat, type, label) {
+        function pillFile(cat, type, label) {
             const count = fileCounts[cat]?.[type] || 0;
-            const cls = count > 0 ? 'action-btn action-btn--active' : 'action-btn';
-            const text = count > 0 ? `${label} (${count})` : label;
+            const cls = count > 0 ? 'pill-btn has-data' : 'pill-btn';
             const attr = cat === 'uploads' ? `data-upload="${type}"` : `data-final="${type}"`;
-            return `<button type="button" class="${cls}" ${attr}>${escapeHtml(text)}</button>`;
+            return `<button type="button" class="${cls}" ${attr}>${label}</button>`;
         }
-        function royaltyBtnHtml(type, label) {
-            const cls = royaltyConfigured.has(type) ? 'action-btn action-btn--active' : 'action-btn';
+        function pillRoyalty(type, label) {
+            const cls = royaltyConfigured.has(type) ? 'pill-btn has-data' : 'pill-btn';
             return `<button type="button" class="${cls}" data-royalty="${type}">${escapeHtml(label)}</button>`;
         }
 
@@ -239,20 +238,20 @@
             const { first, rest } = splitName(m.forename, m.surname, m.username);
             const initial = (first[0] || '?').toUpperCase();
             const avatar = m.avatar_url
-                ? `<div class="collab-card__avatar" style="background-image:url('${escapeHtml(m.avatar_url)}');"></div>`
-                : `<div class="collab-card__avatar">${escapeHtml(initial)}</div>`;
+                ? `<div class="collaborator-image" style="background-image:url('${escapeHtml(m.avatar_url)}');"></div>`
+                : `<div class="collaborator-image">${escapeHtml(initial)}</div>`;
             const link = m.username ? `/u/${encodeURIComponent(m.username)}` : '#';
             const role = m.is_owner ? 'OWNER' : 'ARTIST';
-            const crown = m.is_owner ? '<span class="collab-card__crown" title="Owner">★</span>' : '';
+            const crown = m.is_owner ? '<span class="collaborator-card__crown" title="Owner">★</span>' : '';
             const removeBtn = isMember && !m.is_owner && (isOwner || m.user_id === user.id)
-                ? `<button class="collab-card__remove" data-remove-member="${escapeHtml(m.user_id)}" aria-label="Remove from project" title="Remove">×</button>`
+                ? `<button class="collaborator-card__remove" data-remove-member="${escapeHtml(m.user_id)}" aria-label="Remove from project" title="Remove">×</button>`
                 : '';
-            return `<a class="collab-card" href="${link}">
-                <span class="collab-card__role">${escapeHtml(role)}</span>
+            return `<a class="collaborator-card" href="${link}">
+                <span class="collaborator-role">${escapeHtml(role)}</span>
                 ${avatar}
-                <span class="collab-card__name">
-                    <strong>${escapeHtml(first)}</strong>
-                    ${rest ? `<span class="collab-card__name-rest">${escapeHtml(rest)}</span>` : ''}
+                <span class="collaborator-name">
+                    <span class="collaborator-name__first">${escapeHtml(first)}</span>
+                    ${rest ? `<span class="collaborator-name__rest">${escapeHtml(rest)}</span>` : ''}
                 </span>
                 ${crown}
                 ${removeBtn}
@@ -260,10 +259,13 @@
         }).join('');
 
         const addPersonCard = isMember ? `
-            <button type="button" class="collab-card collab-card--add" id="pjAddPersonBtn" aria-label="Add person">
-                <span class="collab-card__role">Select function</span>
-                <span class="collab-card__avatar">+</span>
-                <span class="collab-card__name"><strong>Add</strong><span class="collab-card__name-rest">person</span></span>
+            <button type="button" class="collaborator-card add-person" id="pjAddPersonBtn" aria-label="Add person">
+                <span class="collaborator-role">Select function</span>
+                <div class="collaborator-image">+</div>
+                <span class="collaborator-name">
+                    <span class="collaborator-name__first">Add</span>
+                    <span class="collaborator-name__rest">person</span>
+                </span>
             </button>
         ` : '';
 
@@ -280,15 +282,27 @@
             const isApproved = approvalSet.has(m.user_id);
             const isSelf = m.user_id === user.id;
             const cls = `approval-row${isApproved ? ' is-approved' : ''}${isSelf ? ' is-self' : ''}`;
-            const hint = isSelf
-                ? `<span class="approval-row__hint">${isApproved ? 'Approved · click to undo' : 'Click to approve'}</span>`
-                : '';
-            return `<div class="${cls}"${isSelf ? ' data-approval-toggle="1"' : ''}>
+            const titleAttr = isSelf
+                ? (isApproved ? 'Click to undo your approval' : 'Click to approve release')
+                : (isApproved ? `${first} ${rest} has approved` : `${first} ${rest} has not approved yet`);
+            return `<button type="button" class="${cls}"${isSelf ? ' data-approval-toggle="1"' : ''} title="${escapeHtml(titleAttr)}">
                 <span class="approval-status"></span>
                 <span class="approval-row__name"><strong>${escapeHtml(first)}</strong>${rest ? ' ' + escapeHtml(rest) : ''}</span>
-                ${hint}
-            </div>`;
+            </button>`;
         }).join('');
+
+        const totalMembers = (members || []).length;
+        const approvedCount = approvalSet.size;
+        const allApproved = totalMembers > 0 && approvedCount === totalMembers;
+        const isAlreadyReleased = p.status === 'released';
+        const releaseBtn = `
+            <div class="project-release">
+                <button type="button" class="project-release__btn" id="releaseProjectBtn"${(allApproved && isOwner && !isAlreadyReleased) ? '' : ' disabled'}>
+                    <span class="project-release__progress">${approvedCount} of ${totalMembers} approved</span>
+                    <span class="project-release__label">${isAlreadyReleased ? 'Released' : 'Release project'}</span>
+                </button>
+            </div>
+        `;
 
         const trackList = (tracks || []).length > 0 ? (tracks || []).map((t) => {
             const styledArtist = F.formatName(t.artist_forename, t.artist_surname, t.artist_username);
@@ -341,65 +355,74 @@
 
             <div class="project-card-rich">
                 <div class="pc-header">
-                    <h1 class="pc-name">${escapeHtml(p.title)}</h1>
+                    <h3 class="pc-name">
+                        <span class="pc-name__label">Project name:</span>
+                        <span class="pc-name__value">${escapeHtml(p.title)}</span>
+                    </h3>
                     ${status}
                 </div>
                 <div class="pc-meta">Owned by ${ownerLink} · ${p.member_count} ${p.member_count === 1 ? 'member' : 'members'} · ${p.track_count} ${p.track_count === 1 ? 'track' : 'tracks'}</div>
+
+                <div class="pc-body">
+                    <div class="pc-left">
+                        <div class="project-team">
+                            ${collabCards}
+                            ${addPersonCard}
+                        </div>
+                    </div>
+
+                    <div class="project-actions">
+                        <div class="button-group">
+                            <span class="button-group__label">Uploads</span>
+                            <div class="action-col">
+                                ${pillFile('uploads', 'wave', 'WAVE')}
+                                ${pillFile('uploads', 'sheet', 'Sheet Music')}
+                                ${pillFile('uploads', 'notes', 'Notes &amp; Lyrics')}
+                                <button type="button" class="pill-btn" data-action="log">Log</button>
+                            </div>
+                        </div>
+
+                        <div class="button-group">
+                            <span class="button-group__label">Finals</span>
+                            <div class="action-col">
+                                ${pillFile('finals', 'mp3', 'WAVE/MP3')}
+                                ${pillFile('finals', 'sheet', 'Sheet Music')}
+                                ${pillFile('finals', 'image', 'Image')}
+                                ${pillFile('finals', 'lyrics', 'Lyrics')}
+                            </div>
+                        </div>
+
+                        <div class="button-group button-group--royalties">
+                            <span class="button-group__label">Royalties</span>
+                            <div class="royalties-cols">
+                                <div class="action-col">
+                                    ${pillRoyalty('mechanical', 'Mechanical')}
+                                    ${pillRoyalty('performance', 'Performance')}
+                                    ${pillRoyalty('covers', 'Covers')}
+                                    ${pillRoyalty('sample', 'Sample')}
+                                </div>
+                                <div class="action-col">
+                                    ${pillRoyalty('synch', 'Synch')}
+                                    ${pillRoyalty('print', 'Print Music')}
+                                    ${pillRoyalty('tutorials', 'Tutorials')}
+                                    ${pillRoyalty('commercial', 'Commercial')}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="button-group button-group--approvals">
+                            <span class="button-group__label">Approvals for release</span>
+                            <div class="project-approvals">
+                                ${approvalRows || '<div style="color:#7E89A6;font-size:12px;">No members yet.</div>'}
+                            </div>
+                            ${releaseBtn}
+                        </div>
+                    </div>
+                </div>
+
                 ${p.description ? `<p class="pc-desc">${escapeHtml(p.description)}</p>` : ''}
 
-                <div class="collab-row">
-                    ${collabCards}
-                    ${addPersonCard}
-                </div>
-
                 ${inviteBlock}
-
-                <div class="action-sections">
-                    <div class="action-section">
-                        <h4>Uploads</h4>
-                        <div class="action-buttons">
-                            ${fileBtnHtml('uploads', 'wave', 'WAVE')}
-                            ${fileBtnHtml('uploads', 'sheet', 'Sheet Music')}
-                            ${fileBtnHtml('uploads', 'notes', 'Notes')}
-                            ${fileBtnHtml('uploads', 'lyrics', 'Lyrics')}
-                        </div>
-                    </div>
-
-                    <div class="action-section">
-                        <h4>Finals</h4>
-                        <div class="action-buttons">
-                            ${fileBtnHtml('finals', 'wave', 'WAVE')}
-                            ${fileBtnHtml('finals', 'sheet', 'Sheet Music')}
-                            ${fileBtnHtml('finals', 'mp3', 'MP3')}
-                            ${fileBtnHtml('finals', 'lyrics', 'Lyrics')}
-                        </div>
-                    </div>
-
-                    <div class="action-section">
-                        <h4>Royalties</h4>
-                        <div class="royalties-buttons">
-                            <div class="royalty-column">
-                                ${royaltyBtnHtml('mechanical', 'Mechanical')}
-                                ${royaltyBtnHtml('performance', 'Performance')}
-                                ${royaltyBtnHtml('covers', 'Covers')}
-                                ${royaltyBtnHtml('sample', 'Sample')}
-                            </div>
-                            <div class="royalty-column">
-                                ${royaltyBtnHtml('synch', 'Synch')}
-                                ${royaltyBtnHtml('print', 'Print Music')}
-                                ${royaltyBtnHtml('tutorials', 'Tutorials')}
-                                ${royaltyBtnHtml('commercial', 'Commercial')}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="action-section">
-                        <h4>Approvals for release</h4>
-                        <div class="approval-list">
-                            ${approvalRows || '<div style="color:#7E89A6;font-size:12px;">No members yet.</div>'}
-                        </div>
-                    </div>
-                </div>
 
                 <div class="pc-tracks">
                     <h4>Tracks <span style="color:#B1B1B1;font-weight:400;">(${(tracks || []).length})</span></h4>
@@ -553,7 +576,8 @@
         }
 
         const FILE_TYPE_LABELS = {
-            wave: 'WAVE', sheet: 'Sheet Music', notes: 'Notes', lyrics: 'Lyrics', mp3: 'MP3'
+            wave: 'WAVE', sheet: 'Sheet Music', notes: 'Notes & Lyrics', lyrics: 'Lyrics',
+            mp3: 'WAVE/MP3', image: 'Image'
         };
         const ROYALTY_LABELS = {
             mechanical: 'Mechanical', performance: 'Performance', covers: 'Covers', sample: 'Sample',
@@ -605,6 +629,33 @@
                 renderDetail(id);
             });
         });
+
+        content.querySelectorAll('[data-action="log"]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                alert('Project activity log — coming in the next milestone.');
+            });
+        });
+
+        const releaseBtnEl = document.getElementById('releaseProjectBtn');
+        if (releaseBtnEl && !releaseBtnEl.disabled) {
+            releaseBtnEl.addEventListener('click', async () => {
+                if (!confirm(`Release "${p.title}"? This marks the project as released for everyone.`)) return;
+                releaseBtnEl.disabled = true;
+                const { error } = await sb.rpc('update_project', {
+                    p_project_id: id,
+                    p_title: p.title,
+                    p_description: p.description,
+                    p_status: 'released',
+                    p_cover_url: p.cover_url || null
+                });
+                if (error) {
+                    alert('Could not release: ' + (error.message || ''));
+                    releaseBtnEl.disabled = false;
+                    return;
+                }
+                renderDetail(id);
+            });
+        }
     }
 
     // ===========================================================
