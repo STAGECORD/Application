@@ -150,27 +150,28 @@
                 : 'Projects are STAGECORD PRO collaboration spaces for artists. Switch your role to Artist on /profile/ to create or join projects.';
             content.innerHTML = head + `<div class="pj-empty">${note}</div>`;
         } else {
-            content.innerHTML = head + `<div class="pj-grid">${rows.map((p) => {
-                const mc = Number(p.member_count) || 0;
-                const tc = Number(p.track_count) || 0;
-                const status = `<span class="pj-status pj-status--${escapeHtml(p.status)}">${escapeHtml(statusLabel(p.status))}</span>`;
-                return `<a class="pj-card" href="/projects/?id=${encodeURIComponent(p.id)}">
-                    <div class="pj-card__head">
-                        <div class="pj-card__name">${escapeHtml(p.title)}</div>
-                        ${status}
-                    </div>
-                    <div class="pj-card__meta">${mc} ${mc === 1 ? 'member' : 'members'} · ${tc} ${tc === 1 ? 'track' : 'tracks'} · ${escapeHtml(fmtDate(p.updated_at))}</div>
-                    ${p.description ? `<div class="pj-card__desc">${escapeHtml(p.description)}</div>` : ''}
-                </a>`;
-            }).join('')}</div>`;
+            content.innerHTML = head + `<div class="pj-rich-list">${rows.map((p) => `
+                <div class="pj-rich-host" data-project-host="${escapeHtml(p.id)}">
+                    <div class="pj-empty">Loading ${escapeHtml(p.title)}…</div>
+                </div>
+            `).join('')}</div>`;
+
+            // Render each project as a fully wired rich card into its own host
+            rows.forEach((p) => {
+                const host = content.querySelector(`[data-project-host="${CSS.escape(p.id)}"]`);
+                if (host) renderDetail(p.id, host);
+            });
         }
 
         const newBtn = document.getElementById('newProjectBtn');
         if (newBtn) newBtn.addEventListener('click', openModal);
     }
 
-    async function renderDetail(id) {
-        content.innerHTML = `<div class="pj-empty">Loading project…</div>`;
+    async function renderDetail(id, host) {
+        if (!host) host = content;
+        const cardPrefix = 'pj-' + String(id).replace(/-/g, '').slice(0, 12);
+        const pid = (name) => `${cardPrefix}-${name}`;
+        host.innerHTML = `<div class="pj-empty">Loading project…</div>`;
 
         const [{ data: meta, error: metaErr },
                { data: members, error: memErr },
@@ -206,7 +207,7 @@
         }
 
         if (metaErr || !meta || meta.length === 0) {
-            content.innerHTML = `<div class="pj-empty">
+            host.innerHTML = `<div class="pj-empty">
                 <p style="color:#FFFFFF;font-size:18px;margin-bottom:8px;">Project not found</p>
                 <p style="margin-top:14px;"><a href="/projects/" style="color:#FFFFFF;">← Your projects</a></p>
             </div>`;
@@ -221,8 +222,11 @@
             ? `<a href="/u/${encodeURIComponent(p.owner_username)}">${ownerName}</a>`
             : ownerName;
 
-        if (window.STAGECORD_AppShell) window.STAGECORD_AppShell.setTitle(p.title);
-        document.title = `${p.title} · STAGECORD`;
+        // Only set the page title when this card owns the whole page
+        if (host === content) {
+            if (window.STAGECORD_AppShell) window.STAGECORD_AppShell.setTitle(p.title);
+            document.title = `${p.title} · STAGECORD`;
+        }
 
         const status = `<span class="pj-status pj-status--${escapeHtml(p.status)}">${escapeHtml(statusLabel(p.status))}</span>`;
 
@@ -259,7 +263,7 @@
         }).join('');
 
         const addPersonCard = isMember ? `
-            <button type="button" class="collaborator-card add-person" id="pjAddPersonBtn" aria-label="Add person">
+            <button type="button" class="collaborator-card add-person" id="${pid('pjAddPersonBtn')}" aria-label="Add person">
                 <span class="collaborator-role">Select function</span>
                 <div class="collaborator-image">+</div>
                 <span class="collaborator-name">
@@ -270,11 +274,11 @@
         ` : '';
 
         const inviteBlock = isMember ? `
-            <div class="pc-invite-row" id="pjInviteRow">
-                <input type="text" id="pjInviteInput" placeholder="Invite by username (artists only)…" autocomplete="off">
-                <button class="pj-btn" id="pjInviteBtn">Add</button>
+            <div class="pc-invite-row" id="${pid('pjInviteRow')}">
+                <input type="text" id="${pid('pjInviteInput')}" placeholder="Invite by username (artists only)…" autocomplete="off">
+                <button class="pj-btn" id="${pid('pjInviteBtn')}">Add</button>
             </div>
-            <div class="pc-invite-feedback" id="pjInviteFeedback"></div>
+            <div class="pc-invite-feedback" id="${pid('pjInviteFeedback')}"></div>
         ` : '';
 
         const approvalRows = (members || []).map((m) => {
@@ -297,7 +301,7 @@
         const isAlreadyReleased = p.status === 'released';
         const releaseBtn = `
             <div class="project-release">
-                <button type="button" class="project-release__btn" id="releaseProjectBtn"${(allApproved && isOwner && !isAlreadyReleased) ? '' : ' disabled'}>
+                <button type="button" class="project-release__btn" id="${pid('releaseProjectBtn')}"${(allApproved && isOwner && !isAlreadyReleased) ? '' : ' disabled'}>
                     <span class="project-release__progress">${approvedCount} of ${totalMembers} approved</span>
                     <span class="project-release__label">${isAlreadyReleased ? 'Released' : 'Release project'}</span>
                 </button>
@@ -323,33 +327,35 @@
             </article>`;
         }).join('') : `<div class="pj-empty">No tracks yet.${isMember ? ' Add yours from your /tracks/ page or your public profile.' : ''}</div>`;
 
+        const isListMode = host !== content;
+        const backLink = isListMode ? '' : '<a class="pj-btn pj-btn--ghost" href="/projects/">← Back</a>';
         const ownerActions = isOwner ? `
             <div class="pj-detail__actions">
-                <a class="pj-btn pj-btn--ghost" href="/projects/">← Back</a>
-                <button class="pj-btn" id="editProjectBtn">Edit</button>
-                <button class="pj-btn pj-btn--ghost pj-btn--danger" id="deleteProjectBtn">Delete project</button>
+                ${backLink}
+                <button class="pj-btn" id="${pid('editProjectBtn')}">Edit</button>
+                <button class="pj-btn pj-btn--ghost pj-btn--danger" id="${pid('deleteProjectBtn')}">Delete project</button>
             </div>
         ` : isMember ? `
             <div class="pj-detail__actions">
-                <a class="pj-btn pj-btn--ghost" href="/projects/">← Back</a>
-                <button class="pj-btn" id="editProjectBtn">Edit</button>
-                <button class="pj-btn pj-btn--ghost pj-btn--danger" id="leaveProjectBtn">Leave project</button>
+                ${backLink}
+                <button class="pj-btn" id="${pid('editProjectBtn')}">Edit</button>
+                <button class="pj-btn pj-btn--ghost pj-btn--danger" id="${pid('leaveProjectBtn')}">Leave project</button>
             </div>
-        ` : `
+        ` : (isListMode ? '' : `
             <div class="pj-detail__actions">
                 <a class="pj-btn pj-btn--ghost" href="/projects/">← Projects</a>
             </div>
-        `;
+        `);
 
         const coverArea = isMember ? `
-            <div class="pj-cover-area" id="pjCoverArea"${p.cover_url ? ` style="background-image:url('${escapeHtml(p.cover_url)}');"` : ''}>
-                <span class="pj-cover-area__placeholder" id="pjCoverPlaceholder"${p.cover_url ? ' style="display:none;"' : ''}>Click to add a cover</span>
+            <div class="pj-cover-area" id="${pid('pjCoverArea')}"${p.cover_url ? ` style="background-image:url('${escapeHtml(p.cover_url)}');"` : ''}>
+                <span class="pj-cover-area__placeholder" id="${pid('pjCoverPlaceholder')}"${p.cover_url ? ' style="display:none;"' : ''}>Click to add a cover</span>
                 <span class="pj-cover-area__overlay">${p.cover_url ? 'Change cover' : 'Add cover'}</span>
-                <input type="file" id="pjCoverInput" accept="image/jpeg,image/png,image/webp">
+                <input type="file" id="${pid('pjCoverInput')}" accept="image/jpeg,image/png,image/webp">
             </div>
         ` : (p.cover_url ? `<div class="pj-cover-area pj-cover-area--readonly" style="background-image:url('${escapeHtml(p.cover_url)}');"></div>` : '');
 
-        content.innerHTML = `
+        host.innerHTML = `
             ${coverArea}
             ${ownerActions}
 
@@ -432,13 +438,13 @@
         `;
 
         // Wire actions
-        const editBtn = document.getElementById('editProjectBtn');
+        const editBtn = document.getElementById(pid('editProjectBtn'));
         if (editBtn && isMember) {
             editBtn.addEventListener('click', () => openEditModal(p));
         }
 
         if (isOwner) {
-            const delBtn = document.getElementById('deleteProjectBtn');
+            const delBtn = document.getElementById(pid('deleteProjectBtn'));
             if (delBtn) {
                 delBtn.addEventListener('click', async () => {
                     if (!confirm(`Delete "${p.title}"? This removes the project for everyone — but their tracks themselves stay intact.`)) return;
@@ -455,7 +461,7 @@
         }
 
         // Cover upload — any member can change it
-        const coverInput = document.getElementById('pjCoverInput');
+        const coverInput = document.getElementById(pid('pjCoverInput'));
         if (coverInput && isMember) {
             coverInput.addEventListener('change', async () => {
                 const file = coverInput.files?.[0];
@@ -492,11 +498,11 @@
                     alert('Cover saved to storage but project update failed: ' + (saveErr.message || ''));
                     return;
                 }
-                renderDetail(id);
+                renderDetail(id, host);
             });
         }
 
-        const leaveBtn = document.getElementById('leaveProjectBtn');
+        const leaveBtn = document.getElementById(pid('leaveProjectBtn'));
         if (leaveBtn) {
             leaveBtn.addEventListener('click', async () => {
                 if (!confirm('Leave this project?')) return;
@@ -512,7 +518,7 @@
         }
 
         if (isMember) {
-            content.querySelectorAll('[data-remove-member]').forEach((btn) => {
+            host.querySelectorAll('[data-remove-member]').forEach((btn) => {
                 btn.addEventListener('click', async (e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -523,11 +529,11 @@
                         alert('Could not remove: ' + (error.message || 'try again'));
                         return;
                     }
-                    renderDetail(id);
+                    renderDetail(id, host);
                 });
             });
 
-            content.querySelectorAll('[data-remove-track]').forEach((btn) => {
+            host.querySelectorAll('[data-remove-track]').forEach((btn) => {
                 btn.addEventListener('click', async () => {
                     if (!confirm('Remove this track from the project?')) return;
                     const trackId = btn.getAttribute('data-remove-track');
@@ -536,13 +542,13 @@
                         alert('Could not remove: ' + (error.message || 'try again'));
                         return;
                     }
-                    renderDetail(id);
+                    renderDetail(id, host);
                 });
             });
 
-            const inviteBtn = document.getElementById('pjInviteBtn');
-            const inviteInput = document.getElementById('pjInviteInput');
-            const inviteFeedback = document.getElementById('pjInviteFeedback');
+            const inviteBtn = document.getElementById(pid('pjInviteBtn'));
+            const inviteInput = document.getElementById(pid('pjInviteInput'));
+            const inviteFeedback = document.getElementById(pid('pjInviteFeedback'));
             if (inviteBtn && inviteInput) {
                 async function doInvite() {
                     const username = inviteInput.value.trim();
@@ -560,13 +566,13 @@
                     inviteInput.value = '';
                     inviteFeedback.textContent = 'Added ✓';
                     inviteFeedback.classList.add('is-success');
-                    setTimeout(() => renderDetail(id), 600);
+                    setTimeout(() => renderDetail(id, host), 600);
                 }
                 inviteBtn.addEventListener('click', doInvite);
                 inviteInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); doInvite(); } });
             }
 
-            const addPersonBtn = document.getElementById('pjAddPersonBtn');
+            const addPersonBtn = document.getElementById(pid('pjAddPersonBtn'));
             if (addPersonBtn && inviteInput) {
                 addPersonBtn.addEventListener('click', () => {
                     inviteInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -584,38 +590,38 @@
             synch: 'Synch', print: 'Print Music', tutorials: 'Tutorials', commercial: 'Commercial'
         };
 
-        content.querySelectorAll('[data-upload]').forEach((btn) => {
+        host.querySelectorAll('[data-upload]').forEach((btn) => {
             btn.addEventListener('click', () => {
                 const t = btn.getAttribute('data-upload');
                 openFilesModal({
                     projectId: id, category: 'uploads', fileType: t, isMember,
                     label: 'Uploads · ' + (FILE_TYPE_LABELS[t] || t),
-                    onClose: () => renderDetail(id)
+                    onClose: () => renderDetail(id, host)
                 });
             });
         });
-        content.querySelectorAll('[data-final]').forEach((btn) => {
+        host.querySelectorAll('[data-final]').forEach((btn) => {
             btn.addEventListener('click', () => {
                 const t = btn.getAttribute('data-final');
                 openFilesModal({
                     projectId: id, category: 'finals', fileType: t, isMember,
                     label: 'Finals · ' + (FILE_TYPE_LABELS[t] || t),
-                    onClose: () => renderDetail(id)
+                    onClose: () => renderDetail(id, host)
                 });
             });
         });
-        content.querySelectorAll('[data-royalty]').forEach((btn) => {
+        host.querySelectorAll('[data-royalty]').forEach((btn) => {
             btn.addEventListener('click', () => {
                 const t = btn.getAttribute('data-royalty');
                 openRoyaltyModal({
                     projectId: id, royaltyType: t,
                     label: ROYALTY_LABELS[t] || t,
                     members: members || [], isOwner,
-                    onClose: () => renderDetail(id)
+                    onClose: () => renderDetail(id, host)
                 });
             });
         });
-        content.querySelectorAll('[data-approval-toggle]').forEach((row) => {
+        host.querySelectorAll('[data-approval-toggle]').forEach((row) => {
             row.addEventListener('click', async () => {
                 row.style.opacity = '0.6';
                 row.style.pointerEvents = 'none';
@@ -626,17 +632,17 @@
                     row.style.pointerEvents = '';
                     return;
                 }
-                renderDetail(id);
+                renderDetail(id, host);
             });
         });
 
-        content.querySelectorAll('[data-action="log"]').forEach((btn) => {
+        host.querySelectorAll('[data-action="log"]').forEach((btn) => {
             btn.addEventListener('click', () => {
                 alert('Project activity log — coming in the next milestone.');
             });
         });
 
-        const releaseBtnEl = document.getElementById('releaseProjectBtn');
+        const releaseBtnEl = document.getElementById(pid('releaseProjectBtn'));
         if (releaseBtnEl && !releaseBtnEl.disabled) {
             releaseBtnEl.addEventListener('click', async () => {
                 if (!confirm(`Release "${p.title}"? This marks the project as released for everyone.`)) return;
@@ -653,7 +659,7 @@
                     releaseBtnEl.disabled = false;
                     return;
                 }
-                renderDetail(id);
+                renderDetail(id, host);
             });
         }
     }
