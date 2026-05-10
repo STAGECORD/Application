@@ -273,13 +273,9 @@
             </button>
         ` : '';
 
-        const inviteBlock = isMember ? `
-            <div class="pc-invite-row" id="${pid('pjInviteRow')}">
-                <input type="text" id="${pid('pjInviteInput')}" placeholder="Invite by username (artists only)…" autocomplete="off">
-                <button class="pj-btn" id="${pid('pjInviteBtn')}">Add</button>
-            </div>
-            <div class="pc-invite-feedback" id="${pid('pjInviteFeedback')}"></div>
-        ` : '';
+        // Invite-by-username row is gone — members are added through the
+        // search modal that opens when the + Add person card is clicked.
+        const inviteBlock = '';
 
         const approvalRows = (members || []).map((m) => {
             const { first, rest } = splitName(m.forename, m.surname, m.username);
@@ -568,37 +564,15 @@
                 });
             });
 
-            const inviteBtn = document.getElementById(pid('pjInviteBtn'));
-            const inviteInput = document.getElementById(pid('pjInviteInput'));
-            const inviteFeedback = document.getElementById(pid('pjInviteFeedback'));
-            if (inviteBtn && inviteInput) {
-                async function doInvite() {
-                    const username = inviteInput.value.trim();
-                    if (!username) return;
-                    inviteFeedback.textContent = '';
-                    inviteFeedback.classList.remove('is-error', 'is-success');
-                    inviteBtn.disabled = true;
-                    const { error } = await sb.rpc('add_project_member', { p_project_id: id, p_username: username });
-                    inviteBtn.disabled = false;
-                    if (error) {
-                        inviteFeedback.textContent = error.message || 'Could not add.';
-                        inviteFeedback.classList.add('is-error');
-                        return;
-                    }
-                    inviteInput.value = '';
-                    inviteFeedback.textContent = 'Added ✓';
-                    inviteFeedback.classList.add('is-success');
-                    setTimeout(() => renderDetail(id, host), 600);
-                }
-                inviteBtn.addEventListener('click', doInvite);
-                inviteInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); doInvite(); } });
-            }
-
             const addPersonBtn = document.getElementById(pid('pjAddPersonBtn'));
-            if (addPersonBtn && inviteInput) {
+            if (addPersonBtn) {
                 addPersonBtn.addEventListener('click', () => {
-                    inviteInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    setTimeout(() => inviteInput.focus(), 200);
+                    openAddMemberModal({
+                        projectId: id,
+                        projectTitle: p.title,
+                        existingMemberIds: new Set((members || []).map((m) => m.user_id)),
+                        onClose: () => renderDetail(id, host)
+                    });
                 });
             }
         }
@@ -953,4 +927,128 @@
         recomputeRoyaltyTotal();
         royaltyModal.classList.add('is-open');
     }
+
+    // ===========================================================
+    // Add member modal — search artists and add to project
+    // ===========================================================
+    const addMemberModal = document.getElementById('pjAddMemberModal');
+    const addMemberTitle = document.getElementById('pjAddMemberTitle');
+    const addMemberSearch = document.getElementById('pjAddMemberSearch');
+    const addMemberStatus = document.getElementById('pjAddMemberStatus');
+    const addMemberList = document.getElementById('pjAddMemberList');
+    const addMemberClose = document.getElementById('pjAddMemberClose');
+
+    let addMemberState = null;
+    let addMemberCache = null; // cached profile list across opens
+    let addMemberSearchDebounce = null;
+
+    function closeAddMemberModal() {
+        addMemberModal.classList.remove('is-open');
+        const cb = addMemberState?.onClose;
+        addMemberState = null;
+        if (cb) cb();
+    }
+    addMemberClose.addEventListener('click', closeAddMemberModal);
+    addMemberModal.addEventListener('click', (e) => { if (e.target === addMemberModal) closeAddMemberModal(); });
+
+    function setAddMemberStatus(text, kind) {
+        addMemberStatus.className = 'pj-am-status';
+        if (kind) addMemberStatus.classList.add('is-' + kind);
+        addMemberStatus.textContent = text || '';
+    }
+
+    function renderAddMemberList(query) {
+        if (!addMemberState || !addMemberCache) return;
+        const q = (query || '').trim().toLowerCase();
+        const filtered = (addMemberCache || []).filter((m) => {
+            if (!m || !m.username) return false;
+            if (m.role !== 'artist') return false;          // project members must be artists
+            if (m.id === user.id) return false;             // never list self
+            if (!q) return true;
+            const haystack = [m.forename, m.surname, m.username]
+                .filter(Boolean).join(' ').toLowerCase();
+            return haystack.includes(q);
+        });
+
+        if (filtered.length === 0) {
+            addMemberList.innerHTML = `<div class="pj-am-empty">${q ? 'No matching artists.' : 'No other artists on the platform yet.'}</div>`;
+            return;
+        }
+
+        addMemberList.innerHTML = filtered.slice(0, 50).map((m) => {
+            const styled = F.formatName(m.forename, m.surname, m.username);
+            const initial = ((F.plainName(m.forename, m.surname, m.username) || '?')[0] || '?').toUpperCase();
+            const avatar = m.avatar_url
+                ? `<div class="pj-am-row__avatar" style="background-image:url('${escapeHtml(m.avatar_url)}');"></div>`
+                : `<div class="pj-am-row__avatar">${escapeHtml(initial)}</div>`;
+            const already = addMemberState.existingMemberIds?.has(m.id);
+            return `<div class="pj-am-row${already ? ' pj-am-row--already' : ''}">
+                ${avatar}
+                <div class="pj-am-row__info">
+                    <div class="pj-am-row__name">${styled}</div>
+                    <div class="pj-am-row__handle">@${escapeHtml(m.username)}</div>
+                </div>
+                <button type="button" class="pj-am-row__add"
+                    data-add-username="${escapeHtml(m.username)}"
+                    data-user-id="${escapeHtml(m.id)}"
+                    ${already ? 'disabled title="Already on the project"' : ''}>
+                    ${already ? 'Added' : 'Add'}
+                </button>
+            </div>`;
+        }).join('');
+
+        addMemberList.querySelectorAll('[data-add-username]').forEach((btn) => {
+            if (btn.disabled) return;
+            btn.addEventListener('click', async () => {
+                if (!addMemberState) return;
+                const username = btn.getAttribute('data-add-username');
+                const userIdToAdd = btn.getAttribute('data-user-id');
+                btn.disabled = true;
+                btn.textContent = 'Adding…';
+                setAddMemberStatus('');
+                const { error } = await sb.rpc('add_project_member', {
+                    p_project_id: addMemberState.projectId,
+                    p_username: username
+                });
+                if (error) {
+                    btn.disabled = false;
+                    btn.textContent = 'Add';
+                    setAddMemberStatus(error.message || 'Could not add this member.', 'error');
+                    return;
+                }
+                btn.textContent = 'Added';
+                btn.closest('.pj-am-row').classList.add('pj-am-row--already');
+                addMemberState.existingMemberIds.add(userIdToAdd);
+                setAddMemberStatus(`Added @${username} ✓`, 'success');
+            });
+        });
+    }
+
+    async function openAddMemberModal({ projectId, projectTitle, existingMemberIds, onClose }) {
+        addMemberState = { projectId, projectTitle, existingMemberIds, onClose };
+        addMemberTitle.textContent = `Add member to ${projectTitle || 'project'}`;
+        addMemberSearch.value = '';
+        setAddMemberStatus('', null);
+        addMemberList.innerHTML = `<div class="pj-am-empty">Loading artists…</div>`;
+        addMemberModal.classList.add('is-open');
+        setTimeout(() => addMemberSearch.focus(), 60);
+
+        if (!addMemberCache) {
+            const { data, error } = await sb.rpc('list_public_profiles');
+            if (error) {
+                addMemberList.innerHTML = `<div class="pj-am-empty">Couldn't load profiles: ${escapeHtml(error.message || '')}</div>`;
+                return;
+            }
+            addMemberCache = data || [];
+        }
+        renderAddMemberList('');
+    }
+
+    addMemberSearch.addEventListener('input', () => {
+        clearTimeout(addMemberSearchDebounce);
+        addMemberSearchDebounce = setTimeout(() => renderAddMemberList(addMemberSearch.value), 120);
+    });
+    addMemberSearch.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') { e.preventDefault(); closeAddMemberModal(); }
+    });
 })();

@@ -524,6 +524,58 @@
         .pc-menu__item--danger { color: #FF6B6B; }
         .pc-menu__item--danger:hover { background: rgba(255,107,107,0.12); }
 
+        /* Add-member modal */
+        .pj-am-search {
+            width: 100%; box-sizing: border-box;
+            background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 999px; padding: 10px 16px;
+            color: #FFFFFF; font-family: inherit; font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .pj-am-search:focus { outline: none; border-color: #FFFFFF; }
+        .pj-am-status {
+            color: #B1B1B1; font-size: 12px; margin: 0 0 8px 4px; min-height: 16px;
+        }
+        .pj-am-status.is-error { color: #FF6B6B; }
+        .pj-am-status.is-success { color: #5CD66B; }
+        .pj-am-list {
+            max-height: 360px; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 6px;
+            margin-bottom: 4px;
+        }
+        .pj-am-row {
+            display: flex; align-items: center; gap: 12px;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+        }
+        .pj-am-row__avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+            background-size: cover; background-position: center;
+            display: flex; align-items: center; justify-content: center;
+            color: #5A6480; font-size: 13px; font-weight: 600;
+            flex-shrink: 0;
+        }
+        .pj-am-row__info { flex: 1; min-width: 0; }
+        .pj-am-row__name { color: #FFFFFF; font-size: 14px; font-weight: 300; }
+        .pj-am-row__name strong { font-weight: 700; }
+        .pj-am-row__handle { color: #7E89A6; font-size: 12px; }
+        .pj-am-row__add {
+            background: #FFFFFF; color: #0B0B0F; border: none;
+            border-radius: 999px; padding: 6px 14px;
+            font-family: inherit; font-size: 12px; font-weight: 600;
+            cursor: pointer;
+        }
+        .pj-am-row__add:hover { background: #E0E0E0; }
+        .pj-am-row__add:disabled { opacity: 0.6; cursor: not-allowed; }
+        .pj-am-row--already .pj-am-row__add {
+            background: transparent; color: #7E89A6; cursor: default;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        .pj-am-empty { color: #7E89A6; font-size: 13px; padding: 24px; text-align: center; }
+
         /* Approval rows: click own row to toggle */
         .approval-row.is-self { cursor: pointer; }
         .approval-row.is-self:hover { border-color: rgba(255,255,255,0.18); background: rgba(255,255,255,0.04); }
@@ -622,6 +674,19 @@
             <div class="pj-empty">Loading…</div>
         </div>
     </div></main>
+
+    <!-- Add member modal: search artists and add to project -->
+    <div class="pj-modal-overlay" id="pjAddMemberModal">
+        <div class="pj-modal pj-modal--wide">
+            <h2 id="pjAddMemberTitle">Add member</h2>
+            <input type="search" class="pj-am-search" id="pjAddMemberSearch" placeholder="Search by name or username…" autocomplete="off">
+            <div class="pj-am-status" id="pjAddMemberStatus"></div>
+            <div class="pj-am-list" id="pjAddMemberList"></div>
+            <div class="pj-modal-actions" style="margin-top: 14px;">
+                <button type="button" class="pj-btn pj-btn--ghost" id="pjAddMemberClose">Close</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Files modal: list + upload for a single (category, file_type) -->
     <div class="pj-modal-overlay" id="pjFilesModal">
