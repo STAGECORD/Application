@@ -203,6 +203,7 @@
             color: #FFFFFF; font-size: 14px;
         }
         .pj-cover-area:hover .pj-cover-area__overlay { display: flex; }
+        .pj-cover-area:hover .pj-cover-area__placeholder { display: none; }
         .pj-cover-area input { display: none; }
         .pj-cover-area--readonly { cursor: default; }
         .pj-cover-area--readonly:hover .pj-cover-area__overlay { display: none; }
@@ -487,6 +488,41 @@
             .project-actions { margin-left: 0; }
             .button-group--approvals { width: 100%; }
         }
+
+        /* Kebab menu — top-right of each card on the list view */
+        .pc-header { position: relative; }
+        .pc-menu { margin-left: auto; position: relative; }
+        .pc-menu__trigger {
+            background: transparent; border: 1px solid transparent;
+            color: #B1B1B1; font-size: 22px; line-height: 1;
+            width: 32px; height: 32px;
+            border-radius: 8px; cursor: pointer;
+            font-family: inherit;
+            display: inline-flex; align-items: center; justify-content: center;
+            padding-bottom: 6px;
+        }
+        .pc-menu__trigger:hover { border-color: #797979; color: #FFFFFF; }
+        .pc-menu__dropdown {
+            position: absolute; top: calc(100% + 4px); right: 0;
+            min-width: 180px;
+            background: #181818;
+            border: 1px solid #797979;
+            border-radius: 8px;
+            padding: 4px;
+            z-index: 50;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+        }
+        .pc-menu__item {
+            display: block; width: 100%;
+            background: transparent; border: none;
+            color: #FFFFFF; font-family: inherit;
+            font-size: 13px; text-align: left;
+            padding: 8px 12px; border-radius: 6px;
+            cursor: pointer;
+        }
+        .pc-menu__item:hover { background: rgba(255,255,255,0.06); }
+        .pc-menu__item--danger { color: #FF6B6B; }
+        .pc-menu__item--danger:hover { background: rgba(255,107,107,0.12); }
 
         /* Approval rows: click own row to toggle */
         .approval-row.is-self { cursor: pointer; }

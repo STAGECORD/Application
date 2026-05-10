@@ -329,7 +329,10 @@
 
         const isListMode = host !== content;
         const backLink = isListMode ? '' : '<a class="pj-btn pj-btn--ghost" href="/projects/">← Back</a>';
-        const ownerActions = isOwner ? `
+        // In list mode (matches prototype), hide the heavy owner-action row.
+        // Edit / Delete / Leave are reached via the small kebab menu inside
+        // each card header. On the deep-link view (?id=X) keep the toolbar.
+        const ownerActions = isListMode ? '' : (isOwner ? `
             <div class="pj-detail__actions">
                 ${backLink}
                 <button class="pj-btn" id="${pid('editProjectBtn')}">Edit</button>
@@ -341,19 +344,37 @@
                 <button class="pj-btn" id="${pid('editProjectBtn')}">Edit</button>
                 <button class="pj-btn pj-btn--ghost pj-btn--danger" id="${pid('leaveProjectBtn')}">Leave project</button>
             </div>
-        ` : (isListMode ? '' : `
+        ` : `
             <div class="pj-detail__actions">
                 <a class="pj-btn pj-btn--ghost" href="/projects/">← Projects</a>
             </div>
         `);
 
-        const coverArea = isMember ? `
+        // Small in-card kebab menu (top-right) — gives quick Edit / Delete /
+        // Leave access on the list view without recreating the loud toolbar.
+        // In deep-link mode the toolbar above already exposes these actions,
+        // so we skip the kebab to avoid duplicate IDs.
+        const cardMenu = (isListMode && isMember) ? `
+            <div class="pc-menu" data-pj-menu>
+                <button type="button" class="pc-menu__trigger" aria-haspopup="true" aria-expanded="false" title="Project actions">⋯</button>
+                <div class="pc-menu__dropdown" hidden>
+                    <button type="button" class="pc-menu__item" id="${pid('editProjectBtn')}">Edit project</button>
+                    ${isOwner
+                        ? `<button type="button" class="pc-menu__item pc-menu__item--danger" id="${pid('deleteProjectBtn')}">Delete project</button>`
+                        : `<button type="button" class="pc-menu__item pc-menu__item--danger" id="${pid('leaveProjectBtn')}">Leave project</button>`}
+                </div>
+            </div>
+        ` : '';
+
+        // Cover area only renders on the single-project deep-link view;
+        // the list view matches the prototype which has no per-card cover.
+        const coverArea = isListMode ? '' : (isMember ? `
             <div class="pj-cover-area" id="${pid('pjCoverArea')}"${p.cover_url ? ` style="background-image:url('${escapeHtml(p.cover_url)}');"` : ''}>
                 <span class="pj-cover-area__placeholder" id="${pid('pjCoverPlaceholder')}"${p.cover_url ? ' style="display:none;"' : ''}>Click to add a cover</span>
                 <span class="pj-cover-area__overlay">${p.cover_url ? 'Change cover' : 'Add cover'}</span>
                 <input type="file" id="${pid('pjCoverInput')}" accept="image/jpeg,image/png,image/webp">
             </div>
-        ` : (p.cover_url ? `<div class="pj-cover-area pj-cover-area--readonly" style="background-image:url('${escapeHtml(p.cover_url)}');"></div>` : '');
+        ` : (p.cover_url ? `<div class="pj-cover-area pj-cover-area--readonly" style="background-image:url('${escapeHtml(p.cover_url)}');"></div>` : ''));
 
         host.innerHTML = `
             ${coverArea}
@@ -366,6 +387,7 @@
                         <span class="pc-name__value">${escapeHtml(p.title)}</span>
                     </h3>
                     ${status}
+                    ${cardMenu}
                 </div>
                 <div class="pc-meta">Owned by ${ownerLink} · ${p.member_count} ${p.member_count === 1 ? 'member' : 'members'} · ${p.track_count} ${p.track_count === 1 ? 'track' : 'tracks'}</div>
 
@@ -641,6 +663,30 @@
                 alert('Project activity log — coming in the next milestone.');
             });
         });
+
+        // Kebab menu toggle (list view only)
+        const menuEl = host.querySelector('[data-pj-menu]');
+        if (menuEl) {
+            const trigger = menuEl.querySelector('.pc-menu__trigger');
+            const dropdown = menuEl.querySelector('.pc-menu__dropdown');
+            trigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const open = !dropdown.hidden;
+                // Close any other open menus first
+                document.querySelectorAll('.pc-menu__dropdown').forEach((d) => { d.hidden = true; });
+                document.querySelectorAll('.pc-menu__trigger').forEach((t) => t.setAttribute('aria-expanded', 'false'));
+                if (!open) {
+                    dropdown.hidden = false;
+                    trigger.setAttribute('aria-expanded', 'true');
+                }
+            });
+            document.addEventListener('click', (e) => {
+                if (!menuEl.contains(e.target)) {
+                    dropdown.hidden = true;
+                    trigger.setAttribute('aria-expanded', 'false');
+                }
+            });
+        }
 
         const releaseBtnEl = document.getElementById(pid('releaseProjectBtn'));
         if (releaseBtnEl && !releaseBtnEl.disabled) {
