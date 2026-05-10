@@ -445,13 +445,6 @@
                 </div>
 
                 ${p.description ? `<p class="pc-desc">${escapeHtml(p.description)}</p>` : ''}
-
-                ${inviteBlock}
-
-                <div class="pc-tracks">
-                    <h4>Tracks <span style="color:#B1B1B1;font-weight:400;">(${(tracks || []).length})</span></h4>
-                    ${trackList}
-                </div>
             </div>
         `;
 
