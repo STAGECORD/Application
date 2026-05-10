@@ -391,6 +391,94 @@
         .pc-invite-feedback { font-size: 12px; min-height: 14px; color: #B1B1B1; margin: -8px 0 14px 4px; }
         .pc-invite-feedback.is-error { color: #FF6B6B; }
         .pc-invite-feedback.is-success { color: #5CD66B; }
+
+        /* Approval rows: click own row to toggle */
+        .approval-row.is-self { cursor: pointer; }
+        .approval-row.is-self:hover { border-color: rgba(255,255,255,0.18); background: rgba(255,255,255,0.04); }
+        .approval-row__hint { color: #7E89A6; font-size: 11px; text-transform: none; margin-left: 6px; }
+        .approval-row.is-approved .approval-row__hint { color: #5CD66B; }
+
+        /* Wider modal variant for file lists + royalty splits */
+        .pj-modal--wide { max-width: 560px; }
+
+        /* Files modal */
+        .pj-files-list {
+            margin: 8px 0 14px 0;
+            max-height: 320px; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 8px;
+        }
+        .pj-files-list:empty::before {
+            content: "No files yet.";
+            color: #7E89A6; font-size: 13px; padding: 24px 0; text-align: center; display: block;
+        }
+        .pj-file-row {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 12px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+        }
+        .pj-file-row__info { flex: 1; min-width: 0; }
+        .pj-file-row__name {
+            color: #FFFFFF; font-size: 13px; font-weight: 600;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .pj-file-row__meta { color: #7E89A6; font-size: 11px; margin-top: 2px; }
+        .pj-file-row__meta strong { color: #B1B1B1; font-weight: 700; }
+        .pj-file-row__open, .pj-file-row__del {
+            background: transparent; border: 1px solid rgba(255,255,255,0.2);
+            color: #FFFFFF; border-radius: 999px;
+            padding: 5px 11px; font-family: inherit; font-size: 11px;
+            cursor: pointer; text-decoration: none;
+            display: inline-flex; align-items: center;
+        }
+        .pj-file-row__open:hover { border-color: #FFFFFF; background: rgba(255,255,255,0.06); }
+        .pj-file-row__del:hover { border-color: #FF6B6B; color: #FF6B6B; }
+        .pj-file-upload {
+            display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+            padding: 14px 0 4px 0;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+        .pj-file-status { color: #B1B1B1; font-size: 12px; flex: 1; }
+        .pj-file-status.is-error { color: #FF6B6B; }
+        .pj-file-status.is-success { color: #5CD66B; }
+
+        /* Royalty modal */
+        .pj-royalty-rows { display: flex; flex-direction: column; gap: 8px; margin: 8px 0 12px 0; max-height: 320px; overflow-y: auto; }
+        .pj-royalty-row {
+            display: flex; align-items: center; gap: 12px;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+        }
+        .pj-royalty-row__avatar {
+            width: 28px; height: 28px; border-radius: 50%;
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+            background-size: cover; background-position: center;
+            display: flex; align-items: center; justify-content: center;
+            color: #5A6480; font-size: 12px; font-weight: 600;
+            flex-shrink: 0;
+        }
+        .pj-royalty-row__name { flex: 1; min-width: 0; color: #FFFFFF; font-size: 13px; font-weight: 300; }
+        .pj-royalty-row__name strong { font-weight: 700; }
+        .pj-royalty-row__input {
+            width: 78px; text-align: right;
+            background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 6px; padding: 6px 8px;
+            color: #FFFFFF; font-family: inherit; font-size: 13px;
+        }
+        .pj-royalty-row__pct { color: #B1B1B1; font-size: 12px; }
+        .pj-royalty-total {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 12px; margin-bottom: 12px;
+            background: rgba(255,255,255,0.04); border-radius: 10px;
+            color: #FFFFFF; font-size: 13px; font-weight: 600;
+        }
+        .pj-royalty-total__val { font-family: 'SF Mono', Monaco, monospace; }
+        .pj-royalty-total.is-valid { color: #5CD66B; }
+        .pj-royalty-total.is-invalid { color: #FF6B6B; }
+        .pj-royalty-readonly { color: #B1B1B1; font-size: 12px; margin-top: 4px; text-align: center; }
     </style>
 </head>
 <body class="app-body">
@@ -402,6 +490,41 @@
             <div class="pj-empty">Loading…</div>
         </div>
     </div></main>
+
+    <!-- Files modal: list + upload for a single (category, file_type) -->
+    <div class="pj-modal-overlay" id="pjFilesModal">
+        <div class="pj-modal pj-modal--wide">
+            <h2 id="pjFilesModalTitle">Files</h2>
+            <div class="pj-files-list" id="pjFilesList"></div>
+            <div class="pj-file-upload">
+                <input type="file" id="pjFileInput" hidden>
+                <button type="button" class="pj-btn" id="pjFileUploadBtn">Upload new file</button>
+                <span class="pj-file-status" id="pjFileStatus"></span>
+            </div>
+            <div class="pj-modal-actions" style="margin-top: 14px;">
+                <button type="button" class="pj-btn pj-btn--ghost" id="pjFilesClose">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Royalty modal: per-member percentage split -->
+    <div class="pj-modal-overlay" id="pjRoyaltyModal">
+        <div class="pj-modal pj-modal--wide">
+            <h2 id="pjRoyaltyModalTitle">Royalty split</h2>
+            <div class="pj-royalty-rows" id="pjRoyaltyRows"></div>
+            <div class="pj-royalty-total">
+                <span>Total</span>
+                <span><span class="pj-royalty-total__val" id="pjRoyaltyTotalVal">0.00</span> / 100.00 %</span>
+            </div>
+            <div class="pj-modal-error" id="pjRoyaltyError"></div>
+            <div class="pj-royalty-readonly" id="pjRoyaltyReadonly" hidden>Only the project owner can change royalty splits.</div>
+            <div class="pj-modal-actions">
+                <button type="button" class="pj-btn pj-btn--ghost" id="pjRoyaltyCancel">Cancel</button>
+                <button type="button" class="pj-btn pj-btn--ghost" id="pjRoyaltyEqualize">Split evenly</button>
+                <button type="button" class="pj-btn" id="pjRoyaltySave">Save</button>
+            </div>
+        </div>
+    </div>
 
     <div class="pj-modal-overlay" id="pjModal">
         <div class="pj-modal">

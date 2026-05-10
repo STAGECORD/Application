@@ -174,11 +174,37 @@
 
         const [{ data: meta, error: metaErr },
                { data: members, error: memErr },
-               { data: tracks, error: trErr }] = await Promise.all([
+               { data: tracks, error: trErr },
+               { data: files },
+               { data: royalties },
+               { data: approvals }] = await Promise.all([
             sb.rpc('get_project', { p_project_id: id }),
             sb.rpc('get_project_members', { p_project_id: id }),
-            sb.rpc('get_project_tracks', { p_project_id: id })
+            sb.rpc('get_project_tracks', { p_project_id: id }),
+            sb.rpc('get_project_files', { p_project_id: id }),
+            sb.rpc('get_project_royalties', { p_project_id: id }),
+            sb.rpc('get_project_approvals', { p_project_id: id })
         ]);
+
+        const fileCounts = {};
+        (files || []).forEach((f) => {
+            if (!fileCounts[f.category]) fileCounts[f.category] = {};
+            fileCounts[f.category][f.file_type] = (fileCounts[f.category][f.file_type] || 0) + 1;
+        });
+        const royaltyConfigured = new Set((royalties || []).map((r) => r.royalty_type));
+        const approvalSet = new Set((approvals || []).map((a) => a.user_id));
+
+        function fileBtnHtml(cat, type, label) {
+            const count = fileCounts[cat]?.[type] || 0;
+            const cls = count > 0 ? 'action-btn action-btn--active' : 'action-btn';
+            const text = count > 0 ? `${label} (${count})` : label;
+            const attr = cat === 'uploads' ? `data-upload="${type}"` : `data-final="${type}"`;
+            return `<button type="button" class="${cls}" ${attr}>${escapeHtml(text)}</button>`;
+        }
+        function royaltyBtnHtml(type, label) {
+            const cls = royaltyConfigured.has(type) ? 'action-btn action-btn--active' : 'action-btn';
+            return `<button type="button" class="${cls}" data-royalty="${type}">${escapeHtml(label)}</button>`;
+        }
 
         if (metaErr || !meta || meta.length === 0) {
             content.innerHTML = `<div class="pj-empty">
@@ -251,9 +277,16 @@
 
         const approvalRows = (members || []).map((m) => {
             const { first, rest } = splitName(m.forename, m.surname, m.username);
-            return `<div class="approval-row">
+            const isApproved = approvalSet.has(m.user_id);
+            const isSelf = m.user_id === user.id;
+            const cls = `approval-row${isApproved ? ' is-approved' : ''}${isSelf ? ' is-self' : ''}`;
+            const hint = isSelf
+                ? `<span class="approval-row__hint">${isApproved ? 'Approved · click to undo' : 'Click to approve'}</span>`
+                : '';
+            return `<div class="${cls}"${isSelf ? ' data-approval-toggle="1"' : ''}>
                 <span class="approval-status"></span>
                 <span class="approval-row__name"><strong>${escapeHtml(first)}</strong>${rest ? ' ' + escapeHtml(rest) : ''}</span>
+                ${hint}
             </div>`;
         }).join('');
 
@@ -325,20 +358,20 @@
                     <div class="action-section">
                         <h4>Uploads</h4>
                         <div class="action-buttons">
-                            <button type="button" class="action-btn" data-upload="wave">WAVE</button>
-                            <button type="button" class="action-btn" data-upload="sheet">Sheet Music</button>
-                            <button type="button" class="action-btn" data-upload="notes">Notes</button>
-                            <button type="button" class="action-btn" data-upload="lyrics">Lyrics</button>
+                            ${fileBtnHtml('uploads', 'wave', 'WAVE')}
+                            ${fileBtnHtml('uploads', 'sheet', 'Sheet Music')}
+                            ${fileBtnHtml('uploads', 'notes', 'Notes')}
+                            ${fileBtnHtml('uploads', 'lyrics', 'Lyrics')}
                         </div>
                     </div>
 
                     <div class="action-section">
                         <h4>Finals</h4>
                         <div class="action-buttons">
-                            <button type="button" class="action-btn" data-final="wave">WAVE</button>
-                            <button type="button" class="action-btn" data-final="sheet">Sheet Music</button>
-                            <button type="button" class="action-btn" data-final="mp3">MP3</button>
-                            <button type="button" class="action-btn" data-final="lyrics">Lyrics</button>
+                            ${fileBtnHtml('finals', 'wave', 'WAVE')}
+                            ${fileBtnHtml('finals', 'sheet', 'Sheet Music')}
+                            ${fileBtnHtml('finals', 'mp3', 'MP3')}
+                            ${fileBtnHtml('finals', 'lyrics', 'Lyrics')}
                         </div>
                     </div>
 
@@ -346,16 +379,16 @@
                         <h4>Royalties</h4>
                         <div class="royalties-buttons">
                             <div class="royalty-column">
-                                <button type="button" class="action-btn" data-royalty="mechanical">Mechanical</button>
-                                <button type="button" class="action-btn" data-royalty="performance">Performance</button>
-                                <button type="button" class="action-btn" data-royalty="covers">Covers</button>
-                                <button type="button" class="action-btn" data-royalty="sample">Sample</button>
+                                ${royaltyBtnHtml('mechanical', 'Mechanical')}
+                                ${royaltyBtnHtml('performance', 'Performance')}
+                                ${royaltyBtnHtml('covers', 'Covers')}
+                                ${royaltyBtnHtml('sample', 'Sample')}
                             </div>
                             <div class="royalty-column">
-                                <button type="button" class="action-btn" data-royalty="synch">Synch</button>
-                                <button type="button" class="action-btn" data-royalty="print">Print Music</button>
-                                <button type="button" class="action-btn" data-royalty="tutorials">Tutorials</button>
-                                <button type="button" class="action-btn" data-royalty="commercial">Commercial</button>
+                                ${royaltyBtnHtml('synch', 'Synch')}
+                                ${royaltyBtnHtml('print', 'Print Music')}
+                                ${royaltyBtnHtml('tutorials', 'Tutorials')}
+                                ${royaltyBtnHtml('commercial', 'Commercial')}
                             </div>
                         </div>
                     </div>
@@ -518,5 +551,303 @@
                 });
             }
         }
+
+        const FILE_TYPE_LABELS = {
+            wave: 'WAVE', sheet: 'Sheet Music', notes: 'Notes', lyrics: 'Lyrics', mp3: 'MP3'
+        };
+        const ROYALTY_LABELS = {
+            mechanical: 'Mechanical', performance: 'Performance', covers: 'Covers', sample: 'Sample',
+            synch: 'Synch', print: 'Print Music', tutorials: 'Tutorials', commercial: 'Commercial'
+        };
+
+        content.querySelectorAll('[data-upload]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const t = btn.getAttribute('data-upload');
+                openFilesModal({
+                    projectId: id, category: 'uploads', fileType: t, isMember,
+                    label: 'Uploads · ' + (FILE_TYPE_LABELS[t] || t),
+                    onClose: () => renderDetail(id)
+                });
+            });
+        });
+        content.querySelectorAll('[data-final]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const t = btn.getAttribute('data-final');
+                openFilesModal({
+                    projectId: id, category: 'finals', fileType: t, isMember,
+                    label: 'Finals · ' + (FILE_TYPE_LABELS[t] || t),
+                    onClose: () => renderDetail(id)
+                });
+            });
+        });
+        content.querySelectorAll('[data-royalty]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const t = btn.getAttribute('data-royalty');
+                openRoyaltyModal({
+                    projectId: id, royaltyType: t,
+                    label: ROYALTY_LABELS[t] || t,
+                    members: members || [], isOwner,
+                    onClose: () => renderDetail(id)
+                });
+            });
+        });
+        content.querySelectorAll('[data-approval-toggle]').forEach((row) => {
+            row.addEventListener('click', async () => {
+                row.style.opacity = '0.6';
+                row.style.pointerEvents = 'none';
+                const { error } = await sb.rpc('toggle_project_approval', { p_project_id: id });
+                if (error) {
+                    alert('Could not toggle approval: ' + (error.message || ''));
+                    row.style.opacity = '';
+                    row.style.pointerEvents = '';
+                    return;
+                }
+                renderDetail(id);
+            });
+        });
+    }
+
+    // ===========================================================
+    // Files modal — list + upload + delete for one (category, type)
+    // ===========================================================
+    const filesModal = document.getElementById('pjFilesModal');
+    const filesModalTitle = document.getElementById('pjFilesModalTitle');
+    const filesList = document.getElementById('pjFilesList');
+    const fileInput = document.getElementById('pjFileInput');
+    const fileUploadBtn = document.getElementById('pjFileUploadBtn');
+    const fileStatus = document.getElementById('pjFileStatus');
+    const filesClose = document.getElementById('pjFilesClose');
+
+    let filesState = null;
+
+    function closeFilesModal() {
+        filesModal.classList.remove('is-open');
+        const cb = filesState?.onClose;
+        filesState = null;
+        if (cb) cb();
+    }
+    function setFileStatus(text, kind) {
+        fileStatus.className = 'pj-file-status';
+        if (kind) fileStatus.classList.add('is-' + kind);
+        fileStatus.textContent = text || '';
+    }
+    filesClose.addEventListener('click', closeFilesModal);
+    filesModal.addEventListener('click', (e) => { if (e.target === filesModal) closeFilesModal(); });
+
+    async function refreshFilesList() {
+        if (!filesState) return;
+        filesList.innerHTML = `<div style="color:#7E89A6;font-size:13px;text-align:center;padding:24px;">Loading…</div>`;
+        const { data, error } = await sb.rpc('get_project_files', { p_project_id: filesState.projectId });
+        if (error) {
+            filesList.innerHTML = `<div style="color:#FF6B6B;font-size:13px;text-align:center;padding:24px;">${escapeHtml(error.message || 'Failed to load files')}</div>`;
+            return;
+        }
+        const my = (data || []).filter((f) => f.category === filesState.category && f.file_type === filesState.fileType);
+        if (my.length === 0) { filesList.innerHTML = ''; return; }
+        filesList.innerHTML = my.map((f) => {
+            const styled = F.formatName(f.uploader_forename, f.uploader_surname, f.uploader_username || 'Someone');
+            const date = new Date(f.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            const sz = f.file_size ? (f.file_size > 1024 * 1024 ? `${(f.file_size / (1024 * 1024)).toFixed(1)} MB` : `${Math.round(f.file_size / 1024)} KB`) : '';
+            return `<div class="pj-file-row">
+                <div class="pj-file-row__info">
+                    <div class="pj-file-row__name">${escapeHtml(f.file_name)}</div>
+                    <div class="pj-file-row__meta">By ${styled} · ${escapeHtml(date)}${sz ? ' · ' + escapeHtml(sz) : ''}</div>
+                </div>
+                <a class="pj-file-row__open" href="${escapeHtml(f.file_url)}" target="_blank" rel="noopener">Open</a>
+                ${filesState.isMember ? `<button type="button" class="pj-file-row__del" data-file-del="${escapeHtml(f.id)}" data-file-path="${escapeHtml(f.file_path)}">Delete</button>` : ''}
+            </div>`;
+        }).join('');
+        filesList.querySelectorAll('[data-file-del]').forEach((btn) => {
+            btn.addEventListener('click', async () => {
+                if (!confirm('Delete this file?')) return;
+                const fileId = btn.getAttribute('data-file-del');
+                const filePath = btn.getAttribute('data-file-path');
+                btn.disabled = true;
+                const { data: returnedPath, error } = await sb.rpc('remove_project_file', { p_file_id: fileId });
+                if (error) {
+                    alert('Could not delete: ' + (error.message || ''));
+                    btn.disabled = false;
+                    return;
+                }
+                await sb.storage.from('project-files').remove([returnedPath || filePath]).catch(() => {});
+                refreshFilesList();
+            });
+        });
+    }
+
+    function openFilesModal({ projectId, category, fileType, isMember, label, onClose }) {
+        filesState = { projectId, category, fileType, isMember, onClose };
+        filesModalTitle.textContent = label;
+        setFileStatus('', null);
+        fileUploadBtn.style.display = isMember ? '' : 'none';
+        filesModal.classList.add('is-open');
+        refreshFilesList();
+    }
+
+    fileUploadBtn.addEventListener('click', () => {
+        if (!filesState?.isMember) return;
+        fileInput.value = '';
+        fileInput.click();
+    });
+
+    fileInput.addEventListener('change', async () => {
+        const file = fileInput.files?.[0];
+        if (!file || !filesState) return;
+        if (file.size > 200 * 1024 * 1024) {
+            setFileStatus('File too large (max 200 MB)', 'error');
+            return;
+        }
+        setFileStatus(`Uploading ${file.name}…`, null);
+        fileUploadBtn.disabled = true;
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const path = `${filesState.projectId}/${filesState.category}-${filesState.fileType}-${Date.now()}-${safeName}`;
+        const { error: upErr } = await sb.storage.from('project-files').upload(path, file, { upsert: false });
+        if (upErr) {
+            setFileStatus('Upload failed: ' + (upErr.message || ''), 'error');
+            fileUploadBtn.disabled = false;
+            return;
+        }
+        const { data: pub } = sb.storage.from('project-files').getPublicUrl(path);
+        const { error: insErr } = await sb.rpc('add_project_file', {
+            p_project_id: filesState.projectId,
+            p_category: filesState.category,
+            p_file_type: filesState.fileType,
+            p_file_name: file.name,
+            p_file_path: path,
+            p_file_url: pub.publicUrl,
+            p_file_size: file.size
+        });
+        fileUploadBtn.disabled = false;
+        if (insErr) {
+            sb.storage.from('project-files').remove([path]).catch(() => {});
+            setFileStatus('Save failed: ' + (insErr.message || ''), 'error');
+            return;
+        }
+        setFileStatus('Uploaded ✓', 'success');
+        setTimeout(() => setFileStatus('', null), 2000);
+        refreshFilesList();
+    });
+
+    // ===========================================================
+    // Royalty modal — per-member percentage split per royalty type
+    // ===========================================================
+    const royaltyModal = document.getElementById('pjRoyaltyModal');
+    const royaltyModalTitle = document.getElementById('pjRoyaltyModalTitle');
+    const royaltyRowsEl = document.getElementById('pjRoyaltyRows');
+    const royaltyTotalVal = document.getElementById('pjRoyaltyTotalVal');
+    const royaltyTotalRow = royaltyTotalVal.closest('.pj-royalty-total');
+    const royaltyError = document.getElementById('pjRoyaltyError');
+    const royaltyReadonly = document.getElementById('pjRoyaltyReadonly');
+    const royaltyCancel = document.getElementById('pjRoyaltyCancel');
+    const royaltyEqualize = document.getElementById('pjRoyaltyEqualize');
+    const royaltySave = document.getElementById('pjRoyaltySave');
+
+    let royaltyState = null;
+
+    function closeRoyaltyModal() {
+        royaltyModal.classList.remove('is-open');
+        const cb = royaltyState?.onClose;
+        royaltyState = null;
+        if (cb) cb();
+    }
+    royaltyCancel.addEventListener('click', closeRoyaltyModal);
+    royaltyModal.addEventListener('click', (e) => { if (e.target === royaltyModal) closeRoyaltyModal(); });
+
+    function recomputeRoyaltyTotal() {
+        const inputs = royaltyRowsEl.querySelectorAll('.pj-royalty-row__input');
+        let total = 0;
+        inputs.forEach((inp) => {
+            const v = parseFloat(inp.value);
+            if (!isNaN(v)) total += v;
+        });
+        royaltyTotalVal.textContent = total.toFixed(2);
+        royaltyTotalRow.classList.remove('is-valid', 'is-invalid');
+        royaltyTotalRow.classList.add(Math.abs(total - 100) < 0.01 ? 'is-valid' : 'is-invalid');
+        return total;
+    }
+
+    royaltyEqualize.addEventListener('click', () => {
+        if (!royaltyState || !royaltyState.isOwner) return;
+        const inputs = royaltyRowsEl.querySelectorAll('.pj-royalty-row__input');
+        const n = inputs.length;
+        if (n === 0) return;
+        const each = Math.floor((100 / n) * 100) / 100;
+        let used = 0;
+        inputs.forEach((inp, i) => {
+            if (i === n - 1) inp.value = (100 - used).toFixed(2);
+            else { inp.value = each.toFixed(2); used += each; }
+        });
+        recomputeRoyaltyTotal();
+    });
+
+    royaltySave.addEventListener('click', async () => {
+        if (!royaltyState || !royaltyState.isOwner) return;
+        const inputs = royaltyRowsEl.querySelectorAll('.pj-royalty-row__input');
+        const userIds = [], percentages = [];
+        inputs.forEach((inp) => {
+            userIds.push(inp.getAttribute('data-user-id'));
+            const v = parseFloat(inp.value);
+            percentages.push(isNaN(v) ? 0 : v);
+        });
+        const total = percentages.reduce((s, n) => s + n, 0);
+        if (Math.abs(total - 100) > 0.01) {
+            royaltyError.textContent = `Percentages must sum to 100 (currently ${total.toFixed(2)}).`;
+            return;
+        }
+        royaltyError.textContent = '';
+        royaltySave.disabled = true;
+        royaltySave.textContent = 'Saving…';
+        const { error } = await sb.rpc('set_project_royalties', {
+            p_project_id: royaltyState.projectId,
+            p_royalty_type: royaltyState.royaltyType,
+            p_user_ids: userIds,
+            p_percentages: percentages
+        });
+        royaltySave.disabled = false;
+        royaltySave.textContent = 'Save';
+        if (error) {
+            royaltyError.textContent = error.message || 'Could not save.';
+            return;
+        }
+        closeRoyaltyModal();
+    });
+
+    async function openRoyaltyModal({ projectId, royaltyType, label, members, isOwner, onClose }) {
+        royaltyState = { projectId, royaltyType, members, isOwner, onClose };
+        royaltyModalTitle.textContent = label + ' royalties';
+        royaltyError.textContent = '';
+        royaltyReadonly.hidden = isOwner;
+        royaltySave.style.display = isOwner ? '' : 'none';
+        royaltyEqualize.style.display = isOwner ? '' : 'none';
+
+        const { data: existing } = await sb.rpc('get_project_royalties', { p_project_id: projectId });
+        const existingMap = {};
+        (existing || []).filter((r) => r.royalty_type === royaltyType).forEach((r) => {
+            existingMap[r.user_id] = Number(r.percentage);
+        });
+
+        royaltyRowsEl.innerHTML = (members || []).map((m) => {
+            const plain = F.plainName(m.forename, m.surname, m.username);
+            const parts = plain.split(/\s+/).filter(Boolean);
+            const first = parts.shift() || plain;
+            const rest = parts.join(' ');
+            const initial = (first[0] || '?').toUpperCase();
+            const avatar = m.avatar_url
+                ? `<div class="pj-royalty-row__avatar" style="background-image:url('${escapeHtml(m.avatar_url)}');"></div>`
+                : `<div class="pj-royalty-row__avatar">${escapeHtml(initial)}</div>`;
+            const val = (existingMap[m.user_id] ?? 0).toFixed(2);
+            return `<div class="pj-royalty-row">
+                ${avatar}
+                <span class="pj-royalty-row__name"><strong>${escapeHtml(first)}</strong>${rest ? ' ' + escapeHtml(rest) : ''}</span>
+                <input type="number" min="0" max="100" step="0.01" class="pj-royalty-row__input" value="${val}" data-user-id="${escapeHtml(m.user_id)}"${isOwner ? '' : ' readonly'}>
+                <span class="pj-royalty-row__pct">%</span>
+            </div>`;
+        }).join('');
+
+        royaltyRowsEl.querySelectorAll('.pj-royalty-row__input').forEach((inp) => {
+            inp.addEventListener('input', recomputeRoyaltyTotal);
+        });
+        recomputeRoyaltyTotal();
+        royaltyModal.classList.add('is-open');
     }
 })();
