@@ -201,32 +201,61 @@
 
         const status = `<span class="pj-status pj-status--${escapeHtml(p.status)}">${escapeHtml(statusLabel(p.status))}</span>`;
 
-        const memberPills = (members || []).map((m) => {
-            const styled = F.formatName(m.forename, m.surname, m.username);
-            const initial = (F.plainName(m.forename, m.surname, m.username)[0] || '?').toUpperCase();
+        function splitName(forename, surname, username) {
+            const plain = F.plainName(forename, surname, username);
+            const parts = plain.split(/\s+/).filter(Boolean);
+            const first = parts.shift() || plain;
+            const rest = parts.join(' ');
+            return { first, rest };
+        }
+
+        const collabCards = (members || []).map((m) => {
+            const { first, rest } = splitName(m.forename, m.surname, m.username);
+            const initial = (first[0] || '?').toUpperCase();
             const avatar = m.avatar_url
-                ? `<div class="pj-member__avatar" style="background-image:url('${escapeHtml(m.avatar_url)}');"></div>`
-                : `<div class="pj-member__avatar">${escapeHtml(initial)}</div>`;
+                ? `<div class="collab-card__avatar" style="background-image:url('${escapeHtml(m.avatar_url)}');"></div>`
+                : `<div class="collab-card__avatar">${escapeHtml(initial)}</div>`;
             const link = m.username ? `/u/${encodeURIComponent(m.username)}` : '#';
-            const crown = m.is_owner ? '<span class="pj-member__crown" title="Owner">★</span>' : '';
+            const role = m.is_owner ? 'OWNER' : 'ARTIST';
+            const crown = m.is_owner ? '<span class="collab-card__crown" title="Owner">★</span>' : '';
             const removeBtn = isMember && !m.is_owner && (isOwner || m.user_id === user.id)
-                ? `<button class="pj-member__remove" data-remove-member="${escapeHtml(m.user_id)}" aria-label="Remove">×</button>`
+                ? `<button class="collab-card__remove" data-remove-member="${escapeHtml(m.user_id)}" aria-label="Remove from project" title="Remove">×</button>`
                 : '';
-            return `<a class="pj-member" href="${link}">
+            return `<a class="collab-card" href="${link}">
+                <span class="collab-card__role">${escapeHtml(role)}</span>
                 ${avatar}
-                <span class="pj-member__name">${styled}</span>
+                <span class="collab-card__name">
+                    <strong>${escapeHtml(first)}</strong>
+                    ${rest ? `<span class="collab-card__name-rest">${escapeHtml(rest)}</span>` : ''}
+                </span>
                 ${crown}
                 ${removeBtn}
             </a>`;
         }).join('');
 
+        const addPersonCard = isMember ? `
+            <button type="button" class="collab-card collab-card--add" id="pjAddPersonBtn" aria-label="Add person">
+                <span class="collab-card__role">Select function</span>
+                <span class="collab-card__avatar">+</span>
+                <span class="collab-card__name"><strong>Add</strong><span class="collab-card__name-rest">person</span></span>
+            </button>
+        ` : '';
+
         const inviteBlock = isMember ? `
-            <div class="pj-invite-row">
+            <div class="pc-invite-row" id="pjInviteRow">
                 <input type="text" id="pjInviteInput" placeholder="Invite by username (artists only)…" autocomplete="off">
                 <button class="pj-btn" id="pjInviteBtn">Add</button>
             </div>
-            <div class="pj-invite-feedback" id="pjInviteFeedback"></div>
+            <div class="pc-invite-feedback" id="pjInviteFeedback"></div>
         ` : '';
+
+        const approvalRows = (members || []).map((m) => {
+            const { first, rest } = splitName(m.forename, m.surname, m.username);
+            return `<div class="approval-row">
+                <span class="approval-status"></span>
+                <span class="approval-row__name"><strong>${escapeHtml(first)}</strong>${rest ? ' ' + escapeHtml(rest) : ''}</span>
+            </div>`;
+        }).join('');
 
         const trackList = (tracks || []).length > 0 ? (tracks || []).map((t) => {
             const styledArtist = F.formatName(t.artist_forename, t.artist_surname, t.artist_username);
@@ -275,26 +304,75 @@
 
         content.innerHTML = `
             ${coverArea}
-            <div class="pj-detail__head">
-                <div class="pj-detail__title-row">
-                    <h1 class="pj-detail__title">${escapeHtml(p.title)}</h1>
+            ${ownerActions}
+
+            <div class="project-card-rich">
+                <div class="pc-header">
+                    <h1 class="pc-name">${escapeHtml(p.title)}</h1>
                     ${status}
                 </div>
-                <div class="pj-detail__meta">Owned by ${ownerLink} · ${p.member_count} ${p.member_count === 1 ? 'member' : 'members'} · ${p.track_count} ${p.track_count === 1 ? 'track' : 'tracks'}</div>
-                ${p.description ? `<p class="pj-detail__desc">${escapeHtml(p.description)}</p>` : ''}
-                ${ownerActions}
-            </div>
+                <div class="pc-meta">Owned by ${ownerLink} · ${p.member_count} ${p.member_count === 1 ? 'member' : 'members'} · ${p.track_count} ${p.track_count === 1 ? 'track' : 'tracks'}</div>
+                ${p.description ? `<p class="pc-desc">${escapeHtml(p.description)}</p>` : ''}
 
-            <section class="pj-section">
-                <h2>Members <span class="count">${(members || []).length}</span></h2>
-                <div class="pj-members">${memberPills}</div>
+                <div class="collab-row">
+                    ${collabCards}
+                    ${addPersonCard}
+                </div>
+
                 ${inviteBlock}
-            </section>
 
-            <section class="pj-section">
-                <h2>Tracks <span class="count">${(tracks || []).length}</span></h2>
-                ${trackList}
-            </section>
+                <div class="action-sections">
+                    <div class="action-section">
+                        <h4>Uploads</h4>
+                        <div class="action-buttons">
+                            <button type="button" class="action-btn" data-upload="wave">WAVE</button>
+                            <button type="button" class="action-btn" data-upload="sheet">Sheet Music</button>
+                            <button type="button" class="action-btn" data-upload="notes">Notes</button>
+                            <button type="button" class="action-btn" data-upload="lyrics">Lyrics</button>
+                        </div>
+                    </div>
+
+                    <div class="action-section">
+                        <h4>Finals</h4>
+                        <div class="action-buttons">
+                            <button type="button" class="action-btn" data-final="wave">WAVE</button>
+                            <button type="button" class="action-btn" data-final="sheet">Sheet Music</button>
+                            <button type="button" class="action-btn" data-final="mp3">MP3</button>
+                            <button type="button" class="action-btn" data-final="lyrics">Lyrics</button>
+                        </div>
+                    </div>
+
+                    <div class="action-section">
+                        <h4>Royalties</h4>
+                        <div class="royalties-buttons">
+                            <div class="royalty-column">
+                                <button type="button" class="action-btn" data-royalty="mechanical">Mechanical</button>
+                                <button type="button" class="action-btn" data-royalty="performance">Performance</button>
+                                <button type="button" class="action-btn" data-royalty="covers">Covers</button>
+                                <button type="button" class="action-btn" data-royalty="sample">Sample</button>
+                            </div>
+                            <div class="royalty-column">
+                                <button type="button" class="action-btn" data-royalty="synch">Synch</button>
+                                <button type="button" class="action-btn" data-royalty="print">Print Music</button>
+                                <button type="button" class="action-btn" data-royalty="tutorials">Tutorials</button>
+                                <button type="button" class="action-btn" data-royalty="commercial">Commercial</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="action-section">
+                        <h4>Approvals for release</h4>
+                        <div class="approval-list">
+                            ${approvalRows || '<div style="color:#7E89A6;font-size:12px;">No members yet.</div>'}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pc-tracks">
+                    <h4>Tracks <span style="color:#B1B1B1;font-weight:400;">(${(tracks || []).length})</span></h4>
+                    ${trackList}
+                </div>
+            </div>
         `;
 
         // Wire actions
@@ -430,6 +508,14 @@
                 }
                 inviteBtn.addEventListener('click', doInvite);
                 inviteInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); doInvite(); } });
+            }
+
+            const addPersonBtn = document.getElementById('pjAddPersonBtn');
+            if (addPersonBtn && inviteInput) {
+                addPersonBtn.addEventListener('click', () => {
+                    inviteInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setTimeout(() => inviteInput.focus(), 200);
+                });
             }
         }
     }
