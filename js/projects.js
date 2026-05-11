@@ -377,18 +377,17 @@
             ${ownerActions}
 
             <div class="project-card-rich">
-                <div class="pc-header">
-                    <h3 class="pc-name">
-                        <span class="pc-name__label">Project name:</span>
-                        <span class="pc-name__value">${escapeHtml(p.title)}</span>
-                    </h3>
-                    ${status}
-                    ${cardMenu}
-                </div>
-                <div class="pc-meta">Owned by ${ownerLink} · ${p.member_count} ${p.member_count === 1 ? 'member' : 'members'} · ${p.track_count} ${p.track_count === 1 ? 'track' : 'tracks'}</div>
+                ${cardMenu}
 
                 <div class="pc-body">
                     <div class="pc-left">
+                        <div class="pc-header">
+                            <h3 class="pc-name">
+                                <span class="pc-name__label">Project name:</span>
+                                <span class="pc-name__value">${escapeHtml(p.title)}</span>
+                            </h3>
+                            ${status}
+                        </div>
                         <div class="project-team">
                             ${collabCards}
                             ${addPersonCard}

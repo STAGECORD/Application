@@ -229,12 +229,15 @@
             width: 100%;
             container-type: inline-size;
             container-name: projectcard;
+            position: relative;
         }
 
-        /* Header — project name + status pill on the same row */
+        /* Project-name header — sits at the top of the left column so its
+           baseline matches the button-group labels on the right column. */
         .pc-header {
-            display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
-            margin-bottom: 8px;
+            display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+            margin: 0 0 var(--project-gap) 0;
+            min-height: 18px;
         }
         .pc-name {
             margin: 0;
@@ -489,9 +492,9 @@
             .button-group--approvals { width: 100%; }
         }
 
-        /* Kebab menu — top-right of each card on the list view */
-        .pc-header { position: relative; }
-        .pc-menu { margin-left: auto; position: relative; }
+        /* Kebab menu — absolute in the card's top-right so it never pushes
+           the name row down or competes with the button-group labels. */
+        .pc-menu { position: absolute; top: 14px; right: 18px; z-index: 5; }
         .pc-menu__trigger {
             background: transparent; border: 1px solid transparent;
             color: #B1B1B1; font-size: 22px; line-height: 1;
