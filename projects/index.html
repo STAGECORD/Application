@@ -393,6 +393,11 @@
         }
         .pill-btn:hover { border-color: #FFFFFF; background: #111111; }
         .pill-btn.has-data { border-color: #FFFFFF; }
+        .pill-btn--open {
+            border-color: #6FA8FF !important;
+            background: rgba(56,134,252,0.18) !important;
+            color: #FFFFFF;
+        }
 
         /* Royalties: label spans full width, two columns of pills under it */
         .button-group--royalties .button-group__label { width: 100%; }
@@ -583,6 +588,63 @@
             border: 1px solid rgba(255,255,255,0.15);
         }
         .pj-am-empty { color: #7E89A6; font-size: 13px; padding: 24px; text-align: center; }
+
+        /* In-card expansion panel — blue accent, shown below action buttons
+           when a pill is clicked. Replaces the modal popups for files and
+           royalty splits so the project card "grows" with the chosen
+           feature instead of layering a window on top. */
+        .pc-expand {
+            margin-top: 18px;
+            padding: 18px 22px 20px;
+            background: linear-gradient(180deg, rgba(56,134,252,0.14) 0%, rgba(56,134,252,0.06) 100%);
+            border: 1px solid rgba(56,134,252,0.45);
+            border-radius: 14px;
+            color: #FFFFFF;
+        }
+        .pc-expand__head {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 14px;
+        }
+        .pc-expand__title {
+            margin: 0;
+            font-size: 14px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.04em;
+            color: #BFD7FF;
+            flex: 1;
+        }
+        .pc-expand__close {
+            background: transparent; border: 1px solid rgba(255,255,255,0.2);
+            color: #FFFFFF; border-radius: 999px;
+            padding: 4px 12px;
+            font-family: inherit; font-size: 12px;
+            cursor: pointer;
+        }
+        .pc-expand__close:hover { border-color: #FFFFFF; background: rgba(255,255,255,0.06); }
+        .pc-expand__hint {
+            color: #BFD7FF; font-size: 12px;
+            margin: 0 0 12px 0; opacity: 0.85;
+        }
+        .pc-expand__status {
+            color: #BFD7FF; font-size: 12px; min-height: 16px;
+            margin-top: 8px;
+        }
+        .pc-expand__status.is-error { color: #FF9C9C; }
+        .pc-expand__status.is-success { color: #A0F0AE; }
+        .pc-expand__actions {
+            display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap;
+            align-items: center;
+        }
+
+        /* Match in-expand file rows + royalty rows to the blue theme */
+        .pc-expand .pj-file-row,
+        .pc-expand .pj-royalty-row {
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.12);
+        }
+        .pc-expand .pj-royalty-total {
+            background: rgba(255,255,255,0.05);
+            color: #FFFFFF;
+        }
 
         /* Approval rows: click own row to toggle */
         .approval-row.is-self { cursor: pointer; }

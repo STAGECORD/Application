@@ -443,6 +443,8 @@
                     </div>
                 </div>
 
+                <div class="pc-expand" data-pj-expand hidden></div>
+
                 ${p.description ? `<p class="pc-desc">${escapeHtml(p.description)}</p>` : ''}
             </div>
         `;
@@ -578,35 +580,251 @@
             synch: 'Synch', print: 'Print Music', tutorials: 'Tutorials', commercial: 'Commercial'
         };
 
+        // Inline expansion panel — replaces popup modals. Clicking the same
+        // pill twice closes it; clicking a different pill swaps the content.
+        const expandEl = host.querySelector('[data-pj-expand]');
+        let activeKey = null;
+
+        function closeExpand() {
+            activeKey = null;
+            expandEl.hidden = true;
+            expandEl.innerHTML = '';
+            host.querySelectorAll('.pill-btn--open').forEach((b) => b.classList.remove('pill-btn--open'));
+        }
+
+        function markActiveBtn(btn) {
+            host.querySelectorAll('.pill-btn--open').forEach((b) => b.classList.remove('pill-btn--open'));
+            if (btn) btn.classList.add('pill-btn--open');
+        }
+
+        async function expandFiles(category, fileType, label, triggerBtn) {
+            const key = `${category}:${fileType}`;
+            if (activeKey === key) { closeExpand(); return; }
+            activeKey = key;
+            markActiveBtn(triggerBtn);
+            expandEl.hidden = false;
+            expandEl.innerHTML = `
+                <div class="pc-expand__head">
+                    <h4 class="pc-expand__title">${escapeHtml(label)}</h4>
+                    <button type="button" class="pc-expand__close" data-expand-close>Close</button>
+                </div>
+                <p class="pc-expand__hint">${isMember ? 'Upload working files and share them with the rest of the team. Click a file to open, or remove it with the × button.' : 'Sign in as a project member to upload or remove files.'}</p>
+                <div class="pj-files-list" data-expand-files><div style="color:#BFD7FF;font-size:13px;text-align:center;padding:18px;">Loading files…</div></div>
+                ${isMember ? `
+                    <div class="pc-expand__actions">
+                        <input type="file" hidden data-expand-file-input>
+                        <button type="button" class="pj-btn" data-expand-upload>Upload new file</button>
+                        <span class="pc-expand__status" data-expand-file-status></span>
+                    </div>
+                ` : ''}
+            `;
+
+            expandEl.querySelector('[data-expand-close]').addEventListener('click', closeExpand);
+
+            async function refreshFiles() {
+                const { data, error } = await sb.rpc('get_project_files', { p_project_id: id });
+                const list = expandEl.querySelector('[data-expand-files]');
+                if (!list) return;
+                if (error) {
+                    list.innerHTML = `<div class="pj-am-empty">${escapeHtml(error.message || 'Failed to load')}</div>`;
+                    return;
+                }
+                const my = (data || []).filter((f) => f.category === category && f.file_type === fileType);
+                if (my.length === 0) { list.innerHTML = `<div style="color:#BFD7FF;font-size:13px;padding:14px 4px;opacity:0.85;">No files in this category yet.</div>`; return; }
+                list.innerHTML = my.map((f) => {
+                    const styled = F.formatName(f.uploader_forename, f.uploader_surname, f.uploader_username || 'Someone');
+                    const date = new Date(f.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    const sz = f.file_size ? (f.file_size > 1024 * 1024 ? `${(f.file_size / (1024 * 1024)).toFixed(1)} MB` : `${Math.round(f.file_size / 1024)} KB`) : '';
+                    return `<div class="pj-file-row">
+                        <div class="pj-file-row__info">
+                            <div class="pj-file-row__name">${escapeHtml(f.file_name)}</div>
+                            <div class="pj-file-row__meta">By ${styled} · ${escapeHtml(date)}${sz ? ' · ' + escapeHtml(sz) : ''}</div>
+                        </div>
+                        <a class="pj-file-row__open" href="${escapeHtml(f.file_url)}" target="_blank" rel="noopener">Open</a>
+                        ${isMember ? `<button type="button" class="pj-file-row__del" data-file-del="${escapeHtml(f.id)}" data-file-path="${escapeHtml(f.file_path)}">Delete</button>` : ''}
+                    </div>`;
+                }).join('');
+                list.querySelectorAll('[data-file-del]').forEach((b) => {
+                    b.addEventListener('click', async () => {
+                        if (!confirm('Delete this file?')) return;
+                        const fileId = b.getAttribute('data-file-del');
+                        const filePath = b.getAttribute('data-file-path');
+                        b.disabled = true;
+                        const { data: returnedPath, error: dErr } = await sb.rpc('remove_project_file', { p_file_id: fileId });
+                        if (dErr) { alert('Could not delete: ' + (dErr.message || '')); b.disabled = false; return; }
+                        await sb.storage.from('project-files').remove([returnedPath || filePath]).catch(() => {});
+                        refreshFiles();
+                    });
+                });
+            }
+            refreshFiles();
+
+            if (isMember) {
+                const uploadBtn = expandEl.querySelector('[data-expand-upload]');
+                const fileInput = expandEl.querySelector('[data-expand-file-input]');
+                const statusEl = expandEl.querySelector('[data-expand-file-status]');
+                function setStatus(text, kind) {
+                    statusEl.className = 'pc-expand__status';
+                    if (kind) statusEl.classList.add('is-' + kind);
+                    statusEl.textContent = text || '';
+                }
+                uploadBtn.addEventListener('click', () => { fileInput.value = ''; fileInput.click(); });
+                fileInput.addEventListener('change', async () => {
+                    const file = fileInput.files?.[0];
+                    if (!file) return;
+                    if (file.size > 200 * 1024 * 1024) { setStatus('File too large (max 200 MB)', 'error'); return; }
+                    setStatus(`Uploading ${file.name}…`, null);
+                    uploadBtn.disabled = true;
+                    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+                    const path = `${id}/${category}-${fileType}-${Date.now()}-${safeName}`;
+                    const { error: upErr } = await sb.storage.from('project-files').upload(path, file, { upsert: false });
+                    if (upErr) { setStatus('Upload failed: ' + (upErr.message || ''), 'error'); uploadBtn.disabled = false; return; }
+                    const { data: pub } = sb.storage.from('project-files').getPublicUrl(path);
+                    const { error: insErr } = await sb.rpc('add_project_file', {
+                        p_project_id: id, p_category: category, p_file_type: fileType,
+                        p_file_name: file.name, p_file_path: path, p_file_url: pub.publicUrl, p_file_size: file.size
+                    });
+                    uploadBtn.disabled = false;
+                    if (insErr) {
+                        sb.storage.from('project-files').remove([path]).catch(() => {});
+                        setStatus('Save failed: ' + (insErr.message || ''), 'error');
+                        return;
+                    }
+                    setStatus('Uploaded ✓', 'success');
+                    setTimeout(() => setStatus('', null), 2200);
+                    refreshFiles();
+                });
+            }
+        }
+
+        async function expandRoyalty(royaltyType, label, triggerBtn) {
+            const key = `royalty:${royaltyType}`;
+            if (activeKey === key) { closeExpand(); return; }
+            activeKey = key;
+            markActiveBtn(triggerBtn);
+            expandEl.hidden = false;
+            expandEl.innerHTML = `
+                <div class="pc-expand__head">
+                    <h4 class="pc-expand__title">${escapeHtml(label)} royalties</h4>
+                    <button type="button" class="pc-expand__close" data-expand-close>Close</button>
+                </div>
+                <p class="pc-expand__hint">${isOwner ? 'Set how this royalty is split between the project members. The total must sum to 100%.' : 'Only the project owner can change royalty splits. You can see the current split below.'}</p>
+                <div class="pj-royalty-rows" data-expand-roy-rows></div>
+                <div class="pj-royalty-total">
+                    <span>Total</span>
+                    <span><span class="pj-royalty-total__val" data-expand-roy-total>0.00</span> / 100.00 %</span>
+                </div>
+                <div class="pc-expand__status" data-expand-roy-status></div>
+                ${isOwner ? `
+                    <div class="pc-expand__actions">
+                        <button type="button" class="pj-btn pj-btn--ghost" data-expand-roy-equal>Split evenly</button>
+                        <button type="button" class="pj-btn" data-expand-roy-save>Save</button>
+                    </div>
+                ` : ''}
+            `;
+            expandEl.querySelector('[data-expand-close]').addEventListener('click', closeExpand);
+
+            const rowsEl = expandEl.querySelector('[data-expand-roy-rows]');
+            const totalEl = expandEl.querySelector('[data-expand-roy-total]');
+            const totalRow = totalEl.closest('.pj-royalty-total');
+            const statusEl = expandEl.querySelector('[data-expand-roy-status]');
+            function setStatus(text, kind) {
+                statusEl.className = 'pc-expand__status';
+                if (kind) statusEl.classList.add('is-' + kind);
+                statusEl.textContent = text || '';
+            }
+
+            const { data: existing } = await sb.rpc('get_project_royalties', { p_project_id: id });
+            const existingMap = {};
+            (existing || []).filter((r) => r.royalty_type === royaltyType).forEach((r) => {
+                existingMap[r.user_id] = Number(r.percentage);
+            });
+
+            rowsEl.innerHTML = (members || []).map((m) => {
+                const plain = F.plainName(m.forename, m.surname, m.username);
+                const parts = plain.split(/\s+/).filter(Boolean);
+                const first = parts.shift() || plain;
+                const rest = parts.join(' ');
+                const initial = (first[0] || '?').toUpperCase();
+                const avatar = m.avatar_url
+                    ? `<div class="pj-royalty-row__avatar" style="background-image:url('${escapeHtml(m.avatar_url)}');"></div>`
+                    : `<div class="pj-royalty-row__avatar">${escapeHtml(initial)}</div>`;
+                const val = (existingMap[m.user_id] ?? 0).toFixed(2);
+                return `<div class="pj-royalty-row">
+                    ${avatar}
+                    <span class="pj-royalty-row__name"><strong>${escapeHtml(first)}</strong>${rest ? ' ' + escapeHtml(rest) : ''}</span>
+                    <input type="number" min="0" max="100" step="0.01" class="pj-royalty-row__input" value="${val}" data-user-id="${escapeHtml(m.user_id)}"${isOwner ? '' : ' readonly'}>
+                    <span class="pj-royalty-row__pct">%</span>
+                </div>`;
+            }).join('');
+
+            function recompute() {
+                const inputs = rowsEl.querySelectorAll('.pj-royalty-row__input');
+                let total = 0;
+                inputs.forEach((inp) => { const v = parseFloat(inp.value); if (!isNaN(v)) total += v; });
+                totalEl.textContent = total.toFixed(2);
+                totalRow.classList.remove('is-valid', 'is-invalid');
+                totalRow.classList.add(Math.abs(total - 100) < 0.01 ? 'is-valid' : 'is-invalid');
+            }
+            rowsEl.querySelectorAll('.pj-royalty-row__input').forEach((inp) => inp.addEventListener('input', recompute));
+            recompute();
+
+            if (isOwner) {
+                expandEl.querySelector('[data-expand-roy-equal]').addEventListener('click', () => {
+                    const inputs = rowsEl.querySelectorAll('.pj-royalty-row__input');
+                    const n = inputs.length; if (n === 0) return;
+                    const each = Math.floor((100 / n) * 100) / 100;
+                    let used = 0;
+                    inputs.forEach((inp, i) => {
+                        if (i === n - 1) inp.value = (100 - used).toFixed(2);
+                        else { inp.value = each.toFixed(2); used += each; }
+                    });
+                    recompute();
+                });
+                expandEl.querySelector('[data-expand-roy-save]').addEventListener('click', async (e) => {
+                    const btn = e.currentTarget;
+                    const inputs = rowsEl.querySelectorAll('.pj-royalty-row__input');
+                    const userIds = [], pcts = [];
+                    inputs.forEach((inp) => {
+                        userIds.push(inp.getAttribute('data-user-id'));
+                        const v = parseFloat(inp.value); pcts.push(isNaN(v) ? 0 : v);
+                    });
+                    const total = pcts.reduce((s, n) => s + n, 0);
+                    if (Math.abs(total - 100) > 0.01) {
+                        setStatus(`Percentages must sum to 100 (currently ${total.toFixed(2)}).`, 'error');
+                        return;
+                    }
+                    setStatus('Saving…', null);
+                    btn.disabled = true;
+                    const { error } = await sb.rpc('set_project_royalties', {
+                        p_project_id: id, p_royalty_type: royaltyType,
+                        p_user_ids: userIds, p_percentages: pcts
+                    });
+                    btn.disabled = false;
+                    if (error) { setStatus(error.message || 'Could not save.', 'error'); return; }
+                    setStatus('Saved ✓', 'success');
+                    // Refresh the host so the button gets the has-data highlight
+                    setTimeout(() => renderDetail(id, host), 600);
+                });
+            }
+        }
+
         host.querySelectorAll('[data-upload]').forEach((btn) => {
             btn.addEventListener('click', () => {
                 const t = btn.getAttribute('data-upload');
-                openFilesModal({
-                    projectId: id, category: 'uploads', fileType: t, isMember,
-                    label: 'Uploads · ' + (FILE_TYPE_LABELS[t] || t),
-                    onClose: () => renderDetail(id, host)
-                });
+                expandFiles('uploads', t, 'Uploads · ' + (FILE_TYPE_LABELS[t] || t), btn);
             });
         });
         host.querySelectorAll('[data-final]').forEach((btn) => {
             btn.addEventListener('click', () => {
                 const t = btn.getAttribute('data-final');
-                openFilesModal({
-                    projectId: id, category: 'finals', fileType: t, isMember,
-                    label: 'Finals · ' + (FILE_TYPE_LABELS[t] || t),
-                    onClose: () => renderDetail(id, host)
-                });
+                expandFiles('finals', t, 'Finals · ' + (FILE_TYPE_LABELS[t] || t), btn);
             });
         });
         host.querySelectorAll('[data-royalty]').forEach((btn) => {
             btn.addEventListener('click', () => {
                 const t = btn.getAttribute('data-royalty');
-                openRoyaltyModal({
-                    projectId: id, royaltyType: t,
-                    label: ROYALTY_LABELS[t] || t,
-                    members: members || [], isOwner,
-                    onClose: () => renderDetail(id, host)
-                });
+                expandRoyalty(t, ROYALTY_LABELS[t] || t, btn);
             });
         });
         host.querySelectorAll('[data-approval-toggle]').forEach((row) => {
