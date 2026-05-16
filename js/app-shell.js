@@ -182,8 +182,8 @@
 
     // ===========================================================
     // Help mode — click "?" to activate, then click any element
-    // with a [data-help] attribute to see what it does. Esc or
-    // clicking "?" again exits. Ported from the prototype.
+    // with [data-help] to see its explanation. Esc or clicking "?"
+    // again exits. Ported from the prototype.
     // ===========================================================
     const helpButton = document.querySelector('.help-button');
     if (helpButton && !document.querySelector('.help-tooltip')) {
@@ -192,6 +192,11 @@
         tooltip.setAttribute('role', 'tooltip');
         tooltip.setAttribute('aria-hidden', 'true');
         document.body.appendChild(tooltip);
+
+        const banner = document.createElement('div');
+        banner.className = 'help-banner';
+        banner.textContent = 'HELP MODE ON — click anything outlined to learn what it does';
+        document.body.appendChild(banner);
 
         let helpActive = false;
 
@@ -209,9 +214,10 @@
         function showTooltipFor(el, x, y) {
             const text = el.getAttribute('data-help');
             if (!text) return;
-            tooltip.textContent = text;
+            tooltip.innerHTML = `${escapeHtml(text)}<span class="help-tooltip__close">Click anything else for its hint · Esc to exit</span>`;
             tooltip.classList.add('is-visible');
             tooltip.setAttribute('aria-hidden', 'false');
+            // Force layout so getBoundingClientRect returns real dimensions
             const ttRect = tooltip.getBoundingClientRect();
             const margin = 12;
             let left = x + 16;
@@ -220,7 +226,7 @@
                 left = window.innerWidth - ttRect.width - margin;
             }
             if (top + ttRect.height + margin > window.innerHeight) {
-                top = y - ttRect.height - 16;
+                top = Math.max(margin, y - ttRect.height - 16);
             }
             left = Math.max(margin, left);
             top = Math.max(margin, top);
@@ -229,22 +235,27 @@
         }
 
         helpButton.addEventListener('click', (e) => {
+            e.preventDefault();
             e.stopPropagation();
             setHelpActive(!helpActive);
         });
 
-        // Capture-phase listener so we run before page handlers
+        // Capture-phase listener so we run before page handlers and can
+        // suppress the underlying click (eg. expanding a pill) when the
+        // user just wants the help tooltip.
         document.addEventListener('click', (e) => {
             if (!helpActive) return;
             if (helpButton.contains(e.target)) return;
             if (tooltip.contains(e.target)) { hideTooltip(); return; }
-            e.preventDefault();
-            e.stopPropagation();
             const target = e.target.closest('[data-help]');
             if (target) {
+                e.preventDefault();
+                e.stopPropagation();
                 showTooltipFor(target, e.clientX, e.clientY);
             } else {
-                setHelpActive(false);
+                // Click outside any documented element: dismiss tooltip but
+                // stay in help mode so the user can keep exploring.
+                hideTooltip();
             }
         }, true);
 

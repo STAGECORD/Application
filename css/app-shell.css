@@ -307,9 +307,10 @@ body.help-mode [data-help]:hover {
 
 .help-tooltip {
     position: fixed;
+    top: 0; left: 0;
     z-index: 9999;
-    max-width: 320px;
-    padding: 12px 14px;
+    max-width: 340px;
+    padding: 14px 16px;
     background: #0B1A38;
     border: 1px solid #6FA8FF;
     border-radius: 10px;
@@ -317,13 +318,29 @@ body.help-mode [data-help]:hover {
     font-size: 13px;
     line-height: 1.45;
     box-shadow: 0 12px 32px rgba(0,0,0,0.45);
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(-4px);
-    transition: opacity 0.15s ease, transform 0.15s ease;
+    display: none;
 }
-.help-tooltip.is-visible {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateY(0);
+.help-tooltip.is-visible { display: block; }
+.help-tooltip__close {
+    display: block;
+    margin-top: 8px;
+    font-size: 11px;
+    color: #6FA8FF;
+    opacity: 0.85;
 }
+
+/* Floating "Help mode is on" banner */
+.help-banner {
+    position: fixed;
+    top: 72px; right: 16px;
+    z-index: 9998;
+    padding: 8px 14px;
+    background: #6FA8FF;
+    color: #0B0B0F;
+    font-size: 12px; font-weight: 700;
+    border-radius: 999px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+    display: none;
+    letter-spacing: 0.03em;
+}
+body.help-mode .help-banner { display: block; }
