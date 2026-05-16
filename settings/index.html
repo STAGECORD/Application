@@ -3,56 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STAGECORD PRO — Settings</title>
-    <link rel="stylesheet" href="../css/sidebar.css">
+    <meta name="robots" content="noindex, nofollow">
+    <title>STAGECORD — Settings</title>
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/logo.css">
-    <link rel="stylesheet" href="../css/topbar.css">
-    <link rel="stylesheet" href="../css/artist-settings.css">
-    <link rel="stylesheet" href="../css/stage.css">
+    <link rel="stylesheet" href="../css/start.css">
+    <link rel="stylesheet" href="../css/app-shell.css">
+    <style>
+        .settings-wrap { max-width: 720px; margin: 0 auto; padding: 32px 24px 60px; }
+        .settings-head { margin-bottom: 24px; }
+        .settings-head h1 {
+            margin: 0; color: #FFFFFF;
+            font-size: 26px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.04em;
+        }
+        .settings-head p { color: #B1B1B1; font-size: 14px; margin: 6px 0 0 0; }
+
+        .settings-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 22px 24px;
+            margin-bottom: 18px;
+            color: #FFFFFF;
+        }
+        .settings-card h2 {
+            margin: 0 0 4px 0;
+            font-size: 16px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.04em;
+            color: #FFFFFF;
+        }
+        .settings-card__sub {
+            color: #B1B1B1; font-size: 13px;
+            margin: 0 0 18px 0;
+        }
+
+        .settings-field {
+            display: flex; flex-direction: column; gap: 6px;
+            margin-bottom: 16px;
+        }
+        .settings-field label {
+            font-size: 12px; color: #7E89A6;
+            text-transform: uppercase; letter-spacing: 0.06em;
+        }
+        .settings-field select,
+        .settings-field input {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 8px;
+            padding: 11px 14px;
+            color: #FFFFFF;
+            font-family: inherit;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+        .settings-field select option { background: #0B1A38; }
+        .settings-field__hint { color: #7E89A6; font-size: 12px; margin-top: 2px; }
+
+        .settings-actions {
+            display: flex; align-items: center; gap: 14px;
+            margin-top: 8px;
+        }
+        .settings-btn {
+            background: #FFFFFF; color: #0B0B0F; border: none;
+            border-radius: 999px; padding: 10px 22px;
+            font-weight: 700; font-size: 14px;
+            font-family: inherit; cursor: pointer;
+        }
+        .settings-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .settings-feedback { color: #B1B1B1; font-size: 13px; }
+        .settings-feedback.is-success { color: #5CD66B; }
+        .settings-feedback.is-error { color: #FF6B6B; }
+    </style>
 </head>
-<body>
-    <aside class="sidebar" data-sidebar></aside>
+<body class="app-body">
 
-    <header class="topbar">
-        <div class="logo-container">
-            <a href="../index.html" class="logo-link">
-                <h1 class="logo"><span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span><span class="logo-pro">PRO</span></h1>
-            </a>
+    <div data-app-shell data-page-title="SETTINGS"></div>
+
+    <main class="app-main"><div class="settings-wrap">
+        <div class="settings-head">
+            <h1>Settings</h1>
+            <p>Preferences that affect how STAGECORD looks and behaves for you.</p>
         </div>
-        <div class="search-bar">
-            <input type="text" class="search-input" placeholder="Search Artists, Concerts, Venues, Friends and much more" aria-label="Search"/>
-            <svg class="search-icon" viewBox="0 0 28 28" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/><path d="M18 18L24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+
+        <div class="settings-card" data-help="Display preferences — how content is rendered for you across the platform. These changes are private to your account.">
+            <h2>Display</h2>
+            <p class="settings-card__sub">Choose your preferred currency. Project rates, commercial pricing and any payouts you see will be converted to this currency.</p>
+
+            <form id="displayForm">
+                <div class="settings-field">
+                    <label for="setting-currency">Currency</label>
+                    <select id="setting-currency" data-help="Currency you see across STAGECORD. Project rates are stored in DKK and converted to this currency on display.">
+                        <option value="DKK">Danish krone (DKK)</option>
+                        <option value="EUR">Euro (EUR)</option>
+                        <option value="USD">US dollar (USD)</option>
+                        <option value="GBP">British pound (GBP)</option>
+                        <option value="JPY">Japanese yen (JPY)</option>
+                        <option value="XOF">West African CFA franc (XOF)</option>
+                    </select>
+                    <span class="settings-field__hint">All prices on the platform are kept in DKK and converted for display. Updating this only changes what you see — it doesn't move any money.</span>
+                </div>
+
+                <div class="settings-actions">
+                    <button type="submit" class="settings-btn" id="displaySave" data-help="Save your display preferences. Takes effect immediately on every page.">Save changes</button>
+                    <span class="settings-feedback" id="displayFeedback" role="status" aria-live="polite"></span>
+                </div>
+            </form>
         </div>
-        <button type="button" class="help-button" aria-label="Help" aria-pressed="false" data-help="Help button: Click to enter help mode, then click any element with a help-cursor to see what it does. Press Esc or click the help button again to exit."><span class="help-mark">?</span></button>
-    </header>
+    </div></main>
 
-    <main class="main-content">
-        <div class="content-wrapper">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase.js"></script>
+    <script src="../js/format.js"></script>
+    <script src="../js/app-shell.js"></script>
+    <script>
+    (async function () {
+        const sb = window.supabaseClient;
+        const { data: { session } } = await sb.auth.getSession();
+        if (!session) { window.location.href = '/login/'; return; }
+        const user = session.user;
 
-            <header class="settings-header">
-                <h1 class="settings-header__title" data-settings-title>Settings</h1>
-                <span class="settings-header__sub" data-settings-subtitle>Loading…</span>
-            </header>
+        const currencyEl = document.getElementById('setting-currency');
+        const saveBtn = document.getElementById('displaySave');
+        const feedback = document.getElementById('displayFeedback');
 
-            <nav class="settings-tabs" role="tablist" data-settings-tabs></nav>
-            <div data-settings-panels></div>
+        function setFeedback(text, kind) {
+            feedback.className = 'settings-feedback';
+            if (kind) feedback.classList.add('is-' + kind);
+            feedback.textContent = text || '';
+        }
 
-        </div>
-    </main>
+        // Load current setting
+        const { data: prof, error: loadErr } = await sb
+            .from('profiles')
+            .select('display_currency')
+            .eq('id', user.id)
+            .single();
+        if (loadErr) {
+            setFeedback('Could not load your settings — try refreshing.', 'error');
+        } else if (prof?.display_currency) {
+            currencyEl.value = prof.display_currency;
+        }
 
-    <script src="../js/core.js"></script>
-    <script src="../js/modes.js"></script>
-    <script src="../js/sidebar.js"></script>
-    <script src="../js/topbar-widgets.js"></script>
-    <script src="../js/stage-badge.js"></script>
-    <script src="../js/acting-as-service.js"></script>
-    <script src="../js/stage-cards.js"></script>
-    <script src="../js/stage-label.js"></script>
-    <script src="../js/stage-resources.js"></script>
-    <script src="../js/stage-economy.js"></script>
-    <script src="../js/settings.js"></script>
-    <script src="../js/activity-feed.js"></script>
-    <script src="../js/app.js"></script>
+        document.getElementById('displayForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newCurrency = currencyEl.value;
+            saveBtn.disabled = true;
+            setFeedback('Saving…');
+            const { error } = await sb
+                .from('profiles')
+                .update({ display_currency: newCurrency })
+                .eq('id', user.id);
+            saveBtn.disabled = false;
+            if (error) {
+                setFeedback('Could not save: ' + (error.message || ''), 'error');
+                return;
+            }
+            setFeedback('Saved ✓', 'success');
+            setTimeout(() => setFeedback('', null), 2500);
+        });
+    })();
+    </script>
 </body>
 </html>
