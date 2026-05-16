@@ -809,6 +809,111 @@
             }
         }
 
+        function relTime(date) {
+            const diff = (Date.now() - date.getTime()) / 1000;
+            if (diff < 60) return 'just now';
+            if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+            if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        async function expandLog(triggerBtn) {
+            const key = 'action:log';
+            if (activeKey === key) { closeExpand(); return; }
+            activeKey = key;
+            markActiveBtn(triggerBtn);
+            expandEl.hidden = false;
+            expandEl.innerHTML = `
+                <div class="pc-expand__head">
+                    <h4 class="pc-expand__title">Project activity log</h4>
+                    <button type="button" class="pc-expand__close" data-expand-close>Close</button>
+                </div>
+                <p class="pc-expand__hint">A timeline of everything that has happened on this project — uploads, royalty splits and approvals — newest first.</p>
+                <div class="pj-log-list" data-expand-log><div style="color:#BFD7FF;text-align:center;padding:24px;">Loading…</div></div>
+            `;
+            expandEl.querySelector('[data-expand-close]').addEventListener('click', closeExpand);
+
+            const [
+                { data: filesData },
+                { data: approvalsData },
+                { data: royaltiesData }
+            ] = await Promise.all([
+                sb.rpc('get_project_files', { p_project_id: id }),
+                sb.rpc('get_project_approvals', { p_project_id: id }),
+                sb.rpc('get_project_royalties', { p_project_id: id })
+            ]);
+
+            const memberById = new Map((members || []).map((m) => [m.user_id, m]));
+            const ownerLite = {
+                user_id: p.owner_id, username: p.owner_username,
+                forename: p.owner_forename, surname: p.owner_surname
+            };
+
+            const events = [];
+
+            (filesData || []).forEach((f) => {
+                events.push({
+                    ts: new Date(f.created_at),
+                    actor: { forename: f.uploader_forename, surname: f.uploader_surname, username: f.uploader_username },
+                    verb: 'uploaded',
+                    target: `${f.file_name} <em>(${escapeHtml(FILE_TYPE_LABELS[f.file_type] || f.file_type)} · ${escapeHtml(f.category)})</em>`,
+                    iconChar: '↑',
+                    category: 'file'
+                });
+            });
+
+            (approvalsData || []).forEach((a) => {
+                const m = memberById.get(a.user_id) || {};
+                events.push({
+                    ts: new Date(a.approved_at),
+                    actor: { forename: m.forename, surname: m.surname, username: m.username || 'Someone' },
+                    verb: 'approved release',
+                    target: '',
+                    iconChar: '✓',
+                    category: 'approval'
+                });
+            });
+
+            // Royalty rows are inserted as a batch by set_project_royalties.
+            // Group by (royalty_type, updated_at second) so a single save becomes one event.
+            const royGroups = new Map();
+            (royaltiesData || []).forEach((r) => {
+                if (!r.updated_at) return;
+                const k = `${r.royalty_type}:${r.updated_at.slice(0, 19)}`;
+                if (!royGroups.has(k)) royGroups.set(k, { royalty_type: r.royalty_type, updated_at: r.updated_at });
+            });
+            royGroups.forEach((g) => {
+                events.push({
+                    ts: new Date(g.updated_at),
+                    actor: ownerLite,
+                    verb: 'updated royalty split for',
+                    target: `<em>${escapeHtml(ROYALTY_LABELS[g.royalty_type] || g.royalty_type)}</em>`,
+                    iconChar: '%',
+                    category: 'royalty'
+                });
+            });
+
+            events.sort((a, b) => b.ts - a.ts);
+
+            const listEl = expandEl.querySelector('[data-expand-log]');
+            if (events.length === 0) {
+                listEl.innerHTML = `<div style="color:#BFD7FF;text-align:center;padding:24px;opacity:0.85;">No activity yet. Upload a file or approve the release to start building the log.</div>`;
+                return;
+            }
+
+            listEl.innerHTML = events.slice(0, 80).map((ev) => {
+                const styledName = F.formatName(ev.actor.forename, ev.actor.surname, ev.actor.username || 'Someone');
+                return `<div class="pj-log-row">
+                    <div class="pj-log-row__icon" data-cat="${ev.category}">${ev.iconChar}</div>
+                    <div class="pj-log-row__body">
+                        <div>${styledName} ${escapeHtml(ev.verb)}${ev.target ? ' ' + ev.target : ''}</div>
+                        <div class="pj-log-row__time">${escapeHtml(relTime(ev.ts))}</div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
         async function expandApproval(triggerRow) {
             const key = 'approval:self';
             if (activeKey === key) { closeExpand(); return; }
@@ -887,9 +992,7 @@
         });
 
         host.querySelectorAll('[data-action="log"]').forEach((btn) => {
-            btn.addEventListener('click', () => {
-                alert('Project activity log — coming in the next milestone.');
-            });
+            btn.addEventListener('click', () => { expandLog(btn); });
         });
 
         // Kebab menu toggle (list view only)
