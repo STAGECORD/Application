@@ -834,6 +834,34 @@
 
             // ----- Commercial: rate-card editor / viewer -----
             if (isCommercial) {
+                const COMMERCIAL_CATEGORIES = {
+                    tv_national: 'TV commercial — national',
+                    tv_international: 'TV commercial — international',
+                    radio_ad: 'Radio commercial',
+                    online_ad: 'Online ad / social media',
+                    trailer: 'Trailer / promo',
+                    film_theatrical: 'Film (theatrical)',
+                    film_streaming: 'Film / series (streaming)',
+                    documentary: 'Documentary',
+                    video_game: 'Video game',
+                    mobile_app: 'Mobile app / game',
+                    live_event: 'Live or corporate event',
+                    background_music: 'Background music (retail, restaurant)',
+                    brand_campaign: 'Brand campaign',
+                    educational: 'Educational / instructional',
+                    permanent_buyout: 'Permanent buyout — full rights'
+                };
+                const COMMERCIAL_RESTRICTIONS = {
+                    pornography: 'Pornography / adult content',
+                    tobacco: 'Tobacco products',
+                    alcohol: 'Alcohol',
+                    gambling: 'Gambling / betting',
+                    weapons: 'Weapons / firearms',
+                    political: 'Political campaigns',
+                    religious: 'Religious content',
+                    hate_speech: 'Hate groups or hate speech',
+                    childrens_content: "Children's content (under 13)"
+                };
                 const ratesEl = expandEl.querySelector('[data-expand-rates]');
                 async function refreshRates() {
                     ratesEl.innerHTML = `<div class="pc-rates__loading">Loading rates…</div>`;
@@ -863,6 +891,10 @@
                             </div>`;
                         }).join('');
 
+                    const categoryOptions = Object.entries(COMMERCIAL_CATEGORIES)
+                        .map(([k, v]) => `<option value="${escapeHtml(k)}">${escapeHtml(v)}</option>`)
+                        .join('');
+
                     ratesEl.innerHTML = `
                         <div class="pc-rates__head">
                             <h5>Rate card</h5>
@@ -872,7 +904,10 @@
                         ${isOwner ? `
                             <form class="pc-rates__form" data-rate-form>
                                 <div class="pc-rates__form-row">
-                                    <input type="text" name="label" placeholder="Label (e.g. National TV ad)" required maxlength="120">
+                                    <select name="category" required>
+                                        <option value="">Pick a category…</option>
+                                        ${categoryOptions}
+                                    </select>
                                     <input type="number" name="price" placeholder="Price (DKK)" min="0" step="100" required>
                                 </div>
                                 <div class="pc-rates__form-row">
@@ -894,6 +929,8 @@
                                 <div class="pc-rates__form-error" data-rate-form-error></div>
                             </form>
                         ` : ''}
+
+                        <div class="pc-restrictions" data-expand-restrictions></div>
                     `;
 
                     ratesEl.querySelectorAll('[data-rate-del]').forEach((btn) => {
@@ -922,17 +959,18 @@
                             e.preventDefault();
                             errEl.textContent = '';
                             const fd = new FormData(form);
+                            const categoryKey = fd.get('category');
                             const periodTypeVal = fd.get('period_type');
+                            if (!categoryKey) { errEl.textContent = 'Pick a category.'; return; }
                             const payload = {
                                 p_project_id: id,
-                                p_label: (fd.get('label') || '').toString().trim(),
+                                p_label: COMMERCIAL_CATEGORIES[categoryKey] || categoryKey,
                                 p_price_dkk: parseFloat(fd.get('price')) || 0,
                                 p_period_type: periodTypeVal,
                                 p_period_months: periodTypeVal === 'permanent' ? null : (parseInt(fd.get('period_months')) || 12),
                                 p_scope: fd.get('scope'),
                                 p_notes: (fd.get('notes') || '').toString().trim() || null
                             };
-                            if (!payload.p_label) { errEl.textContent = 'Label is required.'; return; }
                             const submitBtn = form.querySelector('button[type="submit"]');
                             submitBtn.disabled = true;
                             const { error: aErr } = await sb.rpc('add_project_commercial_rate', payload);
@@ -942,6 +980,69 @@
                             syncMonths();
                             refreshRates();
                         });
+                    }
+
+                    // Restrictions section
+                    const restrEl = expandEl.querySelector('[data-expand-restrictions]');
+                    const { data: restrData } = await sb.rpc('get_project_commercial_restrictions', { p_project_id: id });
+                    const activeRestrictions = new Set((restrData || []).map((r) => r.restriction));
+
+                    if (isOwner) {
+                        const checkboxes = Object.entries(COMMERCIAL_RESTRICTIONS).map(([k, v]) => `
+                            <label class="pc-restrict__item">
+                                <input type="checkbox" data-restriction="${escapeHtml(k)}"${activeRestrictions.has(k) ? ' checked' : ''}>
+                                <span>${escapeHtml(v)}</span>
+                            </label>
+                        `).join('');
+                        restrEl.innerHTML = `
+                            <div class="pc-restrictions__head">
+                                <h5>Restrictions</h5>
+                                <span class="pc-rates__sub">Tick anything this song may NOT be used for. Changes save instantly.</span>
+                            </div>
+                            <div class="pc-restrict__grid">${checkboxes}</div>
+                            <div class="pc-restrict__status" data-restrict-status></div>
+                        `;
+                        const statusEl2 = restrEl.querySelector('[data-restrict-status]');
+                        function setRestrStatus(text, kind) {
+                            statusEl2.className = 'pc-restrict__status';
+                            if (kind) statusEl2.classList.add('is-' + kind);
+                            statusEl2.textContent = text || '';
+                        }
+                        restrEl.querySelectorAll('[data-restriction]').forEach((cb) => {
+                            cb.addEventListener('change', async () => {
+                                if (cb.checked) activeRestrictions.add(cb.getAttribute('data-restriction'));
+                                else activeRestrictions.delete(cb.getAttribute('data-restriction'));
+                                setRestrStatus('Saving…');
+                                const { error: rErr } = await sb.rpc('set_project_commercial_restrictions', {
+                                    p_project_id: id,
+                                    p_restrictions: Array.from(activeRestrictions)
+                                });
+                                if (rErr) { setRestrStatus('Save failed: ' + (rErr.message || ''), 'error'); return; }
+                                setRestrStatus('Saved ✓', 'success');
+                                setTimeout(() => setRestrStatus('', null), 1800);
+                            });
+                        });
+                    } else {
+                        const restrictionList = Array.from(activeRestrictions);
+                        if (restrictionList.length === 0) {
+                            restrEl.innerHTML = `
+                                <div class="pc-restrictions__head">
+                                    <h5>Restrictions</h5>
+                                </div>
+                                <div class="pc-restrict__none">The owner has not set any commercial restrictions on this song.</div>
+                            `;
+                        } else {
+                            const chips = restrictionList.map((r) =>
+                                `<span class="pc-restrict__chip">${escapeHtml(COMMERCIAL_RESTRICTIONS[r] || r)}</span>`
+                            ).join('');
+                            restrEl.innerHTML = `
+                                <div class="pc-restrictions__head">
+                                    <h5>Restrictions</h5>
+                                    <span class="pc-rates__sub">This song may NOT be licensed for the following uses:</span>
+                                </div>
+                                <div class="pc-restrict__chips">${chips}</div>
+                            `;
+                        }
                     }
                 }
                 refreshRates();
