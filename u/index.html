@@ -9,80 +9,346 @@
     <link rel="stylesheet" href="../css/start.css">
     <link rel="stylesheet" href="../css/app-shell.css">
     <style>
-        .pp-wrap { max-width: 720px; margin: 0 auto; padding: 32px 24px 60px; }
-        .pp-cover {
-            width: 100%; height: 200px;
-            border-radius: 16px;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
+        /* =====================================================
+           Public profile page — mirrors the /artist/ demo
+           visual language (big cover hero, uppercase section
+           headings, horizontal event calendar).
+           ===================================================== */
+
+        .pp-wrap { max-width: 1180px; margin: 0 auto; padding: 24px 24px 60px; }
+
+        /* ---------- Hero / cover ---------- */
+        .pp-hero {
+            position: relative;
+            width: 100%;
+            height: 420px;
+            border-radius: 28px;
+            overflow: hidden;
+            color: #FFFFFF;
+            background-color: #1a1a1a;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 22px 26px 28px 30px;
+            box-sizing: border-box;
+        }
+        .pp-hero--no-cover {
+            background-image: linear-gradient(135deg, #1a2a4f 0%, #2d1a4f 60%, #4f1a2a 100%);
+        }
+        .pp-hero::before {
+            content: "";
+            position: absolute; inset: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 35%, rgba(0,0,0,0.65) 100%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .pp-hero > * { position: relative; z-index: 1; }
+
+        .pp-hero__top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .pp-hero__avatar {
+            width: 84px; height: 84px; border-radius: 50%;
             background-size: cover; background-position: center;
-            margin-bottom: 12px;
-        }
-        .pp-card {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 16px;
-            padding: 36px;
-        }
-        .pp-card.has-cover { margin-top: -50px; position: relative; z-index: 2; backdrop-filter: blur(2px); }
-        .pp-header { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
-        .pp-avatar {
-            width: 128px; height: 128px; border-radius: 50%;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.12);
-            background-size: cover; background-position: center;
-            flex-shrink: 0; display: flex; align-items: center; justify-content: center;
-        }
-        .pp-avatar__initial {
-            color: #5A6480; font-size: 42px; font-weight: 600;
-        }
-        .pp-meta { flex: 1; min-width: 220px; }
-        .pp-name { margin: 0 0 4px 0; color: #FFFFFF; font-size: 28px; font-weight: 300; line-height: 1.2; }
-        .pp-name strong { font-weight: 700; }
-        .pp-handle { margin: 0 0 14px 0; color: #7E89A6; font-size: 15px; }
-        .pp-role-tag {
-            display: inline-block; padding: 4px 12px; border-radius: 999px;
-            background: rgba(56,134,252,0.18); color: #6FA8FF;
-            font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em;
-        }
-        .pp-bio {
-            margin: 28px 0 0 0; padding: 24px 0 0 0;
-            border-top: 1px solid rgba(255,255,255,0.06);
-            color: #D1D6E0; font-size: 16px; line-height: 1.6;
-            white-space: pre-wrap;
-        }
-        .pp-empty {
-            text-align: center; padding: 60px 20px;
-            color: #7E89A6;
-        }
-        .pp-empty h2 {
-            margin: 0 0 12px 0; color: #FFFFFF;
-            font-size: 24px; font-weight: 600;
-        }
-        .pp-empty a {
-            color: #FFFFFF; text-decoration: underline;
+            background-color: rgba(255,255,255,0.12);
+            border: 2px solid rgba(255,255,255,0.55);
+            box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+            display: flex; align-items: center; justify-content: center;
+            color: #FFFFFF; font-size: 32px; font-weight: 600;
+            flex-shrink: 0;
         }
         .pp-cta-row {
-            display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap;
+            display: flex; gap: 12px; flex-wrap: wrap;
+            margin-left: auto;
         }
-        .pp-btn {
-            background: #FFFFFF; color: #0B0B0F;
-            padding: 11px 22px; border-radius: 999px;
-            text-decoration: none; font-weight: 600; font-size: 14px;
+        .pp-cta {
+            display: inline-flex; align-items: center; gap: 10px;
+            padding: 0 22px;
+            height: 44px;
+            background: transparent;
+            border: 1px solid #FFFFFF;
+            border-radius: 999px;
+            color: #FFFFFF;
+            font-family: inherit; font-weight: 500; font-size: 15px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.15s ease, color 0.15s ease;
+            white-space: nowrap;
         }
-        .pp-btn--ghost {
-            background: transparent; color: #FFFFFF;
-            border: 1px solid rgba(255,255,255,0.2);
+        .pp-cta:hover { background: rgba(255,255,255,0.14); }
+        .pp-cta--solid { background: #FFFFFF; color: #0B0B0F; }
+        .pp-cta--solid:hover { background: #F0F0F0; color: #0B0B0F; }
+        .pp-cta--following { background: transparent; color: #FFFFFF; border-color: rgba(255,255,255,0.6); }
+        .pp-cta--following:hover { background: rgba(255,107,107,0.16); border-color: rgba(255,107,107,0.7); color: #FFB3B3; }
+        .pp-cta:disabled { opacity: 0.6; cursor: wait; }
+
+        .pp-hero__bottom {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+        .pp-hero__identity { min-width: 0; flex: 1 1 auto; }
+        .pp-hero__handle {
+            color: rgba(255,255,255,0.85);
+            font-size: 15px;
+            margin: 0 0 6px 0;
+            letter-spacing: 0.02em;
+        }
+        .pp-hero__handle .pp-role-pill {
+            display: inline-block;
+            margin-left: 10px;
+            padding: 2px 10px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.16);
+            color: #FFFFFF;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 600;
+            vertical-align: middle;
+        }
+        .pp-hero__name {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 56px;
+            line-height: 1;
+            text-transform: uppercase;
+            color: #FFFFFF;
+            margin: 0;
+            letter-spacing: -0.01em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            min-width: 0;
+        }
+        .pp-hero__name strong { font-weight: 700; }
+        .pp-hero__name .pp-hero__name-light { font-weight: 300; }
+
+        .pp-hero__stats {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+        .pp-hero__stat {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            line-height: 26px;
+            color: #FFFFFF;
+        }
+        .pp-hero__stat-value { font-weight: 700; margin-right: 6px; }
+        .pp-hero__stat-label { font-weight: 400; opacity: 0.9; }
+
+        /* ---------- Sections ---------- */
+        .pp-section { margin-top: 38px; }
+        .pp-section__heading {
+            margin: 0 0 18px 0;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 22px;
+            line-height: 28px;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            color: #FFFFFF;
+        }
+        .pp-section__heading .pp-section__count {
+            color: #7E89A6;
+            font-size: 14px;
+            font-weight: 400;
+            margin-left: 10px;
+            text-transform: none;
+            letter-spacing: 0;
         }
 
-        .pp-posts {
-            margin-top: 28px;
+        /* ---------- Bio ---------- */
+        .pp-bio__text {
+            margin: 0;
+            color: #D1D6E0;
+            font-size: 15px;
+            line-height: 1.65;
+            white-space: pre-wrap;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            cursor: pointer;
+            transition: color 0.15s ease;
         }
-        .pp-posts__heading {
-            display: flex; align-items: baseline; gap: 12px; margin: 0 0 14px 0;
-            color: #FFFFFF; font-size: 18px; font-weight: 600;
+        .pp-bio.is-expanded .pp-bio__text {
+            display: block;
+            -webkit-line-clamp: unset;
+            overflow: visible;
         }
-        .pp-posts__count { color: #7E89A6; font-size: 13px; font-weight: 400; }
+        .pp-bio__text:hover { color: #FFFFFF; }
+        .pp-bio--empty {
+            color: #7E89A6; font-size: 14px;
+            padding: 8px 0;
+        }
+
+        /* ---------- Events calendar (16-day strip) ---------- */
+        .pp-cal-row {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding-bottom: 6px;
+            scroll-snap-type: x proximity;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .pp-cal-row::-webkit-scrollbar { display: none; }
+        .pp-cal-day {
+            flex-shrink: 0;
+            width: 64px; height: 64px;
+            padding: 0;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.5);
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            color: #FFFFFF;
+            font-family: inherit;
+            cursor: default;
+            transition: background 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+            scroll-snap-align: start;
+            line-height: 1;
+        }
+        .pp-cal-day--today { border-color: rgba(111,168,255,0.9); box-shadow: 0 0 0 1px rgba(111,168,255,0.4); }
+        .pp-cal-day--event {
+            background: radial-gradient(50% 50% at 50% 50%, #440103 39%, #F34530 100%);
+            border-color: #FFFFFF;
+            cursor: pointer;
+        }
+        .pp-cal-day--event:hover {
+            background: radial-gradient(50% 50% at 50% 50%, #6e1a1d 39%, #FF6149 100%);
+            box-shadow: 0 0 18px rgba(243,69,48,0.65);
+        }
+        .pp-cal-date { font-size: 13px; font-weight: 700; }
+        .pp-cal-weekday { font-size: 10px; font-weight: 400; opacity: 0.85; }
+        .pp-cal-empty { color: #7E89A6; font-size: 13px; padding: 8px 0; }
+
+        /* ---------- Detailed event list (below the calendar) ---------- */
+        .pp-event-list { margin-top: 18px; display: flex; flex-direction: column; gap: 10px; }
+        .pp-event {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 14px 16px;
+            display: grid;
+            grid-template-columns: 56px 1fr auto;
+            gap: 14px;
+            align-items: center;
+        }
+        .pp-event__date {
+            background: rgba(56,134,252,0.12);
+            border: 1px solid rgba(56,134,252,0.24);
+            border-radius: 10px;
+            padding: 6px 4px;
+            text-align: center;
+        }
+        .pp-event__day { color: #FFFFFF; font-size: 20px; font-weight: 700; line-height: 1; }
+        .pp-event__month { color: #6FA8FF; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; }
+        .pp-event__title { margin: 0; color: #FFFFFF; font-size: 15px; font-weight: 600; }
+        .pp-event__where { color: #D1D6E0; font-size: 13px; margin-top: 3px; }
+        .pp-event__time { color: #7E89A6; font-size: 12px; margin-top: 2px; }
+        .pp-event__ticket {
+            color: #FFFFFF; text-decoration: none;
+            font-size: 13px; padding: 8px 14px;
+            border: 1px solid rgba(255,255,255,0.3); border-radius: 999px;
+            white-space: nowrap;
+        }
+        .pp-event__ticket:hover { background: rgba(255,255,255,0.08); }
+
+        /* ---------- Projects: horizontal scrollable cards ---------- */
+        .pp-project-row {
+            display: flex;
+            gap: 14px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding-bottom: 6px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .pp-project-row::-webkit-scrollbar { display: none; }
+        .pp-project {
+            flex: 0 0 320px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 16px 18px;
+            text-decoration: none; color: inherit;
+            display: flex; flex-direction: column; gap: 6px;
+            transition: border-color 0.15s ease, background 0.15s ease;
+        }
+        .pp-project:hover { border-color: rgba(255,255,255,0.22); background: rgba(255,255,255,0.06); }
+        .pp-project__head { display: flex; align-items: center; gap: 8px; }
+        .pp-project__name { color: #FFFFFF; font-weight: 600; font-size: 15px; line-height: 1.3; flex: 1; min-width: 0; }
+        .pp-project__status {
+            display: inline-block; padding: 2px 8px; border-radius: 999px;
+            font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; flex-shrink: 0;
+        }
+        .pp-project__status--in_progress { background: rgba(56,134,252,0.18); color: #6FA8FF; }
+        .pp-project__status--released { background: rgba(92,214,107,0.18); color: #5CD66B; }
+        .pp-project__status--archived { background: rgba(255,255,255,0.08); color: #7E89A6; }
+        .pp-project__meta { color: #7E89A6; font-size: 12px; }
+        .pp-project__desc { color: #D1D6E0; font-size: 13px; line-height: 1.5;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+        /* ---------- Tracks ---------- */
+        .pp-track {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 10px;
+        }
+        .pp-track__head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .pp-track__title { margin: 0; color: #FFFFFF; font-size: 15px; font-weight: 600; flex: 1; min-width: 0; }
+        .pp-track__time { color: #5A6480; font-size: 12px; }
+        .pp-track__desc {
+            margin: 0 0 8px 0; color: #D1D6E0;
+            font-size: 14px; line-height: 1.5;
+            white-space: pre-wrap;
+        }
+        .pp-track audio { width: 100%; margin-top: 4px; filter: invert(0.85) hue-rotate(180deg); }
+
+        /* ---------- Playlists ---------- */
+        .pp-playlist-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+        .pp-playlist {
+            display: flex; align-items: center; gap: 12px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 12px 14px;
+            text-decoration: none; color: inherit;
+            transition: border-color 0.15s ease, background 0.15s ease;
+        }
+        .pp-playlist:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.06); }
+        .pp-playlist__icon {
+            width: 46px; height: 46px; border-radius: 12px;
+            background: linear-gradient(135deg, rgba(56,134,252,0.22), rgba(255,176,102,0.18));
+            background-size: cover; background-position: center;
+            display: flex; align-items: center; justify-content: center;
+            color: rgba(255,255,255,0.7);
+            flex-shrink: 0;
+        }
+        .pp-playlist__main { min-width: 0; flex: 1; }
+        .pp-playlist__name { color: #FFFFFF; font-weight: 600; font-size: 14px; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pp-playlist__meta { color: #7E89A6; font-size: 12px; margin-top: 2px; }
+
+        /* ---------- Posts ---------- */
         .pp-post {
             background: rgba(255,255,255,0.04);
             border: 1px solid rgba(255,255,255,0.08);
@@ -106,133 +372,21 @@
             border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);
             display: block;
         }
-        .pp-posts__empty {
+        .pp-section__empty {
             background: rgba(255,255,255,0.02);
             border: 1px dashed rgba(255,255,255,0.08);
             border-radius: 14px;
-            padding: 32px 20px; text-align: center;
+            padding: 28px 20px; text-align: center;
             color: #7E89A6; font-size: 14px;
         }
 
-        .pp-tracks { margin-top: 28px; }
-        .pp-track {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 14px;
-            padding: 16px;
-            margin-bottom: 10px;
+        /* ---------- Loading / not-found ---------- */
+        .pp-loading, .pp-not-found {
+            text-align: center; padding: 80px 20px; color: #7E89A6;
         }
-        .pp-track__head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-        .pp-track__title { margin: 0; color: #FFFFFF; font-size: 15px; font-weight: 600; flex: 1; min-width: 0; }
-        .pp-track__time { color: #5A6480; font-size: 12px; }
-        .pp-track__desc {
-            margin: 0 0 8px 0; color: #D1D6E0;
-            font-size: 14px; line-height: 1.5;
-            white-space: pre-wrap;
-        }
-        .pp-track audio {
-            width: 100%; margin-top: 4px;
-            filter: invert(0.85) hue-rotate(180deg);
-        }
+        .pp-not-found h2 { margin: 0 0 12px 0; color: #FFFFFF; font-size: 24px; font-weight: 600; }
 
-        .pp-follow-row {
-            display: flex; gap: 18px; margin-top: 14px;
-            color: #D1D6E0; font-size: 14px; align-items: center; flex-wrap: wrap;
-        }
-        .pp-follow-stat strong { color: #FFFFFF; font-weight: 600; margin-right: 4px; }
-        .pp-follow-btn {
-            background: #FFFFFF; color: #0B0B0F; border: none;
-            border-radius: 999px; padding: 8px 18px;
-            font-weight: 600; cursor: pointer; font-size: 13px;
-            margin-left: auto;
-        }
-        .pp-follow-btn:disabled { opacity: 0.6; cursor: wait; }
-        .pp-follow-btn--following {
-            background: transparent; color: #FFFFFF;
-            border: 1px solid rgba(255,255,255,0.24);
-        }
-        .pp-follow-btn--following:hover {
-            background: rgba(255,107,107,0.12); border-color: rgba(255,107,107,0.6); color: #FF6B6B;
-        }
-
-        .pp-events { margin-top: 28px; }
-        .pp-event {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 14px;
-            padding: 14px 16px;
-            margin-bottom: 10px;
-            display: grid;
-            grid-template-columns: 56px 1fr;
-            gap: 14px;
-            align-items: center;
-        }
-        .pp-event__date {
-            background: rgba(56,134,252,0.12);
-            border: 1px solid rgba(56,134,252,0.24);
-            border-radius: 10px;
-            padding: 6px 4px;
-            text-align: center;
-        }
-        .pp-event__day { color: #FFFFFF; font-size: 20px; font-weight: 700; line-height: 1; }
-        .pp-event__month { color: #6FA8FF; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; }
-        .pp-event__title { margin: 0; color: #FFFFFF; font-size: 15px; font-weight: 600; }
-        .pp-event__where { color: #D1D6E0; font-size: 13px; margin-top: 3px; }
-        .pp-event__time { color: #7E89A6; font-size: 12px; margin-top: 2px; }
-        .pp-event__ticket {
-            color: #FFFFFF; text-decoration: underline;
-            font-size: 13px; margin-top: 6px; display: inline-block;
-        }
-
-        .pp-playlists { margin-top: 28px; }
-        .pp-playlist-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
-        .pp-playlist {
-            display: flex; align-items: center; gap: 12px;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 12px;
-            padding: 12px 14px;
-            text-decoration: none; color: inherit;
-            transition: border-color 0.15s ease;
-        }
-        .pp-playlist:hover { border-color: rgba(255,255,255,0.2); }
-        .pp-playlist__icon {
-            width: 44px; height: 44px; border-radius: 10px;
-            background: linear-gradient(135deg, rgba(56,134,252,0.18), rgba(255,176,102,0.14));
-            display: flex; align-items: center; justify-content: center;
-            color: rgba(255,255,255,0.55);
-            flex-shrink: 0;
-        }
-        .pp-playlist__main { min-width: 0; flex: 1; }
-        .pp-playlist__name { color: #FFFFFF; font-weight: 600; font-size: 14px; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .pp-playlist__meta { color: #7E89A6; font-size: 12px; margin-top: 2px; }
-
-        .pp-projects { margin-top: 28px; }
-        .pp-project-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
-        .pp-project {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 12px;
-            padding: 14px 16px;
-            text-decoration: none; color: inherit;
-            display: flex; flex-direction: column; gap: 6px;
-            transition: border-color 0.15s ease;
-        }
-        .pp-project:hover { border-color: rgba(255,255,255,0.2); }
-        .pp-project__head { display: flex; align-items: center; gap: 8px; }
-        .pp-project__name { color: #FFFFFF; font-weight: 600; font-size: 14px; line-height: 1.3; flex: 1; min-width: 0; }
-        .pp-project__status {
-            display: inline-block; padding: 2px 8px; border-radius: 999px;
-            font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; flex-shrink: 0;
-        }
-        .pp-project__status--in_progress { background: rgba(56,134,252,0.18); color: #6FA8FF; }
-        .pp-project__status--released { background: rgba(92,214,107,0.18); color: #5CD66B; }
-        .pp-project__status--archived { background: rgba(255,255,255,0.08); color: #7E89A6; }
-        .pp-project__meta { color: #7E89A6; font-size: 12px; }
-        .pp-project__desc { color: #D1D6E0; font-size: 13px; line-height: 1.5;
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-
-        /* Comments — same look as in /welcome/ */
+        /* ---------- Comments / likes — same look as in /welcome/ ---------- */
         .cm-toggle {
             display: block; width: 100%;
             background: transparent; border: none;
@@ -242,10 +396,7 @@
             margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.06);
         }
         .cm-toggle:hover { color: #FFFFFF; }
-        .cm-thread {
-            margin-top: 12px; padding-top: 12px;
-            border-top: 1px solid rgba(255,255,255,0.06);
-        }
+        .cm-thread { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); }
         .cm-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
         .cm-empty { color: #7E89A6; font-size: 13px; padding: 6px 0; }
         .cm { display: flex; gap: 10px; align-items: flex-start; }
@@ -313,13 +464,28 @@
             border-left: 1px solid rgba(255,255,255,0.06);
             display: flex; flex-direction: column; gap: 10px;
         }
+
+        /* ---------- Mobile ---------- */
+        @media (max-width: 720px) {
+            .pp-wrap { padding: 14px 14px 80px; }
+            .pp-hero { height: auto; min-height: 320px; padding: 16px 18px 22px; border-radius: 18px; }
+            .pp-hero__name { font-size: 36px; white-space: normal; line-height: 1.05; }
+            .pp-hero__avatar { width: 64px; height: 64px; font-size: 26px; border-width: 2px; }
+            .pp-cta { height: 38px; font-size: 13px; padding: 0 16px; }
+            .pp-hero__stats { text-align: left; flex-direction: row; gap: 18px; flex-wrap: wrap; }
+            .pp-hero__stat { font-size: 14px; line-height: 20px; }
+            .pp-hero__bottom { flex-direction: column; align-items: flex-start; gap: 16px; }
+            .pp-section { margin-top: 28px; }
+            .pp-section__heading { font-size: 18px; }
+            .pp-cal-day { width: 52px; height: 52px; }
+            .pp-event { grid-template-columns: 50px 1fr; }
+            .pp-event__ticket { grid-column: 2; justify-self: start; margin-top: 4px; }
+            .pp-project { flex: 0 0 280px; }
+        }
     </style>
 </head>
 <body class="start-body">
 
-    <!-- App-shell renders sidebar+topbar here when the viewer is logged in.
-         When logged out, the placeholder stays empty and we fall back to
-         the marketing-style start-topbar below. -->
     <div data-app-shell data-public-allowed data-page-title=""></div>
 
     <header class="start-topbar" data-public-only>
@@ -329,15 +495,12 @@
             </h1>
             <span class="start-topbar__beta">Beta</span>
         </a>
-
-        <nav class="start-topbar__links" id="ppTopbarNav">
-            <!-- populated based on auth state -->
-        </nav>
+        <nav class="start-topbar__links" id="ppTopbarNav"></nav>
     </header>
 
     <main class="app-main"><div class="pp-wrap">
         <div id="ppContent">
-            <div class="pp-empty">Loading profile…</div>
+            <div class="pp-loading">Loading profile…</div>
         </div>
     </div></main>
 
@@ -365,7 +528,7 @@
         const nav = document.getElementById('ppTopbarNav');
 
         function escapeHtml(s) {
-            return String(s).replace(/[&<>"']/g, (c) => ({
+            return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({
                 '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
             }[c]));
         }
@@ -373,7 +536,6 @@
         const params = new URLSearchParams(window.location.search);
         let username = (params.get('username') || params.get('u') || '').trim();
         if (!username) {
-            // /u/<username> via vercel rewrite — pull from path segment
             const pathMatch = window.location.pathname.match(/^\/u\/([^\/?#]+)/);
             if (pathMatch) username = decodeURIComponent(pathMatch[1]).trim();
         }
@@ -395,11 +557,10 @@
 
         if (!username) {
             content.innerHTML = `
-                <div class="pp-empty">
+                <div class="pp-not-found">
                     <h2>No profile selected</h2>
                     <p>Open a STAGECORD profile by visiting <code>/u/&lt;username&gt;</code>.</p>
-                </div>
-            `;
+                </div>`;
             return;
         }
 
@@ -408,22 +569,18 @@
         if (error) {
             console.error('get_public_profile failed:', error);
             content.innerHTML = `
-                <div class="pp-empty">
+                <div class="pp-not-found">
                     <h2>Couldn't load profile</h2>
                     <p>Try refreshing — if the problem sticks, drop us a line at hello@stagecord.com.</p>
-                </div>
-            `;
+                </div>`;
             return;
         }
-
-        if (!data || data.length === 0 || !data[0]) {
+        if (!data || !data[0]) {
             content.innerHTML = `
-                <div class="pp-empty">
+                <div class="pp-not-found">
                     <h2>Profile not found</h2>
                     <p>No STAGECORD member uses the username <strong style="color:#FFFFFF;">${escapeHtml(username)}</strong>.</p>
-                    <p style="margin-top:16px;">${session ? '' : '<a href="/">Join the waitlist →</a>'}</p>
-                </div>
-            `;
+                </div>`;
             document.title = 'STAGECORD — Profile not found';
             return;
         }
@@ -431,94 +588,126 @@
         const profile = data[0];
         const F = window.STAGECORD;
         const plainFull = F.plainName(profile.forename, profile.surname, profile.username);
-        const styledFull = F.formatName(profile.forename, profile.surname, profile.username);
         const roleLabel = profile.role === 'artist' ? 'Artist' : (profile.role === 'fan' ? 'Fan' : profile.role);
         const initial = (plainFull[0] || '?').toUpperCase();
+        const isOwn = ownUsername && ownUsername.toLowerCase() === username.toLowerCase();
 
         document.title = `${plainFull} · STAGECORD`;
 
+        const heroStyle = profile.cover_url
+            ? `background-image: url('${escapeHtml(profile.cover_url)}');`
+            : '';
+        const heroClasses = `pp-hero${profile.cover_url ? '' : ' pp-hero--no-cover'}`;
+
         const avatarHtml = profile.avatar_url
-            ? `<div class="pp-avatar" style="background-image:url('${escapeHtml(profile.avatar_url)}');"></div>`
-            : `<div class="pp-avatar"><span class="pp-avatar__initial">${escapeHtml(initial)}</span></div>`;
+            ? `<div class="pp-hero__avatar" style="background-image:url('${escapeHtml(profile.avatar_url)}');"></div>`
+            : `<div class="pp-hero__avatar">${escapeHtml(initial)}</div>`;
 
-        const coverHtml = profile.cover_url
-            ? `<div class="pp-cover" style="background-image:url('${escapeHtml(profile.cover_url)}');"></div>`
-            : '';
-
-        const bioHtml = profile.bio
-            ? `<div class="pp-bio">${escapeHtml(profile.bio)}</div>`
-            : '';
-
-        const isOwn = ownUsername && ownUsername.toLowerCase() === username.toLowerCase();
-        const ownCtas = isOwn ? `
-            <div class="pp-cta-row">
-                <a href="/profile/" class="pp-btn">Edit your profile</a>
-                <a href="/welcome/" class="pp-btn pp-btn--ghost">Back to dashboard</a>
-            </div>
-        ` : '';
+        // Styled name: forename bold + uppercase, surname slim
+        const foreUC = (profile.forename || '').toUpperCase();
+        const surUC = (profile.surname || '').toUpperCase();
+        const nameHtml = foreUC
+            ? `<strong>${escapeHtml(foreUC)}</strong>${surUC ? ` <span class="pp-hero__name-light">${escapeHtml(surUC)}</span>` : ''}`
+            : escapeHtml((profile.username || username).toUpperCase());
 
         content.innerHTML = `
-            ${coverHtml}
-            <div class="pp-card${profile.cover_url ? ' has-cover' : ''}">
-                <div class="pp-header">
+            <section class="${heroClasses}" style="${heroStyle}">
+                <div class="pp-hero__top">
                     ${avatarHtml}
-                    <div class="pp-meta">
-                        <h2 class="pp-name">${styledFull}</h2>
-                        <p class="pp-handle">@${escapeHtml(profile.username || username)}</p>
-                        ${roleLabel ? `<span class="pp-role-tag">${escapeHtml(roleLabel)}</span>` : ''}
+                    <div class="pp-cta-row" id="ppCtaRow"></div>
+                </div>
+                <div class="pp-hero__bottom">
+                    <div class="pp-hero__identity">
+                        <p class="pp-hero__handle">@${escapeHtml(profile.username || username)}${roleLabel ? `<span class="pp-role-pill">${escapeHtml(roleLabel)}</span>` : ''}</p>
+                        <h1 class="pp-hero__name">${nameHtml}</h1>
+                    </div>
+                    <div class="pp-hero__stats" id="ppStats">
+                        <span class="pp-hero__stat"><span class="pp-hero__stat-value" id="ppFollowerCount">—</span><span class="pp-hero__stat-label">Followers</span></span>
+                        <span class="pp-hero__stat"><span class="pp-hero__stat-value" id="ppFollowingCount">—</span><span class="pp-hero__stat-label">Following</span></span>
                     </div>
                 </div>
-                <div class="pp-follow-row" id="ppFollowRow">
-                    <span class="pp-follow-stat"><strong id="ppFollowerCount">—</strong>followers</span>
-                    <span class="pp-follow-stat"><strong id="ppFollowingCount">—</strong>following</span>
-                    <button id="ppMessageBtn" class="pp-follow-btn pp-follow-btn--following" style="display:none;">Message</button>
-                    <button id="ppFollowBtn" class="pp-follow-btn" style="display:none;">Follow</button>
-                </div>
-                ${bioHtml}
-                ${ownCtas}
-            </div>
-            <section class="pp-events" id="ppEvents"></section>
-            <section class="pp-projects" id="ppProjects"></section>
-            <section class="pp-tracks" id="ppTracks"></section>
-            <section class="pp-playlists" id="ppPlaylists"></section>
-            <section class="pp-posts" id="ppPosts">
-                <div class="pp-posts__empty">Loading posts…</div>
+            </section>
+
+            <section class="pp-section pp-bio" id="ppBioSection">
+                <h2 class="pp-section__heading">Bio</h2>
+                ${profile.bio
+                    ? `<p class="pp-bio__text" id="ppBioText" title="Click to expand">${escapeHtml(profile.bio)}</p>`
+                    : `<div class="pp-bio--empty">${isOwn ? '<a href="/profile/" style="color:#FFFFFF;">Add a bio →</a>' : 'No bio yet.'}</div>`}
+            </section>
+
+            <section class="pp-section" id="ppEventsSection">
+                <h2 class="pp-section__heading">Events / Concerts <span class="pp-section__count" id="ppEventsCount"></span></h2>
+                <div class="pp-cal-row" id="ppCalRow"></div>
+                <div class="pp-event-list" id="ppEventList"></div>
+            </section>
+
+            <section class="pp-section" id="ppProjectsSection" hidden>
+                <h2 class="pp-section__heading">Projects <span class="pp-section__count" id="ppProjectsCount"></span></h2>
+                <div class="pp-project-row" id="ppProjectsRow"></div>
+            </section>
+
+            <section class="pp-section" id="ppTracksSection" hidden>
+                <h2 class="pp-section__heading">Music <span class="pp-section__count" id="ppTracksCount"></span></h2>
+                <div id="ppTracksList"></div>
+            </section>
+
+            <section class="pp-section" id="ppPlaylistsSection" hidden>
+                <h2 class="pp-section__heading">Playlists <span class="pp-section__count" id="ppPlaylistsCount"></span></h2>
+                <div class="pp-playlist-grid" id="ppPlaylistsGrid"></div>
+            </section>
+
+            <section class="pp-section" id="ppPostsSection">
+                <h2 class="pp-section__heading">Posts <span class="pp-section__count" id="ppPostsCount"></span></h2>
+                <div id="ppPostsList"><div class="pp-section__empty">Loading posts…</div></div>
             </section>
         `;
 
-        async function loadFollowSummary() {
-            const { data: summary, error: sumErr } = await sb.rpc('get_follow_summary', {
-                p_username: profile.username || username
+        // ---------- Bio expand-on-click ----------
+        const bioText = document.getElementById('ppBioText');
+        if (bioText) {
+            bioText.addEventListener('click', () => {
+                document.getElementById('ppBioSection').classList.toggle('is-expanded');
             });
-            if (sumErr) {
-                console.error('get_follow_summary failed:', sumErr);
-                return;
-            }
+        }
+
+        // ---------- Hero CTAs (Follow / Message / Edit profile) ----------
+        const ctaRow = document.getElementById('ppCtaRow');
+        if (isOwn) {
+            ctaRow.innerHTML = `<a class="pp-cta pp-cta--solid" href="/profile/">Edit profile</a>`;
+        } else if (session) {
+            ctaRow.innerHTML = `
+                <button id="ppFollowBtn" class="pp-cta pp-cta--solid">Follow</button>
+                <button id="ppMessageBtn" class="pp-cta">Message</button>
+            `;
+        } else {
+            ctaRow.innerHTML = `
+                <a class="pp-cta pp-cta--solid" href="/login/">Log in to follow</a>
+            `;
+        }
+
+        async function loadFollowSummary() {
+            const { data: summary, error: sumErr } = await sb.rpc('get_follow_summary', { p_username: profile.username || username });
+            if (sumErr) { console.error('get_follow_summary failed:', sumErr); return; }
             const row = (summary && summary[0]) || {};
-            document.getElementById('ppFollowerCount').textContent = (row.follower_count ?? 0) + ' ';
-            document.getElementById('ppFollowingCount').textContent = (row.following_count ?? 0) + ' ';
+            document.getElementById('ppFollowerCount').textContent  = (row.follower_count ?? 0);
+            document.getElementById('ppFollowingCount').textContent = (row.following_count ?? 0);
             const btn = document.getElementById('ppFollowBtn');
-            if (session && !isOwn) {
+            if (btn) {
                 const isFollowing = !!row.viewer_is_following;
-                btn.style.display = '';
                 btn.textContent = isFollowing ? 'Following' : 'Follow';
-                btn.classList.toggle('pp-follow-btn--following', isFollowing);
+                btn.classList.toggle('pp-cta--following', isFollowing);
+                btn.classList.toggle('pp-cta--solid', !isFollowing);
                 btn.dataset.following = isFollowing ? '1' : '';
             }
         }
 
         const messageBtn = document.getElementById('ppMessageBtn');
-        if (messageBtn && session && !isOwn) {
-            messageBtn.style.display = '';
-            messageBtn.style.marginLeft = '0';
+        if (messageBtn) {
             messageBtn.addEventListener('click', async () => {
                 messageBtn.disabled = true;
                 messageBtn.textContent = 'Opening…';
-                const { data, error: convoErr } = await sb.rpc('start_or_get_conversation', {
-                    p_target_username: profile.username || username
-                });
+                const { data, error: convoErr } = await sb.rpc('start_or_get_conversation', { p_target_username: profile.username || username });
                 if (convoErr) {
-                    console.error('start_or_get_conversation failed:', convoErr);
                     alert('Could not start conversation: ' + (convoErr.message || ''));
                     messageBtn.disabled = false;
                     messageBtn.textContent = 'Message';
@@ -529,17 +718,14 @@
         }
 
         const followBtn = document.getElementById('ppFollowBtn');
-        if (followBtn && session && !isOwn) {
+        if (followBtn) {
             followBtn.addEventListener('click', async () => {
                 followBtn.disabled = true;
                 const wasFollowing = followBtn.dataset.following === '1';
                 followBtn.textContent = wasFollowing ? 'Unfollowing…' : 'Following…';
-                const { data, error: tErr } = await sb.rpc('toggle_follow', {
-                    p_target_username: profile.username || username
-                });
+                const { error: tErr } = await sb.rpc('toggle_follow', { p_target_username: profile.username || username });
                 followBtn.disabled = false;
                 if (tErr) {
-                    console.error('toggle_follow failed:', tErr);
                     followBtn.textContent = wasFollowing ? 'Following' : 'Follow';
                     alert('Could not update follow: ' + (tErr.message || 'try again'));
                     return;
@@ -550,6 +736,7 @@
 
         loadFollowSummary();
 
+        // ---------- Helpers ----------
         function timeAgo(iso) {
             const t = new Date(iso).getTime();
             const diff = (Date.now() - t) / 1000;
@@ -559,14 +746,12 @@
             if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
             return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         }
-
         function fmtDuration(secs) {
             if (!secs && secs !== 0) return '';
             const m = Math.floor(secs / 60);
             const s = Math.floor(secs % 60).toString().padStart(2, '0');
             return `${m}:${s}`;
         }
-
         function fmtEventDate(iso) {
             const d = new Date(iso);
             return {
@@ -576,18 +761,49 @@
                 full: d.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })
             };
         }
+        function sameDay(a, b) {
+            return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+        }
 
-        const eventsEl = document.getElementById('ppEvents');
+        // ---------- Events: 16-day calendar + list ----------
+        const calRow = document.getElementById('ppCalRow');
+        const eventList = document.getElementById('ppEventList');
+        const eventsCount = document.getElementById('ppEventsCount');
         const { data: events, error: evErr } = await sb.rpc('get_user_events', {
-            p_username: profile.username || username,
-            p_upcoming_only: true,
-            p_limit: 20
+            p_username: profile.username || username, p_upcoming_only: true, p_limit: 30
         });
 
-        if (evErr) {
-            console.error('get_user_events failed:', evErr);
-        } else if (events && events.length > 0) {
-            const eventsHtml = events.map((e) => {
+        if (evErr) console.error('get_user_events failed:', evErr);
+        const evs = events || [];
+        eventsCount.textContent = evs.length ? `${evs.length}` : '';
+
+        // Build 16-day strip starting today
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        const days = [];
+        for (let i = 0; i < 16; i++) {
+            const d = new Date(today);
+            d.setDate(today.getDate() + i);
+            days.push(d);
+        }
+        calRow.innerHTML = days.map((d, idx) => {
+            const eventOnDay = evs.find((e) => sameDay(new Date(e.starts_at), d));
+            const isToday = idx === 0;
+            const dateStr = d.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+            const wdStr = d.toLocaleDateString('en-US', { weekday: 'short' });
+            const cls = ['pp-cal-day'];
+            if (eventOnDay) cls.push('pp-cal-day--event');
+            if (isToday) cls.push('pp-cal-day--today');
+            return `<button type="button" class="${cls.join(' ')}" ${eventOnDay ? `data-event-id="${escapeHtml(eventOnDay.id || '')}"` : ''} title="${escapeHtml(eventOnDay ? eventOnDay.title : dateStr)}">
+                <span class="pp-cal-date">${escapeHtml(dateStr.split(' ')[0])}</span>
+                <span class="pp-cal-weekday">${escapeHtml(wdStr)}</span>
+            </button>`;
+        }).join('');
+
+        if (evs.length === 0) {
+            eventList.innerHTML = `<div class="pp-section__empty">${isOwn ? '<a href="/events/" style="color:#FFFFFF;">Plan an event →</a>' : 'No upcoming events.'}</div>`;
+        } else {
+            eventList.innerHTML = evs.map((e) => {
                 const f = fmtEventDate(e.starts_at);
                 const where = [e.venue_name, e.city].filter(Boolean).map(escapeHtml).join(' · ');
                 const ticket = e.ticket_url
@@ -602,30 +818,49 @@
                         <h3 class="pp-event__title">${escapeHtml(e.title)}</h3>
                         ${where ? `<div class="pp-event__where">${where}</div>` : ''}
                         <div class="pp-event__time">${escapeHtml(f.full)} · ${escapeHtml(f.time)}</div>
-                        ${ticket}
                     </div>
+                    ${ticket}
                 </article>`;
             }).join('');
-            eventsEl.innerHTML = `
-                <h3 class="pp-posts__heading">Upcoming events <span class="pp-posts__count">${events.length}</span></h3>
-                ${eventsHtml}
-            `;
         }
 
-        const tracksEl = document.getElementById('ppTracks');
-        const { data: tracks, error: tracksErr } = await sb.rpc('get_user_tracks', {
-            p_username: profile.username || username,
-            p_limit: 50
+        // ---------- Projects ----------
+        const { data: userProjects, error: pjErr } = await sb.rpc('get_user_projects', {
+            p_username: profile.username || username, p_limit: 30
         });
+        if (pjErr) console.error('get_user_projects failed:', pjErr);
+        const projects = userProjects || [];
+        if (projects.length) {
+            document.getElementById('ppProjectsSection').hidden = false;
+            document.getElementById('ppProjectsCount').textContent = projects.length;
+            document.getElementById('ppProjectsRow').innerHTML = projects.map((pr) => {
+                const mc = Number(pr.member_count) || 0;
+                const tc = Number(pr.track_count) || 0;
+                const statusLabel = pr.status === 'in_progress' ? 'In progress' : (pr.status === 'released' ? 'Released' : 'Archived');
+                return `<a class="pp-project" href="/projects/?id=${encodeURIComponent(pr.id)}">
+                    <div class="pp-project__head">
+                        <div class="pp-project__name">${escapeHtml(pr.title)}</div>
+                        <span class="pp-project__status pp-project__status--${escapeHtml(pr.status)}">${escapeHtml(statusLabel)}</span>
+                    </div>
+                    <div class="pp-project__meta">${mc} ${mc === 1 ? 'member' : 'members'} · ${tc} ${tc === 1 ? 'track' : 'tracks'}${pr.is_owner ? ' · owner' : ''}</div>
+                    ${pr.description ? `<div class="pp-project__desc">${escapeHtml(pr.description)}</div>` : ''}
+                </a>`;
+            }).join('');
+        }
 
-        if (tracksErr) {
-            console.error('get_user_tracks failed:', tracksErr);
-        } else if (tracks && tracks.length > 0) {
-            const tracksHtml = tracks.map((t) => {
+        // ---------- Tracks ----------
+        const { data: tracks, error: tracksErr } = await sb.rpc('get_user_tracks', {
+            p_username: profile.username || username, p_limit: 50
+        });
+        if (tracksErr) console.error('get_user_tracks failed:', tracksErr);
+        const trks = tracks || [];
+        if (trks.length) {
+            document.getElementById('ppTracksSection').hidden = false;
+            document.getElementById('ppTracksCount').textContent = trks.length;
+            const tracksList = document.getElementById('ppTracksList');
+            tracksList.innerHTML = trks.map((t) => {
                 const dur = t.duration_seconds ? ` · ${fmtDuration(t.duration_seconds)}` : '';
-                const desc = t.description
-                    ? `<p class="pp-track__desc">${escapeHtml(t.description)}</p>`
-                    : '';
+                const desc = t.description ? `<p class="pp-track__desc">${escapeHtml(t.description)}</p>` : '';
                 return `<article class="pp-track" data-track-id="${escapeHtml(t.id)}">
                     <header class="pp-track__head">
                         <h3 class="pp-track__title">${escapeHtml(t.title)}</h3>
@@ -636,14 +871,9 @@
                     <div class="pp-actions"></div>
                 </article>`;
             }).join('');
-            tracksEl.innerHTML = `
-                <h3 class="pp-posts__heading">Music <span class="pp-posts__count">${tracks.length}</span></h3>
-                ${tracksHtml}
-            `;
-
-            const trackViewerId = (await sb.auth.getSession()).data.session?.user?.id || null;
-            tracks.forEach((t) => {
-                const trackEl = tracksEl.querySelector(`[data-track-id="${t.id}"]`);
+            const trackViewerId = session?.user?.id || null;
+            trks.forEach((t) => {
+                const trackEl = tracksList.querySelector(`[data-track-id="${t.id}"]`);
                 if (!trackEl) return;
                 const actions = trackEl.querySelector('.pp-actions');
                 if (!actions) return;
@@ -663,48 +893,21 @@
             });
         }
 
-        const projectsEl = document.getElementById('ppProjects');
-        const { data: userProjects, error: pjErr } = await sb.rpc('get_user_projects', {
-            p_username: profile.username || username,
-            p_limit: 20
-        });
-        if (pjErr) {
-            console.error('get_user_projects failed:', pjErr);
-        } else if (userProjects && userProjects.length > 0) {
-            const cards = userProjects.map((pr) => {
-                const mc = Number(pr.member_count) || 0;
-                const tc = Number(pr.track_count) || 0;
-                const statusLabel = pr.status === 'in_progress' ? 'In progress' : (pr.status === 'released' ? 'Released' : 'Archived');
-                return `<a class="pp-project" href="/projects/?id=${encodeURIComponent(pr.id)}">
-                    <div class="pp-project__head">
-                        <div class="pp-project__name">${escapeHtml(pr.title)}</div>
-                        <span class="pp-project__status pp-project__status--${escapeHtml(pr.status)}">${escapeHtml(statusLabel)}</span>
-                    </div>
-                    <div class="pp-project__meta">${mc} ${mc === 1 ? 'member' : 'members'} · ${tc} ${tc === 1 ? 'track' : 'tracks'}${pr.is_owner ? ' · owner' : ''}</div>
-                    ${pr.description ? `<div class="pp-project__desc">${escapeHtml(pr.description)}</div>` : ''}
-                </a>`;
-            }).join('');
-            projectsEl.innerHTML = `
-                <h3 class="pp-posts__heading">Projects <span class="pp-posts__count">${userProjects.length}</span></h3>
-                <div class="pp-project-grid">${cards}</div>
-            `;
-        }
-
-        const playlistsEl = document.getElementById('ppPlaylists');
+        // ---------- Playlists ----------
         const { data: playlists, error: plErr } = await sb.rpc('get_user_playlists', {
-            p_username: profile.username || username,
-            p_limit: 30
+            p_username: profile.username || username, p_limit: 30
         });
-        if (plErr) {
-            console.error('get_user_playlists failed:', plErr);
-        } else if (playlists && playlists.length > 0) {
-            const cards = playlists.map((pl) => {
+        if (plErr) console.error('get_user_playlists failed:', plErr);
+        const pls = playlists || [];
+        if (pls.length) {
+            document.getElementById('ppPlaylistsSection').hidden = false;
+            document.getElementById('ppPlaylistsCount').textContent = pls.length;
+            document.getElementById('ppPlaylistsGrid').innerHTML = pls.map((pl) => {
                 const tc = Number(pl.track_count) || 0;
+                const coverStyle = pl.cover_url ? ` style="background-image:url('${escapeHtml(pl.cover_url)}');"` : '';
                 return `<a class="pp-playlist" href="/playlists/?id=${encodeURIComponent(pl.id)}">
-                    <div class="pp-playlist__icon">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
-                        </svg>
+                    <div class="pp-playlist__icon"${coverStyle}>
+                        ${pl.cover_url ? '' : `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`}
                     </div>
                     <div class="pp-playlist__main">
                         <div class="pp-playlist__name">${escapeHtml(pl.name)}</div>
@@ -712,42 +915,32 @@
                     </div>
                 </a>`;
             }).join('');
-            playlistsEl.innerHTML = `
-                <h3 class="pp-posts__heading">Playlists <span class="pp-posts__count">${playlists.length}</span></h3>
-                <div class="pp-playlist-grid">${cards}</div>
-            `;
         }
 
-        const postsEl = document.getElementById('ppPosts');
+        // ---------- Posts ----------
+        const postsList = document.getElementById('ppPostsList');
         const { data: posts, error: postsErr } = await sb.rpc('get_user_posts', {
-            p_username: profile.username || username,
-            p_limit: 30
+            p_username: profile.username || username, p_limit: 30
         });
 
         if (postsErr) {
             console.error('get_user_posts failed:', postsErr);
-            postsEl.innerHTML = `
-                <h3 class="pp-posts__heading">Posts</h3>
-                <div class="pp-posts__empty">Couldn't load posts.</div>
-            `;
+            postsList.innerHTML = `<div class="pp-section__empty">Couldn't load posts.</div>`;
+            return;
+        }
+        const ps = posts || [];
+        document.getElementById('ppPostsCount').textContent = ps.length ? ps.length : '';
+
+        if (ps.length === 0) {
+            postsList.innerHTML = `<div class="pp-section__empty">${isOwn ? "You haven't posted yet — try the composer on your dashboard." : "No posts yet."}</div>`;
             return;
         }
 
-        if (!posts || posts.length === 0) {
-            postsEl.innerHTML = `
-                <h3 class="pp-posts__heading">Posts</h3>
-                <div class="pp-posts__empty">${isOwn ? "You haven't posted yet — try the composer on your dashboard." : "No posts yet."}</div>
-            `;
-            return;
-        }
-
-        const cards = posts.map((p) => {
+        postsList.innerHTML = ps.map((p) => {
             const contentBlock = p.content && p.content.trim()
-                ? `<p class="pp-post__content">${escapeHtml(p.content)}</p>`
-                : '';
+                ? `<p class="pp-post__content">${escapeHtml(p.content)}</p>` : '';
             const imageBlock = p.image_url
-                ? `<img class="pp-post__image" src="${escapeHtml(p.image_url)}" alt="">`
-                : '';
+                ? `<img class="pp-post__image" src="${escapeHtml(p.image_url)}" alt="">` : '';
             return `<article class="pp-post" data-post-id="${escapeHtml(p.id)}">
                 <header class="pp-post__head">
                     <span>@${escapeHtml(p.username || username)}</span>
@@ -759,16 +952,10 @@
             </article>`;
         }).join('');
 
-        postsEl.innerHTML = `
-            <h3 class="pp-posts__heading">Posts <span class="pp-posts__count">${posts.length}</span></h3>
-            ${cards}
-        `;
-
         const currentUserId = session?.user?.id || null;
-        posts.forEach((p) => {
-            const postEl = postsEl.querySelector(`[data-post-id="${p.id}"]`);
+        ps.forEach((p) => {
+            const postEl = postsList.querySelector(`[data-post-id="${p.id}"]`);
             if (!postEl) return;
-
             if (window.STAGECORD_Likes) {
                 const actions = postEl.querySelector('.pp-actions');
                 if (actions) {
@@ -782,7 +969,6 @@
                     });
                 }
             }
-
             if (window.STAGECORD_Comments) {
                 window.STAGECORD_Comments.attach({
                     postElement: postEl,
