@@ -873,9 +873,19 @@
                     const rowsHtml = rates.length === 0
                         ? `<div class="pc-rates__empty">No commercial rates set yet${isOwner ? ' — add one below.' : '.'}</div>`
                         : rates.map((r) => {
+                            // Format months smartly — whole years show as "X years",
+                            // otherwise as "X months".
+                            function fmtPeriod(months) {
+                                if (!months) return 'Limited';
+                                if (months % 12 === 0 && months >= 12) {
+                                    const y = months / 12;
+                                    return `${y} ${y === 1 ? 'year' : 'years'}`;
+                                }
+                                return `${months} ${months === 1 ? 'month' : 'months'}`;
+                            }
                             const periodTxt = r.period_type === 'permanent'
                                 ? 'Permanent'
-                                : (r.period_months ? `${r.period_months} months` : 'Limited');
+                                : fmtPeriod(r.period_months);
                             const scopeTxt = r.scope === 'national' ? 'National'
                                 : r.scope === 'international' ? 'International' : 'Global';
                             return `<div class="pc-rate-row">
@@ -914,7 +924,13 @@
                                         <option value="limited">Limited period</option>
                                         <option value="permanent">Permanent</option>
                                     </select>
-                                    <input type="number" name="period_months" placeholder="Months" min="1" value="12">
+                                    <div class="pc-rates__form-pair" data-pair-length>
+                                        <input type="number" name="period_length" placeholder="Length" min="1" value="12">
+                                        <select name="period_unit">
+                                            <option value="months">months</option>
+                                            <option value="years">years</option>
+                                        </select>
+                                    </div>
                                     <select name="scope">
                                         <option value="national">National</option>
                                         <option value="international">International</option>
@@ -945,11 +961,11 @@
                     if (isOwner) {
                         const form = ratesEl.querySelector('[data-rate-form]');
                         const errEl = ratesEl.querySelector('[data-rate-form-error]');
-                        // Hide months input when permanent
+                        // Hide length pair when permanent
                         const periodType = form.querySelector('[name="period_type"]');
-                        const monthsInp = form.querySelector('[name="period_months"]');
+                        const lengthPair = form.querySelector('[data-pair-length]');
                         function syncMonths() {
-                            monthsInp.style.display = periodType.value === 'permanent' ? 'none' : '';
+                            lengthPair.style.display = periodType.value === 'permanent' ? 'none' : '';
                         }
                         periodType.addEventListener('change', syncMonths);
                         syncMonths();
@@ -961,12 +977,15 @@
                             const categoryKey = fd.get('category');
                             const periodTypeVal = fd.get('period_type');
                             if (!categoryKey) { errEl.textContent = 'Pick a category.'; return; }
+                            const lengthRaw = parseInt(fd.get('period_length')) || 12;
+                            const unit = fd.get('period_unit');
+                            const monthsTotal = unit === 'years' ? lengthRaw * 12 : lengthRaw;
                             const payload = {
                                 p_project_id: id,
                                 p_label: COMMERCIAL_CATEGORIES[categoryKey] || categoryKey,
                                 p_price_dkk: parseFloat(fd.get('price')) || 0,
                                 p_period_type: periodTypeVal,
-                                p_period_months: periodTypeVal === 'permanent' ? null : (parseInt(fd.get('period_months')) || 12),
+                                p_period_months: periodTypeVal === 'permanent' ? null : monthsTotal,
                                 p_scope: fd.get('scope'),
                                 p_notes: (fd.get('notes') || '').toString().trim() || null
                             };
