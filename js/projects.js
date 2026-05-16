@@ -848,8 +848,7 @@
                     live_event: 'Live or corporate event',
                     background_music: 'Background music (retail, restaurant)',
                     brand_campaign: 'Brand campaign',
-                    educational: 'Educational / instructional',
-                    permanent_buyout: 'Permanent buyout — full rights'
+                    educational: 'Educational / instructional'
                 };
                 const COMMERCIAL_RESTRICTIONS = {
                     pornography: 'Pornography / adult content',
