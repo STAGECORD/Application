@@ -283,7 +283,7 @@
             const isSelf = m.user_id === user.id;
             const cls = `approval-row${isApproved ? ' is-approved' : ''}${isSelf ? ' is-self' : ''}`;
             const titleAttr = isSelf
-                ? (isApproved ? 'Click to undo your approval' : 'Click to approve release')
+                ? (isApproved ? 'Your approval — click to manage' : 'Click to approve release')
                 : (isApproved ? `${first} ${rest} has approved` : `${first} ${rest} has not approved yet`);
             return `<button type="button" class="${cls}"${isSelf ? ' data-approval-toggle="1"' : ''} title="${escapeHtml(titleAttr)}">
                 <span class="approval-status"></span>
@@ -809,6 +809,61 @@
             }
         }
 
+        async function expandApproval(triggerRow) {
+            const key = 'approval:self';
+            if (activeKey === key) { closeExpand(); return; }
+            activeKey = key;
+            markActiveBtn(triggerRow);
+            expandEl.hidden = false;
+
+            const isApproved = approvalSet.has(user.id);
+            const approvedNow = approvalSet.size;
+            const totalNow = (members || []).length;
+
+            expandEl.innerHTML = `
+                <div class="pc-expand__head">
+                    <h4 class="pc-expand__title">Your approval for release</h4>
+                    <button type="button" class="pc-expand__close" data-expand-close>Close</button>
+                </div>
+                <p class="pc-expand__hint">${isApproved
+                    ? 'You have approved this project for release. You can undo your approval at any time before everyone has signed off.'
+                    : 'Approving means you accept the project is ready to release. Once every member has approved, the project owner can hit Release project to mark it released.'}</p>
+                <p class="pc-expand__hint" style="margin-top:-6px;">
+                    <strong style="color:#FFFFFF;">${approvedNow} of ${totalNow}</strong>
+                    ${totalNow === 1 ? 'member has' : 'members have'} approved so far.
+                </p>
+                <div class="pc-expand__actions">
+                    <button type="button" class="pj-btn" data-expand-approve>
+                        ${isApproved ? 'Undo my approval' : 'Approve release'}
+                    </button>
+                </div>
+                <div class="pc-expand__status" data-expand-app-status></div>
+            `;
+
+            expandEl.querySelector('[data-expand-close]').addEventListener('click', closeExpand);
+
+            const statusEl = expandEl.querySelector('[data-expand-app-status]');
+            function setStatus(text, kind) {
+                statusEl.className = 'pc-expand__status';
+                if (kind) statusEl.classList.add('is-' + kind);
+                statusEl.textContent = text || '';
+            }
+
+            expandEl.querySelector('[data-expand-approve]').addEventListener('click', async (e) => {
+                const btn = e.currentTarget;
+                btn.disabled = true;
+                setStatus('Saving…', null);
+                const { error } = await sb.rpc('toggle_project_approval', { p_project_id: id });
+                if (error) {
+                    setStatus('Could not save: ' + (error.message || ''), 'error');
+                    btn.disabled = false;
+                    return;
+                }
+                setStatus('Saved ✓', 'success');
+                setTimeout(() => renderDetail(id, host), 600);
+            });
+        }
+
         host.querySelectorAll('[data-upload]').forEach((btn) => {
             btn.addEventListener('click', () => {
                 const t = btn.getAttribute('data-upload');
@@ -828,18 +883,7 @@
             });
         });
         host.querySelectorAll('[data-approval-toggle]').forEach((row) => {
-            row.addEventListener('click', async () => {
-                row.style.opacity = '0.6';
-                row.style.pointerEvents = 'none';
-                const { error } = await sb.rpc('toggle_project_approval', { p_project_id: id });
-                if (error) {
-                    alert('Could not toggle approval: ' + (error.message || ''));
-                    row.style.opacity = '';
-                    row.style.pointerEvents = '';
-                    return;
-                }
-                renderDetail(id, host);
-            });
+            row.addEventListener('click', () => { expandApproval(row); });
         });
 
         host.querySelectorAll('[data-action="log"]').forEach((btn) => {
