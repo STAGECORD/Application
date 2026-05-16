@@ -330,18 +330,39 @@ body.help-mode [data-help]:hover {
     opacity: 0.85;
 }
 
-/* Floating "Help mode is on" banner */
+/* Floating help banner — anchored to the top so it's always visible.
+   Doubles as the live help text: hover any [data-help] element and
+   the banner's text updates to that element's explanation. */
 .help-banner {
     position: fixed;
     top: 72px; right: 16px;
+    left: auto;
+    max-width: 480px;
     z-index: 9998;
-    padding: 8px 14px;
+    padding: 12px 18px;
+    background: #0B1A38;
+    color: #FFFFFF;
+    border: 2px solid #6FA8FF;
+    font-size: 13px; font-weight: 500;
+    line-height: 1.45;
+    border-radius: 14px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.45);
+    display: none;
+}
+.help-banner.is-default {
     background: #6FA8FF;
     color: #0B0B0F;
-    font-size: 12px; font-weight: 700;
-    border-radius: 999px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.35);
-    display: none;
+    font-weight: 700;
     letter-spacing: 0.03em;
 }
 body.help-mode .help-banner { display: block; }
+.help-banner__label {
+    display: block;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6FA8FF;
+    margin-bottom: 4px;
+    font-weight: 700;
+}
+.help-banner.is-default .help-banner__label { display: none; }

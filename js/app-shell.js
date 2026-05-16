@@ -182,61 +182,38 @@
 
     // ===========================================================
     // Help mode — click "?" to activate, then HOVER any element
-    // with [data-help] to see its explanation. Clicks are also
-    // intercepted (capture phase) to suppress the underlying action
-    // while help mode is on, but the tooltip itself is hover-driven
-    // so there's no race with page-specific click handlers.
+    // with [data-help] to see its explanation. The banner in the
+    // top-right doubles as the live tooltip: its text updates to
+    // whatever the cursor is on. No separate floating tooltip means
+    // no z-index / overflow / focus races with page CSS.
     // ===========================================================
     const helpButton = document.querySelector('.help-button');
-    if (helpButton && !document.querySelector('.help-tooltip')) {
-        const tooltip = document.createElement('div');
-        tooltip.className = 'help-tooltip';
-        tooltip.setAttribute('role', 'tooltip');
-        tooltip.setAttribute('aria-hidden', 'true');
-        document.body.appendChild(tooltip);
+    if (helpButton && !document.querySelector('.help-banner')) {
+        const defaultMsg = 'HELP MODE ON — hover anything outlined to see what it does. Esc to exit.';
 
         const banner = document.createElement('div');
-        banner.className = 'help-banner';
-        banner.textContent = 'HELP MODE ON — hover anything outlined to see what it does';
+        banner.className = 'help-banner is-default';
+        banner.textContent = defaultMsg;
         document.body.appendChild(banner);
 
         let helpActive = false;
-        let currentTarget = null;
 
         function setHelpActive(on) {
             helpActive = on;
             document.body.classList.toggle('help-mode', on);
             helpButton.classList.toggle('is-active', on);
             helpButton.setAttribute('aria-pressed', on ? 'true' : 'false');
-            if (!on) {
-                hideTooltip();
-                currentTarget = null;
-            }
+            if (!on) resetBanner();
         }
-        function hideTooltip() {
-            tooltip.classList.remove('is-visible');
-            tooltip.setAttribute('aria-hidden', 'true');
+        function resetBanner() {
+            banner.classList.add('is-default');
+            banner.textContent = defaultMsg;
         }
-        function showTooltipFor(el, x, y) {
+        function showHelpFor(el) {
             const text = el.getAttribute('data-help');
-            if (!text) { hideTooltip(); return; }
-            tooltip.innerHTML = `${escapeHtml(text)}<span class="help-tooltip__close">Esc to exit help mode</span>`;
-            tooltip.classList.add('is-visible');
-            tooltip.setAttribute('aria-hidden', 'false');
-            const ttRect = tooltip.getBoundingClientRect();
-            const margin = 12;
-            let left = x + 16;
-            let top = y + 16;
-            if (left + ttRect.width + margin > window.innerWidth) {
-                left = window.innerWidth - ttRect.width - margin;
-            }
-            if (top + ttRect.height + margin > window.innerHeight) {
-                top = Math.max(margin, y - ttRect.height - 16);
-            }
-            left = Math.max(margin, left);
-            top = Math.max(margin, top);
-            tooltip.style.left = left + 'px';
-            tooltip.style.top = top + 'px';
+            if (!text) return;
+            banner.classList.remove('is-default');
+            banner.innerHTML = `<span class="help-banner__label">What this does</span>${escapeHtml(text)}`;
         }
 
         helpButton.addEventListener('click', (e) => {
@@ -245,30 +222,19 @@
             setHelpActive(!helpActive);
         });
 
-        // Hover-driven tooltip: as the cursor crosses into a documented
-        // element, show its hint; out → hide.
         document.addEventListener('mouseover', (e) => {
             if (!helpActive) return;
             const target = e.target.closest && e.target.closest('[data-help]');
-            if (!target || target === helpButton || tooltip.contains(target)) return;
-            currentTarget = target;
-            showTooltipFor(target, e.clientX, e.clientY);
-        });
-        document.addEventListener('mousemove', (e) => {
-            if (!helpActive || !currentTarget) return;
-            // Reposition while cursor moves over the same element
-            if (currentTarget.contains(e.target) || e.target === currentTarget) {
-                showTooltipFor(currentTarget, e.clientX, e.clientY);
-            }
+            if (!target || target === helpButton || banner.contains(target)) return;
+            showHelpFor(target);
         });
         document.addEventListener('mouseout', (e) => {
-            if (!helpActive || !currentTarget) return;
-            // Hide when leaving the current documented element entirely
+            if (!helpActive) return;
+            const leaving = e.target.closest && e.target.closest('[data-help]');
+            if (!leaving) return;
             const next = e.relatedTarget;
-            if (!next || !currentTarget.contains(next)) {
-                hideTooltip();
-                currentTarget = null;
-            }
+            if (next && (leaving.contains(next) || (next.closest && next.closest('[data-help]')))) return;
+            resetBanner();
         });
 
         // Suppress clicks on the page while help mode is on so users
@@ -276,7 +242,7 @@
         document.addEventListener('click', (e) => {
             if (!helpActive) return;
             if (helpButton.contains(e.target)) return;
-            if (tooltip.contains(e.target)) return;
+            if (banner.contains(e.target)) return;
             e.preventDefault();
             e.stopPropagation();
         }, true);
