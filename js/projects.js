@@ -709,17 +709,30 @@
             // version that's actually earning. Member shares can sum to < 100.
             const allowsUnder = royaltyType === 'covers' || royaltyType === 'tutorials';
             const externalLabel = royaltyType === 'covers' ? 'External cover artist' : 'Tutorial creator';
-            const ownerHint = allowsUnder
-                ? `Project members keep their share of this royalty; the rest goes to the ${externalLabel.toLowerCase()}. Member shares can sum to less than 100%.`
-                : 'Set how this royalty is split between the project members. The total must sum to 100%.';
-            const guestHint = 'Only the project owner can change royalty splits. You can see the current split below.';
+            const CATEGORY_HINTS = {
+                mechanical: 'Paid every time the song is reproduced — physical copies, downloads, and the publishing share of streams.',
+                performance: 'Collected by performing-rights societies (Koda / ASCAP / BMI) when the song is performed publicly — radio, livestream, concerts, restaurants.',
+                synch: 'Synchronization fee when the song is licensed for film, TV, ads, games or trailers — usually a one-time payment plus future performance royalties.',
+                print: 'Sales and licensing of printed sheet music, lyric booklets and digital tab/notation.',
+                covers: 'When other artists release a cover of this song — the cover artist keeps their share, the rest flows back to the original team.',
+                sample: 'When another artist samples this recording in their own track — the original team is paid by the sampling artist.',
+                tutorials: 'Income from instructional content (videos, courses, lesson packs) that teaches the song — the tutorial creator keeps their share.',
+                commercial: 'Commercial / endorsement licensing — merchandise, brand campaigns, B2B sponsorships and direct ad placements.'
+            };
+            const categoryHint = CATEGORY_HINTS[royaltyType] || '';
+            const ruleHint = isOwner
+                ? (allowsUnder
+                    ? `Set how the project members split their portion below — anything under 100% flows to the ${externalLabel.toLowerCase()} shown beneath the totals.`
+                    : `Set how this is split between the project members below. The members' total must sum to 100%.`)
+                : 'Only the project owner can change royalty splits. You can see the current split below.';
 
             expandEl.innerHTML = `
                 <div class="pc-expand__head">
                     <h4 class="pc-expand__title">${escapeHtml(label)} royalties</h4>
                     <button type="button" class="pc-expand__close" data-expand-close>Close</button>
                 </div>
-                <p class="pc-expand__hint">${isOwner ? ownerHint : guestHint}</p>
+                ${categoryHint ? `<p class="pc-expand__hint">${escapeHtml(categoryHint)}</p>` : ''}
+                <p class="pc-expand__hint" style="margin-top:-6px;">${escapeHtml(ruleHint)}</p>
                 <div class="pj-royalty-rows" data-expand-roy-rows></div>
                 <div class="pj-royalty-total">
                     <span>${allowsUnder ? 'Members total' : 'Total'}</span>
