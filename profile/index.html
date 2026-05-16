@@ -142,7 +142,7 @@
 
             <form id="profileForm">
                 <div class="cover-wrap" id="coverWrap">
-                    <label class="cover-photo" id="coverTrigger" title="Click to upload cover">
+                    <label class="cover-photo" id="coverTrigger" title="Click to upload cover" data-help="Cover photo — wide banner that appears at the top of your public /u/ page. Click to upload a JPG, PNG or WebP up to 5 MB.">
                         <span class="cover-photo__placeholder" id="coverPlaceholder">Click to add a cover photo</span>
                         <span class="cover-photo__overlay" id="coverOverlay">Change cover</span>
                         <input type="file" id="coverInput" accept="image/jpeg,image/png,image/webp">
@@ -152,7 +152,7 @@
                 <div class="profile-row">
                     <div class="profile-avatar-block">
                         <div class="profile-avatar-wrap">
-                            <label class="profile-avatar" id="avatarTrigger" title="Click to upload">
+                            <label class="profile-avatar" id="avatarTrigger" title="Click to upload" data-help="Profile photo — your avatar everywhere on STAGECORD (sidebar, posts, comments, project cards). Click to upload a square JPG, PNG or WebP up to 5 MB.">
                                 <span class="profile-avatar__placeholder" id="avatarPlaceholder">No photo</span>
                                 <span class="profile-avatar__overlay" id="avatarOverlay">Change photo</span>
                                 <input type="file" id="avatarInput" accept="image/jpeg,image/png,image/webp">
@@ -163,29 +163,29 @@
                     <div class="profile-fields">
                         <div class="profile-field">
                             <label for="profile-email">Email</label>
-                            <input id="profile-email" type="email" readonly>
+                            <input id="profile-email" type="email" readonly data-help="Your account email — used for login and notifications. Cannot be changed from here; contact support if needed.">
                             <span class="profile-field__hint">Your email is tied to your account and can't be changed here.</span>
                         </div>
 
                         <div class="profile-field">
                             <label for="profile-forename">First name</label>
-                            <input id="profile-forename" type="text" autocomplete="given-name" required>
+                            <input id="profile-forename" type="text" autocomplete="given-name" required data-help="Your first name — rendered in bold everywhere your name appears.">
                         </div>
 
                         <div class="profile-field">
                             <label for="profile-surname">Last name</label>
-                            <input id="profile-surname" type="text" autocomplete="family-name" required>
+                            <input id="profile-surname" type="text" autocomplete="family-name" required data-help="Your surname — rendered in lighter weight next to your first name.">
                         </div>
 
                         <div class="profile-field">
                             <label for="profile-username">Username</label>
-                            <input id="profile-username" type="text" autocomplete="username" placeholder="lowercase letters, numbers, _ or - (3-30 chars)" pattern="[a-z0-9][a-z0-9_-]{2,29}">
+                            <input id="profile-username" type="text" autocomplete="username" placeholder="lowercase letters, numbers, _ or - (3-30 chars)" pattern="[a-z0-9][a-z0-9_-]{2,29}" data-help="Your @-handle and public profile URL slug (stagecord.com/u/your-handle). Lowercase letters, digits, underscore and hyphen only. 3–30 chars.">
                             <span class="profile-field__hint" id="usernameHint">Used for your shareable profile URL. Lowercase only.</span>
                         </div>
 
                         <div class="profile-field">
                             <label for="profile-role">Role</label>
-                            <select id="profile-role" style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:11px 14px;color:#FFFFFF;font-family:inherit;font-size:15px;width:100%;box-sizing:border-box;">
+                            <select id="profile-role" style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:11px 14px;color:#FFFFFF;font-family:inherit;font-size:15px;width:100%;box-sizing:border-box;" data-help="Account role — Artists unlock Tracks / Projects / Events in the sidebar. Fans see the social feed only. You can flip between roles freely.">
                                 <option value="fan">General user / Fan</option>
                                 <option value="artist">Artist</option>
                             </select>
@@ -194,14 +194,14 @@
 
                         <div class="profile-field">
                             <label for="profile-bio">Bio</label>
-                            <textarea id="profile-bio" placeholder="A short line about you — optional, shown on your public profile."></textarea>
+                            <textarea id="profile-bio" placeholder="A short line about you — optional, shown on your public profile." data-help="Optional one-paragraph bio — shown on your public /u/ page below your name. Good place for genre, location, link to a portfolio."></textarea>
                         </div>
                     </div>
                 </div>
 
                 <div class="profile-actions">
-                    <button type="submit" class="profile-btn" id="profileSave">Save changes</button>
-                    <button type="button" class="profile-btn profile-btn--ghost" id="profileCancel">Cancel</button>
+                    <button type="submit" class="profile-btn" id="profileSave" data-help="Save all profile changes. Avatar and cover uploads save automatically the moment you pick a file; this button covers the text fields.">Save changes</button>
+                    <button type="button" class="profile-btn profile-btn--ghost" id="profileCancel" data-help="Discard unsaved text-field changes (avatar and cover stay since they save instantly).">Cancel</button>
                     <span class="profile-feedback" id="profileFeedback" role="status" aria-live="polite"></span>
                 </div>
             </form>

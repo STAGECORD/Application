@@ -161,16 +161,16 @@
             <form id="plModalForm">
                 <div class="pl-modal-field">
                     <label for="pl-name">Name</label>
-                    <input id="pl-name" type="text" maxlength="200" placeholder="e.g. Late-night demos" required>
+                    <input id="pl-name" type="text" maxlength="200" placeholder="e.g. Late-night demos" required data-help="Playlist name — visible on your public profile and wherever the playlist is shared. Up to 200 characters.">
                 </div>
                 <div class="pl-modal-field">
                     <label for="pl-desc">Description <span style="opacity:0.6;">(optional)</span></label>
-                    <textarea id="pl-desc" maxlength="1000" placeholder="A short note about what this playlist is for."></textarea>
+                    <textarea id="pl-desc" maxlength="1000" placeholder="A short note about what this playlist is for." data-help="Optional description — explain the vibe or theme. Shown beneath the playlist title on the detail page."></textarea>
                 </div>
                 <div class="pl-modal-error" id="plModalError"></div>
                 <div class="pl-modal-actions">
-                    <button type="button" class="pl-btn pl-btn--ghost" id="plModalCancel">Cancel</button>
-                    <button type="submit" class="pl-btn" id="plModalSubmit">Create</button>
+                    <button type="button" class="pl-btn pl-btn--ghost" id="plModalCancel" data-help="Discard this playlist without saving.">Cancel</button>
+                    <button type="submit" class="pl-btn" id="plModalSubmit" data-help="Create the playlist. You can add tracks to it afterward from /tracks/ or from track cards on profiles.">Create</button>
                 </div>
             </form>
         </div>

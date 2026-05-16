@@ -102,44 +102,44 @@
             <form id="eventForm">
                 <div class="ev-field">
                     <label for="ev-title">Title</label>
-                    <input id="ev-title" type="text" maxlength="200" placeholder="e.g. Live at Vega" required>
+                    <input id="ev-title" type="text" maxlength="200" placeholder="e.g. Live at Vega" required data-help="Event title — what fans will see on your public profile. Keep it short and punchy.">
                 </div>
 
                 <div class="ev-field-row">
                     <div class="ev-field">
                         <label for="ev-date">Date &amp; time</label>
-                        <input id="ev-date" type="datetime-local" required>
+                        <input id="ev-date" type="datetime-local" required data-help="When the event starts. Used to sort upcoming vs past events on your profile.">
                     </div>
                     <div class="ev-field">
                         <label for="ev-venue">Venue</label>
-                        <input id="ev-venue" type="text" maxlength="200" placeholder="e.g. Vega Main Hall">
+                        <input id="ev-venue" type="text" maxlength="200" placeholder="e.g. Vega Main Hall" data-help="Venue name. Helps fans know where to go and acts as the line between cities and online events.">
                     </div>
                 </div>
 
                 <div class="ev-field-row">
                     <div class="ev-field">
                         <label for="ev-city">City</label>
-                        <input id="ev-city" type="text" maxlength="100" placeholder="e.g. Copenhagen">
+                        <input id="ev-city" type="text" maxlength="100" placeholder="e.g. Copenhagen" data-help="City the event happens in. Used to group your tour dates regionally.">
                     </div>
                     <div class="ev-field">
                         <label for="ev-ticket">Ticket link <span style="opacity:0.6;">(optional)</span></label>
-                        <input id="ev-ticket" type="url" maxlength="500" placeholder="https://…">
+                        <input id="ev-ticket" type="url" maxlength="500" placeholder="https://…" data-help="External ticket URL. Renders as a Buy tickets button on the event card.">
                     </div>
                 </div>
 
                 <div class="ev-field">
                     <label for="ev-desc">Notes <span style="opacity:0.6;">(optional)</span></label>
-                    <textarea id="ev-desc" maxlength="1000" placeholder="Doors, support acts, dress code, anything fans should know."></textarea>
+                    <textarea id="ev-desc" maxlength="1000" placeholder="Doors, support acts, dress code, anything fans should know." data-help="Free-form notes — doors, support acts, dress code, anything that doesn't fit the structured fields above."></textarea>
                 </div>
 
                 <div class="ev-row">
-                    <button type="submit" class="ev-btn" id="evSubmit" disabled>Add event</button>
+                    <button type="submit" class="ev-btn" id="evSubmit" disabled data-help="Publish the event. Once added it shows up on your public profile under Upcoming events.">Add event</button>
                     <span class="ev-feedback" id="evFeedback" role="status" aria-live="polite"></span>
                 </div>
             </form>
         </div>
 
-        <div class="events-card">
+        <div class="events-card" data-help="Your scheduled events. Past events stay listed but drop off the Upcoming section of your profile. Use the × on a row to delete one.">
             <h2>Your events <span class="events-card__sub" id="evCount"></span></h2>
             <div id="evList">
                 <div class="ev-empty">Loading…</div>

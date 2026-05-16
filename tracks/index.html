@@ -107,24 +107,24 @@
     <div data-app-shell data-page-title="Tracks"></div>
 
     <main class="app-main"><div class="tracks-wrap">
-        <div class="tracks-card">
+        <div class="tracks-card" data-help="Upload a new track — title, optional description and the audio file. Once published it shows up on your public profile and is available to add to projects + playlists.">
             <h2>Upload a track <span class="tracks-card__sub">MP3, WAV, M4A or OGG · max 50 MB</span></h2>
 
             <form id="uploadForm">
                 <div class="upload-field">
                     <label for="track-title">Title</label>
-                    <input id="track-title" type="text" maxlength="200" placeholder="What do you call this track?" required>
+                    <input id="track-title" type="text" maxlength="200" placeholder="What do you call this track?" required data-help="Track title — shown wherever the track appears (your profile, playlists, project rails). Up to 200 characters.">
                 </div>
 
                 <div class="upload-field">
                     <label for="track-desc">Description <span style="opacity:0.6;">(optional)</span></label>
-                    <textarea id="track-desc" maxlength="1000" placeholder="A short note about the track — when it's from, what it's about, who you made it with."></textarea>
+                    <textarea id="track-desc" maxlength="1000" placeholder="A short note about the track — when it's from, what it's about, who you made it with." data-help="Optional context for the track — what it's about, who you made it with, when it was recorded. Shown beneath the player."></textarea>
                 </div>
 
                 <div class="upload-field">
                     <label>Audio file</label>
                     <div class="upload-file-row">
-                        <label class="upload-file-btn">
+                        <label class="upload-file-btn" data-help="Pick an audio file (MP3, WAV, M4A or OGG, up to 50 MB). Duration is detected automatically and shown on the player.">
                             <input type="file" id="track-file" accept="audio/mpeg,audio/wav,audio/mp4,audio/m4a,audio/aac,audio/ogg,audio/x-m4a,audio/mp3" hidden>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                 <path d="M9 18V5l12-2v13"/>
@@ -138,14 +138,14 @@
                 </div>
 
                 <div class="upload-row">
-                    <button type="submit" class="upload-btn" id="uploadBtn" disabled>Publish track</button>
+                    <button type="submit" class="upload-btn" id="uploadBtn" disabled data-help="Publish the track. The file uploads to STAGECORD storage and the track appears in your list below and on your public profile.">Publish track</button>
                     <span class="upload-progress" id="uploadProgress"></span>
                     <span class="upload-feedback" id="uploadFeedback" role="status" aria-live="polite"></span>
                 </div>
             </form>
         </div>
 
-        <div class="tracks-card">
+        <div class="tracks-card" data-help="Your published tracks. Each row plays inline, supports likes and can be deleted by you. The × button on a track removes both the file and its plays.">
             <h2>Your tracks <span class="tracks-card__sub" id="tracksCount"></span></h2>
             <div id="tracksList">
                 <div class="tracks-empty">Loading…</div>

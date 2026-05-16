@@ -148,24 +148,24 @@
 
     <main class="app-main"><div class="inbox-page">
         <div class="inbox-grid">
-            <section class="inbox-card inbox-list" id="inboxList">
+            <section class="inbox-card inbox-list" id="inboxList" data-help="Conversations list — every direct message thread you're part of. Unread threads show a blue dot. Click one to open it on the right.">
                 <div class="inbox-card__head">Conversations</div>
                 <div class="inbox-list__items" id="conversationsList">
                     <div class="inbox-empty">Loading…</div>
                 </div>
             </section>
 
-            <section class="inbox-card inbox-thread" id="inboxThread">
+            <section class="inbox-card inbox-thread" id="inboxThread" data-help="Message thread — full history with the selected member. Opening a thread marks new messages as read for you.">
                 <div class="inbox-card__head">
-                    <button type="button" class="inbox-back" id="inboxBack">← Back</button>
+                    <button type="button" class="inbox-back" id="inboxBack" data-help="Back to the conversations list (mobile only).">← Back</button>
                     <span id="threadTitle">Choose a conversation</span>
                 </div>
                 <div class="inbox-thread__messages" id="threadMessages">
                     <div class="inbox-placeholder">Pick a conversation on the left, or send your first message from someone's <strong>profile</strong>.</div>
                 </div>
                 <form id="composerForm" class="inbox-thread__composer" hidden>
-                    <input type="text" class="inbox-thread__input" id="composerInput" placeholder="Type a message…" maxlength="2000" autocomplete="off">
-                    <button type="submit" class="inbox-thread__send" id="composerSend" disabled>Send</button>
+                    <input type="text" class="inbox-thread__input" id="composerInput" placeholder="Type a message…" maxlength="2000" autocomplete="off" data-help="Message text — up to 2000 characters. Press Enter or click Send to deliver. The recipient gets a notification.">
+                    <button type="submit" class="inbox-thread__send" id="composerSend" disabled data-help="Send the message. The recipient is notified instantly and the thread bumps to the top of their inbox.">Send</button>
                 </form>
             </section>
         </div>
