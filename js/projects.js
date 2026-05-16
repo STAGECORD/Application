@@ -850,6 +850,23 @@
                     brand_campaign: 'Brand campaign',
                     educational: 'Educational / instructional'
                 };
+                // Sensible default scope per category. Owner can still override.
+                const CATEGORY_DEFAULT_SCOPE = {
+                    tv_national: 'national',
+                    tv_international: 'global',
+                    radio_ad: 'national',
+                    online_ad: 'global',
+                    trailer: 'global',
+                    film_theatrical: 'global',
+                    film_streaming: 'global',
+                    documentary: 'international',
+                    video_game: 'global',
+                    mobile_app: 'global',
+                    live_event: 'national',
+                    background_music: 'national',
+                    brand_campaign: 'national',
+                    educational: 'national'
+                };
                 const COMMERCIAL_RESTRICTIONS = {
                     pornography: 'Pornography / adult content',
                     tobacco: 'Tobacco products',
@@ -1024,7 +1041,17 @@
                                 form.querySelector('[name="price"]').value = Math.round(Number(s.avg_dkk));
                             });
                         }
-                        categorySelect.addEventListener('change', refreshSuggestion);
+                        // Auto-set scope based on category (owner can override after)
+                        const scopeSelect = form.querySelector('[name="scope"]');
+                        function autoScope() {
+                            const key = categorySelect.value;
+                            const def = CATEGORY_DEFAULT_SCOPE[key];
+                            if (def) scopeSelect.value = def;
+                        }
+                        categorySelect.addEventListener('change', () => {
+                            autoScope();
+                            refreshSuggestion();
+                        });
                         refreshSuggestion();
 
                         form.addEventListener('submit', async (e) => {
