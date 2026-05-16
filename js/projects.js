@@ -27,6 +27,38 @@
 
     const escapeHtml = F.escapeHtml;
 
+    // Hardcoded conversion rates from DKK. Update manually as needed.
+    // (Each value is "how many of this currency = 1 DKK".)
+    const FX_FROM_DKK = {
+        DKK: 1,
+        EUR: 0.134,
+        USD: 0.145,
+        GBP: 0.115,
+        JPY: 22.1,
+        XOF: 88.0
+    };
+    function fmtMoneyDkk(amountDkk, displayCurrency) {
+        const target = FX_FROM_DKK[displayCurrency] ? displayCurrency : 'DKK';
+        const converted = Number(amountDkk) * FX_FROM_DKK[target];
+        try {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: target,
+                maximumFractionDigits: target === 'JPY' || target === 'XOF' ? 0 : 2
+            }).format(converted);
+        } catch (_) {
+            return `${converted.toFixed(2)} ${target}`;
+        }
+    }
+
+    // User's display currency (loaded once)
+    let userCurrency = 'DKK';
+    try {
+        const { data: prof } = await sb.from('profiles')
+            .select('display_currency').eq('id', user.id).single();
+        if (prof?.display_currency) userCurrency = prof.display_currency;
+    } catch (_) { /* fine — defaults to DKK */ }
+
     function fmtDate(iso) {
         return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
@@ -769,13 +801,16 @@
                     : `Set how this is split between the project members below. The members' total must sum to 100%.`)
                 : 'Only the project owner can change royalty splits. You can see the current split below.';
 
+            const isCommercial = royaltyType === 'commercial';
+
             expandEl.innerHTML = `
                 <div class="pc-expand__head">
                     <h4 class="pc-expand__title">${escapeHtml(label)} royalties</h4>
                     <button type="button" class="pc-expand__close" data-expand-close>Close</button>
                 </div>
                 ${categoryHint ? `<p class="pc-expand__hint">${escapeHtml(categoryHint)}</p>` : ''}
-                <p class="pc-expand__hint" style="margin-top:-6px;">${escapeHtml(ruleHint)}</p>
+                ${isCommercial ? `<div class="pc-commercial-rates" data-expand-rates></div>` : ''}
+                <p class="pc-expand__hint" style="margin-top:-6px;">${escapeHtml(isCommercial ? 'Beneath the rate card, set how the earnings from any commercial licence are split between project members.' : ruleHint)}</p>
                 <div class="pj-royalty-rows" data-expand-roy-rows></div>
                 <div class="pj-royalty-total">
                     <span>${allowsUnder ? 'Members total' : 'Total'}</span>
@@ -796,6 +831,121 @@
                 ` : ''}
             `;
             expandEl.querySelector('[data-expand-close]').addEventListener('click', closeExpand);
+
+            // ----- Commercial: rate-card editor / viewer -----
+            if (isCommercial) {
+                const ratesEl = expandEl.querySelector('[data-expand-rates]');
+                async function refreshRates() {
+                    ratesEl.innerHTML = `<div class="pc-rates__loading">Loading rates…</div>`;
+                    const { data, error } = await sb.rpc('get_project_commercial_rates', { p_project_id: id });
+                    if (error) {
+                        ratesEl.innerHTML = `<div class="pc-rates__empty">${escapeHtml(error.message || 'Failed to load')}</div>`;
+                        return;
+                    }
+                    const rates = data || [];
+                    const rowsHtml = rates.length === 0
+                        ? `<div class="pc-rates__empty">No commercial rates set yet${isOwner ? ' — add one below.' : '.'}</div>`
+                        : rates.map((r) => {
+                            const periodTxt = r.period_type === 'permanent'
+                                ? 'Permanent'
+                                : (r.period_months ? `${r.period_months} months` : 'Limited');
+                            const scopeTxt = r.scope === 'national' ? 'National'
+                                : r.scope === 'international' ? 'International' : 'Global';
+                            return `<div class="pc-rate-row">
+                                <div class="pc-rate-row__main">
+                                    <div class="pc-rate-row__label">${escapeHtml(r.label)}</div>
+                                    <div class="pc-rate-row__meta">${escapeHtml(periodTxt)} · ${escapeHtml(scopeTxt)}${r.notes ? ' · ' + escapeHtml(r.notes) : ''}</div>
+                                </div>
+                                <div class="pc-rate-row__price">${escapeHtml(fmtMoneyDkk(r.price_dkk, userCurrency))}</div>
+                                ${isOwner
+                                    ? `<button type="button" class="pc-rate-row__del" data-rate-del="${escapeHtml(r.id)}" aria-label="Remove rate">×</button>`
+                                    : `<button type="button" class="pc-rate-row__request" data-rate-request="${escapeHtml(r.id)}" disabled title="License request form is coming next">Request</button>`}
+                            </div>`;
+                        }).join('');
+
+                    ratesEl.innerHTML = `
+                        <div class="pc-rates__head">
+                            <h5>Rate card</h5>
+                            <span class="pc-rates__sub">${rates.length} ${rates.length === 1 ? 'rate' : 'rates'} · prices shown in ${escapeHtml(userCurrency)}, stored in DKK</span>
+                        </div>
+                        <div class="pc-rates__list">${rowsHtml}</div>
+                        ${isOwner ? `
+                            <form class="pc-rates__form" data-rate-form>
+                                <div class="pc-rates__form-row">
+                                    <input type="text" name="label" placeholder="Label (e.g. National TV ad)" required maxlength="120">
+                                    <input type="number" name="price" placeholder="Price (DKK)" min="0" step="100" required>
+                                </div>
+                                <div class="pc-rates__form-row">
+                                    <select name="period_type">
+                                        <option value="limited">Limited period</option>
+                                        <option value="permanent">Permanent</option>
+                                    </select>
+                                    <input type="number" name="period_months" placeholder="Months" min="1" value="12">
+                                    <select name="scope">
+                                        <option value="national">National</option>
+                                        <option value="international">International</option>
+                                        <option value="global">Global</option>
+                                    </select>
+                                </div>
+                                <div class="pc-rates__form-row">
+                                    <input type="text" name="notes" placeholder="Notes (optional)" maxlength="200">
+                                    <button type="submit" class="pj-btn">+ Add rate</button>
+                                </div>
+                                <div class="pc-rates__form-error" data-rate-form-error></div>
+                            </form>
+                        ` : ''}
+                    `;
+
+                    ratesEl.querySelectorAll('[data-rate-del]').forEach((btn) => {
+                        btn.addEventListener('click', async () => {
+                            if (!confirm('Remove this rate?')) return;
+                            btn.disabled = true;
+                            const { error: dErr } = await sb.rpc('remove_project_commercial_rate', { p_rate_id: btn.getAttribute('data-rate-del') });
+                            if (dErr) { alert('Could not remove: ' + (dErr.message || '')); btn.disabled = false; return; }
+                            refreshRates();
+                        });
+                    });
+
+                    if (isOwner) {
+                        const form = ratesEl.querySelector('[data-rate-form]');
+                        const errEl = ratesEl.querySelector('[data-rate-form-error]');
+                        // Hide months input when permanent
+                        const periodType = form.querySelector('[name="period_type"]');
+                        const monthsInp = form.querySelector('[name="period_months"]');
+                        function syncMonths() {
+                            monthsInp.style.display = periodType.value === 'permanent' ? 'none' : '';
+                        }
+                        periodType.addEventListener('change', syncMonths);
+                        syncMonths();
+
+                        form.addEventListener('submit', async (e) => {
+                            e.preventDefault();
+                            errEl.textContent = '';
+                            const fd = new FormData(form);
+                            const periodTypeVal = fd.get('period_type');
+                            const payload = {
+                                p_project_id: id,
+                                p_label: (fd.get('label') || '').toString().trim(),
+                                p_price_dkk: parseFloat(fd.get('price')) || 0,
+                                p_period_type: periodTypeVal,
+                                p_period_months: periodTypeVal === 'permanent' ? null : (parseInt(fd.get('period_months')) || 12),
+                                p_scope: fd.get('scope'),
+                                p_notes: (fd.get('notes') || '').toString().trim() || null
+                            };
+                            if (!payload.p_label) { errEl.textContent = 'Label is required.'; return; }
+                            const submitBtn = form.querySelector('button[type="submit"]');
+                            submitBtn.disabled = true;
+                            const { error: aErr } = await sb.rpc('add_project_commercial_rate', payload);
+                            submitBtn.disabled = false;
+                            if (aErr) { errEl.textContent = aErr.message || 'Could not add'; return; }
+                            form.reset();
+                            syncMonths();
+                            refreshRates();
+                        });
+                    }
+                }
+                refreshRates();
+            }
 
             const rowsEl = expandEl.querySelector('[data-expand-roy-rows]');
             const totalEl = expandEl.querySelector('[data-expand-roy-total]');

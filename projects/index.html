@@ -646,6 +646,76 @@
             color: #FFFFFF;
         }
 
+        /* Commercial rate card inside the blue expand */
+        .pc-commercial-rates { margin-bottom: 16px; }
+        .pc-rates__head {
+            display: flex; align-items: baseline; gap: 12px;
+            margin-bottom: 10px; flex-wrap: wrap;
+        }
+        .pc-rates__head h5 {
+            margin: 0; color: #BFD7FF;
+            font-size: 13px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.04em;
+        }
+        .pc-rates__sub { color: #B1B1B1; font-size: 11px; }
+        .pc-rates__loading, .pc-rates__empty {
+            color: #BFD7FF; font-size: 12px; opacity: 0.85;
+            padding: 8px 0;
+        }
+        .pc-rates__list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+        .pc-rate-row {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 10px;
+        }
+        .pc-rate-row__main { flex: 1; min-width: 0; }
+        .pc-rate-row__label { color: #FFFFFF; font-size: 13px; font-weight: 600; }
+        .pc-rate-row__meta { color: #BFD7FF; font-size: 11px; margin-top: 2px; opacity: 0.85; }
+        .pc-rate-row__price {
+            color: #FFFFFF; font-size: 14px; font-weight: 700;
+            font-family: 'SF Mono', Monaco, monospace;
+        }
+        .pc-rate-row__del {
+            background: transparent; border: 1px solid rgba(255,255,255,0.18);
+            color: #B1B1B1; border-radius: 50%;
+            width: 24px; height: 24px;
+            font-size: 14px; line-height: 1;
+            cursor: pointer; font-family: inherit;
+            display: inline-flex; align-items: center; justify-content: center;
+        }
+        .pc-rate-row__del:hover { color: #FF6B6B; border-color: #FF6B6B; }
+        .pc-rate-row__request {
+            background: transparent; border: 1px solid rgba(255,255,255,0.2);
+            color: #FFFFFF; border-radius: 999px;
+            padding: 5px 11px; font-family: inherit; font-size: 11px;
+            cursor: pointer;
+        }
+        .pc-rate-row__request:hover:not(:disabled) { border-color: #FFFFFF; background: rgba(255,255,255,0.06); }
+        .pc-rate-row__request:disabled { opacity: 0.5; cursor: not-allowed; }
+        .pc-rates__form {
+            border-top: 1px solid rgba(255,255,255,0.08);
+            padding-top: 12px; margin-top: 4px;
+            display: flex; flex-direction: column; gap: 8px;
+        }
+        .pc-rates__form-row {
+            display: flex; gap: 8px; flex-wrap: wrap;
+        }
+        .pc-rates__form input,
+        .pc-rates__form select {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.16);
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: #FFFFFF;
+            font-family: inherit; font-size: 13px;
+            flex: 1; min-width: 140px; box-sizing: border-box;
+        }
+        .pc-rates__form select option { background: #0B1A38; }
+        .pc-rates__form button { flex: 0 0 auto; }
+        .pc-rates__form-error { color: #FF9C9C; font-size: 12px; min-height: 14px; }
+
         /* Activity log rows inside the blue expand */
         .pj-log-list {
             max-height: 380px; overflow-y: auto;
