@@ -181,9 +181,11 @@
     };
 
     // ===========================================================
-    // Help mode — click "?" to activate, then click any element
-    // with [data-help] to see its explanation. Esc or clicking "?"
-    // again exits. Ported from the prototype.
+    // Help mode — click "?" to activate, then HOVER any element
+    // with [data-help] to see its explanation. Clicks are also
+    // intercepted (capture phase) to suppress the underlying action
+    // while help mode is on, but the tooltip itself is hover-driven
+    // so there's no race with page-specific click handlers.
     // ===========================================================
     const helpButton = document.querySelector('.help-button');
     if (helpButton && !document.querySelector('.help-tooltip')) {
@@ -195,17 +197,21 @@
 
         const banner = document.createElement('div');
         banner.className = 'help-banner';
-        banner.textContent = 'HELP MODE ON — click anything outlined to learn what it does';
+        banner.textContent = 'HELP MODE ON — hover anything outlined to see what it does';
         document.body.appendChild(banner);
 
         let helpActive = false;
+        let currentTarget = null;
 
         function setHelpActive(on) {
             helpActive = on;
             document.body.classList.toggle('help-mode', on);
             helpButton.classList.toggle('is-active', on);
             helpButton.setAttribute('aria-pressed', on ? 'true' : 'false');
-            if (!on) hideTooltip();
+            if (!on) {
+                hideTooltip();
+                currentTarget = null;
+            }
         }
         function hideTooltip() {
             tooltip.classList.remove('is-visible');
@@ -213,11 +219,10 @@
         }
         function showTooltipFor(el, x, y) {
             const text = el.getAttribute('data-help');
-            if (!text) return;
-            tooltip.innerHTML = `${escapeHtml(text)}<span class="help-tooltip__close">Click anything else for its hint · Esc to exit</span>`;
+            if (!text) { hideTooltip(); return; }
+            tooltip.innerHTML = `${escapeHtml(text)}<span class="help-tooltip__close">Esc to exit help mode</span>`;
             tooltip.classList.add('is-visible');
             tooltip.setAttribute('aria-hidden', 'false');
-            // Force layout so getBoundingClientRect returns real dimensions
             const ttRect = tooltip.getBoundingClientRect();
             const margin = 12;
             let left = x + 16;
@@ -240,23 +245,40 @@
             setHelpActive(!helpActive);
         });
 
-        // Capture-phase listener so we run before page handlers and can
-        // suppress the underlying click (eg. expanding a pill) when the
-        // user just wants the help tooltip.
+        // Hover-driven tooltip: as the cursor crosses into a documented
+        // element, show its hint; out → hide.
+        document.addEventListener('mouseover', (e) => {
+            if (!helpActive) return;
+            const target = e.target.closest && e.target.closest('[data-help]');
+            if (!target || target === helpButton || tooltip.contains(target)) return;
+            currentTarget = target;
+            showTooltipFor(target, e.clientX, e.clientY);
+        });
+        document.addEventListener('mousemove', (e) => {
+            if (!helpActive || !currentTarget) return;
+            // Reposition while cursor moves over the same element
+            if (currentTarget.contains(e.target) || e.target === currentTarget) {
+                showTooltipFor(currentTarget, e.clientX, e.clientY);
+            }
+        });
+        document.addEventListener('mouseout', (e) => {
+            if (!helpActive || !currentTarget) return;
+            // Hide when leaving the current documented element entirely
+            const next = e.relatedTarget;
+            if (!next || !currentTarget.contains(next)) {
+                hideTooltip();
+                currentTarget = null;
+            }
+        });
+
+        // Suppress clicks on the page while help mode is on so users
+        // don't accidentally trigger actions (eg. expand a pill).
         document.addEventListener('click', (e) => {
             if (!helpActive) return;
             if (helpButton.contains(e.target)) return;
-            if (tooltip.contains(e.target)) { hideTooltip(); return; }
-            const target = e.target.closest('[data-help]');
-            if (target) {
-                e.preventDefault();
-                e.stopPropagation();
-                showTooltipFor(target, e.clientX, e.clientY);
-            } else {
-                // Click outside any documented element: dismiss tooltip but
-                // stay in help mode so the user can keep exploring.
-                hideTooltip();
-            }
+            if (tooltip.contains(e.target)) return;
+            e.preventDefault();
+            e.stopPropagation();
         }, true);
 
         document.addEventListener('keydown', (e) => {
