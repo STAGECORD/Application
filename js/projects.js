@@ -212,7 +212,8 @@
             covers: 'Covers royalty: when other artists release a cover of this song. Project members can take less than 100% — the rest goes to the cover artist.',
             sample: 'Sample royalty: when another artist samples this recording in their own track. Click to edit the split among the original team.',
             tutorials: 'Tutorials royalty: instructional content teaching the song. Members can take less than 100% — the rest goes to the tutorial creator.',
-            commercial: 'Commercial royalty: endorsement licensing, merchandise, brand campaigns, B2B sponsorships. Click to edit the split.'
+            commercial: 'Commercial royalty: endorsement licensing, merchandise, brand campaigns, B2B sponsorships. Click to edit the split.',
+            remix: 'Remix royalty: when another artist releases a remix of this track. Members can take less than 100% — the rest goes to the remixer who did the new work.'
         };
 
         function pillFile(cat, type, label) {
@@ -463,6 +464,7 @@
                                     ${pillRoyalty('synch', 'Synch')}
                                     ${pillRoyalty('print', 'Print Music')}
                                     ${pillRoyalty('tutorials', 'Tutorials')}
+                                    ${pillRoyalty('remix', 'Remix')}
                                     ${pillRoyalty('commercial', 'Commercial')}
                                 </div>
                             </div>
@@ -612,7 +614,8 @@
         };
         const ROYALTY_LABELS = {
             mechanical: 'Mechanical', performance: 'Performance', covers: 'Covers', sample: 'Sample',
-            synch: 'Synch', print: 'Print Music', tutorials: 'Tutorials', commercial: 'Commercial'
+            synch: 'Synch', print: 'Print Music', tutorials: 'Tutorials', commercial: 'Commercial',
+            remix: 'Remix'
         };
 
         // Inline expansion panel — replaces popup modals. Clicking the same
@@ -739,11 +742,15 @@
             markActiveBtn(triggerBtn);
             expandEl.hidden = false;
 
-            // For 'covers' and 'tutorials', the remainder of 100% goes to
-            // the external cover artist / tutorial creator who recorded the
-            // version that's actually earning. Member shares can sum to < 100.
-            const allowsUnder = royaltyType === 'covers' || royaltyType === 'tutorials';
-            const externalLabel = royaltyType === 'covers' ? 'External cover artist' : 'Tutorial creator';
+            // For 'covers', 'tutorials' and 'remix', the remainder of 100%
+            // goes to the external person (cover artist / tutorial creator /
+            // remixer) who did the new work. Member shares can sum to < 100.
+            const allowsUnder = royaltyType === 'covers' || royaltyType === 'tutorials' || royaltyType === 'remix';
+            const externalLabel = royaltyType === 'covers'
+                ? 'External cover artist'
+                : royaltyType === 'tutorials'
+                    ? 'Tutorial creator'
+                    : 'External remixer';
             const CATEGORY_HINTS = {
                 mechanical: 'Paid every time the song is reproduced — physical copies, downloads, and the publishing share of streams.',
                 performance: 'Collected by performing-rights societies (Koda / ASCAP / BMI) when the song is performed publicly — radio, livestream, concerts, restaurants.',
@@ -752,7 +759,8 @@
                 covers: 'When other artists release a cover of this song — the cover artist keeps their share, the rest flows back to the original team.',
                 sample: 'When another artist samples this recording in their own track — the original team is paid by the sampling artist.',
                 tutorials: 'Income from instructional content (videos, courses, lesson packs) that teaches the song — the tutorial creator keeps their share.',
-                commercial: 'Commercial / endorsement licensing — merchandise, brand campaigns, B2B sponsorships and direct ad placements.'
+                commercial: 'Commercial / endorsement licensing — merchandise, brand campaigns, B2B sponsorships and direct ad placements.',
+                remix: 'When another artist releases an official remix of this track — the remixer keeps their share of the new version, the rest flows back to the original team.'
             };
             const categoryHint = CATEGORY_HINTS[royaltyType] || '';
             const ruleHint = isOwner
