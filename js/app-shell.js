@@ -33,15 +33,15 @@
     }
 
     const NAV = [
-        { label: 'Home', href: '/welcome/', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>` },
-        { label: 'Inbox', href: '/inbox/', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5h13l3.5 7v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6l3.5-7z"/></svg>` },
-        { label: 'Notifications', href: '/notifications/', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>` },
-        { label: 'Members', href: '/members/', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>` },
-        { label: 'Tracks', href: '/tracks/', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`, artistOnly: true },
-        { label: 'Playlists', href: '/playlists/', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3.5" cy="6" r="1.5"/><circle cx="3.5" cy="12" r="1.5"/><circle cx="3.5" cy="18" r="1.5"/></svg>` },
-        { label: 'Projects', href: '/projects/', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7h6l2 3h12v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7z"/><path d="M2 7V5a2 2 0 0 1 2-2h4l2 3"/></svg>`, artistOnly: true },
-        { label: 'Events', href: '/events/', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`, artistOnly: true },
-        { label: 'Profile', href: '/profile/', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>` }
+        { label: 'Home', href: '/welcome/', help: 'Home — your personal feed and the place to compose new posts. Activity from people and artists you follow lands here.', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>` },
+        { label: 'Inbox', href: '/inbox/', help: 'Inbox — direct messages with other artists and members. Unread count is shown as a badge on this nav item.', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5h13l3.5 7v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6l3.5-7z"/></svg>` },
+        { label: 'Notifications', href: '/notifications/', help: 'Notifications — follows, likes, comments, replies and project additions, newest first. The bell badge counts unread items.', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>` },
+        { label: 'Members', href: '/members/', help: 'Members — discover everyone on STAGECORD. Search by name or @-handle and click a card to open the public profile.', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>` },
+        { label: 'Tracks', href: '/tracks/', help: 'Tracks — upload and manage your published music. Each track can be added to a project, a playlist, or your public profile.', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`, artistOnly: true },
+        { label: 'Playlists', href: '/playlists/', help: 'Playlists — curated lists of tracks. Build them around moods, genres or sessions and share them on your public profile.', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3.5" cy="6" r="1.5"/><circle cx="3.5" cy="12" r="1.5"/><circle cx="3.5" cy="18" r="1.5"/></svg>` },
+        { label: 'Projects', href: '/projects/', help: 'Projects — collaboration spaces with other artists. Manage uploads, finals, royalty splits and release approvals from one card per project.', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7h6l2 3h12v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7z"/><path d="M2 7V5a2 2 0 0 1 2-2h4l2 3"/></svg>`, artistOnly: true },
+        { label: 'Events', href: '/events/', help: 'Events — gigs, releases and live streams you\'re planning. Each event you publish appears on your public profile.', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`, artistOnly: true },
+        { label: 'Profile', href: '/profile/', help: 'Profile — edit your forename, surname, @-handle, bio, role, avatar and cover image. Changes flow to your public /u/-page.', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>` }
     ];
 
     const path = window.location.pathname.replace(/\/+$/, '/') || '/';
@@ -84,7 +84,7 @@
 
     slot.innerHTML = `
         <aside class="app-sidebar" data-app-sidebar>
-            <a class="app-sidebar__me" href="${escapeHtml(meHref)}">
+            <a class="app-sidebar__me" href="${escapeHtml(meHref)}" data-help="Your identity card — shows your avatar and name. Click to jump straight to your public profile (/u/your-handle).">
                 ${meAvatarHtml}
                 <div class="app-sidebar__me-text">
                     <div class="app-sidebar__me-name">${meNameHtml}</div>
@@ -93,7 +93,7 @@
 
             <nav class="app-sidebar__nav">
                 ${NAV.filter((n) => !n.artistOnly || isArtist).map((n) => `
-                    <a class="app-sidebar__nav-item${isActive(n.href) ? ' is-active' : ''}" href="${n.href}" data-nav-slug="${escapeHtml(n.label.toLowerCase())}">
+                    <a class="app-sidebar__nav-item${isActive(n.href) ? ' is-active' : ''}" href="${n.href}" data-nav-slug="${escapeHtml(n.label.toLowerCase())}" data-help="${escapeHtml(n.help || '')}">
                         ${n.icon}
                         <span>${escapeHtml(n.label)}</span>
                         ${n.label === 'Notifications' ? '<span class="nav-badge" data-app-bell hidden></span>' : ''}
@@ -104,7 +104,7 @@
 
             <div class="app-sidebar__spacer"></div>
 
-            <button class="app-sidebar__signout" id="appSignOut">
+            <button class="app-sidebar__signout" id="appSignOut" data-help="Sign out of STAGECORD. Your session ends and you're returned to the marketing page.">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
                     <polyline points="16 17 21 12 16 7"/>
@@ -115,11 +115,11 @@
         </aside>
 
         <header class="app-topbar">
-            <a class="app-topbar__logo" href="/welcome/">
+            <a class="app-topbar__logo" href="/welcome/" data-help="STAGECORD logo — click to return to your home feed from anywhere on the platform.">
                 <span><span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span></span>
                 <span class="app-topbar__beta">Beta</span>
             </a>
-            <div class="app-topbar__title">${escapeHtml(topbarTitle)}</div>
+            <div class="app-topbar__title" data-help="Current page — what you're looking at right now.">${escapeHtml(topbarTitle)}</div>
             <div class="app-topbar__actions">
                 <button type="button" class="help-button" aria-label="Help mode" aria-pressed="false" data-help="Help mode: Click the ? then click any labelled element to see what it does. Click ? again or press Esc to turn help off.">
                     <span class="help-mark">?</span>

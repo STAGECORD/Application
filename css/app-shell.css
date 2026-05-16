@@ -292,17 +292,18 @@ body.app-body .app-main {
 }
 
 /* When help mode is active, hint the cursor over the whole page and
-   subtly outline anything that has a [data-help] explanation. */
+   visibly outline anything that has a [data-help] explanation. */
 body.help-mode { cursor: help; }
 body.help-mode [data-help] {
     cursor: help;
-    outline: 1px dashed rgba(111, 168, 255, 0.45);
+    outline: 2px dashed #6FA8FF;
     outline-offset: 2px;
     border-radius: 4px;
+    box-shadow: 0 0 0 2px rgba(56, 134, 252, 0.18);
 }
 body.help-mode [data-help]:hover {
-    outline-color: #6FA8FF;
     outline-style: solid;
+    background-color: rgba(56, 134, 252, 0.12) !important;
 }
 
 .help-tooltip {
