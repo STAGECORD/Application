@@ -3,52 +3,280 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STAGECORD - Search</title>
-    <link rel="stylesheet" href="../css/sidebar.css">
+    <meta name="robots" content="noindex, nofollow">
+    <title>STAGECORD — Search</title>
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/logo.css">
-    <link rel="stylesheet" href="../css/topbar.css">
-    <link rel="stylesheet" href="../css/search.css">
+    <link rel="stylesheet" href="../css/start.css">
+    <link rel="stylesheet" href="../css/app-shell.css">
+    <style>
+        .search-wrap { max-width: 920px; margin: 0 auto; padding: 32px 24px 60px; }
+
+        .search-hero { margin-bottom: 28px; }
+        .search-hero h1 { margin: 0 0 14px 0; color: #FFFFFF; font-weight: 600; font-size: 28px; }
+        .search-hero p { margin: 0; color: #7E89A6; font-size: 14px; }
+
+        .search-field {
+            position: relative;
+            display: flex; align-items: center;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 0 14px 0 44px;
+            height: 52px;
+            margin-bottom: 6px;
+        }
+        .search-field:focus-within { background: rgba(255,255,255,0.08); border-color: rgba(111,168,255,0.45); }
+        .search-field svg { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; color: rgba(255,255,255,0.55); pointer-events: none; }
+        .search-field input {
+            flex: 1; background: transparent; border: 0; outline: 0;
+            color: #FFFFFF; font: inherit; font-size: 16px; height: 100%;
+            padding: 0; min-width: 0;
+        }
+        .search-field input::placeholder { color: rgba(255,255,255,0.4); }
+
+        .search-meta { color: #7E89A6; font-size: 12px; margin-top: 6px; }
+
+        .search-empty {
+            text-align: center; padding: 80px 20px;
+            color: #7E89A6; font-size: 14px;
+        }
+        .search-empty strong { color: #FFFFFF; font-weight: 500; display: block; margin-bottom: 6px; }
+
+        .search-section { margin-top: 32px; }
+        .search-section__head {
+            display: flex; align-items: baseline; gap: 10px;
+            margin-bottom: 14px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .search-section__title { color: #FFFFFF; font-size: 18px; font-weight: 600; margin: 0; }
+        .search-section__count { color: #7E89A6; font-size: 13px; }
+
+        .search-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+        }
+        .search-list { display: flex; flex-direction: column; gap: 8px; }
+
+        .res-card {
+            display: flex; align-items: center; gap: 12px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 12px;
+            text-decoration: none;
+            color: inherit;
+            transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+        }
+        .res-card:hover {
+            background: rgba(255,255,255,0.07);
+            border-color: rgba(255,255,255,0.16);
+            transform: translateY(-1px);
+        }
+        .res-card__avatar {
+            width: 46px; height: 46px; border-radius: 50%;
+            background-color: rgba(255,255,255,0.08);
+            background-size: cover; background-position: center;
+            flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            color: rgba(255,255,255,0.75); font-weight: 600; font-size: 18px;
+        }
+        .res-card__avatar--rect { border-radius: 10px; }
+        .res-card__avatar--initial { background-color: rgba(111,168,255,0.2); }
+
+        .res-card__text { min-width: 0; flex: 1; }
+        .res-card__title {
+            color: #FFFFFF; font-size: 14px; font-weight: 500;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .res-card__subtitle {
+            color: #7E89A6; font-size: 12px;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+            margin-top: 2px;
+        }
+
+        .search-loading { color: #7E89A6; font-size: 13px; padding: 40px 0; text-align: center; }
+        .search-error { color: #FF6B6B; font-size: 13px; padding: 20px; text-align: center; }
+    </style>
 </head>
-<body>
-    <aside class="sidebar" data-sidebar></aside>
+<body class="app-body">
+    <div data-app-shell data-page-title="Search"></div>
 
-    <header class="topbar">
-        <div class="logo-container"><a href="../index.html" class="logo-link"><h1 class="logo"><span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span></h1></a></div>
-        <div class="search-bar">
-            <input type="text" class="search-input" placeholder="Search Artists, Concerts, Venues, Friends and much more" aria-label="Search"/>
-            <svg class="search-icon" viewBox="0 0 28 28" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/><path d="M18 18L24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        </div>
-        <button type="button" class="help-button" aria-label="Help" aria-pressed="false" data-help="Help button: Click to enter help mode, then click any element with a help-cursor to see what it does. Press Esc or click the help button again to exit."><span class="help-mark">?</span></button>
-    </header>
+    <main class="app-main">
+        <div class="search-wrap">
+            <div class="search-hero">
+                <h1>Search</h1>
+                <p>Find people, tracks, projects, playlists, and posts across STAGECORD.</p>
+            </div>
 
-    <main class="main-content">
-        <div class="content-wrapper" data-search-results>
+            <label class="search-field">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>
+                </svg>
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search people, tracks, projects, playlists, posts…"
+                    aria-label="Search"
+                    autocomplete="off"
+                    spellcheck="false">
+            </label>
+            <div class="search-meta" id="searchMeta"></div>
 
-            <header class="search-page-header">
-                <h1 class="search-page-header__heading" data-search-heading>Search</h1>
-                <p class="search-page-header__subtitle"><span data-search-count>0 results</span> · across artists, songs, albums, playlists, fans, venues</p>
-            </header>
-
-            <div class="search-page-chips" data-search-chips></div>
-
-            <div class="search-page-results" data-search-list></div>
-
+            <div id="searchResults"></div>
         </div>
     </main>
 
-    <script src="../js/core.js"></script>
-    <script src="../js/modes.js"></script>
-    <script src="../js/sidebar.js"></script>
-    <script src="../js/topbar-widgets.js"></script>
-    <script src="../js/stage-badge.js"></script>
-    <script src="../js/acting-as-service.js"></script>
-    <script src="../js/stage-cards.js"></script>
-    <script src="../js/stage-label.js"></script>
-    <script src="../js/stage-resources.js"></script>
-    <script src="../js/stage-economy.js"></script>
-    <script src="../js/settings.js"></script>
-    <script src="../js/activity-feed.js"></script>
-    <script src="../js/app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase.js"></script>
+    <script src="../js/format.js"></script>
+    <script src="../js/app-shell.js"></script>
+    <script>
+    (async function () {
+        const sb = window.supabaseClient;
+        if (!sb) return;
+
+        const input = document.getElementById('searchInput');
+        const meta  = document.getElementById('searchMeta');
+        const out   = document.getElementById('searchResults');
+
+        const TYPE_ORDER = [
+            { key: 'person',   label: 'People',    layout: 'grid' },
+            { key: 'track',    label: 'Tracks',    layout: 'list' },
+            { key: 'project',  label: 'Projects',  layout: 'list' },
+            { key: 'playlist', label: 'Playlists', layout: 'grid' },
+            { key: 'post',     label: 'Posts',     layout: 'list' }
+        ];
+
+        const PER_TYPE_LIMIT = 25;
+
+        function escapeHtml(s) {
+            return String(s || '').replace(/[<>&"']/g, (c) => ({
+                '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;'
+            }[c]));
+        }
+
+        function avatarFor(r) {
+            const rect = (r.result_type === 'playlist' || r.result_type === 'post') ? ' res-card__avatar--rect' : '';
+            if (r.image_url) {
+                return `<div class="res-card__avatar${rect}" style="background-image:url('${escapeHtml(r.image_url)}');"></div>`;
+            }
+            const letter = (r.title || '?').trim().charAt(0).toUpperCase() || '?';
+            return `<div class="res-card__avatar res-card__avatar--initial${rect}">${escapeHtml(letter)}</div>`;
+        }
+
+        function renderSection(type, rows) {
+            if (!rows.length) return '';
+            const gridClass = type.layout === 'grid' ? 'search-grid' : 'search-list';
+            const items = rows.map((r) => `
+                <a class="res-card" href="${escapeHtml(r.href || '#')}">
+                    ${avatarFor(r)}
+                    <div class="res-card__text">
+                        <div class="res-card__title">${escapeHtml(r.title || '')}</div>
+                        <div class="res-card__subtitle">${escapeHtml(r.subtitle || '')}</div>
+                    </div>
+                </a>
+            `).join('');
+            return `
+                <section class="search-section">
+                    <div class="search-section__head">
+                        <h2 class="search-section__title">${type.label}</h2>
+                        <span class="search-section__count">${rows.length} result${rows.length === 1 ? '' : 's'}</span>
+                    </div>
+                    <div class="${gridClass}">${items}</div>
+                </section>
+            `;
+        }
+
+        function setUrlQuery(q) {
+            const url = new URL(window.location.href);
+            if (q) url.searchParams.set('q', q);
+            else url.searchParams.delete('q');
+            window.history.replaceState({}, '', url.toString());
+        }
+
+        let inFlight = 0;
+        let debounceTimer = null;
+
+        async function runSearch(q) {
+            if (!q) {
+                meta.textContent = '';
+                out.innerHTML = `
+                    <div class="search-empty">
+                        <strong>Start typing to search.</strong>
+                        Search across people, tracks, projects, playlists, and posts.
+                    </div>`;
+                return;
+            }
+
+            const myToken = ++inFlight;
+            out.innerHTML = `<div class="search-loading">Searching…</div>`;
+            meta.textContent = '';
+
+            const { data, error } = await sb.rpc('global_search', {
+                p_query: q,
+                p_per_type_limit: PER_TYPE_LIMIT
+            });
+
+            if (myToken !== inFlight) return;
+
+            if (error) {
+                console.error('global_search failed:', error);
+                out.innerHTML = `<div class="search-error">Search failed: ${escapeHtml(error.message || '')}</div>`;
+                return;
+            }
+
+            const grouped = {};
+            for (const r of data || []) {
+                if (!grouped[r.result_type]) grouped[r.result_type] = [];
+                grouped[r.result_type].push(r);
+            }
+            const total = (data || []).length;
+
+            if (!total) {
+                out.innerHTML = `
+                    <div class="search-empty">
+                        <strong>No results for “${escapeHtml(q)}”.</strong>
+                        Try a different spelling, or a shorter query.
+                    </div>`;
+                return;
+            }
+
+            const catCount = Object.keys(grouped).length;
+            meta.textContent = `${total} result${total === 1 ? '' : 's'} across ${catCount} categor${catCount === 1 ? 'y' : 'ies'}.`;
+
+            out.innerHTML = TYPE_ORDER
+                .map((t) => renderSection(t, grouped[t.key] || []))
+                .join('');
+        }
+
+        input.addEventListener('input', () => {
+            const q = input.value.trim();
+            setUrlQuery(q);
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => runSearch(q), 180);
+        });
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                input.value = '';
+                setUrlQuery('');
+                runSearch('');
+            }
+        });
+
+        const params = new URLSearchParams(window.location.search);
+        const initialQ = (params.get('q') || '').trim();
+        if (initialQ) {
+            input.value = initialQ;
+            await runSearch(initialQ);
+        } else {
+            runSearch('');
+        }
+        input.focus();
+    })();
+    </script>
 </body>
 </html>

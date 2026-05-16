@@ -120,7 +120,21 @@
                 <span><span class="logo-stage">STAGE</span><span class="logo-cord">CORD</span></span>
                 <span class="app-topbar__beta">Beta</span>
             </a>
-            <div class="app-topbar__title" data-help="Current page — what you're looking at right now.">${escapeHtml(topbarTitle)}</div>
+            <div class="app-topbar__search" data-help="Global search — find people, tracks, posts, projects and playlists in one go. Press Enter to see all results.">
+                <svg class="app-topbar__search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>
+                </svg>
+                <input
+                    type="text"
+                    class="app-topbar__search-input"
+                    placeholder="Search people, tracks, projects, playlists…"
+                    aria-label="Search"
+                    autocomplete="off"
+                    spellcheck="false"
+                    data-search-input>
+                <button type="button" class="app-topbar__search-clear" aria-label="Clear search" data-search-clear hidden>&times;</button>
+                <div class="app-topbar__search-dropdown" data-search-dropdown hidden></div>
+            </div>
             <div class="app-topbar__actions">
                 <button type="button" class="help-button" aria-label="Help mode" aria-pressed="false" data-help="Help mode: Click the ? then click any labelled element to see what it does. Click ? again or press Esc to turn help off.">
                     <span class="help-mark">?</span>
@@ -128,6 +142,12 @@
             </div>
         </header>
     `;
+    // keep page title in <title> tag even though we removed the visible label
+    if (topbarTitle) {
+        document.title = topbarTitle.includes('STAGECORD')
+            ? topbarTitle
+            : `${topbarTitle} · STAGECORD`;
+    }
 
     document.getElementById('appSignOut').addEventListener('click', async () => {
         await sb.auth.signOut();
@@ -172,14 +192,168 @@
     refreshBadges();
     setInterval(() => { if (!document.hidden) refreshBadges(); }, 30000);
 
-    // Expose for pages that want to update the topbar title later
+    // Expose for pages that want to update the title later
     window.STAGECORD_AppShell = {
         setTitle(title) {
-            const el = document.querySelector('.app-topbar__title');
-            if (el) el.textContent = title;
+            // Visible title was replaced by search bar — keep API alive by setting document.title
+            if (title) document.title = `${title} · STAGECORD`;
         },
         refreshBadges
     };
+
+    // ===========================================================
+    // Global search — topbar dropdown
+    // ===========================================================
+    (function initSearchBar() {
+        const wrap = slot.querySelector('[data-search-input]')?.closest('.app-topbar__search');
+        if (!wrap) return;
+        const input = wrap.querySelector('[data-search-input]');
+        const clearBtn = wrap.querySelector('[data-search-clear]');
+        const dropdown = wrap.querySelector('[data-search-dropdown]');
+
+        const TYPE_LABEL = {
+            person: 'People',
+            track: 'Tracks',
+            post: 'Posts',
+            project: 'Projects',
+            playlist: 'Playlists'
+        };
+        const TYPE_ORDER = ['person', 'track', 'project', 'playlist', 'post'];
+        const TOP_PER_TYPE = 3;
+
+        let lastQuery = '';
+        let debounceTimer = null;
+        let inFlight = 0;
+
+        function escapeAttr(s) {
+            return String(s || '').replace(/[<>&"']/g, (c) => ({
+                '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;'
+            }[c]));
+        }
+
+        function initialAvatar(name) {
+            const letter = (name || '?').trim().charAt(0).toUpperCase() || '?';
+            return `<div class="sb-result__avatar sb-result__avatar--initial">${escapeAttr(letter)}</div>`;
+        }
+
+        function avatarFor(r) {
+            if (r.image_url) {
+                return `<div class="sb-result__avatar" style="background-image:url('${escapeAttr(r.image_url)}');"></div>`;
+            }
+            return initialAvatar(r.title);
+        }
+
+        function renderDropdown(query, rows) {
+            if (!query) {
+                dropdown.hidden = true;
+                dropdown.innerHTML = '';
+                return;
+            }
+            const grouped = {};
+            for (const r of rows || []) {
+                if (!grouped[r.result_type]) grouped[r.result_type] = [];
+                if (grouped[r.result_type].length < TOP_PER_TYPE) grouped[r.result_type].push(r);
+            }
+
+            const sections = TYPE_ORDER
+                .filter((t) => grouped[t] && grouped[t].length)
+                .map((t) => {
+                    const items = grouped[t].map((r) => `
+                        <a class="sb-result" href="${escapeAttr(r.href || '#')}" data-search-result>
+                            ${avatarFor(r)}
+                            <div class="sb-result__text">
+                                <div class="sb-result__title">${escapeAttr(r.title || '')}</div>
+                                <div class="sb-result__subtitle">${escapeAttr(r.subtitle || '')}</div>
+                            </div>
+                        </a>
+                    `).join('');
+                    return `
+                        <div class="sb-section">
+                            <div class="sb-section__label">${TYPE_LABEL[t] || t}</div>
+                            ${items}
+                        </div>
+                    `;
+                }).join('');
+
+            const hasAny = sections.length > 0;
+            const seeAllHref = `/search/?q=${encodeURIComponent(query)}`;
+            dropdown.innerHTML = `
+                ${hasAny ? sections : `<div class="sb-empty">No results for “${escapeAttr(query)}”.</div>`}
+                <a class="sb-seeall" href="${escapeAttr(seeAllHref)}">See all results for “${escapeAttr(query)}” →</a>
+            `;
+            dropdown.hidden = false;
+        }
+
+        async function runSearch(q) {
+            const myToken = ++inFlight;
+            try {
+                const { data, error } = await sb.rpc('global_search', {
+                    p_query: q,
+                    p_per_type_limit: TOP_PER_TYPE
+                });
+                if (error) {
+                    console.warn('global_search failed:', error);
+                    return;
+                }
+                if (myToken !== inFlight) return; // stale
+                renderDropdown(q, data || []);
+            } catch (e) {
+                console.warn('search error', e);
+            }
+        }
+
+        input.addEventListener('input', () => {
+            const q = input.value.trim();
+            clearBtn.hidden = !q;
+            if (q === lastQuery) return;
+            lastQuery = q;
+            clearTimeout(debounceTimer);
+            if (!q) {
+                renderDropdown('', []);
+                return;
+            }
+            debounceTimer = setTimeout(() => runSearch(q), 180);
+        });
+
+        input.addEventListener('focus', () => {
+            if (input.value.trim() && dropdown.innerHTML) {
+                dropdown.hidden = false;
+            }
+        });
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const q = input.value.trim();
+                if (q) window.location.href = `/search/?q=${encodeURIComponent(q)}`;
+            } else if (e.key === 'Escape') {
+                input.value = '';
+                clearBtn.hidden = true;
+                renderDropdown('', []);
+                input.blur();
+            }
+        });
+
+        clearBtn.addEventListener('click', () => {
+            input.value = '';
+            clearBtn.hidden = true;
+            renderDropdown('', []);
+            input.focus();
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!wrap.contains(e.target)) dropdown.hidden = true;
+        });
+
+        // Cmd/Ctrl+K to focus search
+        document.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                input.focus();
+                input.select();
+            }
+        });
+    })();
 
     // ===========================================================
     // Help mode — click "?" to activate, then HOVER any element
