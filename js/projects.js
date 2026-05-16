@@ -208,7 +208,7 @@
             mechanical: 'Mechanical royalty: paid every time the song is reproduced — physical copies, downloads, publishing share of streams. Click to edit how the project members split this.',
             performance: 'Performance royalty: collected by performing-rights societies (Koda / ASCAP / BMI) when the song is performed publicly. Click to edit the split.',
             synch: 'Synchronization royalty: paid when the song is licensed into film, TV, ads, games or trailers. Click to edit the split.',
-            print: 'Print music royalty: sales and licensing of sheet music, lyric booklets, tabs. Click to edit the split.',
+            neighbouring: 'Neighbouring rights royalty: collected when the master recording itself is played publicly — radio, TV, streaming, live venues. The parallel to Performance, but for the recording instead of the song. Distributed by Gramex (DK), SoundExchange (US), PPL (UK), etc.',
             covers: 'Covers royalty: when other artists release a cover of this song. Project members can take less than 100% — the rest goes to the cover artist.',
             sample: 'Sample royalty: when another artist samples this recording in their own track. Click to edit the split among the original team.',
             tutorials: 'Tutorials royalty: instructional content teaching the song. Members can take less than 100% — the rest goes to the tutorial creator.',
@@ -462,7 +462,7 @@
                                 </div>
                                 <div class="action-col">
                                     ${pillRoyalty('synch', 'Synch')}
-                                    ${pillRoyalty('print', 'Print Music')}
+                                    ${pillRoyalty('neighbouring', 'Neighbouring')}
                                     ${pillRoyalty('tutorials', 'Tutorials')}
                                     ${pillRoyalty('remix', 'Remix')}
                                     ${pillRoyalty('commercial', 'Commercial')}
@@ -614,7 +614,7 @@
         };
         const ROYALTY_LABELS = {
             mechanical: 'Mechanical', performance: 'Performance', covers: 'Covers', sample: 'Sample',
-            synch: 'Synch', print: 'Print Music', tutorials: 'Tutorials', commercial: 'Commercial',
+            synch: 'Synch', neighbouring: 'Neighbouring', tutorials: 'Tutorials', commercial: 'Commercial',
             remix: 'Remix'
         };
 
@@ -755,7 +755,7 @@
                 mechanical: 'Paid every time the song is reproduced — physical copies, downloads, and the publishing share of streams.',
                 performance: 'Collected by performing-rights societies (Koda / ASCAP / BMI) when the song is performed publicly — radio, livestream, concerts, restaurants.',
                 synch: 'Synchronization fee when the song is licensed for film, TV, ads, games or trailers — usually a one-time payment plus future performance royalties.',
-                print: 'Sales and licensing of printed sheet music, lyric booklets and digital tab/notation.',
+                neighbouring: 'Performance royalty for the recording itself — collected by neighbouring-rights societies (Gramex in DK, SoundExchange in US, PPL in the UK) when the master is played publicly on radio, TV, streaming and live venues. Separate from "Performance" above which goes to the songwriters.',
                 covers: 'When other artists release a cover of this song — the cover artist keeps their share, the rest flows back to the original team.',
                 sample: 'When another artist samples this recording in their own track — the original team is paid by the sampling artist.',
                 tutorials: 'Income from instructional content (videos, courses, lesson packs) that teaches the song — the tutorial creator keeps their share.',
