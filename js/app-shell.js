@@ -136,6 +136,19 @@
                 <div class="app-topbar__search-dropdown" data-search-dropdown hidden></div>
             </div>
             <div class="app-topbar__actions">
+                <button type="button" class="topbar-icon-btn" id="appTopbarBell" aria-label="Notifications" data-help="Notifications — follows, likes, comments, replies and project additions, newest first. Click to open the full list.">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                        <path d="M10 21a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                    <span class="topbar-icon-btn__count" data-app-topbar-bell hidden></span>
+                </button>
+                <button type="button" class="topbar-icon-btn" id="appTopbarQr" aria-label="Show your friend-add QR code" data-help="QR-befriend — show your QR so fans or friends can scan it IRL and land on your STAGECORD profile, ready to follow you without typing your handle.">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M3 3h6v6H3zM15 3h6v6h-6zM3 15h6v6H3z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                        <path d="M15 15h2v2h-2zM19 15h2v2h-2zM15 19h2v2h-2zM19 19h2v2h-2z" fill="currentColor"/>
+                    </svg>
+                </button>
                 <button type="button" class="help-button" aria-label="Help mode" aria-pressed="false" data-help="Help mode: Click the ? then click any labelled element to see what it does. Click ? again or press Esc to turn help off.">
                     <span class="help-mark">?</span>
                 </button>
@@ -154,9 +167,76 @@
         window.location.href = '/';
     });
 
-    // Notification + inbox badges — poll periodically
+    // Topbar bell → go to notifications page (mirrors sidebar Notifications link)
+    const topbarBell = document.getElementById('appTopbarBell');
+    if (topbarBell) {
+        topbarBell.addEventListener('click', () => {
+            window.location.href = '/notifications/';
+        });
+    }
+
+    // Topbar QR-befriend button → modal with the user's profile URL as a QR code
+    const topbarQr = document.getElementById('appTopbarQr');
+    if (topbarQr) {
+        topbarQr.addEventListener('click', () => openQrModal());
+    }
+
+    function openQrModal() {
+        const handle = profile?.username || null;
+        const profileUrl = handle
+            ? `${window.location.origin}/u/${encodeURIComponent(handle)}`
+            : `${window.location.origin}/`;
+        const displayName = [profile?.forename, profile?.surname].filter(Boolean).join(' ')
+            || handle || user.email || 'You';
+        const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=0&data=${encodeURIComponent(profileUrl)}`;
+
+        let modal = document.getElementById('appQrModal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'appQrModal';
+            modal.className = 'app-qr-overlay';
+            modal.innerHTML = `
+                <div class="app-qr">
+                    <header class="app-qr__head">
+                        <h2 class="app-qr__title">Befriend via QR</h2>
+                        <button type="button" class="app-qr__close" aria-label="Close">&times;</button>
+                    </header>
+                    <p class="app-qr__intro">Show this QR to anyone you meet IRL. When they scan it with their phone camera, they land on <strong data-qr-name></strong>'s STAGECORD profile, ready to follow.</p>
+                    <div class="app-qr__code"><img alt="Your STAGECORD QR code" data-qr-img></div>
+                    <div class="app-qr__url" data-qr-url></div>
+                    <p class="app-qr__hint">Tip: Show this at gigs, festivals or meet-and-greets. Faster than typing your handle.</p>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal || e.target.closest('.app-qr__close')) {
+                    modal.classList.remove('is-open');
+                }
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') modal.classList.remove('is-open');
+            });
+        }
+        modal.querySelector('[data-qr-name]').textContent = displayName;
+        modal.querySelector('[data-qr-img]').src = qrSrc;
+        modal.querySelector('[data-qr-url]').textContent = profileUrl;
+        modal.classList.add('is-open');
+    }
+
+    // Notification + inbox badges — poll periodically (sidebar + topbar share the count)
     const bellBadge = slot.querySelector('[data-app-bell]');
     const inboxBadge = slot.querySelector('[data-app-inbox]');
+    const topbarBellBadge = slot.querySelector('[data-app-topbar-bell]');
+
+    function setBellBadge(el, n) {
+        if (!el) return;
+        if (n > 0) {
+            el.textContent = n > 99 ? '99+' : String(n);
+            el.hidden = false;
+        } else {
+            el.hidden = true;
+        }
+    }
 
     async function refreshBadges() {
         try {
@@ -165,14 +245,8 @@
                 .select('*', { count: 'exact', head: true })
                 .eq('user_id', user.id)
                 .is('read_at', null);
-            if (bellBadge) {
-                if ((notifCount || 0) > 0) {
-                    bellBadge.textContent = notifCount > 99 ? '99+' : String(notifCount);
-                    bellBadge.hidden = false;
-                } else {
-                    bellBadge.hidden = true;
-                }
-            }
+            setBellBadge(bellBadge, notifCount || 0);
+            setBellBadge(topbarBellBadge, notifCount || 0);
         } catch (_) { /* ignore */ }
 
         try {
