@@ -703,17 +703,34 @@
             activeKey = key;
             markActiveBtn(triggerBtn);
             expandEl.hidden = false;
+
+            // For 'covers' and 'tutorials', the remainder of 100% goes to
+            // the external cover artist / tutorial creator who recorded the
+            // version that's actually earning. Member shares can sum to < 100.
+            const allowsUnder = royaltyType === 'covers' || royaltyType === 'tutorials';
+            const externalLabel = royaltyType === 'covers' ? 'External cover artist' : 'Tutorial creator';
+            const ownerHint = allowsUnder
+                ? `Project members keep their share of this royalty; the rest goes to the ${externalLabel.toLowerCase()}. Member shares can sum to less than 100%.`
+                : 'Set how this royalty is split between the project members. The total must sum to 100%.';
+            const guestHint = 'Only the project owner can change royalty splits. You can see the current split below.';
+
             expandEl.innerHTML = `
                 <div class="pc-expand__head">
                     <h4 class="pc-expand__title">${escapeHtml(label)} royalties</h4>
                     <button type="button" class="pc-expand__close" data-expand-close>Close</button>
                 </div>
-                <p class="pc-expand__hint">${isOwner ? 'Set how this royalty is split between the project members. The total must sum to 100%.' : 'Only the project owner can change royalty splits. You can see the current split below.'}</p>
+                <p class="pc-expand__hint">${isOwner ? ownerHint : guestHint}</p>
                 <div class="pj-royalty-rows" data-expand-roy-rows></div>
                 <div class="pj-royalty-total">
-                    <span>Total</span>
+                    <span>${allowsUnder ? 'Members total' : 'Total'}</span>
                     <span><span class="pj-royalty-total__val" data-expand-roy-total>0.00</span> / 100.00 %</span>
                 </div>
+                ${allowsUnder ? `
+                    <div class="pj-royalty-total" style="margin-top:6px;">
+                        <span>${escapeHtml(externalLabel)}</span>
+                        <span><span class="pj-royalty-total__val" data-expand-roy-external>100.00</span> %</span>
+                    </div>
+                ` : ''}
                 <div class="pc-expand__status" data-expand-roy-status></div>
                 ${isOwner ? `
                     <div class="pc-expand__actions">
@@ -758,13 +775,27 @@
                 </div>`;
             }).join('');
 
+            const externalEl = expandEl.querySelector('[data-expand-roy-external]');
+            const externalRow = externalEl ? externalEl.closest('.pj-royalty-total') : null;
+
             function recompute() {
                 const inputs = rowsEl.querySelectorAll('.pj-royalty-row__input');
                 let total = 0;
                 inputs.forEach((inp) => { const v = parseFloat(inp.value); if (!isNaN(v)) total += v; });
                 totalEl.textContent = total.toFixed(2);
                 totalRow.classList.remove('is-valid', 'is-invalid');
-                totalRow.classList.add(Math.abs(total - 100) < 0.01 ? 'is-valid' : 'is-invalid');
+                if (allowsUnder) {
+                    // Valid when 0 ≤ total ≤ 100; remainder goes to the external party
+                    totalRow.classList.add(total >= -0.01 && total <= 100.01 ? 'is-valid' : 'is-invalid');
+                    if (externalEl) {
+                        const ext = Math.max(0, Math.min(100, 100 - total));
+                        externalEl.textContent = ext.toFixed(2);
+                        externalRow.classList.remove('is-valid', 'is-invalid');
+                        externalRow.classList.add('is-valid');
+                    }
+                } else {
+                    totalRow.classList.add(Math.abs(total - 100) < 0.01 ? 'is-valid' : 'is-invalid');
+                }
             }
             rowsEl.querySelectorAll('.pj-royalty-row__input').forEach((inp) => inp.addEventListener('input', recompute));
             recompute();
@@ -790,7 +821,12 @@
                         const v = parseFloat(inp.value); pcts.push(isNaN(v) ? 0 : v);
                     });
                     const total = pcts.reduce((s, n) => s + n, 0);
-                    if (Math.abs(total - 100) > 0.01) {
+                    if (allowsUnder) {
+                        if (total < -0.01 || total > 100.01) {
+                            setStatus(`Member shares must total between 0% and 100% (currently ${total.toFixed(2)}%).`, 'error');
+                            return;
+                        }
+                    } else if (Math.abs(total - 100) > 0.01) {
                         setStatus(`Percentages must sum to 100 (currently ${total.toFixed(2)}).`, 'error');
                         return;
                     }
