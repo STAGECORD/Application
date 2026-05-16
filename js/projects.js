@@ -864,12 +864,25 @@
                 const ratesEl = expandEl.querySelector('[data-expand-rates]');
                 async function refreshRates() {
                     ratesEl.innerHTML = `<div class="pc-rates__loading">Loading rates…</div>`;
-                    const { data, error } = await sb.rpc('get_project_commercial_rates', { p_project_id: id });
+                    const [
+                        { data, error },
+                        { data: suggestions }
+                    ] = await Promise.all([
+                        sb.rpc('get_project_commercial_rates', { p_project_id: id }),
+                        sb.rpc('get_rate_suggestions', { p_project_id: id })
+                    ]);
                     if (error) {
                         ratesEl.innerHTML = `<div class="pc-rates__empty">${escapeHtml(error.message || 'Failed to load')}</div>`;
                         return;
                     }
                     const rates = data || [];
+                    const suggestionByLabel = {};
+                    (suggestions || []).forEach((s) => { suggestionByLabel[s.label] = s; });
+
+                    // Completion stats — how many of the 14 categories are set
+                    const totalCats = Object.keys(COMMERCIAL_CATEGORIES).length;
+                    const setLabels = new Set(rates.map((r) => r.label));
+                    const setCount = Object.values(COMMERCIAL_CATEGORIES).filter((v) => setLabels.has(v)).length;
                     const rowsHtml = rates.length === 0
                         ? `<div class="pc-rates__empty">No commercial rates set yet${isOwner ? ' — add one below.' : '.'}</div>`
                         : rates.map((r) => {
@@ -904,11 +917,27 @@
                         .map(([k, v]) => `<option value="${escapeHtml(k)}">${escapeHtml(v)}</option>`)
                         .join('');
 
+                    const isComplete = setCount === totalCats;
+                    const completionHint = isOwner ? `
+                        <div class="pc-rates__completion${isComplete ? ' is-complete' : ''}">
+                            <div class="pc-rates__completion-bar">
+                                <div class="pc-rates__completion-fill" style="width:${(setCount / totalCats * 100).toFixed(1)}%"></div>
+                            </div>
+                            <div class="pc-rates__completion-text">
+                                <strong>${setCount} of ${totalCats}</strong> categories set
+                                ${isComplete
+                                    ? ' — your rate card is complete. Nice.'
+                                    : ' — filling every category gives buyers a clearer menu and helps your song appear in more licensing searches.'}
+                            </div>
+                        </div>
+                    ` : '';
+
                     ratesEl.innerHTML = `
                         <div class="pc-rates__head">
                             <h5>Rate card</h5>
                             <span class="pc-rates__sub">${rates.length} ${rates.length === 1 ? 'rate' : 'rates'} · prices shown in ${escapeHtml(userCurrency)}, stored in DKK</span>
                         </div>
+                        ${completionHint}
                         <div class="pc-rates__list">${rowsHtml}</div>
                         ${isOwner ? `
                             <form class="pc-rates__form" data-rate-form>
@@ -919,6 +948,7 @@
                                     </select>
                                     <input type="number" name="price" placeholder="Price (DKK)" min="0" step="100" required>
                                 </div>
+                                <div class="pc-rates__suggestion" data-rate-suggestion></div>
                                 <div class="pc-rates__form-row">
                                     <select name="period_type">
                                         <option value="limited">Limited period</option>
@@ -969,6 +999,33 @@
                         }
                         periodType.addEventListener('change', syncMonths);
                         syncMonths();
+
+                        // Suggested price — refreshes when category changes
+                        const categorySelect = form.querySelector('[name="category"]');
+                        const suggestionEl = form.querySelector('[data-rate-suggestion]');
+                        function refreshSuggestion() {
+                            const key = categorySelect.value;
+                            if (!key) { suggestionEl.innerHTML = ''; return; }
+                            const label = COMMERCIAL_CATEGORIES[key];
+                            const s = suggestionByLabel[label];
+                            if (!s || !s.sample_count) {
+                                suggestionEl.innerHTML = `<span class="pc-rates__sugg-empty">No suggestion yet — be the first to set a rate for <strong>${escapeHtml(label)}</strong>.</span>`;
+                                return;
+                            }
+                            const converted = fmtMoneyDkk(s.avg_dkk, userCurrency);
+                            suggestionEl.innerHTML = `
+                                <span class="pc-rates__sugg-text">
+                                    Suggested: <strong>${escapeHtml(converted)}</strong>
+                                    <span class="pc-rates__sugg-meta">· average of ${s.sample_count} ${s.sample_count === 1 ? 'rate' : 'rates'} from other artists</span>
+                                </span>
+                                <button type="button" class="pc-rates__sugg-use" data-use-suggested>Use this</button>
+                            `;
+                            suggestionEl.querySelector('[data-use-suggested]').addEventListener('click', () => {
+                                form.querySelector('[name="price"]').value = Math.round(Number(s.avg_dkk));
+                            });
+                        }
+                        categorySelect.addEventListener('change', refreshSuggestion);
+                        refreshSuggestion();
 
                         form.addEventListener('submit', async (e) => {
                             e.preventDefault();

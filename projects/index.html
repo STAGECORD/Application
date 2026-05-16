@@ -663,6 +663,58 @@
             padding: 8px 0;
         }
         .pc-rates__list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+
+        /* Completion banner above the rate list */
+        .pc-rates__completion {
+            padding: 12px 14px;
+            background: rgba(56,134,252,0.10);
+            border: 1px solid rgba(56,134,252,0.35);
+            border-radius: 10px;
+            margin-bottom: 12px;
+        }
+        .pc-rates__completion.is-complete {
+            background: rgba(0,169,17,0.10);
+            border-color: rgba(0,169,17,0.45);
+        }
+        .pc-rates__completion-bar {
+            width: 100%; height: 4px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 999px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        .pc-rates__completion-fill {
+            height: 100%;
+            background: #6FA8FF;
+            transition: width 0.25s ease;
+        }
+        .pc-rates__completion.is-complete .pc-rates__completion-fill { background: #5CD66B; }
+        .pc-rates__completion-text {
+            color: #FFFFFF; font-size: 12px; line-height: 1.45;
+        }
+        .pc-rates__completion-text strong { color: #FFFFFF; font-weight: 700; }
+
+        /* Suggested-price strip under the category dropdown */
+        .pc-rates__suggestion {
+            display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+            min-height: 14px;
+            margin: -2px 0 4px 0;
+        }
+        .pc-rates__sugg-empty { color: #BFD7FF; font-size: 12px; opacity: 0.8; }
+        .pc-rates__sugg-empty strong { color: #FFFFFF; font-weight: 600; }
+        .pc-rates__sugg-text { color: #BFD7FF; font-size: 12px; }
+        .pc-rates__sugg-text strong {
+            color: #FFFFFF; font-weight: 700;
+            font-family: 'SF Mono', Monaco, monospace;
+        }
+        .pc-rates__sugg-meta { color: #B1B1B1; opacity: 0.7; }
+        .pc-rates__sugg-use {
+            background: transparent; border: 1px solid rgba(255,255,255,0.2);
+            color: #FFFFFF; border-radius: 999px;
+            padding: 3px 10px; font-family: inherit; font-size: 11px;
+            cursor: pointer;
+        }
+        .pc-rates__sugg-use:hover { border-color: #FFFFFF; background: rgba(255,255,255,0.06); }
         .pc-rate-row {
             display: flex; align-items: center; gap: 12px;
             padding: 10px 14px;
