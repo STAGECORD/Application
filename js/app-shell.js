@@ -120,7 +120,11 @@
                 <span class="app-topbar__beta">Beta</span>
             </a>
             <div class="app-topbar__title">${escapeHtml(topbarTitle)}</div>
-            <div class="app-topbar__actions"></div>
+            <div class="app-topbar__actions">
+                <button type="button" class="help-button" aria-label="Help mode" aria-pressed="false" data-help="Help mode: Click the ? then click any labelled element to see what it does. Click ? again or press Esc to turn help off.">
+                    <span class="help-mark">?</span>
+                </button>
+            </div>
         </header>
     `;
 
@@ -175,4 +179,77 @@
         },
         refreshBadges
     };
+
+    // ===========================================================
+    // Help mode — click "?" to activate, then click any element
+    // with a [data-help] attribute to see what it does. Esc or
+    // clicking "?" again exits. Ported from the prototype.
+    // ===========================================================
+    const helpButton = document.querySelector('.help-button');
+    if (helpButton && !document.querySelector('.help-tooltip')) {
+        const tooltip = document.createElement('div');
+        tooltip.className = 'help-tooltip';
+        tooltip.setAttribute('role', 'tooltip');
+        tooltip.setAttribute('aria-hidden', 'true');
+        document.body.appendChild(tooltip);
+
+        let helpActive = false;
+
+        function setHelpActive(on) {
+            helpActive = on;
+            document.body.classList.toggle('help-mode', on);
+            helpButton.classList.toggle('is-active', on);
+            helpButton.setAttribute('aria-pressed', on ? 'true' : 'false');
+            if (!on) hideTooltip();
+        }
+        function hideTooltip() {
+            tooltip.classList.remove('is-visible');
+            tooltip.setAttribute('aria-hidden', 'true');
+        }
+        function showTooltipFor(el, x, y) {
+            const text = el.getAttribute('data-help');
+            if (!text) return;
+            tooltip.textContent = text;
+            tooltip.classList.add('is-visible');
+            tooltip.setAttribute('aria-hidden', 'false');
+            const ttRect = tooltip.getBoundingClientRect();
+            const margin = 12;
+            let left = x + 16;
+            let top = y + 16;
+            if (left + ttRect.width + margin > window.innerWidth) {
+                left = window.innerWidth - ttRect.width - margin;
+            }
+            if (top + ttRect.height + margin > window.innerHeight) {
+                top = y - ttRect.height - 16;
+            }
+            left = Math.max(margin, left);
+            top = Math.max(margin, top);
+            tooltip.style.left = left + 'px';
+            tooltip.style.top = top + 'px';
+        }
+
+        helpButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            setHelpActive(!helpActive);
+        });
+
+        // Capture-phase listener so we run before page handlers
+        document.addEventListener('click', (e) => {
+            if (!helpActive) return;
+            if (helpButton.contains(e.target)) return;
+            if (tooltip.contains(e.target)) { hideTooltip(); return; }
+            e.preventDefault();
+            e.stopPropagation();
+            const target = e.target.closest('[data-help]');
+            if (target) {
+                showTooltipFor(target, e.clientX, e.clientY);
+            } else {
+                setHelpActive(false);
+            }
+        }, true);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && helpActive) setHelpActive(false);
+        });
+    }
 })();

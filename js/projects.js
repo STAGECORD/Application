@@ -195,15 +195,37 @@
         const royaltyConfigured = new Set((royalties || []).map((r) => r.royalty_type));
         const approvalSet = new Set((approvals || []).map((a) => a.user_id));
 
+        const PILL_FILE_HINTS = {
+            'uploads-wave': 'Uploads → WAVE: work-in-progress lossless audio shared with the team.',
+            'uploads-sheet': 'Uploads → Sheet Music: notation drafts the team iterates on.',
+            'uploads-notes': 'Uploads → Notes & Lyrics: lyric drafts, voice notes, brainstorming files.',
+            'finals-mp3': 'Finals → WAVE/MP3: mastered audio ready for distribution.',
+            'finals-sheet': 'Finals → Sheet Music: approved notation ready to license or sell.',
+            'finals-image': 'Finals → Image: final cover artwork and promotional images for the release.',
+            'finals-lyrics': 'Finals → Lyrics: approved lyrics that ship to streaming services and lyric sites.'
+        };
+        const PILL_ROYALTY_HINTS = {
+            mechanical: 'Mechanical royalty: paid every time the song is reproduced — physical copies, downloads, publishing share of streams. Click to edit how the project members split this.',
+            performance: 'Performance royalty: collected by performing-rights societies (Koda / ASCAP / BMI) when the song is performed publicly. Click to edit the split.',
+            synch: 'Synchronization royalty: paid when the song is licensed into film, TV, ads, games or trailers. Click to edit the split.',
+            print: 'Print music royalty: sales and licensing of sheet music, lyric booklets, tabs. Click to edit the split.',
+            covers: 'Covers royalty: when other artists release a cover of this song. Project members can take less than 100% — the rest goes to the cover artist.',
+            sample: 'Sample royalty: when another artist samples this recording in their own track. Click to edit the split among the original team.',
+            tutorials: 'Tutorials royalty: instructional content teaching the song. Members can take less than 100% — the rest goes to the tutorial creator.',
+            commercial: 'Commercial royalty: endorsement licensing, merchandise, brand campaigns, B2B sponsorships. Click to edit the split.'
+        };
+
         function pillFile(cat, type, label) {
             const count = fileCounts[cat]?.[type] || 0;
             const cls = count > 0 ? 'pill-btn has-data' : 'pill-btn';
             const attr = cat === 'uploads' ? `data-upload="${type}"` : `data-final="${type}"`;
-            return `<button type="button" class="${cls}" ${attr}>${label}</button>`;
+            const hint = PILL_FILE_HINTS[`${cat}-${type}`] || '';
+            return `<button type="button" class="${cls}" ${attr} data-help="${escapeHtml(hint)}">${label}</button>`;
         }
         function pillRoyalty(type, label) {
             const cls = royaltyConfigured.has(type) ? 'pill-btn has-data' : 'pill-btn';
-            return `<button type="button" class="${cls}" data-royalty="${type}">${escapeHtml(label)}</button>`;
+            const hint = PILL_ROYALTY_HINTS[type] || '';
+            return `<button type="button" class="${cls}" data-royalty="${type}" data-help="${escapeHtml(hint)}">${escapeHtml(label)}</button>`;
         }
 
         if (metaErr || !meta || meta.length === 0) {
@@ -228,7 +250,12 @@
             document.title = `${p.title} · STAGECORD`;
         }
 
-        const status = `<span class="pj-status pj-status--${escapeHtml(p.status)}">${escapeHtml(statusLabel(p.status))}</span>`;
+        const STATUS_HINT = {
+            in_progress: 'Status: In progress — the team is still working on this project. Not yet visible on artist profiles as released.',
+            released: 'Status: Released — every member approved and the owner shipped it. Visible as a release on artist profiles.',
+            archived: 'Status: Archived — shelved by the owner. Hidden from active project lists.'
+        };
+        const status = `<span class="pj-status pj-status--${escapeHtml(p.status)}" data-help="${escapeHtml(STATUS_HINT[p.status] || '')}">${escapeHtml(statusLabel(p.status))}</span>`;
 
         function splitName(forename, surname, username) {
             const plain = F.plainName(forename, surname, username);
@@ -250,7 +277,10 @@
             const removeBtn = isMember && !m.is_owner && (isOwner || m.user_id === user.id)
                 ? `<button class="collaborator-card__remove" data-remove-member="${escapeHtml(m.user_id)}" aria-label="Remove from project" title="Remove">×</button>`
                 : '';
-            return `<a class="collaborator-card" href="${link}">
+            const collabHelp = m.is_owner
+                ? `Project owner. Owns the project, sets royalty splits, and is the only person who can release.`
+                : `Project member. Click the avatar to open their public profile. The owner can remove members; members can leave themselves.`;
+            return `<a class="collaborator-card" href="${link}" data-help="${escapeHtml(collabHelp)}">
                 <span class="collaborator-role">${escapeHtml(role)}</span>
                 ${avatar}
                 <span class="collaborator-name">
@@ -263,7 +293,7 @@
         }).join('');
 
         const addPersonCard = isMember ? `
-            <button type="button" class="collaborator-card add-person" id="${pid('pjAddPersonBtn')}" aria-label="Add person">
+            <button type="button" class="collaborator-card add-person" id="${pid('pjAddPersonBtn')}" aria-label="Add person" data-help="Add a new collaborator — opens a search modal where you can find artists by name or @-handle and add them to the project.">
                 <span class="collaborator-role">Select function</span>
                 <div class="collaborator-image">+</div>
                 <span class="collaborator-name">
@@ -285,7 +315,12 @@
             const titleAttr = isSelf
                 ? (isApproved ? 'Your approval — click to manage' : 'Click to approve release')
                 : (isApproved ? `${first} ${rest} has approved` : `${first} ${rest} has not approved yet`);
-            return `<button type="button" class="${cls}"${isSelf ? ' data-approval-toggle="1"' : ''} title="${escapeHtml(titleAttr)}">
+            const helpText = isSelf
+                ? 'Your approval for release. Click to open the approval panel where you can approve or undo. When everyone approves, the owner can ship the release.'
+                : (isApproved
+                    ? `${first} ${rest} has approved this project for release.`
+                    : `${first} ${rest} has not approved yet. Every member must approve before the project can be released.`);
+            return `<button type="button" class="${cls}"${isSelf ? ' data-approval-toggle="1"' : ''} title="${escapeHtml(titleAttr)}" data-help="${escapeHtml(helpText)}">
                 <span class="approval-status"></span>
                 <span class="approval-row__name"><strong>${escapeHtml(first)}</strong>${rest ? ' ' + escapeHtml(rest) : ''}</span>
             </button>`;
@@ -297,7 +332,7 @@
         const isAlreadyReleased = p.status === 'released';
         const releaseBtn = `
             <div class="project-release">
-                <button type="button" class="project-release__btn" id="${pid('releaseProjectBtn')}"${(allApproved && isOwner && !isAlreadyReleased) ? '' : ' disabled'}>
+                <button type="button" class="project-release__btn" id="${pid('releaseProjectBtn')}"${(allApproved && isOwner && !isAlreadyReleased) ? '' : ' disabled'} data-help="Release project: marks the project as released for everyone and shows it on artist profiles. Becomes clickable once every member has approved.">
                     <span class="project-release__progress">${approvedCount} of ${totalMembers} approved</span>
                     <span class="project-release__label">${isAlreadyReleased ? 'Released' : 'Release project'}</span>
                 </button>
@@ -352,7 +387,7 @@
         // so we skip the kebab to avoid duplicate IDs.
         const cardMenu = (isListMode && isMember) ? `
             <div class="pc-menu" data-pj-menu>
-                <button type="button" class="pc-menu__trigger" aria-haspopup="true" aria-expanded="false" title="Project actions">⋯</button>
+                <button type="button" class="pc-menu__trigger" aria-haspopup="true" aria-expanded="false" title="Project actions" data-help="Project actions menu — Edit lets you rename, change the status or update the cover; Delete / Leave removes you or the whole project.">⋯</button>
                 <div class="pc-menu__dropdown" hidden>
                     <button type="button" class="pc-menu__item" id="${pid('editProjectBtn')}">Edit project</button>
                     ${isOwner
@@ -401,7 +436,7 @@
                                 ${pillFile('uploads', 'wave', 'WAVE')}
                                 ${pillFile('uploads', 'sheet', 'Sheet Music')}
                                 ${pillFile('uploads', 'notes', 'Notes &amp; Lyrics')}
-                                <button type="button" class="pill-btn" data-action="log">Log</button>
+                                <button type="button" class="pill-btn" data-action="log" data-help="Log: see a timeline of everything that's happened on the project — file uploads, royalty changes and release approvals, newest first.">Log</button>
                             </div>
                         </div>
 

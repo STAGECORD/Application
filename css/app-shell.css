@@ -264,3 +264,66 @@ body.app-body .app-main {
         min-height: calc(100vh - 54px);
     }
 }
+
+/* ============================================================
+   Help mode — ? button in the topbar, tooltip, body cursor.
+   ============================================================ */
+.help-button {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.18);
+    color: #FFFFFF;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    cursor: help;
+    font-family: inherit;
+    transition: border-color 0.15s ease, background 0.15s ease;
+    padding: 0;
+}
+.help-button:hover { border-color: #FFFFFF; background: rgba(255,255,255,0.06); }
+.help-button.is-active {
+    background: #FFFFFF;
+    color: #0B0B0F;
+    border-color: #FFFFFF;
+}
+.help-button .help-mark {
+    font-size: 16px; font-weight: 700; line-height: 1;
+    pointer-events: none;
+}
+
+/* When help mode is active, hint the cursor over the whole page and
+   subtly outline anything that has a [data-help] explanation. */
+body.help-mode { cursor: help; }
+body.help-mode [data-help] {
+    cursor: help;
+    outline: 1px dashed rgba(111, 168, 255, 0.45);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+body.help-mode [data-help]:hover {
+    outline-color: #6FA8FF;
+    outline-style: solid;
+}
+
+.help-tooltip {
+    position: fixed;
+    z-index: 9999;
+    max-width: 320px;
+    padding: 12px 14px;
+    background: #0B1A38;
+    border: 1px solid #6FA8FF;
+    border-radius: 10px;
+    color: #FFFFFF;
+    font-size: 13px;
+    line-height: 1.45;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.45);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-4px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.help-tooltip.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
