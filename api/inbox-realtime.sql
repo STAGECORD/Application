@@ -1,0 +1,131 @@
+-- =====================================================================
+-- STAGECORD — Inbox realtime + optimistic send
+-- Run this in Supabase SQL editor (project: jkleiomqhmrnpsflyuoz).
+-- Safe to re-run.
+--
+-- Adds:
+--   1) SELECT RLS policies on conversations / conversation_members /
+--      messages so Realtime can broadcast inserts to the right viewers.
+--      (Existing INSERT/UPDATE/DELETE still go through security-definer
+--      RPCs — we are NOT opening writes.)
+--   2) Re-creates send_message to RETURN the inserted row so the client
+--      can resolve its optimistic bubble immediately.
+--   3) Enables the messages table on the supabase_realtime publication.
+-- =====================================================================
+
+-- 1) SELECT RLS policies ----------------------------------------------
+
+-- Self-membership: every authenticated user can see only their own row.
+-- (No recursion: refers only to auth.uid().)
+drop policy if exists "cm_self_read" on public.conversation_members;
+create policy "cm_self_read"
+on public.conversation_members for select
+to authenticated
+using (user_id = auth.uid());
+
+-- Conversations are visible to their members.
+drop policy if exists "conv_member_read" on public.conversations;
+create policy "conv_member_read"
+on public.conversations for select
+to authenticated
+using (
+    exists (
+        select 1
+        from public.conversation_members cm
+        where cm.conversation_id = conversations.id
+          and cm.user_id = auth.uid()
+    )
+);
+
+-- Messages are visible to members of the conversation.
+drop policy if exists "msg_member_read" on public.messages;
+create policy "msg_member_read"
+on public.messages for select
+to authenticated
+using (
+    exists (
+        select 1
+        from public.conversation_members cm
+        where cm.conversation_id = messages.conversation_id
+          and cm.user_id = auth.uid()
+    )
+);
+
+-- 2) send_message: return the inserted row ----------------------------
+
+drop function if exists public.send_message(uuid, text);
+
+create function public.send_message(
+    p_conversation_id uuid,
+    p_content         text
+)
+returns table (
+    id              uuid,
+    conversation_id uuid,
+    user_id         uuid,
+    content         text,
+    created_at      timestamptz
+)
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+    me uuid := auth.uid();
+    is_member boolean;
+    new_row public.messages;
+    trimmed text := btrim(coalesce(p_content, ''));
+begin
+    if me is null then
+        raise exception 'must be authenticated to send a message';
+    end if;
+
+    if length(trimmed) = 0 then
+        raise exception 'message is empty';
+    end if;
+
+    if length(trimmed) > 2000 then
+        raise exception 'message too long (max 2000 chars)';
+    end if;
+
+    select exists(
+        select 1 from public.conversation_members
+        where conversation_id = p_conversation_id and user_id = me
+    ) into is_member;
+
+    if not is_member then
+        raise exception 'not a member of this conversation';
+    end if;
+
+    insert into public.messages (conversation_id, user_id, content)
+    values (p_conversation_id, me, trimmed)
+    returning * into new_row;
+
+    update public.conversations
+       set last_message_at = new_row.created_at
+     where id = p_conversation_id;
+
+    return query
+    select new_row.id, new_row.conversation_id, new_row.user_id,
+           new_row.content, new_row.created_at;
+end;
+$$;
+
+grant execute on function public.send_message(uuid, text) to authenticated;
+
+-- 3) Realtime publication ---------------------------------------------
+-- Add messages to the supabase_realtime publication if it's not already
+-- there. Wrapped in DO so re-running is safe (ALTER PUBLICATION raises
+-- if the table is already a member).
+do $$
+begin
+    if not exists (
+        select 1
+        from pg_publication_tables
+        where pubname = 'supabase_realtime'
+          and schemaname = 'public'
+          and tablename  = 'messages'
+    ) then
+        execute 'alter publication supabase_realtime add table public.messages';
+    end if;
+end $$;

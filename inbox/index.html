@@ -140,6 +140,93 @@
             color: #7E89A6; padding: 40px;
             text-align: center;
         }
+
+        .inbox-compose-btn {
+            background: rgba(56,134,252,0.18);
+            border: 1px solid rgba(56,134,252,0.32);
+            color: #FFFFFF;
+            border-radius: 999px;
+            padding: 6px 12px;
+            font-size: 12px; font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .inbox-compose-btn:hover { background: rgba(56,134,252,0.28); }
+        .inbox-compose-btn svg { width: 14px; height: 14px; }
+
+        .compose-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            align-items: flex-start; justify-content: center;
+            z-index: 1000;
+            padding: 80px 16px 16px;
+            overflow-y: auto;
+        }
+        .compose-overlay[data-open] { display: flex; }
+        .compose-modal {
+            background: #15171F;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            width: 100%; max-width: 440px;
+            display: flex; flex-direction: column;
+            overflow: hidden;
+            max-height: calc(100vh - 100px);
+        }
+        .compose-modal__head {
+            padding: 14px 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .compose-modal__title { font-weight: 600; color: #FFFFFF; font-size: 15px; }
+        .compose-modal__close {
+            background: transparent; border: none; color: #7E89A6;
+            font-size: 20px; cursor: pointer; line-height: 1;
+            padding: 0 4px;
+        }
+        .compose-modal__close:hover { color: #FFFFFF; }
+        .compose-modal__search {
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .compose-modal__input {
+            width: 100%;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 999px;
+            padding: 9px 14px;
+            color: #FFFFFF; font-family: inherit; font-size: 14px;
+        }
+        .compose-modal__results {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 200px;
+            max-height: 400px;
+        }
+        .compose-result {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .compose-result:hover { background: rgba(255,255,255,0.03); }
+        .compose-result__avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+            background-size: cover; background-position: center;
+            display: flex; align-items: center; justify-content: center;
+            color: #5A6480; font-size: 14px; font-weight: 600;
+            flex-shrink: 0;
+        }
+        .compose-result__main { flex: 1; min-width: 0; }
+        .compose-result__name { color: #FFFFFF; font-weight: 300; font-size: 14px; }
+        .compose-result__name strong { font-weight: 700; }
+        .compose-result__handle { color: #7E89A6; font-size: 12px; }
+        .compose-empty { padding: 30px 20px; text-align: center; color: #7E89A6; font-size: 13px; }
+
+        .msg__bubble--pending { opacity: 0.6; }
+        .msg__bubble--failed { background: rgba(255,107,107,0.18) !important; border-color: rgba(255,107,107,0.4) !important; }
     </style>
 </head>
 <body class="app-body">
@@ -149,7 +236,13 @@
     <main class="app-main"><div class="inbox-page">
         <div class="inbox-grid">
             <section class="inbox-card inbox-list" id="inboxList" data-help="Conversations list — every direct message thread you're part of. Unread threads show a blue dot. Click one to open it on the right.">
-                <div class="inbox-card__head">Conversations</div>
+                <div class="inbox-card__head">
+                    <span>Conversations</span>
+                    <button type="button" class="inbox-compose-btn" id="composeBtn" data-help="Start a new conversation by searching for a member.">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                        New
+                    </button>
+                </div>
                 <div class="inbox-list__items" id="conversationsList">
                     <div class="inbox-empty">Loading…</div>
                 </div>
@@ -170,6 +263,21 @@
             </section>
         </div>
     </div></main>
+
+    <div class="compose-overlay" id="composeOverlay" role="dialog" aria-modal="true" aria-labelledby="composeTitle">
+        <div class="compose-modal">
+            <div class="compose-modal__head">
+                <span class="compose-modal__title" id="composeTitle">New message</span>
+                <button type="button" class="compose-modal__close" id="composeClose" aria-label="Close">×</button>
+            </div>
+            <div class="compose-modal__search">
+                <input type="text" class="compose-modal__input" id="composeSearch" placeholder="Search by name or @username…" autocomplete="off" data-help="Type to filter members. Click one to start the conversation.">
+            </div>
+            <div class="compose-modal__results" id="composeResults">
+                <div class="compose-empty">Loading members…</div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase.js"></script>
