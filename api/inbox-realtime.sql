@@ -55,17 +55,15 @@ using (
 
 drop function if exists public.send_message(uuid, text);
 
+-- Returns SETOF public.messages (not RETURNS TABLE) so that column
+-- references inside the function body don't collide with implicit OUT
+-- parameters — e.g. "where conversation_id = ..." would otherwise be
+-- ambiguous against an OUT param of the same name.
 create function public.send_message(
     p_conversation_id uuid,
     p_content         text
 )
-returns table (
-    id              uuid,
-    conversation_id uuid,
-    user_id         uuid,
-    content         text,
-    created_at      timestamptz
-)
+returns setof public.messages
 language plpgsql
 security definer
 set search_path = public
@@ -89,8 +87,9 @@ begin
     end if;
 
     select exists(
-        select 1 from public.conversation_members
-        where conversation_id = p_conversation_id and user_id = me
+        select 1 from public.conversation_members cm
+        where cm.conversation_id = p_conversation_id
+          and cm.user_id = me
     ) into is_member;
 
     if not is_member then
@@ -103,11 +102,9 @@ begin
 
     update public.conversations
        set last_message_at = new_row.created_at
-     where id = p_conversation_id;
+     where conversations.id = p_conversation_id;
 
-    return query
-    select new_row.id, new_row.conversation_id, new_row.user_id,
-           new_row.content, new_row.created_at;
+    return next new_row;
 end;
 $$;
 
