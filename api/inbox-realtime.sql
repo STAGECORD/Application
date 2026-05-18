@@ -110,6 +110,67 @@ $$;
 
 grant execute on function public.send_message(uuid, text) to authenticated;
 
+-- 2b) get_conversation_messages: same column-ambiguity bug fix -------
+-- Original function (shipped 2026-05-06) had the same RETURNS TABLE
+-- vs. unqualified column reference issue — exposed only once messages
+-- actually persisted after the send_message fix above.
+
+drop function if exists public.get_conversation_messages(uuid, integer);
+
+create function public.get_conversation_messages(
+    p_conversation_id uuid,
+    p_limit           integer default 200
+)
+returns table (
+    id              uuid,
+    user_id         uuid,
+    content         text,
+    created_at      timestamptz,
+    forename        text,
+    surname         text,
+    username        text,
+    avatar_url      text
+)
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+    me uuid := auth.uid();
+    is_member boolean;
+begin
+    if me is null then
+        raise exception 'must be authenticated';
+    end if;
+
+    select exists(
+        select 1 from public.conversation_members cm
+        where cm.conversation_id = p_conversation_id
+          and cm.user_id = me
+    ) into is_member;
+
+    if not is_member then
+        raise exception 'not a member of this conversation';
+    end if;
+
+    update public.conversation_members cm
+       set last_read_at = now()
+     where cm.conversation_id = p_conversation_id
+       and cm.user_id = me;
+
+    return query
+    select m.id, m.user_id, m.content, m.created_at,
+           p.forename, p.surname, p.username, p.avatar_url
+    from public.messages m
+    left join public.profiles p on p.id = m.user_id
+    where m.conversation_id = p_conversation_id
+    order by m.created_at asc
+    limit p_limit;
+end;
+$$;
+
+grant execute on function public.get_conversation_messages(uuid, integer) to authenticated;
+
 -- 3) Realtime publication ---------------------------------------------
 -- Add messages to the supabase_realtime publication if it's not already
 -- there. Wrapped in DO so re-running is safe (ALTER PUBLICATION raises
