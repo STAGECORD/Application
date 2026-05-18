@@ -56,6 +56,7 @@
         const email = (form.elements['email']?.value || '').trim().toLowerCase();
         const role = getRole();
         const wantsUpdates = !!(form.elements['updates']?.checked);
+        const website = (form.elements['website']?.value || '').trim();
 
         if (!name || !email || !role) {
             setFeedback('Please fill in name, email and role.', 'error');
@@ -71,7 +72,7 @@
             response = await fetch('/api/waitlist', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email, role, wantsUpdates })
+                body: JSON.stringify({ name, email, role, wantsUpdates, website })
             });
             data = await response.json().catch(() => ({}));
         } catch (err) {

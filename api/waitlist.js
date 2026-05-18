@@ -20,6 +20,39 @@ export default async function handler(req, res) {
     const email = String(body.email || '').trim().toLowerCase();
     const role = String(body.role || '').trim();
     const wantsUpdates = !!body.wantsUpdates;
+    const website = String(body.website || '').trim();
+
+    // Honeypot: hidden field that real users never see/fill. If it has any
+    // value, the submission almost certainly comes from a form-scraping bot.
+    // Return 200 (silent success) so bots can't tell they were filtered.
+    if (website) {
+        console.warn('Honeypot tripped:', { name, email, role, website });
+        return res.status(200).json({ ok: true, emailed: false });
+    }
+
+    // Cloudflare Turnstile verification (when TURNSTILE_SECRET_KEY is set).
+    const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
+    if (turnstileSecret) {
+        const tsToken = String(body.turnstileToken || '').trim();
+        if (!tsToken) {
+            return res.status(400).json({ error: 'Captcha missing' });
+        }
+        try {
+            const verifyRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ secret: turnstileSecret, response: tsToken })
+            });
+            const verifyJson = await verifyRes.json();
+            if (!verifyJson.success) {
+                console.warn('Turnstile rejected:', verifyJson);
+                return res.status(403).json({ error: 'Captcha failed' });
+            }
+        } catch (err) {
+            console.error('Turnstile verify call failed:', err);
+            return res.status(500).json({ error: 'Captcha check failed' });
+        }
+    }
 
     if (!name || name.length > 200) {
         return res.status(400).json({ error: 'Name required' });

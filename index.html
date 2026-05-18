@@ -70,6 +70,11 @@
                 </header>
 
                 <form class="start-form" id="waitlistForm" novalidate>
+                    <div aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;">
+                        <label>Website (leave empty)
+                            <input type="text" name="website" tabindex="-1" autocomplete="off">
+                        </label>
+                    </div>
                     <label class="start-field">
                         <span class="start-field__label">Your name</span>
                         <input type="text" name="name" placeholder="Full name" required autocomplete="name">
