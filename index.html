@@ -98,6 +98,8 @@
                         <span>Send me product updates and news while I wait.</span>
                     </label>
 
+                    <div class="cf-turnstile" data-sitekey="0x4AAAAAADR21AFXFkNCxUSo" data-callback="onTurnstileSuccess" data-error-callback="onTurnstileError" style="margin-bottom: 16px;"></div>
+
                     <button type="submit" class="start-cta start-cta--primary start-cta--block" id="waitlistSubmit">Notify me when it's my turn</button>
 
                     <div class="waitlist-feedback" id="waitlistFeedback" role="status" aria-live="polite"></div>
@@ -182,6 +184,12 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <script>
+        window.turnstileToken = '';
+        window.onTurnstileSuccess = (token) => { window.turnstileToken = token; };
+        window.onTurnstileError = () => { window.turnstileToken = ''; };
+    </script>
     <script src="js/supabase.js"></script>
     <script src="js/waitlist.js"></script>
 </body>

@@ -72,7 +72,7 @@
             response = await fetch('/api/waitlist', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email, role, wantsUpdates, website })
+                body: JSON.stringify({ name, email, role, wantsUpdates, website, turnstileToken: window.turnstileToken || '' })
             });
             data = await response.json().catch(() => ({}));
         } catch (err) {
