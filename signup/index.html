@@ -8,6 +8,42 @@
     <link rel="stylesheet" href="../css/topbar.css">
     <link rel="stylesheet" href="../css/signup.css">
     <link rel="stylesheet" href="../css/waitlist.css">
+    <style>
+        .signup-roles { border: none; padding: 0; margin: 0 0 16px 0; }
+        .signup-roles__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+        .signup-role {
+            display: flex; align-items: center; justify-content: center;
+            padding: 12px 16px; border-radius: 10px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.14);
+            color: #D1D6E0; font-size: 14px;
+            cursor: pointer; transition: background 0.15s, border-color 0.15s, color 0.15s;
+        }
+        .signup-role:hover { border-color: rgba(255,255,255,0.32); color: #FFFFFF; }
+        .signup-role input { display: none; }
+        .signup-role input:checked + span { color: #FFFFFF; }
+        .signup-role:has(input:checked) {
+            background: #FFFFFF; color: #0B0B0F; border-color: #FFFFFF;
+        }
+        .signup-role:has(input:checked) span { color: #0B0B0F; font-weight: 600; }
+        .signup-field__hint { font-size: 12px; color: #5A6480; margin-top: 4px; }
+
+        .discipline-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+        .discipline-chip {
+            display: inline-flex; align-items: center;
+            padding: 7px 14px; border-radius: 999px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.14);
+            color: #D1D6E0; font-size: 13px; font-family: inherit;
+            cursor: pointer; transition: background 0.15s, border-color 0.15s, color 0.15s;
+            user-select: none;
+        }
+        .discipline-chip:hover { border-color: rgba(255,255,255,0.32); color: #FFFFFF; }
+        .discipline-chip.is-on {
+            background: #FFFFFF; color: #0B0B0F; border-color: #FFFFFF;
+            font-weight: 600;
+        }
+    </style>
 </head>
 <body class="signup-body">
 
@@ -123,6 +159,20 @@
                     </div>
                 </div>
 
+                <fieldset class="signup-roles" id="signup-roles-field" data-help="Vælg om du opretter dig som artist (skaber af musik/dans/visuel kunst) eller som general user/fan (du vil følge og opdage). Du kan altid skifte senere fra Settings.">
+                    <legend class="signup-field__label">I'm joining as a…<span aria-hidden="true">*</span></legend>
+                    <div class="signup-roles__grid">
+                        <label class="signup-role"><input type="radio" name="role" value="artist" required><span>Artist</span></label>
+                        <label class="signup-role"><input type="radio" name="role" value="fan" required><span>General user / Fan</span></label>
+                    </div>
+                </fieldset>
+
+                <div class="signup-field" id="signup-disciplines-field" data-help="Vælg én eller flere typer der beskriver hvad du laver. Bruges til at matche dig med samarbejdspartnere på projekter — vises også som tags på din offentlige profil." hidden>
+                    <label class="signup-field__label">What kind of artist are you?</label>
+                    <div class="discipline-chips" id="signup-disciplines-chips"></div>
+                    <span class="signup-field__hint">Pick as many as fit. You can change these any time from your profile.</span>
+                </div>
+
                 <p class="signup-terms" data-help="Ved at oprette en konto accepterer du STAGECORD's vilkår — link til de fulde vilkår tilføjes senere.">By signing up, you agree to STAGECORD's terms &amp; conditions</p>
 
                 <button type="submit" class="signup-submit" id="signupSubmit">Sign up</button>
@@ -137,6 +187,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase.js"></script>
+    <script src="../js/disciplines.js"></script>
     <script src="../js/signup.js"></script>
 </body>
 </html>

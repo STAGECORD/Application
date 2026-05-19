@@ -6,6 +6,39 @@
     const submitBtn = document.getElementById('signupSubmit');
     const feedback = document.getElementById('signupFeedback');
     const emailInput = document.getElementById('signup-email');
+    const disciplinesField = document.getElementById('signup-disciplines-field');
+    const disciplinesChips = document.getElementById('signup-disciplines-chips');
+
+    const selectedDisciplines = new Set();
+
+    function renderDisciplineChips() {
+        if (!disciplinesChips || !window.STAGECORD?.DISCIPLINES) return;
+        disciplinesChips.innerHTML = window.STAGECORD.DISCIPLINES.map((d) => {
+            const on = selectedDisciplines.has(d.slug) ? ' is-on' : '';
+            return `<button type="button" class="discipline-chip${on}" data-slug="${d.slug}">${d.label}</button>`;
+        }).join('');
+        disciplinesChips.querySelectorAll('[data-slug]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const slug = btn.getAttribute('data-slug');
+                if (selectedDisciplines.has(slug)) {
+                    selectedDisciplines.delete(slug);
+                    btn.classList.remove('is-on');
+                } else {
+                    selectedDisciplines.add(slug);
+                    btn.classList.add('is-on');
+                }
+            });
+        });
+    }
+    renderDisciplineChips();
+
+    function toggleDisciplines() {
+        const role = (form.elements['role']?.value) || '';
+        if (disciplinesField) disciplinesField.hidden = role !== 'artist';
+    }
+    Array.from(form.querySelectorAll('input[name="role"]')).forEach((r) => {
+        r.addEventListener('change', toggleDisciplines);
+    });
     const roleNote = document.createElement('p');
     roleNote.className = 'signup-subtitle';
     roleNote.style.marginTop = '8px';
@@ -70,6 +103,16 @@
         if (sur && !sur.value && parts.length > 1) sur.value = parts.slice(1).join(' ');
     }
 
+    // Pre-select role from the invite (whatever the user picked on the waitlist)
+    const invitedRole = data.role === 'artist' ? 'artist' : (data.role === 'fan' ? 'fan' : '');
+    if (invitedRole) {
+        const radio = form.querySelector(`input[name="role"][value="${invitedRole}"]`);
+        if (radio) {
+            radio.checked = true;
+            toggleDisciplines();
+        }
+    }
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         setFeedback('', null);
@@ -80,9 +123,14 @@
         const username = (form.elements['username']?.value || '').trim();
         const password = form.elements['password']?.value || '';
         const passwordConfirm = form.elements['passwordConfirm']?.value || '';
+        const role = (form.elements['role']?.value || '').trim();
 
         if (!forename || !surname) {
             setFeedback('Please fill in your forename and surname.', 'error');
+            return;
+        }
+        if (!role) {
+            setFeedback('Please pick whether you\'re joining as an Artist or General user / Fan.', 'error');
             return;
         }
         if (password.length < 8) {
@@ -93,6 +141,10 @@
             setFeedback('Passwords do not match.', 'error');
             return;
         }
+
+        const disciplines = role === 'artist'
+            ? (window.STAGECORD?.sanitizeDisciplines?.(Array.from(selectedDisciplines)) || [])
+            : [];
 
         const originalLabel = submitBtn.textContent;
         submitBtn.disabled = true;
@@ -107,7 +159,8 @@
                     forename,
                     surname,
                     username: username || null,
-                    role: data.role || 'fan',
+                    role,
+                    disciplines,
                     invite_token: token
                 }
             }
