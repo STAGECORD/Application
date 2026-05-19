@@ -107,6 +107,41 @@
             </table>
             <div class="admin-results" id="results"></div>
         </div>
+
+        <div class="admin-card" id="profilesCard" hidden>
+            <h2>Created profiles</h2>
+            <p>Everyone who actually completed signup and now has an account. Use the filters to find specific creators.</p>
+            <div class="admin-row">
+                <button class="admin-btn admin-btn--ghost" id="profilesRefreshBtn">Refresh list</button>
+            </div>
+
+            <div class="admin-row" style="margin-top: 14px;">
+                <input type="search" class="admin-input" id="profilesSearch" placeholder="Search by name, @handle, email or bio…" autocomplete="off" style="flex:1; min-width: 180px;">
+                <select class="admin-input" id="profilesDisciplineFilter" style="flex:0 0 auto; min-width: 200px; cursor: pointer;">
+                    <option value="">All disciplines</option>
+                </select>
+                <select class="admin-input" id="profilesRoleFilter" style="flex:0 0 auto; min-width: 140px; cursor: pointer;">
+                    <option value="">All roles</option>
+                    <option value="artist">Artists only</option>
+                    <option value="fan">Fans only</option>
+                </select>
+                <span id="profilesFilterCount" style="color:#7E89A6;font-size:13px;"></span>
+            </div>
+
+            <table class="admin-table" id="profilesTable">
+                <thead>
+                    <tr>
+                        <th>Name / Handle</th>
+                        <th>Email</th>
+                        <th>Role &amp; disciplines</th>
+                        <th>Joined</th>
+                    </tr>
+                </thead>
+                <tbody id="profilesBody">
+                    <tr><td colspan="4">Loading…</td></tr>
+                </tbody>
+            </table>
+        </div>
     </main>
 
     <script src="../js/disciplines.js"></script>
@@ -129,12 +164,26 @@
 
         let allRows = [];
 
+        const profilesCard = document.getElementById('profilesCard');
+        const profilesBody = document.getElementById('profilesBody');
+        const profilesRefreshBtn = document.getElementById('profilesRefreshBtn');
+        const profilesSearch = document.getElementById('profilesSearch');
+        const profilesDisciplineFilter = document.getElementById('profilesDisciplineFilter');
+        const profilesRoleFilter = document.getElementById('profilesRoleFilter');
+        const profilesFilterCount = document.getElementById('profilesFilterCount');
+        let allProfiles = [];
+
         if (window.STAGECORD?.DISCIPLINES) {
             window.STAGECORD.DISCIPLINES.forEach((d) => {
                 const opt = document.createElement('option');
                 opt.value = d.slug;
                 opt.textContent = d.label;
                 disciplineFilter.appendChild(opt);
+
+                const opt2 = document.createElement('option');
+                opt2.value = d.slug;
+                opt2.textContent = d.label;
+                profilesDisciplineFilter.appendChild(opt2);
             });
         }
 
@@ -334,16 +383,97 @@
         function showAuth(message) {
             authCard.hidden = false;
             waitlistCard.hidden = true;
+            profilesCard.hidden = true;
             secretFeedback.textContent = message || '';
             secretFeedback.style.color = '#FF6B6B';
             secretInput.value = '';
             secretInput.focus();
         }
 
+        async function loadProfilesList() {
+            const secret = getSecret();
+            if (!secret) return;
+            profilesBody.innerHTML = '<tr><td colspan="4">Loading…</td></tr>';
+            try {
+                const res = await fetch('/api/list-profiles', {
+                    headers: { 'Authorization': `Bearer ${secret}` }
+                });
+                if (!res.ok) {
+                    let detail = '';
+                    try { const j = await res.json(); detail = j.detail || j.error || JSON.stringify(j); }
+                    catch { detail = await res.text().catch(() => ''); }
+                    profilesBody.innerHTML = `<tr><td colspan="4" class="err">Error ${res.status}: ${escapeHtml(detail.slice(0,400))}</td></tr>`;
+                    return;
+                }
+                const { rows } = await res.json();
+                allProfiles = rows || [];
+                applyProfileFilters();
+            } catch (err) {
+                profilesBody.innerHTML = `<tr><td colspan="4" class="err">Network error: ${escapeHtml(err.message)}</td></tr>`;
+            }
+        }
+
+        function applyProfileFilters() {
+            const q = (profilesSearch.value || '').trim().toLowerCase();
+            const disc = profilesDisciplineFilter.value;
+            const role = profilesRoleFilter.value;
+            let filtered = allProfiles;
+            if (role) filtered = filtered.filter((r) => r.role === role);
+            if (disc) filtered = filtered.filter((r) => Array.isArray(r.disciplines) && r.disciplines.includes(disc));
+            if (q) {
+                filtered = filtered.filter((r) => {
+                    const hay = [r.forename, r.surname, r.username, r.email, r.bio]
+                        .filter(Boolean).join(' ').toLowerCase();
+                    return hay.includes(q);
+                });
+            }
+            renderProfilesList(filtered);
+            if (allProfiles.length === 0) {
+                profilesFilterCount.textContent = '';
+            } else if (filtered.length === allProfiles.length) {
+                profilesFilterCount.textContent = `${allProfiles.length} total`;
+            } else {
+                profilesFilterCount.textContent = `${filtered.length} of ${allProfiles.length}`;
+            }
+        }
+
+        function fmtDate(iso) {
+            if (!iso) return '';
+            const d = new Date(iso);
+            if (isNaN(d.getTime())) return '';
+            return d.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        function renderProfilesList(rows) {
+            if (!rows || rows.length === 0) {
+                profilesBody.innerHTML = '<tr><td colspan="4">No matches.</td></tr>';
+                return;
+            }
+            profilesBody.innerHTML = rows.map((r) => {
+                const fore = escapeHtml(r.forename || '');
+                const sur = escapeHtml(r.surname || '');
+                const fullName = (fore || sur) ? `<strong style="font-weight:700;">${fore}</strong>${sur ? ' ' + sur : ''}` : '<span style="color:#5A6480;">(no name)</span>';
+                const handle = r.username
+                    ? `<a href="/u/${encodeURIComponent(r.username)}" target="_blank" style="color:#6FA8FF;text-decoration:none;">@${escapeHtml(r.username)}</a>`
+                    : '<span style="color:#5A6480;">no handle</span>';
+                const confirmedBadge = r.email_confirmed
+                    ? '<span class="badge badge--used" style="margin-left:6px;">Confirmed</span>'
+                    : '<span class="badge badge--sent" style="margin-left:6px;background:rgba(255,168,57,0.16);color:#FFB066;">Unconfirmed</span>';
+                return `<tr>
+                    <td>${fullName}<br>${handle}</td>
+                    <td>${escapeHtml(r.email || '')}${confirmedBadge}</td>
+                    <td>${fmtRole(r.role)}${fmtDisciplines(r.disciplines)}</td>
+                    <td style="color:#7E89A6;font-size:12px;">${fmtDate(r.created_at)}</td>
+                </tr>`;
+            }).join('');
+        }
+
         function showAdmin() {
             authCard.hidden = true;
             waitlistCard.hidden = false;
+            profilesCard.hidden = false;
             loadList();
+            loadProfilesList();
         }
 
         saveSecretBtn.addEventListener('click', () => {
@@ -368,6 +498,15 @@
         });
         disciplineFilter.addEventListener('change', applyFilters);
         roleFilter.addEventListener('change', applyFilters);
+
+        let profilesSearchDebounce = null;
+        profilesSearch.addEventListener('input', () => {
+            clearTimeout(profilesSearchDebounce);
+            profilesSearchDebounce = setTimeout(applyProfileFilters, 120);
+        });
+        profilesDisciplineFilter.addEventListener('change', applyProfileFilters);
+        profilesRoleFilter.addEventListener('change', applyProfileFilters);
+        profilesRefreshBtn.addEventListener('click', loadProfilesList);
 
         if (getSecret()) showAdmin();
         else showAuth();
