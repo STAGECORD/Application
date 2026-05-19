@@ -123,51 +123,38 @@ body.signup-body .help-button.active .help-mark {
 }
 
 /* ---------- Left column: decorative artwork ----------
-   Big guitar photo as the main image, with smaller portrait and headphones
-   photos overlapping the top-right and bottom-left corners. */
+   2×2 collage of four photos, equal weight. */
 .signup-art {
-    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 12px;
     width: 100%;
-    aspect-ratio: 1 / 1.05;
+    aspect-ratio: 1 / 1;
     min-width: 0;
 }
 
 .signup-art__image {
-    position: absolute;
     border-radius: 10px;
     background-size: cover;
     background-position: center;
     box-shadow: 0 14px 36px rgba(0, 0, 0, 0.5);
 }
 
-/* Street wall with guitar — sits at the back, fills most of the area */
-.signup-art__image--guitar {
-    top: 60px;
-    left: 24px;
-    right: 24px;
-    bottom: 70px;
-    background-image: url("../assets/images/auth/street-guitar.png");
-    z-index: 1;
+.signup-art__image--jamming {
+    background-image: url("../assets/images/auth/jamming.png");
 }
 
-/* Female portrait — square, top-right corner overlapping the wall */
-.signup-art__image--portrait {
-    top: 0;
-    right: 0;
-    width: 50%;
-    aspect-ratio: 1;
-    background-image: url("../assets/images/auth/female.png");
-    z-index: 2;
+.signup-art__image--dancing {
+    background-image: url("../assets/images/auth/dancing.png");
 }
 
-/* Retro boom blaster — bottom-left corner overlapping the wall */
-.signup-art__image--headphones {
-    bottom: 0;
-    left: 0;
-    width: 48%;
-    aspect-ratio: 5 / 4;
-    background-image: url("../assets/images/auth/boom-blaster.png");
-    z-index: 2;
+.signup-art__image--blaster {
+    background-image: url("../assets/images/auth/ghetto-blaster.png");
+}
+
+.signup-art__image--koncert {
+    background-image: url("../assets/images/auth/koncert.png");
 }
 
 /* ---------- Right column: form ---------- */
