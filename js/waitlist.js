@@ -31,14 +31,12 @@
     }
     renderDisciplineChips();
 
+    // Waitlist is creator-only — disciplines are always visible.
     function toggleDisciplines() {
         if (!disciplinesField) return;
-        const role = (form.querySelector('input[name="role"]:checked')?.value) || '';
-        disciplinesField.hidden = role !== 'artist';
+        disciplinesField.hidden = false;
     }
-    Array.from(form.querySelectorAll('input[name="role"]')).forEach((r) => {
-        r.addEventListener('change', toggleDisciplines);
-    });
+    toggleDisciplines();
 
     function setFeedback(message, kind) {
         if (!feedback) return;
@@ -48,8 +46,10 @@
     }
 
     function getRole() {
+        // Waitlist is creator-only — there's no Fan radio anymore.
         const checked = form.querySelector('input[name="role"]:checked');
-        return checked ? checked.value : '';
+        if (checked) return checked.value;
+        return 'artist';
     }
 
     function fmt(n) {
