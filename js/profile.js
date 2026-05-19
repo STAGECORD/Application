@@ -6,14 +6,13 @@
     const cancelBtn = document.getElementById('profileCancel');
     const feedback = document.getElementById('profileFeedback');
 
-    const emailInput = document.getElementById('profile-email');
     const foreInput = document.getElementById('profile-forename');
     const surInput = document.getElementById('profile-surname');
     const userInput = document.getElementById('profile-username');
-    const roleInput = document.getElementById('profile-role');
     const disciplinesField = document.getElementById('profile-disciplines-field');
     const disciplinesChips = document.getElementById('profile-disciplines-chips');
     const bioInput = document.getElementById('profile-bio');
+    let loadedRole = 'fan';
 
     let selectedDisciplines = new Set();
 
@@ -39,8 +38,7 @@
 
     function toggleDisciplinesVisibility() {
         if (!disciplinesField) return;
-        const isArtist = roleInput && roleInput.value === 'artist';
-        disciplinesField.hidden = !isArtist;
+        disciplinesField.hidden = loadedRole !== 'artist';
     }
     const usernameHint = document.getElementById('usernameHint');
 
@@ -127,7 +125,6 @@
     }
 
     const userId = session.user.id;
-    emailInput.value = session.user.email || '';
 
     let originalAvatarUrl = null;
     let pendingAvatarFile = null;
@@ -147,8 +144,8 @@
         foreInput.value = profile.forename || '';
         surInput.value = profile.surname || '';
         userInput.value = profile.username || '';
-        if (roleInput) roleInput.value = profile.role || 'fan';
         bioInput.value = profile.bio || '';
+        loadedRole = profile.role || 'fan';
         originalAvatarUrl = profile.avatar_url || null;
         originalCoverUrl = profile.cover_url || null;
         setAvatarPreview(originalAvatarUrl);
@@ -161,10 +158,6 @@
         selectedDisciplines = new Set(initialDisciplines);
         renderDisciplineChips();
         toggleDisciplinesVisibility();
-    }
-
-    if (roleInput) {
-        roleInput.addEventListener('change', toggleDisciplinesVisibility);
     }
 
     function updatePublicProfileLink(username) {
@@ -306,7 +299,6 @@
             foreInput.value = profile.forename || '';
             surInput.value = profile.surname || '';
             userInput.value = profile.username || '';
-            if (roleInput) roleInput.value = profile.role || 'fan';
             bioInput.value = profile.bio || '';
             const reset = window.STAGECORD?.sanitizeDisciplines?.(profile.disciplines) || [];
             selectedDisciplines = new Set(reset);
@@ -407,21 +399,18 @@
             }
         }
 
-        const role = roleInput ? roleInput.value : (profile?.role || 'fan');
-        const disciplinesToSave = role === 'artist'
-            ? (window.STAGECORD?.sanitizeDisciplines?.(Array.from(selectedDisciplines)) || [])
-            : [];
         const updates = {
             forename,
             surname,
             username: username || null,
-            role,
             bio: bio || null,
-            disciplines: disciplinesToSave,
             avatar_url: newAvatarUrl,
             cover_url: newCoverUrl,
             updated_at: new Date().toISOString()
         };
+        if (loadedRole === 'artist') {
+            updates.disciplines = window.STAGECORD?.sanitizeDisciplines?.(Array.from(selectedDisciplines)) || [];
+        }
 
         const { error: saveErr } = await sb
             .from('profiles')

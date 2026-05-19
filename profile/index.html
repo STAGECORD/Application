@@ -178,12 +178,6 @@
 
                     <div class="profile-fields">
                         <div class="profile-field">
-                            <label for="profile-email">Email</label>
-                            <input id="profile-email" type="email" readonly data-help="Your account email — used for login and notifications. Cannot be changed from here; contact support if needed.">
-                            <span class="profile-field__hint">Your email is tied to your account and can't be changed here.</span>
-                        </div>
-
-                        <div class="profile-field">
                             <label for="profile-forename">First name</label>
                             <input id="profile-forename" type="text" autocomplete="given-name" required data-help="Your first name — rendered in bold everywhere your name appears.">
                         </div>
@@ -197,15 +191,6 @@
                             <label for="profile-username">Username</label>
                             <input id="profile-username" type="text" autocomplete="username" placeholder="lowercase letters, numbers, _ or - (3-30 chars)" pattern="[a-z0-9][a-z0-9_-]{2,29}" data-help="Your @-handle and public profile URL slug (stagecord.com/u/your-handle). Lowercase letters, digits, underscore and hyphen only. 3–30 chars.">
                             <span class="profile-field__hint" id="usernameHint">Used for your shareable profile URL. Lowercase only.</span>
-                        </div>
-
-                        <div class="profile-field">
-                            <label for="profile-role">Role</label>
-                            <select id="profile-role" style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:11px 14px;color:#FFFFFF;font-family:inherit;font-size:15px;width:100%;box-sizing:border-box;" data-help="Account role — Artists unlock Tracks / Projects / Events in the sidebar. Fans see the social feed only. You can flip between roles freely.">
-                                <option value="fan">General user / Fan</option>
-                                <option value="artist">Artist</option>
-                            </select>
-                            <span class="profile-field__hint">Artists get Tracks, Projects and Events. Fans see the social feed and can follow artists.</span>
                         </div>
 
                         <div class="profile-field" id="profile-disciplines-field" hidden>
