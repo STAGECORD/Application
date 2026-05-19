@@ -27,6 +27,9 @@
         }
         .admin-btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .admin-btn--ghost { background: transparent; color: #FFFFFF; border: 1px solid rgba(255,255,255,0.2); }
+        .admin-btn--danger { background: transparent; color: #FF6B6B; border: 1px solid rgba(255,107,107,0.35); }
+        .admin-btn--danger:hover:not(:disabled) { background: rgba(255,107,107,0.12); }
+        .admin-table .row-actions { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap; }
         .admin-row { display: flex; gap: 10px; align-items: center; margin-top: 12px; flex-wrap: wrap; }
         .admin-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
         .admin-table th, .admin-table td { padding: 10px 8px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06); color: #D1D6E0; }
@@ -153,20 +156,26 @@
                 }
                 const name = row.name ? row.name.replace(/[<>&"']/g,(c)=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c])) : '';
                 const email = row.email.replace(/[<>&"']/g,(c)=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));
-                const action = row.invite_used_at
+                const sendBtn = row.invite_used_at
                     ? ''
                     : `<button class="admin-btn" data-send="${email}">${row.invite_sent_at ? 'Resend' : 'Send invite'}</button>`;
+                const deleteBtn = row.invite_used_at
+                    ? ''
+                    : `<button class="admin-btn admin-btn--danger" data-delete="${email}" title="Remove from waitlist">Delete</button>`;
                 return `<tr class="${row.invite_used_at ? 'is-used' : ''}">
                     <td>${name}</td>
                     <td>${email}</td>
                     <td>${fmtRole(row.role)}</td>
                     <td>${status}</td>
-                    <td>${action}</td>
+                    <td><div class="row-actions">${sendBtn}${deleteBtn}</div></td>
                 </tr>`;
             }).join('');
 
             tbody.querySelectorAll('[data-send]').forEach((btn) => {
                 btn.addEventListener('click', () => sendInvite(btn.getAttribute('data-send'), btn));
+            });
+            tbody.querySelectorAll('[data-delete]').forEach((btn) => {
+                btn.addEventListener('click', () => deleteEntry(btn.getAttribute('data-delete'), btn));
             });
         }
 
@@ -202,6 +211,38 @@
                     btn.textContent = original;
                     appendResult(`<span class="err">✗ ${email}: ${row?.error || 'unknown error'}</span>`);
                 }
+            } catch (err) {
+                btn.disabled = false;
+                btn.textContent = original;
+                appendResult(`<span class="err">✗ ${email}: ${err.message}</span>`);
+            }
+        }
+
+        async function deleteEntry(email, btn) {
+            const secret = getSecret();
+            if (!secret) return;
+            if (!confirm(`Delete "${email}" from the waitlist? This cannot be undone.`)) return;
+            btn.disabled = true;
+            const original = btn.textContent;
+            btn.textContent = 'Deleting…';
+            try {
+                const res = await fetch('/api/delete-waitlist', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${secret}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email })
+                });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) {
+                    btn.disabled = false;
+                    btn.textContent = original;
+                    appendResult(`<span class="err">✗ ${email}: ${data.error || res.status}</span>`);
+                    return;
+                }
+                appendResult(`<span class="ok">✓ ${email}: removed from waitlist</span>`);
+                setTimeout(loadList, 400);
             } catch (err) {
                 btn.disabled = false;
                 btn.textContent = original;
