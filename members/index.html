@@ -14,13 +14,23 @@
         .members-header { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; }
         .members-header h1 { margin: 0; color: #FFFFFF; font-size: 28px; font-weight: 600; }
         .members-header .members-count { color: #7E89A6; font-size: 14px; }
-        .members-search {
+        .members-controls {
+            display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
             margin-bottom: 24px;
+        }
+        .members-search {
             background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.12);
             border-radius: 999px; padding: 11px 18px; color: #FFFFFF;
             font-family: inherit; font-size: 15px;
-            width: 100%; max-width: 360px; box-sizing: border-box;
+            flex: 1 1 240px; max-width: 360px; box-sizing: border-box;
         }
+        .members-filter {
+            background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 999px; padding: 11px 18px; color: #FFFFFF;
+            font-family: inherit; font-size: 14px;
+            cursor: pointer;
+        }
+        .members-filter option { background: #0B0B0F; color: #FFFFFF; }
         .members-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -60,6 +70,19 @@
             align-self: flex-start;
         }
         .member-card__role--fan { background: rgba(255,168,57,0.16); color: #FFB066; }
+        .member-card__disciplines {
+            display: flex; flex-wrap: wrap; gap: 5px;
+        }
+        .member-card__discipline {
+            display: inline-block;
+            padding: 2px 9px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: #D1D6E0;
+            font-size: 11px;
+            letter-spacing: 0.02em;
+        }
         .member-card__bio {
             color: #D1D6E0; font-size: 13px; line-height: 1.5;
             margin: 0;
@@ -85,7 +108,12 @@
             <span class="members-count" id="membersCount"></span>
         </div>
 
-        <input type="search" class="members-search" id="membersSearch" placeholder="Search by name or username…" autocomplete="off" data-help="Filter the member grid live — searches across forename, surname, @-handle and bio. Clear the field to see everyone again.">
+        <div class="members-controls">
+            <input type="search" class="members-search" id="membersSearch" placeholder="Search by name or username…" autocomplete="off" data-help="Filter the member grid live — searches across forename, surname, @-handle and bio. Clear the field to see everyone again.">
+            <select class="members-filter" id="membersFilter" data-help="Filter by what kind of artist someone is. Pick a discipline to only see artists who do that.">
+                <option value="">All disciplines</option>
+            </select>
+        </div>
 
         <div id="membersContent">
             <div class="members-empty">Loading members…</div>
@@ -95,6 +123,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase.js"></script>
     <script src="../js/format.js"></script>
+    <script src="../js/disciplines.js"></script>
     <script src="../js/app-shell.js"></script>
     <script>
     (async function () {
@@ -102,6 +131,16 @@
         const content = document.getElementById('membersContent');
         const countEl = document.getElementById('membersCount');
         const searchInput = document.getElementById('membersSearch');
+        const filterSelect = document.getElementById('membersFilter');
+
+        if (filterSelect && window.STAGECORD?.DISCIPLINES) {
+            window.STAGECORD.DISCIPLINES.forEach((d) => {
+                const opt = document.createElement('option');
+                opt.value = d.slug;
+                opt.textContent = d.label;
+                filterSelect.appendChild(opt);
+            });
+        }
 
         const { data: { session } } = await sb.auth.getSession();
         if (!session) {
@@ -159,6 +198,11 @@
                 const postCountHtml = pc > 0
                     ? ` · ${pc} ${pc === 1 ? 'post' : 'posts'}`
                     : '';
+                const labelFn = window.STAGECORD?.labelForDiscipline || ((s) => s);
+                const slugs = Array.isArray(m.disciplines) ? m.disciplines : [];
+                const disciplinesHtml = (m.role === 'artist' && slugs.length > 0)
+                    ? `<div class="member-card__disciplines">${slugs.map((s) => `<span class="member-card__discipline">${escapeHtml(labelFn(s))}</span>`).join('')}</div>`
+                    : '';
                 return `<a class="member-card" href="/u/${encodeURIComponent(m.username)}">
                     <div class="member-card__top">
                         ${avatarHtml}
@@ -168,32 +212,44 @@
                         </div>
                     </div>
                     ${roleLabel ? `<span class="member-card__role${roleClass}">${escapeHtml(roleLabel)}</span>` : ''}
+                    ${disciplinesHtml}
                     ${m.bio ? `<p class="member-card__bio">${escapeHtml(m.bio)}</p>` : ''}
                 </a>`;
             }).join('')}</div>`;
         }
 
-        render(members);
-
-        let searchDebounce = null;
-        searchInput.addEventListener('input', () => {
-            clearTimeout(searchDebounce);
-            const q = searchInput.value.trim().toLowerCase();
-            searchDebounce = setTimeout(() => {
-                if (!q) {
-                    render(members);
-                    countEl.textContent = `${members.length} ${members.length === 1 ? 'member' : 'members'}`;
-                    return;
-                }
-                const filtered = members.filter((m) => {
+        function applyFilters() {
+            const q = (searchInput.value || '').trim().toLowerCase();
+            const disc = filterSelect ? filterSelect.value : '';
+            let filtered = members;
+            if (disc) {
+                filtered = filtered.filter((m) => Array.isArray(m.disciplines) && m.disciplines.includes(disc));
+            }
+            if (q) {
+                filtered = filtered.filter((m) => {
                     const haystack = [m.forename, m.surname, m.username, m.bio]
                         .filter(Boolean).join(' ').toLowerCase();
                     return haystack.includes(q);
                 });
-                render(filtered);
+            }
+            render(filtered);
+            if (filtered.length === members.length) {
+                countEl.textContent = `${members.length} ${members.length === 1 ? 'member' : 'members'}`;
+            } else {
                 countEl.textContent = `${filtered.length} of ${members.length} ${members.length === 1 ? 'member' : 'members'}`;
-            }, 120);
+            }
+        }
+
+        applyFilters();
+
+        let searchDebounce = null;
+        searchInput.addEventListener('input', () => {
+            clearTimeout(searchDebounce);
+            searchDebounce = setTimeout(applyFilters, 120);
         });
+        if (filterSelect) {
+            filterSelect.addEventListener('change', applyFilters);
+        }
     })();
     </script>
 </body>

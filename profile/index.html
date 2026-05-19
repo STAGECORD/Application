@@ -68,6 +68,22 @@
         .profile-field textarea { min-height: 96px; resize: vertical; }
         .profile-field__hint { font-size: 12px; color: #5A6480; }
 
+        .discipline-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+        .discipline-chip {
+            display: inline-flex; align-items: center;
+            padding: 7px 14px; border-radius: 999px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.14);
+            color: #D1D6E0; font-size: 13px; font-family: inherit;
+            cursor: pointer; transition: background 0.15s, border-color 0.15s, color 0.15s;
+            user-select: none;
+        }
+        .discipline-chip:hover { border-color: rgba(255,255,255,0.32); color: #FFFFFF; }
+        .discipline-chip.is-on {
+            background: #FFFFFF; color: #0B0B0F; border-color: #FFFFFF;
+            font-weight: 600;
+        }
+
         .profile-actions {
             display: flex; gap: 12px; align-items: center;
             margin-top: 24px; flex-wrap: wrap;
@@ -192,6 +208,12 @@
                             <span class="profile-field__hint">Artists get Tracks, Projects and Events. Fans see the social feed and can follow artists.</span>
                         </div>
 
+                        <div class="profile-field" id="profile-disciplines-field" hidden>
+                            <label>What kind of artist are you?</label>
+                            <div class="discipline-chips" id="profile-disciplines-chips" data-help="Pick one or more disciplines that describe what you do. Shown on your public profile and used to match you to collaborator searches."></div>
+                            <span class="profile-field__hint">Pick as many as fit. You can change these any time.</span>
+                        </div>
+
                         <div class="profile-field">
                             <label for="profile-bio">Bio</label>
                             <textarea id="profile-bio" placeholder="A short line about you — optional, shown on your public profile." data-help="Optional one-paragraph bio — shown on your public /u/ page below your name. Good place for genre, location, link to a portfolio."></textarea>
@@ -211,6 +233,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase.js"></script>
     <script src="../js/app-shell.js"></script>
+    <script src="../js/disciplines.js"></script>
     <script src="../js/profile.js"></script>
 </body>
 </html>

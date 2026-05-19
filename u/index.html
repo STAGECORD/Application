@@ -117,6 +117,20 @@
             font-weight: 600;
             vertical-align: middle;
         }
+        .pp-disciplines {
+            display: flex; flex-wrap: wrap; gap: 6px;
+            margin: 0 0 8px 0;
+        }
+        .pp-discipline-tag {
+            display: inline-block;
+            padding: 3px 11px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.14);
+            color: #FFFFFF;
+            font-size: 12px;
+            letter-spacing: 0.02em;
+        }
         .pp-hero__name {
             font-family: 'Outfit', sans-serif;
             font-weight: 700;
@@ -519,6 +533,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase.js"></script>
     <script src="../js/format.js"></script>
+    <script src="../js/disciplines.js"></script>
     <script src="../js/app-shell.js"></script>
     <script src="../js/likes.js"></script>
     <script src="../js/add-to-playlist.js"></script>
@@ -612,6 +627,12 @@
             ? `<strong>${escapeHtml(foreUC)}</strong>${surUC ? ` <span class="pp-hero__name-light">${escapeHtml(surUC)}</span>` : ''}`
             : escapeHtml((profile.username || username).toUpperCase());
 
+        const disciplineSlugs = Array.isArray(profile.disciplines) ? profile.disciplines : [];
+        const labelFn = window.STAGECORD?.labelForDiscipline || ((s) => s);
+        const disciplineTagsHtml = (profile.role === 'artist' && disciplineSlugs.length > 0)
+            ? `<div class="pp-disciplines">${disciplineSlugs.map((s) => `<span class="pp-discipline-tag">${escapeHtml(labelFn(s))}</span>`).join('')}</div>`
+            : '';
+
         content.innerHTML = `
             <section class="${heroClasses}" style="${heroStyle}">
                 <div class="pp-hero__top">
@@ -621,6 +642,7 @@
                 <div class="pp-hero__bottom">
                     <div class="pp-hero__identity">
                         <p class="pp-hero__handle">@${escapeHtml(profile.username || username)}${roleLabel ? `<span class="pp-role-pill">${escapeHtml(roleLabel)}</span>` : ''}</p>
+                        ${disciplineTagsHtml}
                         <h1 class="pp-hero__name">${nameHtml}</h1>
                     </div>
                     <div class="pp-hero__stats" id="ppStats">

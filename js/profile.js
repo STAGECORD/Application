@@ -11,7 +11,37 @@
     const surInput = document.getElementById('profile-surname');
     const userInput = document.getElementById('profile-username');
     const roleInput = document.getElementById('profile-role');
+    const disciplinesField = document.getElementById('profile-disciplines-field');
+    const disciplinesChips = document.getElementById('profile-disciplines-chips');
     const bioInput = document.getElementById('profile-bio');
+
+    let selectedDisciplines = new Set();
+
+    function renderDisciplineChips() {
+        if (!disciplinesChips || !window.STAGECORD?.DISCIPLINES) return;
+        disciplinesChips.innerHTML = window.STAGECORD.DISCIPLINES.map((d) => {
+            const on = selectedDisciplines.has(d.slug) ? ' is-on' : '';
+            return `<button type="button" class="discipline-chip${on}" data-slug="${d.slug}">${d.label}</button>`;
+        }).join('');
+        disciplinesChips.querySelectorAll('[data-slug]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const slug = btn.getAttribute('data-slug');
+                if (selectedDisciplines.has(slug)) {
+                    selectedDisciplines.delete(slug);
+                    btn.classList.remove('is-on');
+                } else {
+                    selectedDisciplines.add(slug);
+                    btn.classList.add('is-on');
+                }
+            });
+        });
+    }
+
+    function toggleDisciplinesVisibility() {
+        if (!disciplinesField) return;
+        const isArtist = roleInput && roleInput.value === 'artist';
+        disciplinesField.hidden = !isArtist;
+    }
     const usernameHint = document.getElementById('usernameHint');
 
     const avatar = document.getElementById('avatarTrigger');
@@ -106,7 +136,7 @@
 
     const { data: profile, error: loadErr } = await sb
         .from('profiles')
-        .select('forename, surname, username, role, bio, avatar_url, cover_url')
+        .select('forename, surname, username, role, bio, avatar_url, cover_url, disciplines')
         .eq('id', userId)
         .single();
 
@@ -126,6 +156,15 @@
         updatePublicProfileLink(profile.username);
         const v = validateUsername(profile.username || '');
         setUsernameHint(v.msg, v.ok ? null : 'error');
+
+        const initialDisciplines = window.STAGECORD?.sanitizeDisciplines?.(profile.disciplines) || [];
+        selectedDisciplines = new Set(initialDisciplines);
+        renderDisciplineChips();
+        toggleDisciplinesVisibility();
+    }
+
+    if (roleInput) {
+        roleInput.addEventListener('change', toggleDisciplinesVisibility);
     }
 
     function updatePublicProfileLink(username) {
@@ -269,6 +308,10 @@
             userInput.value = profile.username || '';
             if (roleInput) roleInput.value = profile.role || 'fan';
             bioInput.value = profile.bio || '';
+            const reset = window.STAGECORD?.sanitizeDisciplines?.(profile.disciplines) || [];
+            selectedDisciplines = new Set(reset);
+            renderDisciplineChips();
+            toggleDisciplinesVisibility();
         }
         pendingAvatarFile = null;
         avatarInput.value = '';
@@ -365,12 +408,16 @@
         }
 
         const role = roleInput ? roleInput.value : (profile?.role || 'fan');
+        const disciplinesToSave = role === 'artist'
+            ? (window.STAGECORD?.sanitizeDisciplines?.(Array.from(selectedDisciplines)) || [])
+            : [];
         const updates = {
             forename,
             surname,
             username: username || null,
             role,
             bio: bio || null,
+            disciplines: disciplinesToSave,
             avatar_url: newAvatarUrl,
             cover_url: newCoverUrl,
             updated_at: new Date().toISOString()
