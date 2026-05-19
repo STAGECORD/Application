@@ -78,6 +78,19 @@
                 <button class="admin-btn admin-btn--ghost" id="refreshBtn">Refresh list</button>
                 <button class="admin-btn admin-btn--ghost" id="logoutBtn">Forget secret</button>
             </div>
+
+            <div class="admin-row" style="margin-top: 14px;">
+                <input type="search" class="admin-input" id="searchInput" placeholder="Search by name or email…" autocomplete="off" style="flex:1; min-width: 180px;">
+                <select class="admin-input" id="disciplineFilter" style="flex:0 0 auto; min-width: 200px; cursor: pointer;">
+                    <option value="">All disciplines</option>
+                </select>
+                <select class="admin-input" id="roleFilter" style="flex:0 0 auto; min-width: 140px; cursor: pointer;">
+                    <option value="">All roles</option>
+                    <option value="artist">Artists only</option>
+                    <option value="fan">Fans only</option>
+                </select>
+                <span id="filterCount" style="color:#7E89A6;font-size:13px;"></span>
+            </div>
             <table class="admin-table" id="waitlistTable">
                 <thead>
                     <tr>
@@ -109,6 +122,21 @@
         const logoutBtn = document.getElementById('logoutBtn');
         const tbody = document.getElementById('waitlistBody');
         const results = document.getElementById('results');
+        const searchInput = document.getElementById('searchInput');
+        const disciplineFilter = document.getElementById('disciplineFilter');
+        const roleFilter = document.getElementById('roleFilter');
+        const filterCount = document.getElementById('filterCount');
+
+        let allRows = [];
+
+        if (window.STAGECORD?.DISCIPLINES) {
+            window.STAGECORD.DISCIPLINES.forEach((d) => {
+                const opt = document.createElement('option');
+                opt.value = d.slug;
+                opt.textContent = d.label;
+                disciplineFilter.appendChild(opt);
+            });
+        }
 
         function getSecret() { return localStorage.getItem(SECRET_KEY) || ''; }
         function setSecret(v) { localStorage.setItem(SECRET_KEY, v); }
@@ -139,7 +167,8 @@
                     return;
                 }
                 const { rows } = await res.json();
-                renderList(rows);
+                allRows = rows || [];
+                applyFilters();
             } catch (err) {
                 tbody.innerHTML = `<tr><td colspan="5" class="err">Network error: ${err.message}</td></tr>`;
             }
@@ -161,9 +190,36 @@
             return `<div class="row-disciplines">${slugs.map((s) => `<span class="row-discipline">${escapeHtml(labelFn(s))}</span>`).join('')}</div>`;
         }
 
+        function applyFilters() {
+            const q = (searchInput.value || '').trim().toLowerCase();
+            const disc = disciplineFilter.value;
+            const role = roleFilter.value;
+            let filtered = allRows;
+            if (role) {
+                filtered = filtered.filter((r) => r.role === role);
+            }
+            if (disc) {
+                filtered = filtered.filter((r) => Array.isArray(r.disciplines) && r.disciplines.includes(disc));
+            }
+            if (q) {
+                filtered = filtered.filter((r) => {
+                    const hay = [r.name, r.email].filter(Boolean).join(' ').toLowerCase();
+                    return hay.includes(q);
+                });
+            }
+            renderList(filtered);
+            if (allRows.length === 0) {
+                filterCount.textContent = '';
+            } else if (filtered.length === allRows.length) {
+                filterCount.textContent = `${allRows.length} total`;
+            } else {
+                filterCount.textContent = `${filtered.length} of ${allRows.length}`;
+            }
+        }
+
         function renderList(rows) {
             if (!rows || rows.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5">Waitlist is empty.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5">No matches.</td></tr>';
                 return;
             }
             tbody.innerHTML = rows.map((row) => {
@@ -304,6 +360,14 @@
             clearSecret();
             showAuth();
         });
+
+        let searchDebounce = null;
+        searchInput.addEventListener('input', () => {
+            clearTimeout(searchDebounce);
+            searchDebounce = setTimeout(applyFilters, 120);
+        });
+        disciplineFilter.addEventListener('change', applyFilters);
+        roleFilter.addEventListener('change', applyFilters);
 
         if (getSecret()) showAdmin();
         else showAuth();
