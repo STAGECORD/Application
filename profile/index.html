@@ -8,51 +8,228 @@
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/logo.css">
     <link rel="stylesheet" href="../css/start.css">
-    <link rel="stylesheet" href="../css/waitlist.css">
     <link rel="stylesheet" href="../css/app-shell.css">
     <style>
-        .profile-wrap { max-width: 960px; margin: 0 auto; padding: 24px 24px 60px; }
-        .profile-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 28px; margin-bottom: 20px; }
-        .profile-card h2 { margin: 0 0 18px 0; color: #FFFFFF; font-weight: 600; font-size: 20px; }
-        .profile-row { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
-        .profile-avatar-block { display: flex; flex-direction: column; align-items: center; gap: 12px; }
-        .profile-avatar-wrap { position: relative; width: 120px; height: 120px; }
-        .profile-avatar {
-            width: 120px; height: 120px; border-radius: 50%;
-            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
-            display: flex; align-items: center; justify-content: center;
-            overflow: hidden; cursor: pointer; position: relative;
-            background-size: cover; background-position: center;
+        /* ---------- Page wrap ---------- */
+        .pp-wrap { max-width: 1080px; margin: 0 auto; padding: 20px 24px 60px; }
+
+        /* ---------- Hero (mirrors /u/<username>) ---------- */
+        .profile-hero {
+            position: relative;
+            width: 100%;
+            height: 420px;
+            border-radius: 28px;
+            overflow: hidden;
+            color: #FFFFFF;
+            background-color: #1a1a1a;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 22px 26px 28px 30px;
+            box-sizing: border-box;
         }
-        .profile-avatar__placeholder {
-            color: #5A6480; font-size: 12px; text-align: center;
+        .profile-hero--no-cover {
+            background-image: linear-gradient(135deg, #1a2a4f 0%, #2d1a4f 60%, #4f1a2a 100%);
+        }
+        .profile-hero::before {
+            content: "";
+            position: absolute; inset: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 35%, rgba(0,0,0,0.65) 100%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .profile-hero > * { position: relative; z-index: 1; }
+
+        /* Cover trigger covers the whole hero (behind everything else) */
+        .profile-hero__cover-trigger {
+            position: absolute; inset: 0;
+            z-index: 0;
+            cursor: pointer;
+        }
+        .profile-hero__cover-trigger input[type="file"] { display: none; }
+        .profile-hero__cover-placeholder {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            color: rgba(255,255,255,0.4); font-size: 13px;
+            text-transform: uppercase; letter-spacing: 0.08em;
+            pointer-events: none;
+        }
+        .profile-hero.has-cover .profile-hero__cover-placeholder { display: none; }
+        .profile-hero__cover-hint {
+            position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+            padding: 6px 14px;
+            background: rgba(0,0,0,0.55);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 999px;
+            color: #FFFFFF; font-size: 12px;
+            opacity: 0; transition: opacity 0.15s;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .profile-hero:hover .profile-hero__cover-hint { opacity: 1; }
+
+        .profile-hero__cover-remove {
+            display: none;
+            position: absolute; top: 14px; right: 14px;
+            width: 32px; height: 32px; border-radius: 50%;
+            background: rgba(0,0,0,0.6); color: #FFFFFF;
+            border: 1px solid rgba(255,255,255,0.25);
+            font-size: 18px; line-height: 1; cursor: pointer; padding: 0;
+            font-family: inherit;
+            z-index: 3;
+        }
+        .profile-hero__cover-remove:hover {
+            background: rgba(255,107,107,0.18); border-color: rgba(255,107,107,0.6); color: #FF8B8B;
+        }
+        .profile-hero.has-cover .profile-hero__cover-remove { display: block; }
+
+        .profile-hero__top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .profile-hero__avatar-trigger {
+            position: relative;
+            cursor: pointer;
+            display: inline-block;
+        }
+        .profile-hero__avatar-trigger input[type="file"] { display: none; }
+        .profile-hero__avatar {
+            width: 84px; height: 84px; border-radius: 50%;
+            background-size: cover; background-position: center;
+            background-color: rgba(255,255,255,0.12);
+            border: 2px solid rgba(255,255,255,0.55);
+            box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+            display: flex; align-items: center; justify-content: center;
+            color: #FFFFFF; font-size: 32px; font-weight: 600;
+            overflow: hidden;
+        }
+        .profile-hero__avatar-placeholder {
+            color: rgba(255,255,255,0.7); font-size: 12px;
             text-transform: uppercase; letter-spacing: 0.08em;
         }
-        .profile-avatar__overlay {
-            position: absolute; inset: 0; background: rgba(0,0,0,0.6);
+        .profile-hero__avatar-overlay {
+            position: absolute; inset: 0;
+            background: rgba(0,0,0,0.6);
+            border-radius: 50%;
             display: none; align-items: center; justify-content: center;
-            color: #FFFFFF; font-size: 13px;
+            color: #FFFFFF; font-size: 11px;
+            text-transform: uppercase; letter-spacing: 0.06em;
         }
-        .profile-avatar:hover .profile-avatar__overlay { display: flex; }
-        .profile-avatar input[type="file"] { display: none; }
-        .profile-avatar__hint { color: #7E89A6; font-size: 12px; text-align: center; }
-        .profile-avatar__remove {
+        .profile-hero__avatar-trigger:hover .profile-hero__avatar-overlay { display: flex; }
+        .profile-hero__avatar-remove {
             display: none;
             position: absolute; top: -4px; right: -4px;
-            width: 28px; height: 28px; border-radius: 50%;
+            width: 26px; height: 26px; border-radius: 50%;
             background: #1a1f2e; color: #FFFFFF;
-            border: 1px solid rgba(255,255,255,0.18);
-            font-size: 18px; line-height: 1; cursor: pointer; padding: 0;
+            border: 1px solid rgba(255,255,255,0.25);
+            font-size: 16px; line-height: 1; cursor: pointer; padding: 0;
             font-family: inherit;
             box-shadow: 0 2px 8px rgba(0,0,0,0.4);
             z-index: 2;
         }
-        .profile-avatar__remove:hover {
-            background: #2a3142; border-color: rgba(255,107,107,0.6); color: #FF6B6B;
+        .profile-hero__avatar-remove:hover {
+            background: #2a3142; border-color: rgba(255,107,107,0.6); color: #FF8B8B;
         }
-        .profile-avatar-wrap.has-photo .profile-avatar__remove { display: block; }
+        .profile-hero__avatar-wrap.has-photo .profile-hero__avatar-remove { display: block; }
 
-        .profile-fields { flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 14px; }
+        .profile-hero__actions {
+            display: flex; gap: 12px; flex-wrap: wrap;
+            margin-left: auto;
+        }
+        .pp-cta {
+            display: inline-flex; align-items: center; gap: 10px;
+            padding: 0 22px;
+            height: 44px;
+            background: transparent;
+            border: 1px solid #FFFFFF;
+            border-radius: 999px;
+            color: #FFFFFF;
+            font-family: inherit; font-weight: 500; font-size: 14px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.15s ease, color 0.15s ease;
+            white-space: nowrap;
+        }
+        .pp-cta:hover { background: rgba(255,255,255,0.14); }
+
+        .profile-hero__bottom {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+        .profile-hero__identity { min-width: 0; flex: 1 1 auto; }
+        .profile-hero__handle {
+            color: rgba(255,255,255,0.85);
+            font-size: 15px;
+            margin: 0 0 6px 0;
+            letter-spacing: 0.02em;
+        }
+        .profile-hero__handle .profile-hero__role-pill {
+            display: inline-block;
+            margin-left: 10px;
+            padding: 2px 10px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.16);
+            color: #FFFFFF;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 600;
+            vertical-align: middle;
+        }
+        .profile-hero__disciplines {
+            display: flex; flex-wrap: wrap; gap: 6px;
+            margin: 0 0 10px 0;
+        }
+        .profile-hero__discipline-tag {
+            display: inline-block;
+            padding: 3px 11px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.14);
+            color: #FFFFFF;
+            font-size: 12px;
+            letter-spacing: 0.02em;
+        }
+        .profile-hero__name {
+            margin: 0;
+            font-size: 56px;
+            font-weight: 300;
+            line-height: 0.96;
+            letter-spacing: -0.02em;
+            color: #FFFFFF;
+            word-break: break-word;
+        }
+        .profile-hero__name strong { font-weight: 700; }
+        .profile-hero__name .profile-hero__name-light { font-weight: 300; }
+
+        /* ---------- Form card under the hero ---------- */
+        .profile-form-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 18px;
+            padding: 28px 30px;
+            margin-top: 28px;
+            max-width: 760px;
+        }
+        .profile-form-card h2 {
+            margin: 0 0 6px 0; color: #FFFFFF;
+            font-weight: 700; font-size: 22px;
+            letter-spacing: 0.01em;
+        }
+        .profile-form-card__sub {
+            margin: 0 0 22px 0;
+            color: #B1B1B1; font-size: 13px;
+        }
+
+        .profile-fields { display: flex; flex-direction: column; gap: 16px; }
         .profile-field { display: flex; flex-direction: column; gap: 6px; }
         .profile-field label {
             font-size: 12px; color: #7E89A6;
@@ -102,107 +279,87 @@
         .profile-feedback.is-success { color: #5CD66B; }
         .profile-feedback.is-error { color: #FF6B6B; }
 
-        .cover-wrap {
-            position: relative;
-            margin-bottom: 18px;
+        @media (max-width: 720px) {
+            .profile-hero { height: 360px; padding: 16px 16px 22px 18px; border-radius: 20px; }
+            .profile-hero__name { font-size: 40px; }
+            .pp-wrap { padding: 14px 14px 60px; }
+            .profile-form-card { padding: 22px 18px; }
         }
-        .cover-photo {
-            display: block; cursor: pointer;
-            width: 100%; height: 180px; border-radius: 12px;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            background-size: cover; background-position: center;
-            position: relative; overflow: hidden;
-        }
-        .cover-photo__placeholder {
-            position: absolute; inset: 0;
-            display: flex; align-items: center; justify-content: center;
-            color: #5A6480; font-size: 13px;
-            text-transform: uppercase; letter-spacing: 0.08em;
-        }
-        .cover-photo__overlay {
-            position: absolute; inset: 0; background: rgba(0,0,0,0.55);
-            display: none; align-items: center; justify-content: center;
-            color: #FFFFFF; font-size: 14px;
-        }
-        .cover-photo:hover .cover-photo__overlay { display: flex; }
-        .cover-photo input[type="file"] { display: none; }
-        .cover-remove {
-            display: none;
-            position: absolute; top: 10px; right: 10px;
-            width: 30px; height: 30px; border-radius: 50%;
-            background: #1a1f2e; color: #FFFFFF;
-            border: 1px solid rgba(255,255,255,0.18);
-            font-size: 18px; line-height: 1; cursor: pointer; padding: 0;
-            font-family: inherit;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-            z-index: 2;
-        }
-        .cover-remove:hover {
-            background: #2a3142; border-color: rgba(255,107,107,0.6); color: #FF6B6B;
-        }
-        .cover-wrap.has-cover .cover-remove { display: block; }
-        .cover-hint { color: #7E89A6; font-size: 12px; margin-top: 6px; }
     </style>
 </head>
 <body class="app-body">
 
     <div data-app-shell data-page-title="Profile"></div>
 
-    <main class="app-main"><div class="profile-wrap">
-        <div class="profile-card">
-            <h2 style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
-                <span>Your profile</span>
-                <a href="#" id="viewPublicProfileLink" style="display:none;color:#FFFFFF;font-size:13px;font-weight:400;text-decoration:underline;opacity:0.85;">View public profile →</a>
-            </h2>
+    <main class="app-main"><div class="pp-wrap">
 
-            <form id="profileForm">
-                <div class="cover-wrap" id="coverWrap">
-                    <label class="cover-photo" id="coverTrigger" title="Click to upload cover" data-help="Cover photo — wide banner that appears at the top of your public /u/ page. Click to upload a JPG, PNG or WebP up to 5 MB.">
-                        <span class="cover-photo__placeholder" id="coverPlaceholder">Click to add a cover photo</span>
-                        <span class="cover-photo__overlay" id="coverOverlay">Change cover</span>
-                        <input type="file" id="coverInput" accept="image/jpeg,image/png,image/webp">
+        <!-- Hero: mirrors /u/<username> so people see exactly how their public profile will look -->
+        <section class="profile-hero" id="coverWrap">
+            <label class="profile-hero__cover-trigger" id="coverTrigger" title="Click to change cover photo" data-help="Cover photo — wide banner that appears at the top of your public /u/ page. Click anywhere on this hero (away from the avatar) to upload a JPG, PNG or WebP up to 5 MB.">
+                <input type="file" id="coverInput" accept="image/jpeg,image/png,image/webp">
+            </label>
+            <span class="profile-hero__cover-placeholder" id="coverPlaceholder">Click to add a cover photo</span>
+            <span class="profile-hero__cover-hint" id="coverOverlay">Click to change cover</span>
+            <button type="button" class="profile-hero__cover-remove" id="coverRemove" title="Remove cover photo">×</button>
+
+            <div class="profile-hero__top">
+                <div class="profile-hero__avatar-wrap" id="profileAvatarWrap">
+                    <label class="profile-hero__avatar-trigger" id="avatarTrigger" title="Click to change profile photo" data-help="Profile photo — your avatar everywhere on STAGECORD (sidebar, posts, comments). Click to upload a square JPG, PNG or WebP up to 5 MB.">
+                        <div class="profile-hero__avatar" id="avatarPreview">
+                            <span class="profile-hero__avatar-placeholder" id="avatarPlaceholder">No photo</span>
+                        </div>
+                        <span class="profile-hero__avatar-overlay" id="avatarOverlay">Change</span>
+                        <input type="file" id="avatarInput" accept="image/jpeg,image/png,image/webp">
                     </label>
+                    <button type="button" class="profile-hero__avatar-remove" id="removeAvatarBtn" title="Remove profile photo">×</button>
                 </div>
 
-                <div class="profile-row">
-                    <div class="profile-avatar-block">
-                        <div class="profile-avatar-wrap">
-                            <label class="profile-avatar" id="avatarTrigger" title="Click to upload" data-help="Profile photo — your avatar everywhere on STAGECORD (sidebar, posts, comments, project cards). Click to upload a square JPG, PNG or WebP up to 5 MB.">
-                                <span class="profile-avatar__placeholder" id="avatarPlaceholder">No photo</span>
-                                <span class="profile-avatar__overlay" id="avatarOverlay">Change photo</span>
-                                <input type="file" id="avatarInput" accept="image/jpeg,image/png,image/webp">
-                            </label>
-                        </div>
+                <div class="profile-hero__actions">
+                    <a href="#" class="pp-cta" id="viewPublicProfileLink" style="display:none;" data-help="Open your public profile in a new tab — handy for previewing what others actually see.">View public profile</a>
+                </div>
+            </div>
+
+            <div class="profile-hero__bottom">
+                <div class="profile-hero__identity">
+                    <p class="profile-hero__handle">@<span id="heroUsername">your-handle</span><span class="profile-hero__role-pill" id="heroRolePill" hidden>Artist</span></p>
+                    <div class="profile-hero__disciplines" id="heroDisciplines"></div>
+                    <h1 class="profile-hero__name" id="heroName"><span style="opacity:0.6;">Your name</span></h1>
+                </div>
+            </div>
+        </section>
+
+        <!-- Edit form under the hero -->
+        <div class="profile-form-card">
+            <h2>Edit profile</h2>
+            <p class="profile-form-card__sub">Everything you change here updates the hero above and your public <a href="#" id="viewPublicProfileLink2" style="color:#FFFFFF;" hidden>/u/ page</a>.</p>
+
+            <form id="profileForm">
+                <div class="profile-fields">
+                    <div class="profile-field">
+                        <label for="profile-forename">First name</label>
+                        <input id="profile-forename" type="text" autocomplete="given-name" required data-help="Your first name — rendered in bold everywhere your name appears.">
                     </div>
 
-                    <div class="profile-fields">
-                        <div class="profile-field">
-                            <label for="profile-forename">First name</label>
-                            <input id="profile-forename" type="text" autocomplete="given-name" required data-help="Your first name — rendered in bold everywhere your name appears.">
-                        </div>
+                    <div class="profile-field">
+                        <label for="profile-surname">Last name</label>
+                        <input id="profile-surname" type="text" autocomplete="family-name" required data-help="Your surname — rendered in lighter weight next to your first name.">
+                    </div>
 
-                        <div class="profile-field">
-                            <label for="profile-surname">Last name</label>
-                            <input id="profile-surname" type="text" autocomplete="family-name" required data-help="Your surname — rendered in lighter weight next to your first name.">
-                        </div>
+                    <div class="profile-field">
+                        <label for="profile-username">Username</label>
+                        <input id="profile-username" type="text" autocomplete="username" placeholder="lowercase letters, numbers, _ or - (3-30 chars)" pattern="[a-z0-9][a-z0-9_-]{2,29}" data-help="Your @-handle and public profile URL slug (stagecord.com/u/your-handle). Lowercase letters, digits, underscore and hyphen only. 3–30 chars.">
+                        <span class="profile-field__hint" id="usernameHint">Used for your shareable profile URL. Lowercase only.</span>
+                    </div>
 
-                        <div class="profile-field">
-                            <label for="profile-username">Username</label>
-                            <input id="profile-username" type="text" autocomplete="username" placeholder="lowercase letters, numbers, _ or - (3-30 chars)" pattern="[a-z0-9][a-z0-9_-]{2,29}" data-help="Your @-handle and public profile URL slug (stagecord.com/u/your-handle). Lowercase letters, digits, underscore and hyphen only. 3–30 chars.">
-                            <span class="profile-field__hint" id="usernameHint">Used for your shareable profile URL. Lowercase only.</span>
-                        </div>
+                    <div class="profile-field" id="profile-disciplines-field" hidden>
+                        <label>What kind of artist are you?</label>
+                        <div class="discipline-chips" id="profile-disciplines-chips" data-help="Pick one or more disciplines that describe what you do. Shown on your public profile and used to match you to collaborator searches."></div>
+                        <span class="profile-field__hint">Pick as many as fit. You can change these any time.</span>
+                    </div>
 
-                        <div class="profile-field" id="profile-disciplines-field" hidden>
-                            <label>What kind of artist are you?</label>
-                            <div class="discipline-chips" id="profile-disciplines-chips" data-help="Pick one or more disciplines that describe what you do. Shown on your public profile and used to match you to collaborator searches."></div>
-                            <span class="profile-field__hint">Pick as many as fit. You can change these any time.</span>
-                        </div>
-
-                        <div class="profile-field">
-                            <label for="profile-bio">Bio</label>
-                            <textarea id="profile-bio" placeholder="A short line about you — optional, shown on your public profile." data-help="Optional one-paragraph bio — shown on your public /u/ page below your name. Good place for genre, location, link to a portfolio."></textarea>
-                        </div>
+                    <div class="profile-field">
+                        <label for="profile-bio">Bio</label>
+                        <textarea id="profile-bio" placeholder="A short line about you — optional, shown on your public profile." data-help="Optional one-paragraph bio — shown on your public /u/ page below your name. Good place for genre, location, link to a portfolio."></textarea>
                     </div>
                 </div>
 

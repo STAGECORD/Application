@@ -32,6 +32,7 @@
                     selectedDisciplines.add(slug);
                     btn.classList.add('is-on');
                 }
+                renderHeroPreview();
             });
         });
     }
@@ -43,11 +44,12 @@
     const usernameHint = document.getElementById('usernameHint');
 
     const avatar = document.getElementById('avatarTrigger');
+    const avatarPreviewEl = document.getElementById('avatarPreview');
     const avatarInput = document.getElementById('avatarInput');
     const avatarPlaceholder = document.getElementById('avatarPlaceholder');
     const avatarOverlay = document.getElementById('avatarOverlay');
     const removeAvatarBtn = document.getElementById('removeAvatarBtn');
-    const avatarWrap = avatar?.parentElement;
+    const avatarWrap = document.getElementById('profileAvatarWrap') || avatar?.parentElement;
 
     const coverWrap = document.getElementById('coverWrap');
     const coverTrigger = document.getElementById('coverTrigger');
@@ -55,6 +57,12 @@
     const coverPlaceholder = document.getElementById('coverPlaceholder');
     const coverOverlay = document.getElementById('coverOverlay');
     const coverRemoveBtn = document.getElementById('coverRemove');
+
+    const heroUsername = document.getElementById('heroUsername');
+    const heroRolePill = document.getElementById('heroRolePill');
+    const heroDisciplines = document.getElementById('heroDisciplines');
+    const heroName = document.getElementById('heroName');
+    const viewPublicProfileLink2 = document.getElementById('viewPublicProfileLink2');
 
     const signOutBtn = document.getElementById('signOutBtn');
 
@@ -68,13 +76,14 @@
     }
 
     function setAvatarPreview(url) {
+        const target = avatarPreviewEl || avatar;
         if (url) {
-            avatar.style.backgroundImage = `url("${url}")`;
+            target.style.backgroundImage = `url("${url}")`;
             avatarPlaceholder.style.display = 'none';
-            if (avatarOverlay) avatarOverlay.textContent = 'Change photo';
+            if (avatarOverlay) avatarOverlay.textContent = 'Change';
             if (avatarWrap) avatarWrap.classList.add('has-photo');
         } else {
-            avatar.style.backgroundImage = '';
+            target.style.backgroundImage = '';
             avatarPlaceholder.style.display = '';
             if (avatarOverlay) avatarOverlay.textContent = 'Add photo';
             if (avatarWrap) avatarWrap.classList.remove('has-photo');
@@ -104,17 +113,68 @@
     }
 
     function setCoverPreview(url) {
-        if (!coverTrigger) return;
+        if (!coverWrap) return;
         if (url) {
-            coverTrigger.style.backgroundImage = `url("${url}")`;
-            coverPlaceholder.style.display = 'none';
-            if (coverOverlay) coverOverlay.textContent = 'Change cover';
-            if (coverWrap) coverWrap.classList.add('has-cover');
+            coverWrap.style.backgroundImage = `url("${url}")`;
+            if (coverPlaceholder) coverPlaceholder.style.display = 'none';
+            if (coverOverlay) coverOverlay.textContent = 'Click to change cover';
+            coverWrap.classList.add('has-cover');
+            coverWrap.classList.remove('profile-hero--no-cover');
         } else {
-            coverTrigger.style.backgroundImage = '';
-            coverPlaceholder.style.display = '';
-            if (coverOverlay) coverOverlay.textContent = 'Add cover photo';
-            if (coverWrap) coverWrap.classList.remove('has-cover');
+            coverWrap.style.backgroundImage = '';
+            if (coverPlaceholder) coverPlaceholder.style.display = '';
+            if (coverOverlay) coverOverlay.textContent = 'Click to add cover';
+            coverWrap.classList.remove('has-cover');
+            coverWrap.classList.add('profile-hero--no-cover');
+        }
+    }
+
+    function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, (c) => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[c]));
+    }
+
+    function renderHeroPreview() {
+        // Username
+        if (heroUsername) {
+            const u = (userInput?.value || '').trim();
+            heroUsername.textContent = u || 'your-handle';
+        }
+        // Role pill — uses loadedRole (loaded from DB; lives on /settings/ now)
+        if (heroRolePill) {
+            if (loadedRole === 'artist') {
+                heroRolePill.textContent = 'Artist';
+                heroRolePill.hidden = false;
+            } else if (loadedRole === 'fan') {
+                heroRolePill.textContent = 'Fan';
+                heroRolePill.hidden = false;
+            } else {
+                heroRolePill.hidden = true;
+            }
+        }
+        // Disciplines (only show if artist)
+        if (heroDisciplines) {
+            if (loadedRole === 'artist' && selectedDisciplines.size > 0) {
+                const labelFn = window.STAGECORD?.labelForDiscipline || ((s) => s);
+                heroDisciplines.innerHTML = Array.from(selectedDisciplines)
+                    .map((s) => `<span class="profile-hero__discipline-tag">${escapeHtml(labelFn(s))}</span>`)
+                    .join('');
+            } else {
+                heroDisciplines.innerHTML = '';
+            }
+        }
+        // Name (forename bold + uppercase, surname light + uppercase)
+        if (heroName) {
+            const fore = (foreInput?.value || '').trim();
+            const sur = (surInput?.value || '').trim();
+            if (!fore && !sur) {
+                heroName.innerHTML = '<span style="opacity:0.6;">Your name</span>';
+            } else {
+                const foreUC = fore.toUpperCase();
+                const surUC = sur.toUpperCase();
+                heroName.innerHTML = `<strong>${escapeHtml(foreUC)}</strong>${surUC ? ` <span class="profile-hero__name-light">${escapeHtml(surUC)}</span>` : ''}`;
+            }
         }
     }
 
@@ -158,18 +218,33 @@
         selectedDisciplines = new Set(initialDisciplines);
         renderDisciplineChips();
         toggleDisciplinesVisibility();
+        renderHeroPreview();
     }
 
     function updatePublicProfileLink(username) {
         const link = document.getElementById('viewPublicProfileLink');
-        if (!link) return;
-        if (username) {
-            link.href = `/u/${encodeURIComponent(username)}`;
-            link.style.display = '';
-        } else {
-            link.style.display = 'none';
+        if (link) {
+            if (username) {
+                link.href = `/u/${encodeURIComponent(username)}`;
+                link.style.display = '';
+            } else {
+                link.style.display = 'none';
+            }
+        }
+        if (viewPublicProfileLink2) {
+            if (username) {
+                viewPublicProfileLink2.href = `/u/${encodeURIComponent(username)}`;
+                viewPublicProfileLink2.hidden = false;
+            } else {
+                viewPublicProfileLink2.hidden = true;
+            }
         }
     }
+
+    // Live hero preview when typing in name / surname / username fields
+    [foreInput, surInput, userInput].forEach((el) => {
+        if (el) el.addEventListener('input', renderHeroPreview);
+    });
 
     userInput.addEventListener('input', () => {
         const before = userInput.value;
@@ -313,6 +388,7 @@
         setCoverPreview(originalCoverUrl);
         const v = validateUsername(userInput.value);
         setUsernameHint(v.msg, v.ok ? null : 'error');
+        renderHeroPreview();
         setFeedback('Changes discarded.', null);
     });
 
@@ -440,6 +516,7 @@
         avatarInput.value = '';
         coverInput.value = '';
         updatePublicProfileLink(username);
+        renderHeroPreview();
         setFeedback('Saved ✓', 'success');
     });
 
