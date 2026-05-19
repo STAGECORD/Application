@@ -17,7 +17,7 @@ export default async function handler(req, res) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const fetchRes = await fetch(`${SUPABASE_URL}/rest/v1/waitlist?select=id,name,email,role,created_at,invite_sent_at,invite_used_at&order=created_at.desc`, {
+    const fetchRes = await fetch(`${SUPABASE_URL}/rest/v1/waitlist?select=id,name,email,role,disciplines,created_at,invite_sent_at,invite_used_at&order=created_at.desc`, {
         headers: {
             'apikey': serviceKey,
             'Authorization': `Bearer ${serviceKey}`

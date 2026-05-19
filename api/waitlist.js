@@ -3,6 +3,12 @@ const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_Q3FwltyNkd42CJ7gJ8meoA_txr9jqEW
 const FROM_EMAIL = 'STAGECORD <noreply@stagecord.com>';
 
 const ALLOWED_ROLES = ['artist', 'fan'];
+const ALLOWED_DISCIPLINES = new Set([
+    'vocalist', 'songwriter', 'composer', 'producer', 'dj-beatmaker',
+    'guitarist', 'bassist', 'drummer', 'pianist', 'multi-instrumentalist',
+    'dancer', 'choreographer', 'comedian', 'podcaster',
+    'visual-artist', 'filmmaker', 'photographer'
+]);
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -21,6 +27,12 @@ export default async function handler(req, res) {
     const role = String(body.role || '').trim();
     const wantsUpdates = !!body.wantsUpdates;
     const website = String(body.website || '').trim();
+    const disciplinesRaw = Array.isArray(body.disciplines) ? body.disciplines : [];
+    const disciplines = role === 'artist'
+        ? Array.from(new Set(disciplinesRaw
+            .filter((s) => typeof s === 'string')
+            .filter((s) => ALLOWED_DISCIPLINES.has(s))))
+        : [];
 
     // Honeypot: hidden field that real users never see/fill. If it has any
     // value, the submission almost certainly comes from a form-scraping bot.
@@ -73,7 +85,7 @@ export default async function handler(req, res) {
             'Content-Type': 'application/json',
             'Prefer': 'return=minimal'
         },
-        body: JSON.stringify({ name, email, role, message })
+        body: JSON.stringify({ name, email, role, message, disciplines })
     });
 
     if (!insertRes.ok) {

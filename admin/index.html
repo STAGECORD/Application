@@ -30,6 +30,12 @@
         .admin-btn--danger { background: transparent; color: #FF6B6B; border: 1px solid rgba(255,107,107,0.35); }
         .admin-btn--danger:hover:not(:disabled) { background: rgba(255,107,107,0.12); }
         .admin-table .row-actions { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap; }
+        .admin-table .row-disciplines { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+        .admin-table .row-discipline {
+            display: inline-block; padding: 1px 8px; border-radius: 999px;
+            background: rgba(56,134,252,0.16); color: #6FA8FF;
+            font-size: 10px; letter-spacing: 0.02em;
+        }
         .admin-row { display: flex; gap: 10px; align-items: center; margin-top: 12px; flex-wrap: wrap; }
         .admin-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
         .admin-table th, .admin-table td { padding: 10px 8px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06); color: #D1D6E0; }
@@ -90,6 +96,7 @@
         </div>
     </main>
 
+    <script src="../js/disciplines.js"></script>
     <script>
     (function () {
         const SECRET_KEY = 'stagecord_admin_secret';
@@ -142,6 +149,18 @@
             return r === 'artist' ? 'Artist' : (r === 'fan' ? 'Fan' : r);
         }
 
+        function escapeHtml(s) {
+            return String(s).replace(/[<>&"']/g, (c) => ({
+                '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;'
+            }[c]));
+        }
+
+        function fmtDisciplines(slugs) {
+            if (!Array.isArray(slugs) || slugs.length === 0) return '';
+            const labelFn = window.STAGECORD?.labelForDiscipline || ((s) => s);
+            return `<div class="row-disciplines">${slugs.map((s) => `<span class="row-discipline">${escapeHtml(labelFn(s))}</span>`).join('')}</div>`;
+        }
+
         function renderList(rows) {
             if (!rows || rows.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5">Waitlist is empty.</td></tr>';
@@ -165,7 +184,7 @@
                 return `<tr class="${row.invite_used_at ? 'is-used' : ''}">
                     <td>${name}</td>
                     <td>${email}</td>
-                    <td>${fmtRole(row.role)}</td>
+                    <td>${fmtRole(row.role)}${fmtDisciplines(row.disciplines)}</td>
                     <td>${status}</td>
                     <td><div class="row-actions">${sendBtn}${deleteBtn}</div></td>
                 </tr>`;

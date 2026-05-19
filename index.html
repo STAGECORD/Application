@@ -93,6 +93,12 @@
                         </div>
                     </fieldset>
 
+                    <div class="start-field" id="waitlist-disciplines-field" hidden>
+                        <span class="start-field__label">What kind of artist are you?</span>
+                        <div class="discipline-chips" id="waitlist-disciplines-chips"></div>
+                        <span class="start-field__hint">Pick as many as fit. Helps us prioritize invites by what creators we're rolling out access to next.</span>
+                    </div>
+
                     <label class="start-field start-field--check">
                         <input type="checkbox" name="updates">
                         <span>Send me product updates and news while I wait.</span>
@@ -191,6 +197,7 @@
         window.onTurnstileError = () => { window.turnstileToken = ''; };
     </script>
     <script src="js/supabase.js"></script>
+    <script src="js/disciplines.js"></script>
     <script src="js/waitlist.js"></script>
 </body>
 </html>

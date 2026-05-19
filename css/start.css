@@ -409,6 +409,22 @@
     color: rgba(255, 255, 255, 0.6);
 }
 
+.discipline-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.discipline-chip {
+    display: inline-flex; align-items: center;
+    padding: 7px 14px; border-radius: 999px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.14);
+    color: #D1D6E0; font-size: 13px; font-family: inherit;
+    cursor: pointer; transition: background 0.15s, border-color 0.15s, color 0.15s;
+    user-select: none;
+}
+.discipline-chip:hover { border-color: rgba(255,255,255,0.32); color: #FFFFFF; }
+.discipline-chip.is-on {
+    background: #FFFFFF; color: #0B0B0F; border-color: #FFFFFF;
+    font-weight: 600;
+}
+
 .start-field__hint {
     font-size: 10px;
     font-weight: 500;

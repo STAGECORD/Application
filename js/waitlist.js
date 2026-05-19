@@ -5,6 +5,40 @@
     const submitBtn = document.getElementById('waitlistSubmit') || form.querySelector('button[type="submit"]');
     const feedback = document.getElementById('waitlistFeedback');
     const countEl = document.getElementById('waitlistCount');
+    const disciplinesField = document.getElementById('waitlist-disciplines-field');
+    const disciplinesChips = document.getElementById('waitlist-disciplines-chips');
+
+    const selectedDisciplines = new Set();
+
+    function renderDisciplineChips() {
+        if (!disciplinesChips || !window.STAGECORD?.DISCIPLINES) return;
+        disciplinesChips.innerHTML = window.STAGECORD.DISCIPLINES.map((d) => {
+            const on = selectedDisciplines.has(d.slug) ? ' is-on' : '';
+            return `<button type="button" class="discipline-chip${on}" data-slug="${d.slug}">${d.label}</button>`;
+        }).join('');
+        disciplinesChips.querySelectorAll('[data-slug]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const slug = btn.getAttribute('data-slug');
+                if (selectedDisciplines.has(slug)) {
+                    selectedDisciplines.delete(slug);
+                    btn.classList.remove('is-on');
+                } else {
+                    selectedDisciplines.add(slug);
+                    btn.classList.add('is-on');
+                }
+            });
+        });
+    }
+    renderDisciplineChips();
+
+    function toggleDisciplines() {
+        if (!disciplinesField) return;
+        const role = (form.querySelector('input[name="role"]:checked')?.value) || '';
+        disciplinesField.hidden = role !== 'artist';
+    }
+    Array.from(form.querySelectorAll('input[name="role"]')).forEach((r) => {
+        r.addEventListener('change', toggleDisciplines);
+    });
 
     function setFeedback(message, kind) {
         if (!feedback) return;
@@ -57,6 +91,9 @@
         const role = getRole();
         const wantsUpdates = !!(form.elements['updates']?.checked);
         const website = (form.elements['website']?.value || '').trim();
+        const disciplines = role === 'artist'
+            ? (window.STAGECORD?.sanitizeDisciplines?.(Array.from(selectedDisciplines)) || [])
+            : [];
 
         if (!name || !email || !role) {
             setFeedback('Please fill in name, email and role.', 'error');
@@ -72,7 +109,7 @@
             response = await fetch('/api/waitlist', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email, role, wantsUpdates, website, turnstileToken: window.turnstileToken || '' })
+                body: JSON.stringify({ name, email, role, wantsUpdates, website, disciplines, turnstileToken: window.turnstileToken || '' })
             });
             data = await response.json().catch(() => ({}));
         } catch (err) {
@@ -95,6 +132,9 @@
             submitBtn.textContent = "You're already on the list ✓";
             setFeedback("You're already on the list — we'll be in touch.", 'success');
             form.reset();
+            selectedDisciplines.clear();
+            renderDisciplineChips();
+            toggleDisciplines();
             return;
         }
 
@@ -104,6 +144,9 @@
             : "You're on the list! We'll email you when your invite is ready.";
         setFeedback(confirmText, 'success');
         form.reset();
+        selectedDisciplines.clear();
+        renderDisciplineChips();
+        toggleDisciplines();
 
         if (countEl) {
             const current = parseInt((countEl.textContent || '0').replace(/,/g, ''), 10) || 0;
