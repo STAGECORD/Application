@@ -88,7 +88,7 @@ window.STAGECORD_Comments = (function () {
                 }
 
                 composer.innerHTML = `
-                    <input type="text" class="cm-composer__input" placeholder="Write a reply…" maxlength="500">
+                    <input type="text" class="cm-composer__input" placeholder="Write a reply…" maxlength="50000">
                     <button type="button" class="emoji-trigger cm-composer__emoji" aria-label="Insert emoji">😊</button>
                     <button type="button" class="cm-composer__btn" disabled>Reply</button>
                 `;
@@ -194,7 +194,7 @@ window.STAGECORD_Comments = (function () {
 
         const composerHtml = currentUserId
             ? `<div class="cm-composer">
-                <input type="text" class="cm-composer__input" placeholder="Write a comment…" maxlength="500">
+                <input type="text" class="cm-composer__input" placeholder="Write a comment…" maxlength="50000">
                 <button type="button" class="emoji-trigger cm-composer__emoji" aria-label="Insert emoji">😊</button>
                 <button type="button" class="cm-composer__btn" disabled>Post</button>
             </div>`

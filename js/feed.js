@@ -91,12 +91,12 @@
     function updateComposerState() {
         const v = composerInput.value;
         const len = v.length;
-        composerCounter.textContent = `${len} / 1000`;
-        composerCounter.classList.toggle('is-warning', len > 800 && len <= 1000);
-        composerCounter.classList.toggle('is-error', len > 1000);
+        composerCounter.textContent = `${len.toLocaleString('en-US')} / 50,000`;
+        composerCounter.classList.toggle('is-warning', len > 45000 && len <= 50000);
+        composerCounter.classList.toggle('is-error', len > 50000);
         const trimmed = v.trim();
         const hasImage = !!pendingImageFile;
-        composerSubmit.disabled = (trimmed.length === 0 && !hasImage) || trimmed.length > 1000;
+        composerSubmit.disabled = (trimmed.length === 0 && !hasImage) || trimmed.length > 50000;
     }
 
     function setPendingImage(file) {
