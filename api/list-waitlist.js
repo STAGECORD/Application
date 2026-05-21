@@ -17,7 +17,14 @@ export default async function handler(req, res) {
         return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const fetchRes = await fetch(`${SUPABASE_URL}/rest/v1/waitlist?select=id,name,email,role,disciplines,created_at,invite_sent_at,invite_used_at&order=created_at.desc`, {
+    const url = new URL(req.url, `http://${req.headers.host || 'x'}`);
+    const includeDeleted = url.searchParams.get('include_deleted') === 'true';
+
+    const baseSelect = 'select=id,name,email,role,disciplines,created_at,invite_sent_at,invite_used_at,deleted_at';
+    const filter = includeDeleted ? '' : '&deleted_at=is.null';
+    const fetchUrl = `${SUPABASE_URL}/rest/v1/waitlist?${baseSelect}${filter}&order=created_at.desc`;
+
+    const fetchRes = await fetch(fetchUrl, {
         headers: {
             'apikey': serviceKey,
             'Authorization': `Bearer ${serviceKey}`

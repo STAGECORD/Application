@@ -1,8 +1,8 @@
 const SUPABASE_URL = 'https://jkleiomqhmrnpsflyuoz.supabase.co';
 
 export default async function handler(req, res) {
-    if (req.method !== 'POST' && req.method !== 'DELETE') {
-        res.setHeader('Allow', 'POST, DELETE');
+    if (req.method !== 'POST') {
+        res.setHeader('Allow', 'POST');
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
@@ -28,8 +28,6 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Missing email' });
     }
 
-    // Soft-delete: stamp deleted_at instead of removing the row.
-    // /api/restore-waitlist can clear it back to null.
     const url = `${SUPABASE_URL}/rest/v1/waitlist?email=eq.${encodeURIComponent(email)}`;
     const updateRes = await fetch(url, {
         method: 'PATCH',
@@ -39,15 +37,15 @@ export default async function handler(req, res) {
             'Content-Type': 'application/json',
             'Prefer': 'return=representation'
         },
-        body: JSON.stringify({ deleted_at: new Date().toISOString() })
+        body: JSON.stringify({ deleted_at: null })
     });
 
     if (!updateRes.ok) {
         const errText = await updateRes.text().catch(() => '');
-        console.error('delete-waitlist (soft) failed:', updateRes.status, errText.slice(0, 400));
-        return res.status(500).json({ error: 'Delete failed', status: updateRes.status, detail: errText.slice(0, 400) });
+        console.error('restore-waitlist failed:', updateRes.status, errText.slice(0, 400));
+        return res.status(500).json({ error: 'Restore failed', status: updateRes.status, detail: errText.slice(0, 400) });
     }
 
-    const updated = await updateRes.json().catch(() => []);
-    return res.status(200).json({ ok: true, soft_deleted: updated.length });
+    const restored = await updateRes.json().catch(() => []);
+    return res.status(200).json({ ok: true, restored: restored.length });
 }

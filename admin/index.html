@@ -30,6 +30,19 @@
         .admin-btn--danger { background: transparent; color: #FF6B6B; border: 1px solid rgba(255,107,107,0.35); }
         .admin-btn--danger:hover:not(:disabled) { background: rgba(255,107,107,0.12); }
         .admin-table .row-actions { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap; }
+        .admin-btn--restore {
+            background: rgba(0,169,17,0.18); color: #5CD66B;
+            border: 1px solid rgba(92,214,107,0.35);
+        }
+        .admin-btn--restore:hover { background: rgba(92,214,107,0.25); }
+        .admin-table tr.is-deleted td:not(:last-child) { color: #5A6480; text-decoration: line-through; opacity: 0.7; }
+        .admin-table tr.is-deleted td:last-child { opacity: 1; }
+        .admin-checkbox {
+            display: inline-flex; align-items: center; gap: 6px;
+            color: #D1D6E0; font-size: 13px; cursor: pointer;
+            user-select: none;
+        }
+        .admin-checkbox input { margin: 0; }
         .admin-table .row-disciplines { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
         .admin-table .row-discipline {
             display: inline-block; padding: 1px 8px; border-radius: 999px;
@@ -89,6 +102,10 @@
                     <option value="artist">Artists only</option>
                     <option value="fan">Fans only</option>
                 </select>
+                <label class="admin-checkbox" title="Include rows that have been soft-deleted. Click Restore on a deleted row to bring it back to the active list.">
+                    <input type="checkbox" id="showDeletedToggle">
+                    Show deleted
+                </label>
                 <span id="filterCount" style="color:#7E89A6;font-size:13px;"></span>
             </div>
             <table class="admin-table" id="waitlistTable">
@@ -160,6 +177,7 @@
         const searchInput = document.getElementById('searchInput');
         const disciplineFilter = document.getElementById('disciplineFilter');
         const roleFilter = document.getElementById('roleFilter');
+        const showDeletedToggle = document.getElementById('showDeletedToggle');
         const filterCount = document.getElementById('filterCount');
 
         let allRows = [];
@@ -196,7 +214,8 @@
             if (!secret) return;
             tbody.innerHTML = '<tr><td colspan="5">Loading…</td></tr>';
             try {
-                const res = await fetch('/api/list-waitlist', {
+                const includeDeleted = showDeletedToggle?.checked ? '?include_deleted=true' : '';
+                const res = await fetch('/api/list-waitlist' + includeDeleted, {
                     headers: { 'Authorization': `Bearer ${secret}` }
                 });
                 if (res.status === 401) {
@@ -272,26 +291,37 @@
                 return;
             }
             tbody.innerHTML = rows.map((row) => {
+                const isDeleted = !!row.deleted_at;
                 let status = '<span style="color:#7E89A6;">Pending</span>';
-                if (row.invite_used_at) {
+                if (isDeleted) {
+                    status = '<span class="badge" style="background:rgba(255,107,107,0.18);color:#FF9B9B;">Deleted</span>';
+                } else if (row.invite_used_at) {
                     status = '<span class="badge badge--used">Joined</span>';
                 } else if (row.invite_sent_at) {
                     status = '<span class="badge badge--sent">Invited</span>';
                 }
                 const name = row.name ? row.name.replace(/[<>&"']/g,(c)=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c])) : '';
                 const email = row.email.replace(/[<>&"']/g,(c)=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));
-                const sendBtn = row.invite_used_at
-                    ? ''
-                    : `<button class="admin-btn" data-send="${email}">${row.invite_sent_at ? 'Resend' : 'Send invite'}</button>`;
-                const deleteBtn = row.invite_used_at
-                    ? ''
-                    : `<button class="admin-btn admin-btn--danger" data-delete="${email}" title="Remove from waitlist">Delete</button>`;
-                return `<tr class="${row.invite_used_at ? 'is-used' : ''}">
+                let actions;
+                if (isDeleted) {
+                    actions = `<button class="admin-btn admin-btn--restore" data-restore="${email}" title="Restore to the active waitlist">Restore</button>`;
+                } else if (row.invite_used_at) {
+                    actions = '';
+                } else {
+                    const sendBtn = `<button class="admin-btn" data-send="${email}">${row.invite_sent_at ? 'Resend' : 'Send invite'}</button>`;
+                    const deleteBtn = `<button class="admin-btn admin-btn--danger" data-delete="${email}" title="Move to deleted list (can be restored)">Delete</button>`;
+                    actions = sendBtn + deleteBtn;
+                }
+                const rowClass = [
+                    row.invite_used_at ? 'is-used' : '',
+                    isDeleted ? 'is-deleted' : ''
+                ].filter(Boolean).join(' ');
+                return `<tr class="${rowClass}">
                     <td>${name}</td>
                     <td>${email}</td>
                     <td>${fmtRole(row.role)}${fmtDisciplines(row.disciplines)}</td>
                     <td>${status}</td>
-                    <td><div class="row-actions">${sendBtn}${deleteBtn}</div></td>
+                    <td><div class="row-actions">${actions}</div></td>
                 </tr>`;
             }).join('');
 
@@ -300,6 +330,9 @@
             });
             tbody.querySelectorAll('[data-delete]').forEach((btn) => {
                 btn.addEventListener('click', () => deleteEntry(btn.getAttribute('data-delete'), btn));
+            });
+            tbody.querySelectorAll('[data-restore]').forEach((btn) => {
+                btn.addEventListener('click', () => restoreEntry(btn.getAttribute('data-restore'), btn));
             });
         }
 
