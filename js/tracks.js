@@ -222,10 +222,12 @@
                     <button class="track__delete" data-delete-track="${escapeHtml(t.id)}" aria-label="Delete">×</button>
                 </header>
                 ${desc}
-                <audio controls preload="none" src="${escapeHtml(t.audio_url)}"></audio>
+                <div class="wf-player" data-audio-url="${escapeHtml(t.audio_url)}"></div>
                 <div class="track__actions"></div>
             </article>`;
         }).join('');
+
+        if (window.STAGECORD_Waveform) window.STAGECORD_Waveform.attachAll(listEl);
 
         rows.forEach((t) => {
             const trackEl = listEl.querySelector(`[data-track-id="${t.id}"]`);

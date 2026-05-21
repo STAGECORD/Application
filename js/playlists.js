@@ -172,7 +172,7 @@
                         <div class="pl-track__artist">${artistLink}${dur}</div>
                         ${removeBtn}
                     </header>
-                    <audio controls preload="none" src="${escapeHtml(t.audio_url)}"></audio>
+                    <div class="wf-player" data-audio-url="${escapeHtml(t.audio_url)}"></div>
                 </article>`;
             }).join('')
             : `<div class="pl-empty">No tracks in this playlist yet.${isOwner ? ' Add some from any artist\'s profile.' : ''}</div>`;
@@ -197,6 +197,7 @@
             </div>
             <div class="pl-tracks">${trackList}</div>
         `;
+        if (window.STAGECORD_Waveform) window.STAGECORD_Waveform.attachAll(content);
 
         document.title = `${p.name} · STAGECORD`;
 

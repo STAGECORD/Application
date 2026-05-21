@@ -117,13 +117,13 @@
                     <div class="signup-profile" data-help="Vælg et profilbillede — vises overalt på platformen hvor du optræder.">
                         <span class="signup-field__label">Profile picture</span>
                         <button type="button" class="signup-profile__btn" id="signupProfileBtn" aria-label="Upload profile picture">
-                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <svg id="signupProfileIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                 <path d="M9 3L7.5 5H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.5L15 3H9z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
                                 <circle cx="12" cy="13" r="4" stroke="currentColor" stroke-width="1.8"/>
                             </svg>
-                            <span>Upload</span>
-                            <input type="file" name="avatar" accept="image/*" hidden>
+                            <span id="signupProfileLabel">Upload</span>
                         </button>
+                        <input type="file" id="signupAvatarInput" name="avatar" accept="image/*" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;opacity:0;">
                     </div>
                 </div>
 

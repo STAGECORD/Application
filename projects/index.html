@@ -11,8 +11,9 @@
     <link rel="stylesheet" href="../css/app-shell.css">
     <link rel="stylesheet" href="../css/emoji-picker.css">
     <link rel="stylesheet" href="../css/sentence-suggest.css">
+    <link rel="stylesheet" href="../css/waveform-player.css">
     <style>
-        .pj-wrap { max-width: 1400px; margin: 0 auto; padding: 32px 24px 60px; }
+        .pj-wrap { max-width: none; margin: 0; padding: 32px 24px 60px; }
         .pj-rich-list { display: flex; flex-direction: column; gap: 24px; }
         .pj-rich-host { display: block; }
         .pj-head {
@@ -881,6 +882,19 @@
             border: 1px solid rgba(255,255,255,0.08);
             border-radius: 10px;
         }
+        .pj-file-row--with-wave {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0;
+        }
+        .pj-file-row--with-wave .pj-file-row__top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .pj-file-row--with-wave .wf-player {
+            margin-top: 10px;
+        }
         .pj-file-row__info { flex: 1; min-width: 0; }
         .pj-file-row__name {
             color: #FFFFFF; font-size: 13px; font-weight: 600;
@@ -1032,11 +1046,13 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/wavesurfer.js@7"></script>
     <script src="../js/supabase.js"></script>
     <script src="../js/format.js"></script>
     <script src="../js/app-shell.js"></script>
     <script src="../js/emoji-picker.js"></script>
     <script src="../js/sentence-suggest.js"></script>
+    <script src="../js/waveform-player.js"></script>
     <script src="../js/projects.js"></script>
 </body>
 </html>

@@ -387,7 +387,7 @@
                     <div class="pj-track__artist">${artistLink}${dur}</div>
                     ${removeBtn}
                 </header>
-                <audio controls preload="none" src="${escapeHtml(t.audio_url)}"></audio>
+                <div class="wf-player" data-audio-url="${escapeHtml(t.audio_url)}"></div>
             </article>`;
         }).join('') : `<div class="pj-empty">No tracks yet.${isMember ? ' Add yours from your /tracks/ page or your public profile.' : ''}</div>`;
 
@@ -517,6 +517,8 @@
                 ${p.description ? `<p class="pc-desc">${escapeHtml(p.description)}</p>` : ''}
             </div>
         `;
+
+        if (window.STAGECORD_Waveform) window.STAGECORD_Waveform.attachAll(host);
 
         // Wire actions
         const editBtn = document.getElementById(pid('editProjectBtn'));
@@ -705,6 +707,20 @@
                     const styled = F.formatName(f.uploader_forename, f.uploader_surname, f.uploader_username || 'Someone');
                     const date = new Date(f.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                     const sz = f.file_size ? (f.file_size > 1024 * 1024 ? `${(f.file_size / (1024 * 1024)).toFixed(1)} MB` : `${Math.round(f.file_size / 1024)} KB`) : '';
+                    const isAudio = /\.(wav|wave|mp3|m4a|aac|ogg|oga|flac)(\?|$)/i.test(f.file_name || '') || /\.(wav|wave|mp3|m4a|aac|ogg|oga|flac)(\?|$)/i.test(f.file_url || '');
+                    if (isAudio) {
+                        return `<div class="pj-file-row pj-file-row--with-wave">
+                            <div class="pj-file-row__top">
+                                <div class="pj-file-row__info">
+                                    <div class="pj-file-row__name">${escapeHtml(f.file_name)}</div>
+                                    <div class="pj-file-row__meta">By ${styled} · ${escapeHtml(date)}${sz ? ' · ' + escapeHtml(sz) : ''}</div>
+                                </div>
+                                <a class="pj-file-row__open" href="${escapeHtml(f.file_url)}" target="_blank" rel="noopener">Open</a>
+                                ${isMember ? `<button type="button" class="pj-file-row__del" data-file-del="${escapeHtml(f.id)}" data-file-path="${escapeHtml(f.file_path)}">Delete</button>` : ''}
+                            </div>
+                            <div class="wf-player" data-audio-url="${escapeHtml(f.file_url)}"></div>
+                        </div>`;
+                    }
                     return `<div class="pj-file-row">
                         <div class="pj-file-row__info">
                             <div class="pj-file-row__name">${escapeHtml(f.file_name)}</div>
@@ -714,6 +730,7 @@
                         ${isMember ? `<button type="button" class="pj-file-row__del" data-file-del="${escapeHtml(f.id)}" data-file-path="${escapeHtml(f.file_path)}">Delete</button>` : ''}
                     </div>`;
                 }).join('');
+                if (window.STAGECORD_Waveform) window.STAGECORD_Waveform.attachAll(list);
                 list.querySelectorAll('[data-file-del]').forEach((b) => {
                     b.addEventListener('click', async () => {
                         if (!confirm('Delete this file?')) return;

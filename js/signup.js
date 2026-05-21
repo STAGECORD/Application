@@ -9,6 +9,65 @@
     const disciplinesField = document.getElementById('signup-disciplines-field');
     const disciplinesChips = document.getElementById('signup-disciplines-chips');
 
+    const profileBtn = document.getElementById('signupProfileBtn');
+    const avatarInput = document.getElementById('signupAvatarInput');
+    const profileLabel = document.getElementById('signupProfileLabel');
+    const profileIcon = document.getElementById('signupProfileIcon');
+    let pendingAvatarDataUrl = null;
+
+    if (profileBtn && avatarInput) {
+        profileBtn.addEventListener('click', () => avatarInput.click());
+        avatarInput.addEventListener('change', async () => {
+            const file = avatarInput.files?.[0];
+            if (!file) return;
+            if (!/^image\//.test(file.type)) {
+                setFeedback('Please pick a JPG, PNG or WebP image.', 'error');
+                avatarInput.value = '';
+                return;
+            }
+            if (file.size > 10 * 1024 * 1024) {
+                setFeedback('Image is over 10 MB — pick a smaller one.', 'error');
+                avatarInput.value = '';
+                return;
+            }
+            try {
+                pendingAvatarDataUrl = await resizeImageToDataUrl(file, 512);
+                profileBtn.style.backgroundImage = `url("${pendingAvatarDataUrl}")`;
+                if (profileIcon) profileIcon.style.display = 'none';
+                if (profileLabel) profileLabel.textContent = 'Change';
+            } catch (err) {
+                console.error('Image resize failed:', err);
+                setFeedback('Could not read that image — try another.', 'error');
+                pendingAvatarDataUrl = null;
+                avatarInput.value = '';
+            }
+        });
+    }
+
+    function resizeImageToDataUrl(file, maxDim) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onerror = () => reject(reader.error);
+            reader.onload = () => {
+                const img = new Image();
+                img.onerror = () => reject(new Error('decode_failed'));
+                img.onload = () => {
+                    const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+                    const w = Math.round(img.width * scale);
+                    const h = Math.round(img.height * scale);
+                    const canvas = document.createElement('canvas');
+                    canvas.width = w;
+                    canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+                    resolve(canvas.toDataURL('image/jpeg', 0.85));
+                };
+                img.src = reader.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
     const selectedDisciplines = new Set();
 
     function renderDisciplineChips() {
@@ -178,6 +237,15 @@
         }
 
         await sb.rpc('mark_invite_used', { p_token: token }).catch(() => {});
+
+        if (pendingAvatarDataUrl) {
+            try {
+                localStorage.setItem('stagecord_pending_avatar', pendingAvatarDataUrl);
+                localStorage.setItem('stagecord_pending_avatar_email', email);
+            } catch (err) {
+                console.warn('Could not stash pending avatar:', err);
+            }
+        }
 
         const target = `/check-email/?email=${encodeURIComponent(email)}`;
         window.location.href = target;

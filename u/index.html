@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../css/app-shell.css">
     <link rel="stylesheet" href="../css/emoji-picker.css">
     <link rel="stylesheet" href="../css/sentence-suggest.css">
+    <link rel="stylesheet" href="../css/waveform-player.css">
     <style>
         /* =====================================================
            Public profile page — mirrors the /artist/ demo
@@ -533,6 +534,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/wavesurfer.js@7"></script>
     <script src="../js/supabase.js"></script>
     <script src="../js/format.js"></script>
     <script src="../js/disciplines.js"></script>
@@ -542,6 +544,7 @@
     <script src="../js/likes.js"></script>
     <script src="../js/add-to-playlist.js"></script>
     <script src="../js/comments.js"></script>
+    <script src="../js/waveform-player.js"></script>
     <script>
     (async function () {
         const sb = window.supabaseClient;
@@ -895,10 +898,11 @@
                         <span class="pp-track__time">${escapeHtml(timeAgo(t.created_at))}${dur}</span>
                     </header>
                     ${desc}
-                    <audio controls preload="none" src="${escapeHtml(t.audio_url)}"></audio>
+                    <div class="wf-player" data-audio-url="${escapeHtml(t.audio_url)}"></div>
                     <div class="pp-actions"></div>
                 </article>`;
             }).join('');
+            if (window.STAGECORD_Waveform) window.STAGECORD_Waveform.attachAll(tracksList);
             const trackViewerId = session?.user?.id || null;
             trks.forEach((t) => {
                 const trackEl = tracksList.querySelector(`[data-track-id="${t.id}"]`);

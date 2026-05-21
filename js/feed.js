@@ -69,6 +69,40 @@
         initialEl.textContent = initial;
     }
 
+    if (!profile?.avatar_url) {
+        const pendingAvatar = localStorage.getItem('stagecord_pending_avatar');
+        const pendingEmail = localStorage.getItem('stagecord_pending_avatar_email');
+        if (pendingAvatar && (!pendingEmail || pendingEmail.toLowerCase() === (user.email || '').toLowerCase())) {
+            try {
+                const blob = await (await fetch(pendingAvatar)).blob();
+                const path = `${user.id}/avatar-${Date.now()}.jpg`;
+                const { error: upErr } = await sb.storage
+                    .from('avatars')
+                    .upload(path, blob, { cacheControl: '3600', upsert: false, contentType: 'image/jpeg' });
+                if (upErr) {
+                    console.warn('Pending avatar upload failed:', upErr);
+                } else {
+                    const { data: pub } = sb.storage.from('avatars').getPublicUrl(path);
+                    const { error: updErr } = await sb
+                        .from('profiles')
+                        .update({ avatar_url: pub.publicUrl, updated_at: new Date().toISOString() })
+                        .eq('id', user.id);
+                    if (updErr) {
+                        console.warn('Failed to save avatar_url:', updErr);
+                    } else {
+                        avatarEl.style.backgroundImage = `url("${pub.publicUrl}")`;
+                        initialEl.style.display = 'none';
+                    }
+                }
+            } catch (err) {
+                console.warn('Pending avatar restore failed:', err);
+            } finally {
+                localStorage.removeItem('stagecord_pending_avatar');
+                localStorage.removeItem('stagecord_pending_avatar_email');
+            }
+        }
+    }
+
     const composerInput = document.getElementById('composerInput');
     const composerSubmit = document.getElementById('composerSubmit');
     const composerCounter = document.getElementById('composerCounter');
