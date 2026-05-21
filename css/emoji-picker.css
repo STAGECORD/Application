@@ -26,6 +26,46 @@
     border-color: rgba(255, 255, 255, 0.32);
 }
 
+/* ---------- Floating emoji trigger (auto-attached to textareas + opted-in inputs) ---------- */
+.emoji-field-wrap {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    box-sizing: border-box;
+}
+.emoji-field-wrap--block {
+    display: block;
+}
+.emoji-trigger--floating {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    background: rgba(0, 0, 0, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #FFFFFF;
+    font-size: 16px;
+    z-index: 5;
+    opacity: 0.75;
+    transition: opacity 0.15s, background 0.15s, border-color 0.15s;
+}
+.emoji-field-wrap:hover .emoji-trigger--floating,
+.emoji-field-wrap:focus-within .emoji-trigger--floating,
+.emoji-trigger--floating:hover,
+.emoji-trigger--floating[aria-expanded="true"] {
+    opacity: 1;
+}
+.emoji-trigger--floating:hover {
+    background: rgba(0, 0, 0, 0.75);
+    border-color: rgba(255, 255, 255, 0.32);
+}
+.emoji-trigger--floating[aria-expanded="true"] {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 255, 0.45);
+}
+
 /* ---------- Picker popover ---------- */
 .emoji-popover {
     position: absolute;

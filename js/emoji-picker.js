@@ -133,10 +133,89 @@
         });
     }
 
+    /* ---------- Auto-attach: wrap any [data-emoji-picker] or <textarea> with a floating 😊 button ---------- */
+
+    const AUTO_SKIP_TYPES = new Set(['password', 'email', 'tel', 'url', 'search', 'number', 'date', 'time', 'datetime-local', 'month', 'week', 'color', 'hidden', 'file']);
+
+    function shouldAutoAttach(el) {
+        if (!el || el.dataset.emojiAttached === '1') return false;
+        if (el.disabled || el.readOnly) return false;
+        if (el.hasAttribute('data-no-emoji')) return false;
+        const tag = el.tagName;
+        if (tag === 'TEXTAREA') return true;
+        if (tag === 'INPUT') {
+            if (el.hasAttribute('data-emoji-picker')) {
+                const type = (el.getAttribute('type') || 'text').toLowerCase();
+                return !AUTO_SKIP_TYPES.has(type);
+            }
+            return false;
+        }
+        return false;
+    }
+
+    function attachFloating(field) {
+        if (!shouldAutoAttach(field)) return;
+        field.dataset.emojiAttached = '1';
+
+        // Wrap the field in a relatively-positioned span/div so the button can be
+        // absolutely positioned over its bottom-right corner. Block for textareas,
+        // inline-block for inputs so existing flex layouts aren't disturbed too much.
+        const isTextarea = field.tagName === 'TEXTAREA';
+        const wrap = document.createElement('span');
+        wrap.className = 'emoji-field-wrap' + (isTextarea ? ' emoji-field-wrap--block' : '');
+        field.parentNode.insertBefore(wrap, field);
+        wrap.appendChild(field);
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'emoji-trigger emoji-trigger--floating';
+        btn.setAttribute('aria-label', 'Insert emoji');
+        btn.setAttribute('aria-haspopup', 'dialog');
+        btn.setAttribute('aria-expanded', 'false');
+        btn.title = 'Insert emoji';
+        btn.innerHTML = '<span aria-hidden="true">😊</span>';
+        wrap.appendChild(btn);
+
+        attach(btn, field);
+    }
+
+    function scan(root) {
+        const node = root || document;
+        // Textareas (auto-included unless opted out)
+        node.querySelectorAll('textarea').forEach(attachFloating);
+        // Inputs that explicitly opt in
+        node.querySelectorAll('input[data-emoji-picker]').forEach(attachFloating);
+    }
+
+    function startAutoAttach() {
+        scan(document);
+        const obs = new MutationObserver((muts) => {
+            for (const m of muts) {
+                m.addedNodes.forEach((n) => {
+                    if (!(n instanceof Element)) return;
+                    if (n.matches?.('textarea') || (n.matches?.('input') && n.hasAttribute('data-emoji-picker'))) {
+                        attachFloating(n);
+                    } else {
+                        scan(n);
+                    }
+                });
+            }
+        });
+        obs.observe(document.body, { childList: true, subtree: true });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', startAutoAttach);
+    } else {
+        startAutoAttach();
+    }
+
     window.STAGECORD = window.STAGECORD || {};
     window.STAGECORD.EmojiPicker = {
         attach,
         makeTriggerButton,
-        close
+        close,
+        scan,
+        attachFloating
     };
 })();
