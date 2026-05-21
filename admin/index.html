@@ -298,7 +298,7 @@
                 } else if (row.invite_used_at) {
                     status = '<span class="badge badge--used">Joined</span>';
                 } else if (row.invite_sent_at) {
-                    status = '<span class="badge badge--sent">Invite sent</span>';
+                    status = '<span class="badge badge--sent">Invited</span>';
                 }
                 const name = row.name ? row.name.replace(/[<>&"']/g,(c)=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c])) : '';
                 const email = row.email.replace(/[<>&"']/g,(c)=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));
