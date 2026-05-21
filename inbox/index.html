@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../css/logo.css">
     <link rel="stylesheet" href="../css/start.css">
     <link rel="stylesheet" href="../css/app-shell.css">
+    <link rel="stylesheet" href="../css/emoji-picker.css">
     <style>
         .inbox-page { max-width: 1080px; margin: 0 auto; padding: 24px 24px 60px; }
         .inbox-grid {
@@ -258,6 +259,7 @@
                 </div>
                 <form id="composerForm" class="inbox-thread__composer" hidden>
                     <input type="text" class="inbox-thread__input" id="composerInput" placeholder="Type a message…" maxlength="2000" autocomplete="off" data-help="Message text — up to 2000 characters. Press Enter or click Send to deliver. The recipient gets a notification.">
+                    <button type="button" class="emoji-trigger" id="composerEmojiBtn" aria-label="Insert emoji" data-help="Open emoji picker to insert an emoji into your message at the cursor.">😊</button>
                     <button type="submit" class="inbox-thread__send" id="composerSend" disabled data-help="Send the message. The recipient is notified instantly and the thread bumps to the top of their inbox.">Send</button>
                 </form>
             </section>
@@ -283,6 +285,7 @@
     <script src="../js/supabase.js"></script>
     <script src="../js/format.js"></script>
     <script src="../js/app-shell.js"></script>
+    <script src="../js/emoji-picker.js"></script>
     <script src="../js/inbox.js"></script>
 </body>
 </html>

@@ -24,6 +24,10 @@
     const composerForm = document.getElementById('composerForm');
     const composerInput = document.getElementById('composerInput');
     const composerSend = document.getElementById('composerSend');
+    const composerEmojiBtn = document.getElementById('composerEmojiBtn');
+    if (composerEmojiBtn && window.STAGECORD?.EmojiPicker) {
+        window.STAGECORD.EmojiPicker.attach(composerEmojiBtn, composerInput);
+    }
     const inboxBack = document.getElementById('inboxBack');
 
     const composeBtn = document.getElementById('composeBtn');

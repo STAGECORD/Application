@@ -89,12 +89,17 @@ window.STAGECORD_Comments = (function () {
 
                 composer.innerHTML = `
                     <input type="text" class="cm-composer__input" placeholder="Write a reply…" maxlength="500">
+                    <button type="button" class="emoji-trigger cm-composer__emoji" aria-label="Insert emoji">😊</button>
                     <button type="button" class="cm-composer__btn" disabled>Reply</button>
                 `;
                 composer.hidden = false;
 
                 const input = composer.querySelector('.cm-composer__input');
+                const emojiBtn = composer.querySelector('.cm-composer__emoji');
                 const submitBtn = composer.querySelector('.cm-composer__btn');
+                if (emojiBtn && window.STAGECORD?.EmojiPicker) {
+                    window.STAGECORD.EmojiPicker.attach(emojiBtn, input);
+                }
                 input.focus();
                 input.addEventListener('input', () => {
                     submitBtn.disabled = input.value.trim().length === 0;
@@ -190,6 +195,7 @@ window.STAGECORD_Comments = (function () {
         const composerHtml = currentUserId
             ? `<div class="cm-composer">
                 <input type="text" class="cm-composer__input" placeholder="Write a comment…" maxlength="500">
+                <button type="button" class="emoji-trigger cm-composer__emoji" aria-label="Insert emoji">😊</button>
                 <button type="button" class="cm-composer__btn" disabled>Post</button>
             </div>`
             : `<div class="cm-empty"><a href="/login/" style="color:#FFFFFF;">Log in</a> to leave a comment.</div>`;
@@ -221,6 +227,10 @@ window.STAGECORD_Comments = (function () {
         if (currentUserId) {
             const input = thread.querySelector('.cm-composer > .cm-composer__input');
             const btn = thread.querySelector('.cm-composer > .cm-composer__btn');
+            const emojiBtn = thread.querySelector('.cm-composer > .cm-composer__emoji');
+            if (emojiBtn && input && window.STAGECORD?.EmojiPicker) {
+                window.STAGECORD.EmojiPicker.attach(emojiBtn, input);
+            }
             if (input && btn) {
                 input.addEventListener('input', () => {
                     btn.disabled = input.value.trim().length === 0;
