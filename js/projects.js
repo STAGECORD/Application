@@ -680,18 +680,20 @@
             if (btn) btn.classList.add('pill-btn--open');
         }
 
+        function clearUnseenBadge(triggerBtn, category, fileType) {
+            if (!triggerBtn || !triggerBtn.classList.contains('has-unseen')) return;
+            triggerBtn.classList.remove('has-unseen');
+            triggerBtn.removeAttribute('data-unseen-count');
+            sb.rpc('mark_project_seen', {
+                p_project_id: id, p_category: category, p_file_type: fileType
+            }).catch((err) => console.warn('mark_project_seen failed:', err));
+        }
+
         async function expandFiles(category, fileType, label, triggerBtn) {
             const key = `${category}:${fileType}`;
             if (activeKey === key) { closeExpand(); return; }
             activeKey = key;
             markActiveBtn(triggerBtn);
-            if (triggerBtn && triggerBtn.classList.contains('has-unseen')) {
-                triggerBtn.classList.remove('has-unseen');
-                triggerBtn.removeAttribute('data-unseen-count');
-                sb.rpc('mark_project_seen', {
-                    p_project_id: id, p_category: category, p_file_type: fileType
-                }).catch((err) => console.warn('mark_project_seen failed:', err));
-            }
             expandEl.hidden = false;
             expandEl.innerHTML = `
                 <div class="pc-expand__head">
@@ -1466,12 +1468,14 @@
         host.querySelectorAll('[data-upload]').forEach((btn) => {
             btn.addEventListener('click', () => {
                 const t = btn.getAttribute('data-upload');
+                clearUnseenBadge(btn, 'uploads', t);
                 expandFiles('uploads', t, 'Uploads · ' + (FILE_TYPE_LABELS[t] || t), btn);
             });
         });
         host.querySelectorAll('[data-final]').forEach((btn) => {
             btn.addEventListener('click', () => {
                 const t = btn.getAttribute('data-final');
+                clearUnseenBadge(btn, 'finals', t);
                 expandFiles('finals', t, 'Finals · ' + (FILE_TYPE_LABELS[t] || t), btn);
             });
         });
