@@ -382,6 +382,7 @@
             flex-shrink: 0;
         }
         .pill-btn {
+            position: relative;
             display: inline-flex; align-items: center; justify-content: center;
             width: var(--pill-width); height: var(--pill-height);
             padding: 0 6px;
@@ -392,15 +393,43 @@
             font-weight: 400; font-size: 12px; line-height: 15px;
             text-align: center; color: #FFFFFF;
             cursor: pointer;
-            transition: border-color 0.2s ease, background-color 0.2s ease;
+            transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
         }
         .pill-btn:hover { border-color: #FFFFFF; background: #111111; }
-        .pill-btn.has-data { border-color: #FFFFFF; }
+        .pill-btn.has-data {
+            border-color: #43C47A;
+            background: rgba(67,196,122,0.10);
+            color: #C8F0D6;
+        }
+        .pill-btn.has-data:hover {
+            background: rgba(67,196,122,0.18);
+            border-color: #5CD66B;
+            color: #FFFFFF;
+        }
+        .pill-btn.has-unseen::after {
+            content: attr(data-unseen-count);
+            position: absolute;
+            top: -5px; right: -5px;
+            min-width: 16px; height: 16px;
+            padding: 0 4px;
+            border-radius: 999px;
+            background: #FF3838;
+            color: #FFFFFF;
+            font-family: 'Outfit', sans-serif;
+            font-size: 9px;
+            font-weight: 700;
+            line-height: 16px;
+            text-align: center;
+            box-shadow: 0 0 0 2px #0B0B0F;
+            box-sizing: border-box;
+            pointer-events: none;
+        }
         .pill-btn--open {
             border-color: #6FA8FF !important;
             background: rgba(56,134,252,0.18) !important;
             color: #FFFFFF;
         }
+        .pill-btn--open.has-unseen::after { display: none; }
 
         /* Royalties: label spans full width, two columns of pills under it */
         .button-group--royalties .button-group__label { width: 100%; }

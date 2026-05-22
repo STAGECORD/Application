@@ -210,19 +210,26 @@
                { data: tracks, error: trErr },
                { data: files },
                { data: royalties },
-               { data: approvals }] = await Promise.all([
+               { data: approvals },
+               { data: unseenRows }] = await Promise.all([
             sb.rpc('get_project', { p_project_id: id }),
             sb.rpc('get_project_members', { p_project_id: id }),
             sb.rpc('get_project_tracks', { p_project_id: id }),
             sb.rpc('get_project_files', { p_project_id: id }),
             sb.rpc('get_project_royalties', { p_project_id: id }),
-            sb.rpc('get_project_approvals', { p_project_id: id })
+            sb.rpc('get_project_approvals', { p_project_id: id }),
+            sb.rpc('get_project_unseen', { p_project_id: id })
         ]);
 
         const fileCounts = {};
         (files || []).forEach((f) => {
             if (!fileCounts[f.category]) fileCounts[f.category] = {};
             fileCounts[f.category][f.file_type] = (fileCounts[f.category][f.file_type] || 0) + 1;
+        });
+        const unseenCounts = {};
+        (unseenRows || []).forEach((r) => {
+            if (!unseenCounts[r.category]) unseenCounts[r.category] = {};
+            unseenCounts[r.category][r.file_type] = r.unseen_count;
         });
         const royaltyConfigured = new Set((royalties || []).map((r) => r.royalty_type));
         const approvalSet = new Set((approvals || []).map((a) => a.user_id));
@@ -250,10 +257,14 @@
 
         function pillFile(cat, type, label) {
             const count = fileCounts[cat]?.[type] || 0;
-            const cls = count > 0 ? 'pill-btn has-data' : 'pill-btn';
+            const unseen = unseenCounts[cat]?.[type] || 0;
+            const classes = ['pill-btn'];
+            if (count > 0) classes.push('has-data');
+            if (unseen > 0) classes.push('has-unseen');
             const attr = cat === 'uploads' ? `data-upload="${type}"` : `data-final="${type}"`;
             const hint = PILL_FILE_HINTS[`${cat}-${type}`] || '';
-            return `<button type="button" class="${cls}" ${attr} data-help="${escapeHtml(hint)}">${label}</button>`;
+            const unseenAttr = unseen > 0 ? ` data-unseen-count="${unseen}"` : '';
+            return `<button type="button" class="${classes.join(' ')}" ${attr} data-help="${escapeHtml(hint)}"${unseenAttr}>${label}</button>`;
         }
         function pillRoyalty(type, label) {
             const cls = royaltyConfigured.has(type) ? 'pill-btn has-data' : 'pill-btn';
@@ -674,6 +685,13 @@
             if (activeKey === key) { closeExpand(); return; }
             activeKey = key;
             markActiveBtn(triggerBtn);
+            if (triggerBtn && triggerBtn.classList.contains('has-unseen')) {
+                triggerBtn.classList.remove('has-unseen');
+                triggerBtn.removeAttribute('data-unseen-count');
+                sb.rpc('mark_project_seen', {
+                    p_project_id: id, p_category: category, p_file_type: fileType
+                }).catch((err) => console.warn('mark_project_seen failed:', err));
+            }
             expandEl.hidden = false;
             expandEl.innerHTML = `
                 <div class="pc-expand__head">
@@ -779,6 +797,20 @@
                     }
                     setStatus('Uploaded ✓', 'success');
                     setTimeout(() => setStatus('', null), 2200);
+
+                    // Tick this pill into "has-data" state, and mark seen for
+                    // self so own upload doesn't show as unseen next load.
+                    fileCounts[category] = fileCounts[category] || {};
+                    fileCounts[category][fileType] = (fileCounts[category][fileType] || 0) + 1;
+                    const triggerBtn = host.querySelector(
+                        category === 'uploads'
+                            ? `[data-upload="${fileType}"]`
+                            : `[data-final="${fileType}"]`
+                    );
+                    if (triggerBtn) triggerBtn.classList.add('has-data');
+                    sb.rpc('mark_project_seen', {
+                        p_project_id: id, p_category: category, p_file_type: fileType
+                    }).catch((err) => console.warn('mark_project_seen failed:', err));
                     refreshFiles();
                 });
             }
