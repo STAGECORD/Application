@@ -190,10 +190,20 @@
             }
             listEl.querySelectorAll('.notif--unread').forEach((el) => el.classList.remove('notif--unread'));
             markAllBtn.hidden = true;
+            if (window.STAGECORD_AppShell?.refreshBadges) {
+                window.STAGECORD_AppShell.refreshBadges();
+            }
         });
 
-        // Auto-mark all as read on visit (so the bell clears)
-        sb.rpc('mark_notifications_read').catch(() => {});
+        // Auto-mark all as read on visit (so the bell + sidebar badges clear).
+        try {
+            await sb.rpc('mark_notifications_read');
+            if (window.STAGECORD_AppShell?.refreshBadges) {
+                window.STAGECORD_AppShell.refreshBadges();
+            }
+        } catch (err) {
+            console.warn('mark_notifications_read failed:', err);
+        }
     })();
     </script>
 </body>

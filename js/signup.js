@@ -236,7 +236,7 @@
             return;
         }
 
-        await sb.rpc('mark_invite_used', { p_token: token }).catch(() => {});
+        try { await sb.rpc('mark_invite_used', { p_token: token }); } catch (err) { console.warn('mark_invite_used failed:', err); }
 
         if (pendingAvatarDataUrl) {
             try {
