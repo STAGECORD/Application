@@ -74,6 +74,92 @@
         .settings-feedback { color: #B1B1B1; font-size: 13px; }
         .settings-feedback.is-success { color: #5CD66B; }
         .settings-feedback.is-error { color: #FF6B6B; }
+
+        .settings-toggle {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 0;
+            cursor: pointer;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            font-size: 14px;
+        }
+        .settings-toggle:first-child { border-top: none; }
+        .settings-toggle input { margin: 0; transform: scale(1.2); accent-color: #6FA8FF; }
+        .settings-toggle__label { flex: 1; color: #FFFFFF; }
+        .settings-toggle__hint { color: #7E89A6; font-size: 12px; margin-top: 2px; }
+
+        .settings-card--danger {
+            border-color: rgba(255,107,107,0.32);
+            background: rgba(255,107,107,0.04);
+        }
+        .settings-btn--danger {
+            background: transparent;
+            color: #FF6B6B;
+            border: 1px solid #FF6B6B;
+        }
+        .settings-btn--danger:hover { background: rgba(255,107,107,0.10); }
+        .settings-deletion-banner {
+            background: rgba(255,107,107,0.10);
+            border: 1px solid rgba(255,107,107,0.32);
+            border-radius: 10px;
+            padding: 14px 18px;
+            color: #FFD7D7;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 14px;
+        }
+        .settings-deletion-banner strong { color: #FFFFFF; }
+
+        .settings-modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center; justify-content: center;
+            z-index: 1000;
+            padding: 24px;
+        }
+        .settings-modal-overlay.is-open { display: flex; }
+        .settings-modal {
+            background: #0E1A33;
+            border: 1px solid rgba(255,107,107,0.32);
+            border-radius: 16px;
+            padding: 28px;
+            max-width: 460px; width: 100%;
+            color: #FFFFFF;
+        }
+        .settings-modal h3 {
+            margin: 0 0 10px 0;
+            font-size: 18px; font-weight: 700;
+            color: #FF9C9C;
+        }
+        .settings-modal p {
+            margin: 0 0 16px 0;
+            color: #D1D6E0; font-size: 14px; line-height: 1.5;
+        }
+        .settings-modal input {
+            width: 100%;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 8px;
+            padding: 11px 14px;
+            color: #FFFFFF;
+            font-family: inherit; font-size: 15px;
+            box-sizing: border-box;
+            margin-bottom: 14px;
+        }
+        .settings-modal__actions {
+            display: flex; gap: 10px; justify-content: flex-end;
+        }
+        .settings-modal__btn-ghost {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #FFFFFF;
+            border-radius: 999px;
+            padding: 9px 18px;
+            font-family: inherit; font-weight: 500;
+            cursor: pointer;
+        }
+        .settings-modal__btn-ghost:hover { background: rgba(255,255,255,0.05); }
     </style>
 </head>
 <body class="app-body">
@@ -137,7 +223,123 @@
                 </div>
             </form>
         </div>
+
+        <div class="settings-card" data-help="Skift dit STAGECORD-password. Du bliver ikke logget ud fra denne enhed efter skiftet.">
+            <h2>Password</h2>
+            <p class="settings-card__sub">Choose a new password. Minimum 8 characters. You stay logged in on this device after changing.</p>
+
+            <form id="passwordForm">
+                <div class="settings-field">
+                    <label for="setting-new-password">New password</label>
+                    <input id="setting-new-password" type="password" autocomplete="new-password" minlength="8" required data-help="Mindst 8 tegn. Brug gerne en blanding af bogstaver, tal og specialtegn.">
+                </div>
+
+                <div class="settings-field">
+                    <label for="setting-new-password-confirm">Confirm new password</label>
+                    <input id="setting-new-password-confirm" type="password" autocomplete="new-password" minlength="8" required data-help="Skriv det samme password igen for at undgå tastefejl.">
+                </div>
+
+                <div class="settings-actions">
+                    <button type="submit" class="settings-btn" id="passwordSave" data-help="Save your new password.">Change password</button>
+                    <span class="settings-feedback" id="passwordFeedback" role="status" aria-live="polite"></span>
+                </div>
+            </form>
+        </div>
+
+        <div class="settings-card" data-help="Vælg hvilke begivenheder der udløser email-notifikationer. In-app notifikationer (klokke + sidebar-badges) vises altid.">
+            <h2>Notifications</h2>
+            <p class="settings-card__sub">Choose which events trigger an email to you. In-app notifications (bell + sidebar badges) are always shown regardless.</p>
+
+            <form id="notifForm">
+                <label class="settings-toggle" data-help="Email når en ny bruger begynder at følge dig.">
+                    <input type="checkbox" id="notif-follow">
+                    <span class="settings-toggle__label">Someone follows me</span>
+                </label>
+                <label class="settings-toggle" data-help="Email når nogen kommenterer på et opslag, en track eller et projekt du har lavet.">
+                    <input type="checkbox" id="notif-comment">
+                    <span class="settings-toggle__label">Someone comments on my content</span>
+                </label>
+                <label class="settings-toggle" data-help="Email når nogen liker et opslag, en track eller en kommentar fra dig. Slået fra som standard for at undgå støj.">
+                    <input type="checkbox" id="notif-like">
+                    <span class="settings-toggle__label">Someone likes my content</span>
+                </label>
+                <label class="settings-toggle" data-help="Email når du modtager en ny direkte besked.">
+                    <input type="checkbox" id="notif-message">
+                    <span class="settings-toggle__label">I get a direct message</span>
+                </label>
+                <label class="settings-toggle" data-help="Email når du bliver tilføjet som medlem til et nyt projekt.">
+                    <input type="checkbox" id="notif-project-added">
+                    <span class="settings-toggle__label">I'm added to a project</span>
+                </label>
+                <label class="settings-toggle" data-help="Ugentlig digest med samlet overblik over aktivitet på din profil. Sendes mandag morgen.">
+                    <input type="checkbox" id="notif-weekly-digest">
+                    <span class="settings-toggle__label">Weekly digest (Monday mornings)</span>
+                </label>
+
+                <div class="settings-actions">
+                    <button type="submit" class="settings-btn" id="notifSave" data-help="Save your notification preferences.">Save changes</button>
+                    <span class="settings-feedback" id="notifFeedback" role="status" aria-live="polite"></span>
+                </div>
+            </form>
+        </div>
+
+        <div class="settings-card" data-help="Kontroller hvem der kan se din profil og kontakte dig.">
+            <h2>Privacy</h2>
+            <p class="settings-card__sub">Control who can see your profile and contact you on STAGECORD.</p>
+
+            <form id="privacyForm">
+                <div class="settings-field">
+                    <label for="setting-visibility">Profile visibility</label>
+                    <select id="setting-visibility" data-help="Public: enhver kan se din profil på /u/&lt;username&gt;. Followers only: kun brugere der følger dig (eller du selv) kan se din fulde profil.">
+                        <option value="public">Public — anyone can view my profile</option>
+                        <option value="followers">Followers only — only people who follow me</option>
+                    </select>
+                </div>
+
+                <div class="settings-field">
+                    <label for="setting-dm">Direct messages</label>
+                    <select id="setting-dm" data-help="Everyone: alle med en STAGECORD-konto kan sende dig en besked. Followers only: kun folk du følger eller dem der følger dig kan starte en samtale.">
+                        <option value="everyone">Everyone — anyone can message me</option>
+                        <option value="followers">Followers only — only people who follow me</option>
+                    </select>
+                </div>
+
+                <div class="settings-actions">
+                    <button type="submit" class="settings-btn" id="privacySave" data-help="Save your privacy preferences.">Save changes</button>
+                    <span class="settings-feedback" id="privacyFeedback" role="status" aria-live="polite"></span>
+                </div>
+            </form>
+        </div>
+
+        <div class="settings-card settings-card--danger" data-help="Permanent sletning af din STAGECORD-konto. Sker først efter 30 dage — du kan fortryde indtil da.">
+            <h2 style="color:#FF9C9C;">Danger zone</h2>
+            <p class="settings-card__sub">Permanently delete your STAGECORD account. Your account is scheduled for deletion 30 days after you confirm; you can cancel any time before then.</p>
+
+            <div id="deletionBanner" class="settings-deletion-banner" hidden>
+                <strong>Your account is scheduled for deletion on <span id="deletionDate"></span>.</strong><br>
+                All your posts, tracks, projects and messages will be permanently removed. Cancel below to keep your account.
+            </div>
+
+            <div class="settings-actions">
+                <button type="button" class="settings-btn settings-btn--danger" id="deleteBtn" data-help="Start the account-deletion flow. You'll get a confirmation modal — nothing happens until you type DELETE.">Delete my account</button>
+                <button type="button" class="settings-btn" id="cancelDeleteBtn" hidden data-help="Cancel the pending account deletion. Your account stays active.">Cancel deletion</button>
+                <span class="settings-feedback" id="dangerFeedback" role="status" aria-live="polite"></span>
+            </div>
+        </div>
     </div></main>
+
+    <div class="settings-modal-overlay" id="deleteModal" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+        <div class="settings-modal">
+            <h3 id="deleteModalTitle">Delete your account?</h3>
+            <p>Your account will be scheduled for permanent deletion 30 days from now. During the grace window you can cancel from this page. After that, everything is removed and cannot be recovered.</p>
+            <p>Type <strong>DELETE</strong> to confirm.</p>
+            <input id="deleteConfirmInput" type="text" autocomplete="off" placeholder="DELETE">
+            <div class="settings-modal__actions">
+                <button type="button" class="settings-modal__btn-ghost" id="deleteModalCancel">Cancel</button>
+                <button type="button" class="settings-btn settings-btn--danger" id="deleteModalConfirm" disabled>Confirm delete</button>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../js/supabase.js"></script>
@@ -171,9 +373,37 @@
 
         emailEl.value = user.email || '';
 
+        const passwordSaveBtn = document.getElementById('passwordSave');
+        const passwordFeedback = document.getElementById('passwordFeedback');
+        const setPasswordFeedback = makeSetFeedback(passwordFeedback);
+
+        const notifSaveBtn = document.getElementById('notifSave');
+        const notifFeedback = document.getElementById('notifFeedback');
+        const setNotifFeedback = makeSetFeedback(notifFeedback);
+        const NOTIF_KEYS = ['follow', 'comment', 'like', 'message', 'project-added', 'weekly-digest'];
+        const notifElById = {};
+        NOTIF_KEYS.forEach((k) => { notifElById[k] = document.getElementById('notif-' + k); });
+
+        const visibilityEl = document.getElementById('setting-visibility');
+        const dmEl = document.getElementById('setting-dm');
+        const privacySaveBtn = document.getElementById('privacySave');
+        const privacyFeedback = document.getElementById('privacyFeedback');
+        const setPrivacyFeedback = makeSetFeedback(privacyFeedback);
+
+        const deleteBtn = document.getElementById('deleteBtn');
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+        const deletionBanner = document.getElementById('deletionBanner');
+        const deletionDateEl = document.getElementById('deletionDate');
+        const dangerFeedback = document.getElementById('dangerFeedback');
+        const setDangerFeedback = makeSetFeedback(dangerFeedback);
+        const deleteModal = document.getElementById('deleteModal');
+        const deleteConfirmInput = document.getElementById('deleteConfirmInput');
+        const deleteModalCancel = document.getElementById('deleteModalCancel');
+        const deleteModalConfirm = document.getElementById('deleteModalConfirm');
+
         const { data: prof, error: loadErr } = await sb
             .from('profiles')
-            .select('display_currency, role')
+            .select('display_currency, role, notification_prefs, profile_visibility, dm_permission, deletion_scheduled_at')
             .eq('id', user.id)
             .single();
         if (loadErr) {
@@ -182,6 +412,30 @@
         } else if (prof) {
             if (prof.display_currency) currencyEl.value = prof.display_currency;
             if (prof.role) roleEl.value = prof.role;
+
+            const np = prof.notification_prefs || {};
+            const NOTIF_DB_KEY = {
+                'follow': 'email_on_follow',
+                'comment': 'email_on_comment',
+                'like': 'email_on_like',
+                'message': 'email_on_message',
+                'project-added': 'email_on_project_added',
+                'weekly-digest': 'email_weekly_digest'
+            };
+            NOTIF_KEYS.forEach((k) => {
+                if (notifElById[k]) notifElById[k].checked = !!np[NOTIF_DB_KEY[k]];
+            });
+
+            if (prof.profile_visibility) visibilityEl.value = prof.profile_visibility;
+            if (prof.dm_permission) dmEl.value = prof.dm_permission;
+
+            if (prof.deletion_scheduled_at) {
+                const d = new Date(prof.deletion_scheduled_at);
+                deletionDateEl.textContent = d.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+                deletionBanner.hidden = false;
+                deleteBtn.hidden = true;
+                cancelDeleteBtn.hidden = false;
+            }
         }
 
         document.getElementById('accountForm').addEventListener('submit', async (e) => {
@@ -218,6 +472,120 @@
             }
             setFeedback('Saved ✓', 'success');
             setTimeout(() => setFeedback('', null), 2500);
+        });
+
+        document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newPw = document.getElementById('setting-new-password').value;
+            const confirmPw = document.getElementById('setting-new-password-confirm').value;
+            if (newPw.length < 8) { setPasswordFeedback('Password must be at least 8 characters.', 'error'); return; }
+            if (newPw !== confirmPw) { setPasswordFeedback('Passwords do not match.', 'error'); return; }
+            passwordSaveBtn.disabled = true;
+            setPasswordFeedback('Updating…');
+            const { error } = await sb.auth.updateUser({ password: newPw });
+            passwordSaveBtn.disabled = false;
+            if (error) {
+                setPasswordFeedback('Could not change password: ' + (error.message || ''), 'error');
+                return;
+            }
+            setPasswordFeedback('Password changed ✓', 'success');
+            document.getElementById('passwordForm').reset();
+            setTimeout(() => setPasswordFeedback('', null), 3000);
+        });
+
+        document.getElementById('notifForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            notifSaveBtn.disabled = true;
+            setNotifFeedback('Saving…');
+            const prefs = {
+                email_on_follow: notifElById['follow'].checked,
+                email_on_comment: notifElById['comment'].checked,
+                email_on_like: notifElById['like'].checked,
+                email_on_message: notifElById['message'].checked,
+                email_on_project_added: notifElById['project-added'].checked,
+                email_weekly_digest: notifElById['weekly-digest'].checked
+            };
+            const { error } = await sb
+                .from('profiles')
+                .update({ notification_prefs: prefs })
+                .eq('id', user.id);
+            notifSaveBtn.disabled = false;
+            if (error) {
+                setNotifFeedback('Could not save: ' + (error.message || ''), 'error');
+                return;
+            }
+            setNotifFeedback('Saved ✓', 'success');
+            setTimeout(() => setNotifFeedback('', null), 2500);
+        });
+
+        document.getElementById('privacyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            privacySaveBtn.disabled = true;
+            setPrivacyFeedback('Saving…');
+            const { error } = await sb
+                .from('profiles')
+                .update({
+                    profile_visibility: visibilityEl.value,
+                    dm_permission: dmEl.value
+                })
+                .eq('id', user.id);
+            privacySaveBtn.disabled = false;
+            if (error) {
+                setPrivacyFeedback('Could not save: ' + (error.message || ''), 'error');
+                return;
+            }
+            setPrivacyFeedback('Saved ✓', 'success');
+            setTimeout(() => setPrivacyFeedback('', null), 2500);
+        });
+
+        // Delete account — confirm modal with typed "DELETE" gate.
+        deleteBtn.addEventListener('click', () => {
+            deleteConfirmInput.value = '';
+            deleteModalConfirm.disabled = true;
+            deleteModal.classList.add('is-open');
+            deleteConfirmInput.focus();
+        });
+        deleteModalCancel.addEventListener('click', () => {
+            deleteModal.classList.remove('is-open');
+        });
+        deleteConfirmInput.addEventListener('input', () => {
+            deleteModalConfirm.disabled = deleteConfirmInput.value.trim() !== 'DELETE';
+        });
+        deleteModalConfirm.addEventListener('click', async () => {
+            deleteModalConfirm.disabled = true;
+            deleteModalConfirm.textContent = 'Scheduling…';
+            const { data, error } = await sb.rpc('request_account_deletion');
+            if (error) {
+                deleteModalConfirm.disabled = false;
+                deleteModalConfirm.textContent = 'Confirm delete';
+                setDangerFeedback('Could not schedule deletion: ' + (error.message || ''), 'error');
+                deleteModal.classList.remove('is-open');
+                return;
+            }
+            deleteModal.classList.remove('is-open');
+            deleteModalConfirm.textContent = 'Confirm delete';
+            const scheduledAt = new Date(data);
+            deletionDateEl.textContent = scheduledAt.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+            deletionBanner.hidden = false;
+            deleteBtn.hidden = true;
+            cancelDeleteBtn.hidden = false;
+            setDangerFeedback('Account scheduled for deletion.', 'success');
+        });
+        cancelDeleteBtn.addEventListener('click', async () => {
+            if (!confirm('Cancel pending account deletion?')) return;
+            cancelDeleteBtn.disabled = true;
+            setDangerFeedback('Cancelling…');
+            const { error } = await sb.rpc('cancel_account_deletion');
+            cancelDeleteBtn.disabled = false;
+            if (error) {
+                setDangerFeedback('Could not cancel: ' + (error.message || ''), 'error');
+                return;
+            }
+            deletionBanner.hidden = true;
+            cancelDeleteBtn.hidden = true;
+            deleteBtn.hidden = false;
+            setDangerFeedback('Deletion cancelled — your account stays active.', 'success');
+            setTimeout(() => setDangerFeedback('', null), 3500);
         });
     })();
     </script>
