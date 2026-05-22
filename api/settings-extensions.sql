@@ -26,6 +26,9 @@ ALTER TABLE public.profiles
 ALTER TABLE public.profiles
     ADD COLUMN IF NOT EXISTS deletion_scheduled_at timestamptz;
 
+ALTER TABLE public.profiles
+    ADD COLUMN IF NOT EXISTS deletion_reason text;
+
 -- Add CHECK constraints idempotently (PostgreSQL doesn't have IF NOT EXISTS
 -- for constraints — use the DO block).
 DO $$
@@ -50,15 +53,19 @@ END $$;
 
 -- Schedule the calling user's account for deletion 30 days from now.
 -- Background cleanup (hard delete after the grace window) is handled
--- separately — this RPC only flags the row.
-CREATE OR REPLACE FUNCTION public.request_account_deletion()
+-- separately — this RPC only flags the row and optionally records the
+-- reason the user gave for leaving (for product feedback).
+DROP FUNCTION IF EXISTS public.request_account_deletion();
+DROP FUNCTION IF EXISTS public.request_account_deletion(text);
+CREATE OR REPLACE FUNCTION public.request_account_deletion(p_reason text DEFAULT NULL)
 RETURNS timestamptz
 LANGUAGE sql
 SECURITY DEFINER
 SET search_path = public
 AS $$
     UPDATE public.profiles
-    SET deletion_scheduled_at = now() + interval '30 days'
+    SET deletion_scheduled_at = now() + interval '30 days',
+        deletion_reason = p_reason
     WHERE id = auth.uid()
     RETURNING deletion_scheduled_at;
 $$;
@@ -75,5 +82,5 @@ AS $$
     WHERE id = auth.uid();
 $$;
 
-GRANT EXECUTE ON FUNCTION public.request_account_deletion() TO authenticated;
+GRANT EXECUTE ON FUNCTION public.request_account_deletion(text) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.cancel_account_deletion() TO authenticated;
