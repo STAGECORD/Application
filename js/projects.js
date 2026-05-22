@@ -1470,15 +1470,21 @@
         host.querySelectorAll('[data-upload]').forEach((btn) => {
             btn.addEventListener('click', () => {
                 const t = btn.getAttribute('data-upload');
+                console.log('[PILL-DEBUG] click', { type: 'uploads:' + t, activeKey, hidden: expandEl.hidden, hasUnseen: btn.classList.contains('has-unseen') });
                 const hadBadge = clearUnseenBadge(btn, 'uploads', t);
+                console.log('[PILL-DEBUG] cleared?', hadBadge, 'calling expandFiles forceOpen=', hadBadge);
                 expandFiles('uploads', t, 'Uploads · ' + (FILE_TYPE_LABELS[t] || t), btn, hadBadge);
+                console.log('[PILL-DEBUG] after expandFiles', { activeKey, hidden: expandEl.hidden, innerHTMLLen: expandEl.innerHTML.length });
             });
         });
         host.querySelectorAll('[data-final]').forEach((btn) => {
             btn.addEventListener('click', () => {
                 const t = btn.getAttribute('data-final');
+                console.log('[PILL-DEBUG] click', { type: 'finals:' + t, activeKey, hidden: expandEl.hidden, hasUnseen: btn.classList.contains('has-unseen') });
                 const hadBadge = clearUnseenBadge(btn, 'finals', t);
+                console.log('[PILL-DEBUG] cleared?', hadBadge, 'calling expandFiles forceOpen=', hadBadge);
                 expandFiles('finals', t, 'Finals · ' + (FILE_TYPE_LABELS[t] || t), btn, hadBadge);
+                console.log('[PILL-DEBUG] after expandFiles', { activeKey, hidden: expandEl.hidden, innerHTMLLen: expandEl.innerHTML.length });
             });
         });
         host.querySelectorAll('[data-royalty]').forEach((btn) => {
