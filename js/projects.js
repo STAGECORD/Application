@@ -681,17 +681,19 @@
         }
 
         function clearUnseenBadge(triggerBtn, category, fileType) {
-            if (!triggerBtn || !triggerBtn.classList.contains('has-unseen')) return;
+            if (!triggerBtn || !triggerBtn.classList.contains('has-unseen')) return false;
             triggerBtn.classList.remove('has-unseen');
             triggerBtn.removeAttribute('data-unseen-count');
             sb.rpc('mark_project_seen', {
                 p_project_id: id, p_category: category, p_file_type: fileType
             }).catch((err) => console.warn('mark_project_seen failed:', err));
+            return true;
         }
 
-        async function expandFiles(category, fileType, label, triggerBtn) {
+        async function expandFiles(category, fileType, label, triggerBtn, forceOpen) {
             const key = `${category}:${fileType}`;
-            if (activeKey === key) { closeExpand(); return; }
+            const sameKeyVisible = activeKey === key && !expandEl.hidden;
+            if (!forceOpen && sameKeyVisible) { closeExpand(); return; }
             activeKey = key;
             markActiveBtn(triggerBtn);
             expandEl.hidden = false;
@@ -1468,15 +1470,15 @@
         host.querySelectorAll('[data-upload]').forEach((btn) => {
             btn.addEventListener('click', () => {
                 const t = btn.getAttribute('data-upload');
-                clearUnseenBadge(btn, 'uploads', t);
-                expandFiles('uploads', t, 'Uploads · ' + (FILE_TYPE_LABELS[t] || t), btn);
+                const hadBadge = clearUnseenBadge(btn, 'uploads', t);
+                expandFiles('uploads', t, 'Uploads · ' + (FILE_TYPE_LABELS[t] || t), btn, hadBadge);
             });
         });
         host.querySelectorAll('[data-final]').forEach((btn) => {
             btn.addEventListener('click', () => {
                 const t = btn.getAttribute('data-final');
-                clearUnseenBadge(btn, 'finals', t);
-                expandFiles('finals', t, 'Finals · ' + (FILE_TYPE_LABELS[t] || t), btn);
+                const hadBadge = clearUnseenBadge(btn, 'finals', t);
+                expandFiles('finals', t, 'Finals · ' + (FILE_TYPE_LABELS[t] || t), btn, hadBadge);
             });
         });
         host.querySelectorAll('[data-royalty]').forEach((btn) => {
