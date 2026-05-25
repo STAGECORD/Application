@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>STAGECORD — Book of Rhymes</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/logo.css">
+    <link rel="stylesheet" href="../css/start.css">
+    <link rel="stylesheet" href="../css/app-shell.css">
+    <style>
+        .rh-wrap { max-width: none; margin: 0; padding: 32px 24px 60px; }
+
+        .rh-head {
+            display: flex; align-items: baseline; gap: 16px;
+            margin-bottom: 8px; flex-wrap: wrap;
+        }
+        .rh-head h1 {
+            margin: 0; color: #FFFFFF;
+            font-size: 26px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.04em;
+            flex: 1;
+        }
+        .rh-head__sub {
+            color: #B1B1B1; font-size: 14px;
+            margin: 0 0 24px 0;
+            max-width: 720px;
+        }
+        .rh-btn {
+            background: #FFFFFF; color: #0B0B0F; border: none;
+            border-radius: 999px; padding: 9px 18px;
+            font-weight: 600; cursor: pointer; font-size: 13px;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+            font-family: inherit;
+        }
+        .rh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .rh-btn--ghost {
+            background: transparent; color: #FFFFFF;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .rh-btn--ghost:hover { background: rgba(255,255,255,0.05); }
+        .rh-btn--danger {
+            background: transparent; color: #FF6B6B;
+            border: 1px solid rgba(255,107,107,0.4);
+        }
+        .rh-btn--danger:hover { background: rgba(255,107,107,0.10); border-color: #FF6B6B; }
+
+        /* Filter chips */
+        .rh-filters {
+            display: flex; gap: 8px; flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+        .rh-chip {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: #C2CADD;
+            border-radius: 999px;
+            padding: 7px 14px;
+            font-size: 13px; font-family: inherit;
+            cursor: pointer;
+            transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+        }
+        .rh-chip:hover { background: rgba(255,255,255,0.08); color: #FFFFFF; }
+        .rh-chip.is-active {
+            background: rgba(56,134,252,0.18);
+            border-color: rgba(56,134,252,0.5);
+            color: #FFFFFF;
+        }
+        .rh-chip__count {
+            opacity: 0.6;
+            margin-left: 6px;
+            font-size: 12px;
+        }
+
+        /* Rhyme list */
+        .rh-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 14px;
+        }
+        .rh-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 16px 18px;
+            display: flex; flex-direction: column; gap: 10px;
+            transition: border-color 0.15s ease;
+        }
+        .rh-card:hover { border-color: rgba(255,255,255,0.2); }
+        .rh-card__head {
+            display: flex; align-items: center; gap: 8px;
+        }
+        .rh-card__cat {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 999px;
+            background: rgba(56,134,252,0.18);
+            border: 1px solid rgba(56,134,252,0.32);
+            color: #6FA8FF;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+        }
+        .rh-card__title {
+            color: #FFFFFF;
+            font-weight: 600;
+            font-size: 14px;
+            flex: 1;
+            min-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .rh-card__content {
+            color: #D1D6E0;
+            font-size: 14px;
+            line-height: 1.55;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            display: -webkit-box;
+            -webkit-line-clamp: 6;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 80px;
+        }
+        .rh-card__foot {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 12px; color: #7E89A6;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        .rh-card__project {
+            color: #C2CADD;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 999px;
+            padding: 2px 9px;
+            text-decoration: none;
+            font-size: 11px;
+        }
+        .rh-card__project:hover { background: rgba(255,255,255,0.10); color: #FFFFFF; }
+        .rh-card__actions {
+            display: flex; gap: 6px; margin-left: auto;
+        }
+        .rh-card__action {
+            background: transparent; border: none;
+            color: #7E89A6; cursor: pointer;
+            padding: 2px 6px;
+            font-size: 12px;
+            font-family: inherit;
+        }
+        .rh-card__action:hover { color: #FFFFFF; }
+        .rh-card__action--danger:hover { color: #FF6B6B; }
+
+        .rh-empty {
+            grid-column: 1 / -1;
+            padding: 60px 20px;
+            text-align: center;
+            color: #7E89A6;
+            border: 1px dashed rgba(255,255,255,0.10);
+            border-radius: 14px;
+        }
+        .rh-empty strong { color: #FFFFFF; display: block; margin-bottom: 6px; font-weight: 600; }
+
+        /* Modal */
+        .rh-modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center; justify-content: center;
+            z-index: 1000;
+            padding: 24px;
+        }
+        .rh-modal-overlay.is-open { display: flex; }
+        .rh-modal {
+            background: #0E1A33;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 520px; width: 100%;
+            max-height: calc(100vh - 60px);
+            overflow-y: auto;
+            color: #FFFFFF;
+        }
+        .rh-modal h3 {
+            margin: 0 0 4px 0;
+            font-size: 18px; font-weight: 700;
+        }
+        .rh-modal__sub {
+            margin: 0 0 20px 0;
+            color: #B1B1B1; font-size: 13px;
+        }
+        .rh-field {
+            display: flex; flex-direction: column; gap: 6px;
+            margin-bottom: 14px;
+        }
+        .rh-field label {
+            font-size: 12px; color: #7E89A6;
+            text-transform: uppercase; letter-spacing: 0.06em;
+        }
+        .rh-field input,
+        .rh-field select,
+        .rh-field textarea {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 8px;
+            padding: 11px 14px;
+            color: #FFFFFF;
+            font-family: inherit;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+        .rh-field textarea {
+            resize: vertical;
+            min-height: 140px;
+            line-height: 1.55;
+        }
+        .rh-field select option { background: #0B1A38; }
+        .rh-field__hint { color: #7E89A6; font-size: 12px; margin-top: 2px; }
+
+        .rh-modal__actions {
+            display: flex; gap: 10px; justify-content: flex-end;
+            margin-top: 10px;
+        }
+        .rh-modal__error {
+            color: #FF9C9C; font-size: 13px;
+            min-height: 18px;
+            margin: 4px 0 6px 0;
+        }
+    </style>
+</head>
+<body class="app-body">
+
+    <div data-app-shell data-page-title="BOOK OF RHYMES"></div>
+
+    <main class="app-main"><div class="rh-wrap">
+        <div class="rh-head">
+            <h1>Book of Rhymes</h1>
+            <button type="button" class="rh-btn" id="newRhymeBtn" data-help="Open the editor and add a new rhyme. Pick a song section (verse, chorus, bridge, etc.) and optionally tag it to a project for easy finding later.">+ New rhyme</button>
+        </div>
+        <p class="rh-head__sub">Your private collection of lyric fragments. Tag each one by song section — verse, chorus, bridge, middle-8 — and optionally connect it to a project so it surfaces when you're writing.</p>
+
+        <div class="rh-filters" id="rhFilters" data-help="Filter chips — click a category to show only rhymes from that song section. Click 'All' to clear the filter."></div>
+
+        <div class="rh-list" id="rhList">
+            <div class="rh-empty" id="rhLoading">Loading your rhymes…</div>
+        </div>
+    </div></main>
+
+    <div class="rh-modal-overlay" id="rhModal" role="dialog" aria-modal="true" aria-labelledby="rhModalTitle">
+        <div class="rh-modal">
+            <h3 id="rhModalTitle">New rhyme</h3>
+            <p class="rh-modal__sub">Capture a verse, chorus or any lyric fragment. You can edit or delete it later.</p>
+
+            <div class="rh-field">
+                <label for="rhTitle">Title <span style="opacity:0.6;text-transform:none;letter-spacing:0;">(optional)</span></label>
+                <input id="rhTitle" type="text" maxlength="120" placeholder="e.g. 'Late night driving — chorus draft 2'">
+            </div>
+
+            <div class="rh-field">
+                <label for="rhCategory">Song section</label>
+                <select id="rhCategory">
+                    <option value="verse">Verse</option>
+                    <option value="pre_chorus">Pre-chorus</option>
+                    <option value="chorus">Chorus</option>
+                    <option value="middle_8">Middle-8</option>
+                    <option value="bridge">Bridge</option>
+                    <option value="hook">Hook</option>
+                    <option value="intro">Intro</option>
+                    <option value="outro">Outro</option>
+                    <option value="refrain">Refrain</option>
+                    <option value="tag">Tag</option>
+                    <option value="vamp">Vamp</option>
+                    <option value="ad_lib">Ad-lib</option>
+                    <option value="other">Other…</option>
+                </select>
+            </div>
+
+            <div class="rh-field" id="rhCustomCategoryField" hidden>
+                <label for="rhCustomCategory">Custom section name</label>
+                <input id="rhCustomCategory" type="text" maxlength="40" placeholder="e.g. 'Spoken intro'">
+            </div>
+
+            <div class="rh-field">
+                <label for="rhContent">Lyric / rhyme</label>
+                <textarea id="rhContent" maxlength="50000" placeholder="Drop your lyric fragment here. Multi-line is fine — the formatting is kept."></textarea>
+            </div>
+
+            <div class="rh-field">
+                <label for="rhProject">Tag to project <span style="opacity:0.6;text-transform:none;letter-spacing:0;">(optional)</span></label>
+                <select id="rhProject">
+                    <option value="">— No project —</option>
+                </select>
+                <span class="rh-field__hint">Linking a rhyme to a project makes it show up when you filter by that project.</span>
+            </div>
+
+            <div class="rh-modal__error" id="rhModalError" role="alert"></div>
+
+            <div class="rh-modal__actions">
+                <button type="button" class="rh-btn rh-btn--ghost" id="rhCancel">Cancel</button>
+                <button type="button" class="rh-btn" id="rhSave">Save rhyme</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase.js"></script>
+    <script src="../js/format.js"></script>
+    <script src="../js/app-shell.js"></script>
+    <script src="../js/rhymes.js"></script>
+</body>
+</html>
