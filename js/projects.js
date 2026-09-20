@@ -1727,9 +1727,9 @@
                 : ((!onMain && section.content && !lyricsState.mainFinalized)
                     ? `<button type="button" class="pj-lyrics-section__action" data-lyrics-to-main="${section.id}">→ Main</button>` : '');
             const view = tokenizeLyricsLine(section.id, section.content || '', lyricsState.rhymes);
-            return `<li class="pj-lyrics-section${locked ? ' is-locked' : ''}" data-section-id="${section.id}" draggable="${locked ? 'false' : 'true'}">
+            return `<li class="pj-lyrics-section${locked ? ' is-locked' : ''}" data-section-id="${section.id}">
                 <div class="pj-lyrics-section__head">
-                    ${locked ? '' : `<button type="button" class="pj-lyrics-section__drag" data-lyrics-drag="${section.id}" aria-label="Drag to reorder">⋮⋮</button>`}
+                    ${locked ? '' : `<button type="button" class="pj-lyrics-section__drag" data-lyrics-drag="${section.id}" draggable="true" aria-label="Drag to reorder">⋮⋮</button>`}
                     <select class="pj-lyrics-section__type" data-lyrics-type="${section.id}"${locked ? ' disabled' : ''}>${options}</select>
                     ${isCustom ? `<input type="text" class="pj-lyrics-toolbar__custom" data-lyrics-custom-name="${section.id}" value="${escapeHtml(section.custom_name || '')}" placeholder="Section name"${locked ? ' disabled' : ''}>` : `<span class="pj-lyrics-section__label">${escapeHtml(label)}</span>`}
                     ${sourceChip}
