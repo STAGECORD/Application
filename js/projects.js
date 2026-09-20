@@ -2532,13 +2532,15 @@
                 const y = 22 + i * 6;
                 lines += `<line class="pj-sheet-staff__line" x1="${clefW - 4}" y1="${y}" x2="${width - padRight + 4}" y2="${y}"/>`;
             }
-            // Anchor the clef glyph's vertical center on the line it
-            // actually identifies — G4 (2nd line from bottom) for treble,
-            // F3 (2nd line from top) for bass — instead of an arbitrary
-            // baseline offset, so it doesn't drift off the right line.
+            // Font-size/baseline pairs below were chosen by rendering the
+            // glyphs against real staff-line guides and checking pixel
+            // alignment directly (not guessed): the treble spiral lands
+            // on G4 (2nd line from bottom) and the bass dots straddle F3
+            // (2nd line from top).
             const clefGlyph = clef === 'bass' ? '𝄢' : '𝄞';
-            const clefTargetY = clef === 'bass' ? 28 : 40;
-            const clefEl = `<text class="pj-sheet-staff__clef pj-sheet-staff__clef--${clef}" dominant-baseline="central" x="${clefW - 22}" y="${clefTargetY}">${clefGlyph}</text>`;
+            const clefEl = clef === 'bass'
+                ? `<text class="pj-sheet-staff__clef pj-sheet-staff__clef--bass" x="${clefW - 22}" y="40" font-size="38">${clefGlyph}</text>`
+                : `<text class="pj-sheet-staff__clef pj-sheet-staff__clef--treble" x="${clefW - 22}" y="62" font-size="44">${clefGlyph}</text>`;
             const keySigEl = sheetKeySignatureGlyphs(clef, clefW + 6).svg;
             const timeSigEl = sheetTimeSignatureGlyphs(clefW + keySigWidth + 14);
             const tempoEl = clef === 'treble' ? `<text class="pj-sheet-staff__tempo" x="${clefW - 22}" y="10">♩ = ${sheetState.tempo}</text>` : '';
