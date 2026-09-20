@@ -1709,8 +1709,11 @@
             if (onMain && section.source_user_id) {
                 sourceChip = `<span class="pj-lyrics-section__source">from ${escapeHtml(lyricsTabName(section.source_user_id))}</span>`;
             }
-            const toMainBtn = (!onMain && section.content && !lyricsState.mainFinalized)
-                ? `<button type="button" class="pj-lyrics-section__action" data-lyrics-to-main="${section.id}">→ Main</button>` : '';
+            const alreadyInMain = !onMain && lyricsMainSections().some((s) => s.source_section_id === section.id);
+            const toMainBtn = alreadyInMain
+                ? `<span class="pj-lyrics-section__source pj-lyrics-section__source--done">✓ In Main Lyrics</span>`
+                : ((!onMain && section.content && !lyricsState.mainFinalized)
+                    ? `<button type="button" class="pj-lyrics-section__action" data-lyrics-to-main="${section.id}">→ Main</button>` : '');
             const view = tokenizeLyricsLine(section.id, section.content || '', lyricsState.rhymes);
             return `<li class="pj-lyrics-section${locked ? ' is-locked' : ''}" data-section-id="${section.id}" draggable="${locked ? 'false' : 'true'}">
                 <div class="pj-lyrics-section__head">
