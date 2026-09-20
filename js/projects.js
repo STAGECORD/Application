@@ -1688,7 +1688,7 @@
                     <div class="pj-lyrics-palette">${swatches}<button type="button" class="pj-lyrics-swatch-add" data-lyrics-add-color aria-label="Add color">+</button></div>
                 </div>
             </div>
-            <p class="pj-lyrics-hint">${lyricsState.activeColor ? `Paint mode: click a word to mark it with the selected color. Click the same color again to turn it off.` : `Select a rhyme color, then click words to group them as rhymes — any number of words can share a color.`}</p>`;
+            <p class="pj-lyrics-hint">${lyricsState.activeColor ? `Paint mode: click a word, or drag across a phrase to select several at once, to mark it with the selected color. Click/drag the same selection again to turn it off.` : `Select a rhyme color, then click a word — or drag across a phrase — to group it as a rhyme. Either side can be any number of words.`}</p>`;
         }
 
         function renderLyricsBanner() {
@@ -1876,32 +1876,57 @@
         // occurrenceKey = "sectionId|lineIndex|wordIndex" — a tag applies
         // to this exact word at this exact spot, not to the word text
         // wherever else it might appear in the notebook.
-        function lyricsApplyRhymeColor(occurrenceKey, word, color) {
-            if (lyricsState.rhymes[occurrenceKey] && lyricsState.rhymes[occurrenceKey].color === color) {
-                delete lyricsState.rhymes[occurrenceKey];
+        //
+        // items = [{ key, word }, …] — either side of a rhyme pairing can
+        // be one word (a plain click) or a dragged-out phrase of any
+        // length; both are handled the same way here.
+        function lyricsApplyRhymeColorBatch(items, color) {
+            if (!items.length) return;
+
+            // Toggle off: the whole selection already has this exact
+            // color — remove it, same gesture as a single-word toggle.
+            const allSameColor = items.every((it) => lyricsState.rhymes[it.key] && lyricsState.rhymes[it.key].color === color);
+            if (allSameColor) {
+                items.forEach((it) => { delete lyricsState.rhymes[it.key]; });
                 renderLyrics();
-                const [sectionId, lineIndex, wordIndex] = occurrenceKey.split('|');
-                sb.from('lyrics_rhyme_tags').delete()
-                    .eq('project_id', id).eq('user_id', user.id)
-                    .eq('section_id', sectionId).eq('line_index', Number(lineIndex)).eq('word_index', Number(wordIndex))
-                    .then(() => {});
+                const ops = items.map((it) => {
+                    const [sectionId, lineIndex, wordIndex] = it.key.split('|');
+                    return sb.from('lyrics_rhyme_tags').delete()
+                        .eq('project_id', id).eq('user_id', user.id)
+                        .eq('section_id', sectionId).eq('line_index', Number(lineIndex)).eq('word_index', Number(wordIndex));
+                });
+                Promise.all(ops).then(() => {});
                 return;
             }
-            const groupWords = Object.keys(lyricsState.rhymes)
-                .filter((k) => lyricsState.rhymes[k].color === color && k !== occurrenceKey)
+
+            const existingGroupWords = Object.keys(lyricsState.rhymes)
+                .filter((k) => lyricsState.rhymes[k].color === color && !items.some((it) => it.key === k))
                 .map((k) => lyricsState.rhymes[k].word);
-            const isSlant = groupWords.length > 0 && !groupWords.some((w) => lyricsWordsRhyme(word, w));
+            const selectionWords = items.map((it) => it.word);
+            // A word counts as "obvious" if it rhymes with something
+            // already in the group, or with another word in this same
+            // selection (so a whole dragged phrase can validate itself).
+            const isSlant = (existingGroupWords.length > 0 || selectionWords.length > 1) &&
+                !items.some((it) =>
+                    existingGroupWords.some((w) => lyricsWordsRhyme(it.word, w)) ||
+                    selectionWords.some((w) => w !== it.word && lyricsWordsRhyme(it.word, w))
+                );
             if (isSlant) {
-                const list = groupWords.map((w) => `"${w}"`).join(', ');
-                if (!confirm(`"${word}" doesn't obviously rhyme with ${list}.\n\nAdd it to this rhyme group anyway? It'll be marked as a non-obvious rhyme (dashed underline) so it's clear it's not a direct match.`)) return;
+                const label = selectionWords.join(' ');
+                const list = existingGroupWords.length ? existingGroupWords.map((w) => `"${w}"`).join(', ') : 'the rest of this group';
+                if (!confirm(`"${label}" doesn't obviously rhyme with ${list}.\n\nAdd it to this rhyme group anyway? It'll be marked as a non-obvious rhyme (dashed underline) so it's clear it's not a direct match.`)) return;
             }
-            lyricsState.rhymes[occurrenceKey] = { word: word, color: color, isSlant: isSlant };
+
+            items.forEach((it) => { lyricsState.rhymes[it.key] = { word: it.word, color: color, isSlant: isSlant }; });
             renderLyrics();
-            const [sectionId, lineIndex, wordIndex] = occurrenceKey.split('|');
-            sb.from('lyrics_rhyme_tags').upsert({
-                project_id: id, user_id: user.id, section_id: sectionId, line_index: Number(lineIndex), word_index: Number(wordIndex),
-                word: word, color: color, is_slant: isSlant
-            }, { onConflict: 'project_id,user_id,section_id,line_index,word_index' }).then(({ error }) => { if (error) reloadLyrics(id); });
+            const rows = items.map((it) => {
+                const [sectionId, lineIndex, wordIndex] = it.key.split('|');
+                return {
+                    project_id: id, user_id: user.id, section_id: sectionId, line_index: Number(lineIndex), word_index: Number(wordIndex),
+                    word: it.word, color: color, is_slant: isSlant
+                };
+            });
+            sb.from('lyrics_rhyme_tags').upsert(rows, { onConflict: 'project_id,user_id,section_id,line_index,word_index' }).then(({ error }) => { if (error) reloadLyrics(id); });
         }
 
         function lyricsAddPaletteColor() {
@@ -1992,8 +2017,8 @@
                 }
                 if (e.target.closest('[data-lyrics-add-color]')) { lyricsAddPaletteColor(); return; }
 
-                const word = e.target.closest('.pj-lyrics-word');
-                if (word && lyricsState.activeColor) { lyricsApplyRhymeColor(word.dataset.occurrence, word.dataset.word, lyricsState.activeColor); return; }
+                // Word selection (single click or dragged phrase) is
+                // handled on mousedown/mouseup below, not here.
 
                 const addBtn = e.target.closest('[data-lyrics-add-btn]');
                 if (addBtn) {
@@ -2089,6 +2114,48 @@
                 if (enteringEditor) return;
                 lyricsRenderPending = false;
                 renderLyrics();
+            });
+
+            // Rhyme word/phrase selection: click one word, or drag from
+            // the first word to the last word of a phrase to select it as
+            // one unit — either side of a rhyme pairing can be any number
+            // of words. Tracked via mousedown/mouseup rather than native
+            // text selection or HTML5 drag (both fought with this before).
+            let lyricsSelectStartKey = null;
+            expandEl.addEventListener('mousedown', (e) => {
+                if (activeKey !== 'action:lyrics') { lyricsSelectStartKey = null; return; }
+                const w = e.target.closest('.pj-lyrics-word');
+                lyricsSelectStartKey = w ? w.dataset.occurrence : null;
+            });
+            expandEl.addEventListener('mouseup', (e) => {
+                if (activeKey !== 'action:lyrics' || !lyricsState || !lyricsState.activeColor) { lyricsSelectStartKey = null; return; }
+                const endWordEl = e.target.closest('.pj-lyrics-word');
+                const startKey = lyricsSelectStartKey;
+                lyricsSelectStartKey = null;
+                if (!endWordEl) return;
+                const endKey = endWordEl.dataset.occurrence;
+
+                if (!startKey || startKey === endKey) {
+                    lyricsApplyRhymeColorBatch([{ key: endKey, word: endWordEl.dataset.word }], lyricsState.activeColor);
+                    return;
+                }
+                const [sId, sLine, sWord] = startKey.split('|');
+                const [eId, eLine, eWord] = endKey.split('|');
+                if (sId !== eId || sLine !== eLine) {
+                    // Dragged across lines/sections — treat as a plain
+                    // click on wherever the drag ended, rather than guess.
+                    lyricsApplyRhymeColorBatch([{ key: endKey, word: endWordEl.dataset.word }], lyricsState.activeColor);
+                    return;
+                }
+                const lo = Math.min(Number(sWord), Number(eWord));
+                const hi = Math.max(Number(sWord), Number(eWord));
+                const items = [];
+                for (let w = lo; w <= hi; w++) {
+                    const k = `${sId}|${sLine}|${w}`;
+                    const el = expandEl.querySelector(`.pj-lyrics-word[data-occurrence="${k}"]`);
+                    if (el) items.push({ key: k, word: el.dataset.word });
+                }
+                lyricsApplyRhymeColorBatch(items, lyricsState.activeColor);
             });
 
             // Drag-to-reorder sections within the active tab's list.
