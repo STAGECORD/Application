@@ -1775,7 +1775,12 @@
         function renderLyrics() {
             const body = expandEl.querySelector('[data-lyrics-body]');
             if (!body) return;
-            body.innerHTML = renderLyricsTabs() + renderLyricsToolbar() + renderLyricsBanner() + renderLyricsSections();
+            try {
+                body.innerHTML = renderLyricsTabs() + renderLyricsToolbar() + renderLyricsBanner() + renderLyricsSections();
+            } catch (err) {
+                console.error('renderLyrics failed:', err);
+                body.innerHTML = `<p class="pj-lyrics-placeholder" style="color:#FF6A55;">Something went wrong rendering Lyrics Studio: ${escapeHtml((err && err.message) || String(err))}</p>`;
+            }
         }
 
         // ---------- Mutations (optimistic local update + background sync) ----------
