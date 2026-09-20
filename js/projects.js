@@ -1502,7 +1502,9 @@
             lyricsState.mainFinalizedAt = raw.book && raw.book.main_finalized_at;
             lyricsState.sections = raw.sections || [];
             lyricsState.rhymes = {};
-            (raw.rhymes || []).forEach((r) => { if (r.user_id === user.id) lyricsState.rhymes[r.word] = r.color; });
+            (raw.rhymes || []).forEach((r) => {
+                if (r.user_id === user.id) lyricsState.rhymes[r.word] = { color: r.color, isSlant: !!r.is_slant };
+            });
         }
 
         // Supabase Realtime echoes your own writes back to you, not just
@@ -1542,10 +1544,12 @@
                     if (match[1]) {
                         const tok = match[1];
                         const key = tok.toLowerCase();
-                        const color = rhymes[key];
+                        const tag = rhymes[key];
+                        const color = tag && tag.color;
                         const style = color ? ` style="color:${color};"` : '';
-                        const cls = 'pj-lyrics-word' + (color ? ' has-rhyme' : '');
-                        html += `<span class="${cls}" data-word="${escapeHtml(key)}"${style}>${escapeHtml(tok)}</span>`;
+                        const cls = 'pj-lyrics-word' + (color ? ' has-rhyme' : '') + (tag && tag.isSlant ? ' is-slant' : '');
+                        const title = (tag && tag.isSlant) ? ' title="Marked as a rhyme even though it\'s not a direct match — still counts when pronounced/sung."' : '';
+                        html += `<span class="${cls}" data-word="${escapeHtml(key)}"${style}${title}>${escapeHtml(tok)}</span>`;
                     } else {
                         html += escapeHtml(match[2]);
                     }
@@ -1742,19 +1746,19 @@
 
         function lyricsApplyRhymeColor(word, color) {
             const key = word.toLowerCase();
-            if (lyricsState.rhymes[key] === color) {
+            if (lyricsState.rhymes[key] && lyricsState.rhymes[key].color === color) {
                 delete lyricsState.rhymes[key];
                 renderLyrics();
                 sb.from('lyrics_rhyme_tags').delete().eq('project_id', id).eq('user_id', user.id).eq('word', key).then(() => {});
                 return;
             }
-            const groupWords = Object.keys(lyricsState.rhymes).filter((w) => lyricsState.rhymes[w] === color && w !== key);
+            const groupWords = Object.keys(lyricsState.rhymes).filter((w) => lyricsState.rhymes[w].color === color && w !== key);
             const isSlant = groupWords.length > 0 && !groupWords.some((w) => lyricsWordsRhyme(key, w));
             if (isSlant) {
                 const list = groupWords.map((w) => `"${w}"`).join(', ');
-                if (!confirm(`"${word}" doesn't obviously rhyme with ${list}.\n\nAdd it to this rhyme group anyway?`)) return;
+                if (!confirm(`"${word}" doesn't obviously rhyme with ${list}.\n\nAdd it to this rhyme group anyway? It'll be marked as a non-obvious rhyme (dashed underline) so it's clear it's not a direct match.`)) return;
             }
-            lyricsState.rhymes[key] = color;
+            lyricsState.rhymes[key] = { color: color, isSlant: isSlant };
             renderLyrics();
             sb.from('lyrics_rhyme_tags').upsert({
                 project_id: id, user_id: user.id, word: key, color: color, is_slant: isSlant

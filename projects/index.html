@@ -718,6 +718,9 @@
         .pj-lyrics-word { cursor: pointer; border-radius: 3px; padding: 0 1px; }
         .pj-lyrics-word:hover { background: rgba(255,255,255,0.12); }
         .pj-lyrics-word.has-rhyme { font-weight: 700; }
+        /* Non-obvious/slant rhyme — same group color, but visually flagged
+           as "not a direct match, still counts when pronounced/sung" */
+        .pj-lyrics-word.is-slant { text-decoration: underline; text-decoration-style: dashed; text-underline-offset: 3px; }
         .pj-lyrics-placeholder { color: rgba(255,255,255,0.5); font-size: 12px; font-style: italic; margin: 4px 0; }
 
         /* Commercial rate card inside the blue expand */
