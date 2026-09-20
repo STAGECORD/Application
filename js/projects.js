@@ -1450,6 +1450,79 @@
             return false;
         }
 
+        // ---------- Rhyme suggestion dictionary (English + Danish) ----------
+        const RHYME_CLUSTERS = [
+            // English
+            ['light','fight','right','night','sight','bright','tight','white','might','knight','slight','flight','height','delight','tonight'],
+            ['day','way','say','play','stay','bay','gray','away','today','may','astray','okay','hooray','display','replay'],
+            ['love','dove','above','glove','shove','of'],
+            ['time','rhyme','climb','mime','dime','lime','sublime','prime','crime','sometime'],
+            ['heart','start','part','smart','art','depart','apart','chart','dart','impart'],
+            ['street','beat','meet','sweet','feet','defeat','repeat','treat','heat','complete','seat','greet'],
+            ['smile','mile','while','pile','style','awhile','aisle','isle','file'],
+            ['rain','pain','main','brain','stain','plain','again','train','vein','remain','contain','obtain','strain'],
+            ['fire','desire','higher','wire','hire','admire','choir','tire','aspire','inspire'],
+            ['mind','find','blind','kind','behind','wind','grind','remind','signed','aligned'],
+            ['eye','sky','fly','high','cry','try','goodbye','dry','sigh','lie','tie','why','reply','rely'],
+            ['sound','found','around','ground','round','bound','astound','profound','unwound'],
+            ['true','blue','through','crew','flew','knew','few','grew','do','you','to','view','renew'],
+            ['gold','cold','hold','told','bold','old','behold','sold','controlled'],
+            ['feel','real','heal','steal','wheel','reveal','deal','seal','reel','peel'],
+            ['know','glow','show','flow','slow','grow','below','tomorrow','window','rainbow','hello'],
+            ['hand','land','stand','grand','band','demand','understand','command','expand','plan'],
+            ['girl','world','curl','swirl','pearl','twirl','whirl','unfurl'],
+            ['gone','dawn','on','upon','beyond','con'],
+            ['alone','phone','stone','bone','known','tone','grown','blown','shown','zone'],
+            ['name','game','flame','same','blame','frame','came','fame','shame','tame'],
+            ['soul','whole','goal','role','control','console','toll','stroll','patrol'],
+            ['wake','make','take','break','shake','fake','sake','stake','snake','cake','mistake'],
+            ['hold','told','bold','old','cold','gold','sold','behold','controlled','folded'],
+            ['stay','away','say','today','play','okay','grey','bay','spray','delay'],
+            // Danish — common endings
+            ['hånd','land','stand','sand','vand','brand','grand','strand','blandt'],
+            ['år','hår','vår','kår','tår','går','står','små','blå','rå'],
+            ['mig','dig','sig','vig','svig','tilbage'],
+            ['gang','lang','slang','sang','fang','klang','trang','stang','vang','rang'],
+            ['lyse','knuse','huse','bruse','pulserende','tryse'],
+            ['drøm','strøm','tøm','sværm','varm','arm','barm','charme'],
+            ['hjerte','smerte','mørke','styrke','række','lykke','trykke'],
+            ['nat','glat','flad','stad','glad','tap','klap','snak'],
+            ['liv','giv','skriv','kniv','driv','aktiv','intensiv'],
+            ['tid','flid','strid','lid','vid','ridse','blid','bid'],
+            ['øje','høje','føje','nøje','tøje','møde','søde','grøde'],
+            ['rejse','kvæg','væk','sek','ekko','dejligt'],
+            ['vej','dig','sej','tej','svæv','levn'],
+            ['nu','du','ku','tro','sko','fro','sno','flo']
+        ];
+        const LYRICS_WORD_INDEX = {};
+        RHYME_CLUSTERS.forEach((cluster, idx) => { cluster.forEach((w) => { LYRICS_WORD_INDEX[w.toLowerCase()] = idx; }); });
+
+        // Suggest rhymes for a word. Tries direct cluster membership first,
+        // then falls back to last-2/3 letter matches across the whole dict.
+        function suggestRhymes(word) {
+            const w = word.toLowerCase().replace(/[^a-zæøå0-9]/g, '');
+            if (!w) return [];
+            const direct = LYRICS_WORD_INDEX[w];
+            const out = [];
+            const seen = { [w]: true };
+            if (typeof direct === 'number') {
+                RHYME_CLUSTERS[direct].forEach((c) => { if (!seen[c]) { out.push(c); seen[c] = true; } });
+            }
+            const tail3 = w.slice(-3);
+            const tail2 = w.slice(-2);
+            const tier3 = [], tier2 = [];
+            RHYME_CLUSTERS.forEach((cluster) => {
+                cluster.forEach((c) => {
+                    if (seen[c]) return;
+                    if (tail3.length >= 3 && c.endsWith(tail3)) tier3.push(c);
+                    else if (c.endsWith(tail2)) tier2.push(c);
+                });
+            });
+            tier3.forEach((c) => { if (!seen[c]) { out.push(c); seen[c] = true; } });
+            tier2.forEach((c) => { if (!seen[c]) { out.push(c); seen[c] = true; } });
+            return out.slice(0, 18);
+        }
+
         function lyricsMemberSections(memberId) {
             return lyricsState.sections.filter((s) => !s.is_main && s.user_id === memberId).sort((a, b) => a.position - b.position);
         }
@@ -1501,9 +1574,15 @@
             lyricsState.mainFinalized = !!(raw.book && raw.book.main_finalized);
             lyricsState.mainFinalizedAt = raw.book && raw.book.main_finalized_at;
             lyricsState.sections = raw.sections || [];
+            // Keyed by exact occurrence (section + line + word position),
+            // not by word text — the same word appearing elsewhere in the
+            // notebook shouldn't get auto-colored just because it matches.
             lyricsState.rhymes = {};
             (raw.rhymes || []).forEach((r) => {
-                if (r.user_id === user.id) lyricsState.rhymes[r.word] = { color: r.color, isSlant: !!r.is_slant };
+                if (r.user_id === user.id && r.section_id != null && r.line_index != null && r.word_index != null) {
+                    const key = r.section_id + '|' + r.line_index + '|' + r.word_index;
+                    lyricsState.rhymes[key] = { word: r.word, color: r.color, isSlant: !!r.is_slant };
+                }
             });
         }
 
@@ -1533,23 +1612,25 @@
             }, 400);
         }
 
-        function tokenizeLyricsLine(text, rhymes) {
+        function tokenizeLyricsLine(sectionId, text, rhymes) {
             if (!text) return '';
-            return text.split('\n').map((line) => {
+            return text.split('\n').map((line, lineIdx) => {
                 if (!line.trim()) return '<p class="pj-lyrics-line">&nbsp;</p>';
                 let html = '';
+                let wordIdx = 0;
                 const re = /([\p{L}\p{N}'-]+)|([^\p{L}\p{N}]+)/gu;
                 let match;
                 while ((match = re.exec(line)) !== null) {
                     if (match[1]) {
                         const tok = match[1];
-                        const key = tok.toLowerCase();
-                        const tag = rhymes[key];
+                        const occKey = sectionId + '|' + lineIdx + '|' + wordIdx;
+                        const tag = rhymes[occKey];
                         const color = tag && tag.color;
                         const style = color ? ` style="color:${color};"` : '';
                         const cls = 'pj-lyrics-word' + (color ? ' has-rhyme' : '') + (tag && tag.isSlant ? ' is-slant' : '');
                         const title = (tag && tag.isSlant) ? ' title="Marked as a rhyme even though it\'s not a direct match — still counts when pronounced/sung."' : '';
-                        html += `<span class="${cls}" data-word="${escapeHtml(key)}"${style}${title}>${escapeHtml(tok)}</span>`;
+                        html += `<span class="${cls}" data-occurrence="${escapeHtml(occKey)}" data-word="${escapeHtml(tok.toLowerCase())}"${style}${title}>${escapeHtml(tok)}</span>`;
+                        wordIdx++;
                     } else {
                         html += escapeHtml(match[2]);
                     }
@@ -1630,7 +1711,7 @@
             }
             const toMainBtn = (!onMain && section.content && !lyricsState.mainFinalized)
                 ? `<button type="button" class="pj-lyrics-section__action" data-lyrics-to-main="${section.id}">→ Main</button>` : '';
-            const view = tokenizeLyricsLine(section.content || '', lyricsState.rhymes);
+            const view = tokenizeLyricsLine(section.id, section.content || '', lyricsState.rhymes);
             return `<li class="pj-lyrics-section${locked ? ' is-locked' : ''}" data-section-id="${section.id}" draggable="${locked ? 'false' : 'true'}">
                 <div class="pj-lyrics-section__head">
                     ${locked ? '' : `<button type="button" class="pj-lyrics-section__drag" data-lyrics-drag="${section.id}" aria-label="Drag to reorder">⋮⋮</button>`}
@@ -1644,7 +1725,8 @@
                 </div>
                 <div class="pj-lyrics-section__body">
                     ${editing
-                        ? `<textarea class="pj-lyrics-editor" data-lyrics-editor="${section.id}" placeholder="Write your lines here — one per line…">${escapeHtml(section.content || '')}</textarea>`
+                        ? `<textarea class="pj-lyrics-editor" data-lyrics-editor="${section.id}" placeholder="Write your lines here — one per line…">${escapeHtml(section.content || '')}</textarea>
+                           <div class="pj-lyrics-suggest-bar" data-lyrics-suggest="${section.id}"></div>`
                         : (section.content ? `<div data-lyrics-view="${section.id}">${view}</div>` : `<p class="pj-lyrics-placeholder">No text yet — click Edit to start writing.</p>`)}
                 </div>
             </li>`;
@@ -1686,7 +1768,7 @@
             lyricsState.editingIds.add(section.id);
             renderLyrics();
             const ta = expandEl.querySelector(`[data-lyrics-editor="${section.id}"]`);
-            if (ta) ta.focus();
+            if (ta) { ta.focus(); lyricsUpdateSuggestBar(section.id, ta); }
             sb.from('lyrics_sections').insert(section).then(({ error }) => { if (error) reloadLyrics(id); });
         }
 
@@ -1744,25 +1826,67 @@
             }, 500);
         }
 
-        function lyricsApplyRhymeColor(word, color) {
-            const key = word.toLowerCase();
-            if (lyricsState.rhymes[key] && lyricsState.rhymes[key].color === color) {
-                delete lyricsState.rhymes[key];
-                renderLyrics();
-                sb.from('lyrics_rhyme_tags').delete().eq('project_id', id).eq('user_id', user.id).eq('word', key).then(() => {});
+        // ---------- Rhyme-suggestion bar — shows suggestions for the
+        // previous line's last word, so the writer has something to work
+        // toward for the line they're currently on. Updates live as the
+        // cursor moves or the text changes.
+        function lyricsCursorLineIndex(textarea) {
+            const pos = textarea.selectionStart || 0;
+            return textarea.value.slice(0, pos).split('\n').length - 1;
+        }
+
+        function lyricsUpdateSuggestBar(sectionId, textarea) {
+            const bar = expandEl.querySelector(`[data-lyrics-suggest="${sectionId}"]`);
+            if (!bar) return;
+            const lines = textarea.value.split('\n');
+            const curLine = lyricsCursorLineIndex(textarea);
+            let prevWord = '';
+            for (let i = curLine - 1; i >= 0; i--) {
+                const words = (lines[i] || '').trim().split(/\s+/).filter(Boolean);
+                if (words.length) { prevWord = words[words.length - 1].replace(/[^\p{L}\p{N}'-]/gu, ''); break; }
+            }
+            if (!prevWord) {
+                bar.innerHTML = `<span class="pj-lyrics-suggest-hint">Write a line, then start the next one — rhyme suggestions for the line above will show up here.</span>`;
                 return;
             }
-            const groupWords = Object.keys(lyricsState.rhymes).filter((w) => lyricsState.rhymes[w].color === color && w !== key);
-            const isSlant = groupWords.length > 0 && !groupWords.some((w) => lyricsWordsRhyme(key, w));
+            const suggestions = suggestRhymes(prevWord);
+            if (!suggestions.length) {
+                bar.innerHTML = `<span class="pj-lyrics-suggest-hint">No rhyme suggestions found for "${escapeHtml(prevWord)}".</span>`;
+                return;
+            }
+            bar.innerHTML = `<span class="pj-lyrics-suggest-label">Rhymes with "${escapeHtml(prevWord)}":</span>` +
+                suggestions.slice(0, 10).map((w) => `<button type="button" class="pj-lyrics-suggest-chip" data-lyrics-insert="${escapeHtml(w)}">${escapeHtml(w)}</button>`).join('');
+        }
+
+        // occurrenceKey = "sectionId|lineIndex|wordIndex" — a tag applies
+        // to this exact word at this exact spot, not to the word text
+        // wherever else it might appear in the notebook.
+        function lyricsApplyRhymeColor(occurrenceKey, word, color) {
+            if (lyricsState.rhymes[occurrenceKey] && lyricsState.rhymes[occurrenceKey].color === color) {
+                delete lyricsState.rhymes[occurrenceKey];
+                renderLyrics();
+                const [sectionId, lineIndex, wordIndex] = occurrenceKey.split('|');
+                sb.from('lyrics_rhyme_tags').delete()
+                    .eq('project_id', id).eq('user_id', user.id)
+                    .eq('section_id', sectionId).eq('line_index', Number(lineIndex)).eq('word_index', Number(wordIndex))
+                    .then(() => {});
+                return;
+            }
+            const groupWords = Object.keys(lyricsState.rhymes)
+                .filter((k) => lyricsState.rhymes[k].color === color && k !== occurrenceKey)
+                .map((k) => lyricsState.rhymes[k].word);
+            const isSlant = groupWords.length > 0 && !groupWords.some((w) => lyricsWordsRhyme(word, w));
             if (isSlant) {
                 const list = groupWords.map((w) => `"${w}"`).join(', ');
                 if (!confirm(`"${word}" doesn't obviously rhyme with ${list}.\n\nAdd it to this rhyme group anyway? It'll be marked as a non-obvious rhyme (dashed underline) so it's clear it's not a direct match.`)) return;
             }
-            lyricsState.rhymes[key] = { color: color, isSlant: isSlant };
+            lyricsState.rhymes[occurrenceKey] = { word: word, color: color, isSlant: isSlant };
             renderLyrics();
+            const [sectionId, lineIndex, wordIndex] = occurrenceKey.split('|');
             sb.from('lyrics_rhyme_tags').upsert({
-                project_id: id, user_id: user.id, word: key, color: color, is_slant: isSlant
-            }, { onConflict: 'project_id,user_id,word' }).then(({ error }) => { if (error) reloadLyrics(id); });
+                project_id: id, user_id: user.id, section_id: sectionId, line_index: Number(lineIndex), word_index: Number(wordIndex),
+                word: word, color: color, is_slant: isSlant
+            }, { onConflict: 'project_id,user_id,section_id,line_index,word_index' }).then(({ error }) => { if (error) reloadLyrics(id); });
         }
 
         function lyricsAddPaletteColor() {
@@ -1854,7 +1978,7 @@
                 if (e.target.closest('[data-lyrics-add-color]')) { lyricsAddPaletteColor(); return; }
 
                 const word = e.target.closest('.pj-lyrics-word');
-                if (word && lyricsState.activeColor) { lyricsApplyRhymeColor(word.dataset.word, lyricsState.activeColor); return; }
+                if (word && lyricsState.activeColor) { lyricsApplyRhymeColor(word.dataset.occurrence, word.dataset.word, lyricsState.activeColor); return; }
 
                 const addBtn = e.target.closest('[data-lyrics-add-btn]');
                 if (addBtn) {
@@ -1873,7 +1997,7 @@
                     if (lyricsState.editingIds.has(sid)) lyricsState.editingIds.delete(sid); else lyricsState.editingIds.add(sid);
                     renderLyrics();
                     const ta = expandEl.querySelector(`[data-lyrics-editor="${sid}"]`);
-                    if (ta) ta.focus();
+                    if (ta) { ta.focus(); lyricsUpdateSuggestBar(sid, ta); }
                     return;
                 }
 
@@ -1882,6 +2006,28 @@
 
                 if (e.target.closest('[data-lyrics-finalize]')) { lyricsFinalizeMain(); return; }
                 if (e.target.closest('[data-lyrics-unfinalize]')) { lyricsUnfinalizeMain(); return; }
+
+                const insertChip = e.target.closest('[data-lyrics-insert]');
+                if (insertChip) {
+                    const bar = insertChip.closest('.pj-lyrics-suggest-bar');
+                    const sid = bar && bar.dataset.lyricsSuggest;
+                    const ta = sid && expandEl.querySelector(`[data-lyrics-editor="${sid}"]`);
+                    if (ta) {
+                        const wordToInsert = insertChip.dataset.lyricsInsert;
+                        const start = ta.selectionStart, end = ta.selectionEnd;
+                        const before = ta.value.slice(0, start);
+                        const after = ta.value.slice(end);
+                        const needsSpace = before && !/\s$/.test(before);
+                        const insert = (needsSpace ? ' ' : '') + wordToInsert;
+                        ta.value = before + insert + after;
+                        const newPos = (before + insert).length;
+                        ta.focus();
+                        ta.setSelectionRange(newPos, newPos);
+                        lyricsSetSectionContent(sid, ta.value);
+                        lyricsUpdateSuggestBar(sid, ta);
+                    }
+                    return;
+                }
             });
 
             expandEl.addEventListener('change', (e) => {
@@ -1899,9 +2045,22 @@
             expandEl.addEventListener('input', (e) => {
                 if (activeKey !== 'action:lyrics') return;
                 const ta = e.target.closest('[data-lyrics-editor]');
-                if (ta) { lyricsSetSectionContent(ta.dataset.lyricsEditor, ta.value); return; }
+                if (ta) { lyricsSetSectionContent(ta.dataset.lyricsEditor, ta.value); lyricsUpdateSuggestBar(ta.dataset.lyricsEditor, ta); return; }
                 const nameInp = e.target.closest('[data-lyrics-custom-name]');
                 if (nameInp) { lyricsSetSectionCustomName(nameInp.dataset.lyricsCustomName, nameInp.value); return; }
+            });
+
+            // Cursor moving without the text changing (click, arrow keys)
+            // should still refresh which line's rhymes are being suggested.
+            expandEl.addEventListener('keyup', (e) => {
+                if (activeKey !== 'action:lyrics') return;
+                const ta = e.target.closest('[data-lyrics-editor]');
+                if (ta) lyricsUpdateSuggestBar(ta.dataset.lyricsEditor, ta);
+            });
+            expandEl.addEventListener('click', (e) => {
+                if (activeKey !== 'action:lyrics') return;
+                const ta = e.target.closest('[data-lyrics-editor]');
+                if (ta) lyricsUpdateSuggestBar(ta.dataset.lyricsEditor, ta);
             });
 
             // Catch up on any re-render a realtime update deferred while
