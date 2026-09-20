@@ -5,14 +5,27 @@
 
 // Resolves an asset path that lives under "STAGECORD PRO/" from any page depth
 // by counting how many directories below the project root the current page sits.
+//
+// Handles both:
+//  - local file:// browsing, where the URL ends in an explicit filename
+//    (…/STAGECORD PRO/artist/settings/index.html)
+//  - the deployed site, where routes are clean directory URLs with no
+//    "STAGECORD PRO" segment and no trailing filename
+//    (…/artist/settings/)
+// The last path segment only counts as a directory level if it does NOT
+// look like a filename (i.e. has no dot) — otherwise every directory-style
+// route resolved one level too shallow.
 function localAsset(rel) {
     const segments = window.location.pathname.split('/').filter(Boolean);
     let baseIdx = -1;
     for (let i = segments.length - 1; i >= 0; i--) {
         if (decodeURIComponent(segments[i]) === 'STAGECORD PRO') { baseIdx = i; break; }
     }
-    const depth = baseIdx === -1 ? Math.max(0, segments.length - 1) : segments.length - baseIdx - 2;
-    return '../'.repeat(Math.max(0, depth)) + rel;
+    const routeSegments = baseIdx === -1 ? segments : segments.slice(baseIdx + 1);
+    const lastSegment = routeSegments[routeSegments.length - 1] || '';
+    const endsInFile = /\.[A-Za-z0-9]+$/.test(lastSegment);
+    const depth = Math.max(0, routeSegments.length - (endsInFile ? 1 : 0));
+    return '../'.repeat(depth) + rel;
 }
 
 // ============================================================

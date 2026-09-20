@@ -1415,13 +1415,12 @@ document.addEventListener('DOMContentLoaded', function() {
         return 'Other';
     }
 
+    // Returns the relative path prefix (e.g. '../../') needed to reach the
+    // project root from the current page, using the same depth-aware logic
+    // as localAsset() — works both for local file:// browsing and for the
+    // deployed site's clean directory URLs.
     function getProjectRoot() {
-        const url = window.location.href;
-        const idx = url.indexOf('/STAGECORD%20PRO/');
-        if (idx !== -1) return url.substring(0, idx + '/STAGECORD%20PRO/'.length);
-        const idx2 = url.indexOf('/STAGECORD PRO/');
-        if (idx2 !== -1) return url.substring(0, idx2 + '/STAGECORD PRO/'.length);
-        return '';
+        return localAsset('');
     }
 
     function navigateToSuggestion(relPath) {
