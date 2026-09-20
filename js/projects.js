@@ -1505,13 +1505,29 @@
             (raw.rhymes || []).forEach((r) => { if (r.user_id === user.id) lyricsState.rhymes[r.word] = r.color; });
         }
 
+        // Supabase Realtime echoes your own writes back to you, not just
+        // teammates' — without this, every debounced save while typing
+        // would trigger a reload+re-render that destroys and recreates the
+        // textarea, kicking focus out mid-sentence. So: never re-render
+        // while a lyrics text field is focused; just update the state
+        // quietly and catch up once focus actually leaves the editor.
+        let lyricsRenderPending = false;
+        function lyricsEditorFocused() {
+            const el = document.activeElement;
+            return !!(el && expandEl.contains(el) && el.matches && (el.matches('[data-lyrics-editor]') || el.matches('[data-lyrics-custom-name]')));
+        }
+
         function reloadLyrics(projectId) {
             clearTimeout(lyricsReloadTimer);
             lyricsReloadTimer = setTimeout(async () => {
                 if (activeKey !== 'action:lyrics' || !lyricsState) return;
                 const raw = await fetchLyricsBook(projectId);
                 applyLyricsRaw(raw);
-                renderLyrics();
+                if (lyricsEditorFocused()) {
+                    lyricsRenderPending = true;
+                } else {
+                    renderLyrics();
+                }
             }, 400);
         }
 
@@ -1665,6 +1681,8 @@
             lyricsState.sections.push(section);
             lyricsState.editingIds.add(section.id);
             renderLyrics();
+            const ta = expandEl.querySelector(`[data-lyrics-editor="${section.id}"]`);
+            if (ta) ta.focus();
             sb.from('lyrics_sections').insert(section).then(({ error }) => { if (error) reloadLyrics(id); });
         }
 
@@ -1880,6 +1898,19 @@
                 if (ta) { lyricsSetSectionContent(ta.dataset.lyricsEditor, ta.value); return; }
                 const nameInp = e.target.closest('[data-lyrics-custom-name]');
                 if (nameInp) { lyricsSetSectionCustomName(nameInp.dataset.lyricsCustomName, nameInp.value); return; }
+            });
+
+            // Catch up on any re-render a realtime update deferred while
+            // typing, once focus actually leaves the editor entirely (not
+            // just moving to another text field).
+            expandEl.addEventListener('focusout', (e) => {
+                if (activeKey !== 'action:lyrics' || !lyricsRenderPending) return;
+                const leavingEditor = e.target.matches && (e.target.matches('[data-lyrics-editor]') || e.target.matches('[data-lyrics-custom-name]'));
+                if (!leavingEditor) return;
+                const enteringEditor = e.relatedTarget && e.relatedTarget.matches && (e.relatedTarget.matches('[data-lyrics-editor]') || e.relatedTarget.matches('[data-lyrics-custom-name]'));
+                if (enteringEditor) return;
+                lyricsRenderPending = false;
+                renderLyrics();
             });
 
             // Drag-to-reorder sections within the active tab's list.
