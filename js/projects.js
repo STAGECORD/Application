@@ -2383,6 +2383,60 @@
         // In-staff diatonic step range per clef, for ledger-line logic.
         const SHEET_STAFF_RANGE = { treble: [2, 10], bass: [-10, -2] };
 
+        // Real engraved key signature: [count, 'sharp'|'flat'|null] per key,
+        // minor keys mapped to their relative major's signature.
+        const KEY_SIG_TABLE = {
+            C: [0, null], Am: [0, null],
+            G: [1, 'sharp'], Em: [1, 'sharp'],
+            D: [2, 'sharp'], Bm: [2, 'sharp'],
+            A: [3, 'sharp'], 'F#m': [3, 'sharp'],
+            E: [4, 'sharp'],
+            B: [5, 'sharp'],
+            F: [1, 'flat'], Dm: [1, 'flat'],
+            Bb: [2, 'flat'], Gm: [2, 'flat'],
+            Eb: [3, 'flat'], Cm: [3, 'flat'],
+            Ab: [4, 'flat']
+        };
+        const SHARP_ORDER = ['F', 'C', 'G', 'D', 'A', 'E', 'B'];
+        const FLAT_ORDER = ['B', 'E', 'A', 'D', 'G', 'C', 'F'];
+        // Standard engraved staff position (letter + octave) for each
+        // accidental, per clef. Bass sits a fixed third below treble on
+        // the same staff grid, so every bass position is treble's letter
+        // shifted down by exactly 2 diatonic steps — kept as an explicit
+        // table (rather than derived) so it's easy to sanity-check.
+        const TREBLE_ACC_OCTAVE = {
+            sharp: { F: 5, C: 5, G: 5, D: 5, A: 4, E: 5, B: 4 },
+            flat: { B: 4, E: 5, A: 4, D: 5, G: 4, C: 5, F: 4 }
+        };
+        const BASS_ACC_OCTAVE = {
+            sharp: { F: 3, C: 3, G: 3, D: 3, A: 2, E: 3, B: 2 },
+            flat: { B: 2, E: 3, A: 2, D: 3, G: 2, C: 3, F: 2 }
+        };
+
+        function sheetKeySignatureGlyphs(clef, x) {
+            const conf = KEY_SIG_TABLE[sheetState.key] || [0, null];
+            const [count, type] = conf;
+            if (!count) return { svg: '', width: 0 };
+            const order = type === 'sharp' ? SHARP_ORDER : FLAT_ORDER;
+            const octTable = (clef === 'bass' ? BASS_ACC_OCTAVE : TREBLE_ACC_OCTAVE)[type];
+            const glyph = type === 'sharp' ? '♯' : '♭';
+            let svg = '';
+            let cx = x;
+            for (let i = 0; i < count; i++) {
+                const letter = order[i];
+                const step = (octTable[letter] - 4) * 7 + SHEET_LETTER_STEP[letter];
+                const y = sheetStepToY(step, clef);
+                svg += `<text class="pj-sheet-staff__accidental" x="${cx}" y="${y + 3}">${glyph}</text>`;
+                cx += 9;
+            }
+            return { svg, width: count * 9 + 4 };
+        }
+
+        function sheetTimeSignatureGlyphs(x) {
+            const parts = (sheetState.timeSignature || '4/4').split('/');
+            return `<text class="pj-sheet-staff__timesig" x="${x}" y="31">${escapeHtml(parts[0] || '4')}</text><text class="pj-sheet-staff__timesig" x="${x}" y="47">${escapeHtml(parts[1] || '4')}</text>`;
+        }
+
         let sheetState = null;
         let sheetVisible = false;
         let sheetChannel = null;
@@ -2467,17 +2521,27 @@
 
         // ---------- Rendering: staff (SVG), one per clef per line ----------
         function buildSheetStaff(lineWords, sectionId, lineIdx, clef) {
-            const padLeft = 36, padRight = 12, slotW = 36;
+            const clefW = 30;
+            const [accCount] = KEY_SIG_TABLE[sheetState.key] || [0, null];
+            const keySigWidth = accCount ? accCount * 9 + 4 : 0;
+            const padLeft = clefW + keySigWidth + 24, padRight = 12, slotW = 36;
             const width = padLeft + padRight + Math.max(lineWords.length, 4) * slotW;
             const height = 70;
             let lines = '';
             for (let i = 0; i < 5; i++) {
                 const y = 22 + i * 6;
-                lines += `<line class="pj-sheet-staff__line" x1="${padLeft - 4}" y1="${y}" x2="${width - padRight + 4}" y2="${y}"/>`;
+                lines += `<line class="pj-sheet-staff__line" x1="${clefW - 4}" y1="${y}" x2="${width - padRight + 4}" y2="${y}"/>`;
             }
+            // Anchor the clef glyph's vertical center on the line it
+            // actually identifies — G4 (2nd line from bottom) for treble,
+            // F3 (2nd line from top) for bass — instead of an arbitrary
+            // baseline offset, so it doesn't drift off the right line.
             const clefGlyph = clef === 'bass' ? '𝄢' : '𝄞';
-            const clefEl = `<text class="pj-sheet-staff__clef" x="${padLeft - 26}" y="${clef === 'bass' ? 32 : 46}">${clefGlyph}</text>`;
-            const sig = `<text class="pj-sheet-staff__signature" x="${padLeft - 4}" y="14">${escapeHtml(sheetState.key + ' · ' + sheetState.timeSignature)}</text>`;
+            const clefTargetY = clef === 'bass' ? 28 : 40;
+            const clefEl = `<text class="pj-sheet-staff__clef pj-sheet-staff__clef--${clef}" dominant-baseline="central" x="${clefW - 22}" y="${clefTargetY}">${clefGlyph}</text>`;
+            const keySigEl = sheetKeySignatureGlyphs(clef, clefW + 6).svg;
+            const timeSigEl = sheetTimeSignatureGlyphs(clefW + keySigWidth + 14);
+            const tempoEl = clef === 'treble' ? `<text class="pj-sheet-staff__tempo" x="${clefW - 22}" y="10">♩ = ${sheetState.tempo}</text>` : '';
 
             const [rangeLo, rangeHi] = SHEET_STAFF_RANGE[clef];
             let notes = '';
@@ -2528,7 +2592,7 @@
                 }
                 notes += ledgers + acc + noteHead + stem;
             }
-            return `<svg class="pj-sheet-staff" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMinYMid meet">${lines}${clefEl}${sig}${notes}</svg>`;
+            return `<svg class="pj-sheet-staff" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMinYMid meet">${tempoEl}${lines}${clefEl}${keySigEl}${timeSigEl}${notes}</svg>`;
         }
 
         function renderSheetWords(line, sectionId, lineIdx) {
@@ -2559,8 +2623,8 @@
                     <div class="pj-sheet-staff-wrap">
                         ${buildSheetStaff(line, section.id, lineIdx, 'treble')}
                         ${buildSheetStaff(line, section.id, lineIdx, 'bass')}
+                        ${renderSheetWords(line, section.id, lineIdx)}
                     </div>
-                    ${renderSheetWords(line, section.id, lineIdx)}
                 </div>`;
             });
             return `<div class="pj-sheet-block">${body}</div>`;
