@@ -1557,9 +1557,21 @@
 
         function startLyricsRealtime(projectId) {
             stopLyricsRealtime();
+            // Every write we make echoes back to us too, not just to
+            // teammates. We already applied our own writes optimistically,
+            // so refetching on our own echo is both unnecessary and
+            // disruptive (it was cutting off "click word 1, then word 2"
+            // mid-sequence). Only actually reload for a change that isn't
+            // ours — payload.new covers INSERT/UPDATE; payload.old covers
+            // DELETE (needs REPLICA IDENTITY FULL to carry user_id).
+            const handleRowChange = (payload) => {
+                const row = (payload.new && Object.keys(payload.new).length) ? payload.new : payload.old;
+                if (row && row.user_id && row.user_id === user.id) return;
+                reloadLyrics(projectId);
+            };
             lyricsChannel = sb.channel('pj-lyrics-' + projectId)
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'lyrics_sections', filter: 'project_id=eq.' + projectId }, () => reloadLyrics(projectId))
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'lyrics_rhyme_tags', filter: 'project_id=eq.' + projectId }, () => reloadLyrics(projectId))
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'lyrics_sections', filter: 'project_id=eq.' + projectId }, handleRowChange)
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'lyrics_rhyme_tags', filter: 'project_id=eq.' + projectId }, handleRowChange)
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'lyrics_books', filter: 'project_id=eq.' + projectId }, () => reloadLyrics(projectId))
                 .subscribe();
         }
