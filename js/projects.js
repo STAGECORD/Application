@@ -26,7 +26,7 @@
     let editingProject = null;
 
     const escapeHtml = F.escapeHtml;
-    const escapeAttr = F.escapeAttr;
+    const escapeAttr = escapeHtml; // window.STAGECORD only exposes escapeHtml; it already escapes quotes so it's attribute-safe too
 
     // Hardcoded conversion rates from DKK. Update manually as needed.
     // (Each value is "how many of this currency = 1 DKK".)
