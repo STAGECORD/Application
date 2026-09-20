@@ -480,8 +480,7 @@
                                 ${pillFile('uploads', 'wave', 'WAVE')}
                                 ${pillFile('uploads', 'sheet', 'Sheet Music')}
                                 ${pillFile('uploads', 'notes', 'Notes &amp; Lyrics')}
-                                <button type="button" class="pill-btn" data-action="lyrics" data-help="Lyrics Studio: write lyrics together, section by section, with everyone's own notebook plus a shared Main Lyrics. Click a word and pick a color to mark rhyme groups.">Lyrics Studio</button>
-                                <button type="button" class="pill-btn" data-action="sheet-music" data-help="Sheet Music Studio: put a grand staff (treble &amp; bass clef) under the lyrics and click a word to set its pitch and duration for tempo, key and time signature.">Sheet Music Studio</button>
+                                <button type="button" class="pill-btn" data-action="lyrics" data-help="Lyrics Studio: write lyrics together, section by section, with everyone's own notebook plus a shared Main Lyrics. Click a word and pick a color to mark rhyme groups — then toggle Sheet Music to add a grand staff (treble &amp; bass clef) underneath.">Lyrics Studio</button>
                                 <button type="button" class="pill-btn" data-action="log" data-help="Log: see a timeline of everything that's happened on the project — file uploads, royalty changes and release approvals, newest first.">Log</button>
                             </div>
                         </div>
@@ -672,7 +671,7 @@
 
         function closeExpand() {
             if (activeKey === 'action:lyrics' && typeof stopLyricsRealtime === 'function') stopLyricsRealtime();
-            if (activeKey === 'action:sheet' && typeof stopSheetRealtime === 'function') { stopSheetRealtime(); hideSheetPicker(); }
+            if (activeKey === 'action:lyrics' && typeof stopSheetRealtime === 'function') { stopSheetRealtime(); hideSheetPicker(); }
             activeKey = null;
             expandEl.hidden = true;
             expandEl.innerHTML = '';
@@ -1682,6 +1681,17 @@
             const readOnlyNote = (!lyricsCanEditCurrentTab())
                 ? `<span class="pj-lyrics-hint-label">Read-only — this is ${escapeHtml(lyricsTabName(lyricsState.activeTab))}'s notebook</span>` : '';
             const swatches = lyricsState.palette.map((c) => `<button type="button" class="pj-lyrics-swatch${c === lyricsState.activeColor ? ' is-active' : ''}" data-lyrics-color="${c}" style="background:${c};" aria-label="Rhyme color ${c}"></button>`).join('');
+            const sheetGroup = sheetState ? `
+                <div class="pj-lyrics-toolbar__group">
+                    <button type="button" class="pj-btn pj-btn--ghost" data-lyrics-toggle-sheet>${sheetVisible ? '🎼 Hide Sheet Music' : '🎼 Sheet Music'}</button>
+                </div>
+                ${sheetVisible ? `
+                <div class="pj-lyrics-toolbar__group"><span class="pj-lyrics-hint-label">Tempo</span>
+                    <input type="number" class="pj-lyrics-toolbar__custom" style="width:64px;" data-sheet-tempo value="${sheetState.tempo}" min="40" max="240"> BPM</div>
+                <div class="pj-lyrics-toolbar__group"><span class="pj-lyrics-hint-label">Time</span>
+                    <select class="pj-lyrics-toolbar__select" data-sheet-time>${SHEET_TIME_SIGNATURES.map((t) => `<option value="${t}"${t === sheetState.timeSignature ? ' selected' : ''}>${t}</option>`).join('')}</select></div>
+                <div class="pj-lyrics-toolbar__group"><span class="pj-lyrics-hint-label">Key</span>
+                    <select class="pj-lyrics-toolbar__select" data-sheet-key>${SHEET_KEYS.map((k) => `<option value="${escapeAttr(k)}"${k === sheetState.key ? ' selected' : ''}>${escapeHtml(k)}</option>`).join('')}</select></div>` : ''}` : '';
             return `<div class="pj-lyrics-toolbar">
                 ${addGroup}
                 ${readOnlyNote}
@@ -1689,8 +1699,10 @@
                     <span class="pj-lyrics-hint-label">Rhyme colors:</span>
                     <div class="pj-lyrics-palette">${swatches}<button type="button" class="pj-lyrics-swatch-add" data-lyrics-add-color aria-label="Add color">+</button></div>
                 </div>
+                ${sheetGroup}
             </div>
-            <p class="pj-lyrics-hint">${lyricsState.activeColor ? `Paint mode: click a word, or drag across a phrase to select several at once, to mark it with the selected color. Click/drag the same selection again to turn it off.` : `Select a rhyme color, then click a word — or drag across a phrase — to group it as a rhyme. Either side can be any number of words.`}</p>`;
+            <p class="pj-lyrics-hint">${lyricsState.activeColor ? `Paint mode: click a word, or drag across a phrase to select several at once, to mark it with the selected color. Click/drag the same selection again to turn it off.` : `Select a rhyme color, then click a word — or drag across a phrase — to group it as a rhyme. Either side can be any number of words.`}</p>
+            ${sheetVisible ? `<p class="pj-lyrics-hint">Sheet Music: click a word below to set its pitch and duration on the treble or bass staff — a word can carry a note on both at once.</p>` : ''}`;
         }
 
         function renderLyricsBanner() {
@@ -1745,6 +1757,7 @@
                         ? `<textarea class="pj-lyrics-editor" data-lyrics-editor="${section.id}" placeholder="Write your lines here — one per line…">${escapeHtml(section.content || '')}</textarea>
                            <div class="pj-lyrics-suggest-bar" data-lyrics-suggest="${section.id}"></div>`
                         : (section.content ? `<div data-lyrics-view="${section.id}">${view}</div>` : `<p class="pj-lyrics-placeholder">No text yet — click Edit to start writing.</p>`)}
+                    ${(sheetVisible && sheetState) ? renderSheetForSection(section) : ''}
                 </div>
             </li>`;
         }
@@ -2019,6 +2032,8 @@
                 }
                 if (e.target.closest('[data-lyrics-add-color]')) { lyricsAddPaletteColor(); return; }
 
+                if (e.target.closest('[data-lyrics-toggle-sheet]')) { sheetVisible = !sheetVisible; hideSheetPicker(); renderLyrics(); return; }
+
                 // Word selection (single click or dragged phrase) is
                 // handled on mousedown/mouseup below, not here.
 
@@ -2188,6 +2203,8 @@
                 lyricsReorderSection(dragId, li.dataset.sectionId);
                 dragId = null;
             });
+
+            wireSheetMusicEvents();
         }
 
         // One-time recovery for tags created before rhyme tagging moved to
@@ -2275,6 +2292,7 @@
             activeKey = key;
             markActiveBtn(triggerBtn);
             expandEl.hidden = false;
+            sheetVisible = false;
             expandEl.innerHTML = `
                 <div class="pc-expand__head">
                     <h4 class="pc-expand__title">Lyrics Studio</h4>
@@ -2282,24 +2300,48 @@
                 </div>
                 <p class="pc-expand__hint">Write lyrics together, section by section. Click a word and pick a color to mark rhymes — any number of words can share a color, even non-obvious ones.</p>
                 <div data-lyrics-body style="color:#BFD7FF;text-align:center;padding:24px;">Loading…</div>
+                <div class="pj-sheet-picker" data-sheet-picker hidden>
+                    <div class="pj-sheet-picker__head">
+                        <span data-sheet-picker-word></span>
+                        <button type="button" class="pj-sheet-picker__close" data-sheet-picker-close aria-label="Close">&times;</button>
+                    </div>
+                    <div class="pj-sheet-picker__clefs" data-sheet-clef-row></div>
+                    <div class="pj-sheet-picker__octaves" data-sheet-octave-row></div>
+                    <div class="pj-sheet-picker__pitches" data-sheet-pitch-grid></div>
+                    <div class="pj-sheet-picker__durations" data-sheet-duration-row></div>
+                    <div class="pj-sheet-picker__actions">
+                        <button type="button" class="pj-btn pj-btn--ghost" data-sheet-rest>Rest</button>
+                        <button type="button" class="pj-btn pj-btn--ghost" data-sheet-clear>Clear</button>
+                    </div>
+                </div>
             `;
-            expandEl.querySelector('[data-expand-close]').addEventListener('click', () => { stopLyricsRealtime(); closeExpand(); });
+            expandEl.querySelector('[data-expand-close]').addEventListener('click', () => { stopLyricsRealtime(); stopSheetRealtime(); hideSheetPicker(); closeExpand(); });
             wireLyricsEvents();
 
             await ensureLyricsStateLoaded(id, true);
             startLyricsRealtime(id);
+
+            try {
+                await ensureSheetMusicSettings(id);
+                sheetState = { tempo: 120, timeSignature: '4/4', key: 'C', notes: {} };
+                applySheetRaw(await fetchSheetMusic(id));
+                startSheetRealtime(id);
+            } catch (err) {
+                console.error('Sheet Music failed to load:', err);
+                sheetState = null;
+            }
+
             renderLyrics();
         }
 
         // ===================================================================
-        // Sheet Music — piano score (grand staff) notation placed on the
-        // project's lyrics. Reads section/line/word data straight from
-        // Lyrics Studio's state (ensureLyricsStateLoaded), so it works
-        // whether or not that panel has been opened yet this session.
+        // Sheet Music — piano score (grand staff) notation, shown inline
+        // inside Lyrics Studio behind a toggle (not a separate panel).
         // Notes are shared across the whole project (like Main Lyrics),
-        // not per-person — any member can place or move a note. Each word
-        // can carry a treble note and/or a bass note at once, rendered as
-        // a real two-staff grand staff.
+        // not per-person — any member can place or move a note on any
+        // section, in whichever tab is currently open. A word can carry a
+        // treble note and/or a bass note at once, rendered as a real
+        // two-staff grand staff under that line.
         // ===================================================================
         const SHEET_WHITE_LETTERS = ['C','D','E','F','G','A','B'];
         const SHEET_BLACK_LETTERS = ['C#','D#','','F#','G#','A#'];
@@ -2336,6 +2378,7 @@
         const SHEET_STAFF_RANGE = { treble: [2, 10], bass: [-10, -2] };
 
         let sheetState = null;
+        let sheetVisible = false;
         let sheetChannel = null;
         let sheetReloadTimer = null;
         let sheetPickerKey = null;    // { sectionId, lineIdx, wordIdx }
@@ -2349,39 +2392,18 @@
             return sheetState.notes[sheetNoteKey(sectionId, lineIdx, wordIdx, clef)] || null;
         }
 
-        function sheetSectionsForSource(source) {
-            const sections = source === LYRICS_MAIN_TAB ? lyricsMainSections() : lyricsMemberSections(source);
-            return sections.map((s) => {
-                let label = LYRICS_SECTION_TYPES[s.type] || s.type;
-                if (s.type === 'custom') label = s.customName || 'Custom';
-                if (s.type === 'verse' || s.type === 'chorus') {
-                    const sameType = sections.filter((x) => x.type === s.type);
-                    const idx = sameType.indexOf(s) + 1;
-                    if (sameType.length > 1) label += ' ' + idx;
-                }
-                const lines = (s.content || '').split('\n').map((line) => line.trim().split(/\s+/).filter(Boolean));
-                return { sectionId: s.id, label, lines };
-            });
-        }
-
-        function sheetPickDefaultSource() {
-            const mainHasContent = lyricsMainSections().some((s) => (s.content || '').trim().length > 0);
-            if (mainHasContent) return LYRICS_MAIN_TAB;
-            if (lyricsMemberSections(user.id).some((s) => (s.content || '').trim().length > 0)) return user.id;
-            const withContent = (members || []).find((m) => lyricsMemberSections(m.user_id).some((s) => (s.content || '').trim().length > 0));
-            return withContent ? withContent.user_id : LYRICS_MAIN_TAB;
-        }
-
-        function sheetSourceDisplayName(source) {
-            return source === LYRICS_MAIN_TAB ? 'Main Lyrics' : lyricsTabName(source) + '’s notebook';
+        function sheetLinesForSection(section) {
+            return (section.content || '').split('\n').map((line) => line.trim().split(/\s+/).filter(Boolean));
         }
 
         // ---------- Load / sync / realtime ----------
         async function ensureSheetMusicSettings(projectId) {
-            try { await sb.rpc('ensure_sheet_music_settings', { p_project_id: projectId }); } catch (e) {}
+            const resp = await sb.rpc('ensure_sheet_music_settings', { p_project_id: projectId });
+            if (resp.error) throw resp.error;
         }
         async function fetchSheetMusic(projectId) {
             const resp = await sb.rpc('get_sheet_music', { p_project_id: projectId });
+            if (resp.error) throw resp.error;
             return resp.data || { settings: null, notes: [] };
         }
         function applySheetRaw(raw) {
@@ -2407,16 +2429,16 @@
         function reloadSheetMusic(projectId) {
             clearTimeout(sheetReloadTimer);
             sheetReloadTimer = setTimeout(async () => {
-                if (activeKey !== 'action:sheet' || !sheetState) return;
+                if (activeKey !== 'action:lyrics' || !sheetState) return;
                 applySheetRaw(await fetchSheetMusic(projectId));
-                renderSheetMusic();
+                if (lyricsEditorFocused()) { lyricsRenderPending = true; } else { renderLyrics(); }
             }, 400);
         }
 
         // ---------- Mutations ----------
         function setSheetHeader(field, value) {
             sheetState[field] = value;
-            renderSheetMusic();
+            renderLyrics();
             const column = field === 'timeSignature' ? 'time_signature' : field;
             sb.from('sheet_music_settings').update({ [column]: value, updated_at: new Date().toISOString() }).eq('project_id', id).then(() => {});
         }
@@ -2424,7 +2446,7 @@
         function setSheetNote(sectionId, lineIdx, wordIdx, clef, note) {
             const key = sheetNoteKey(sectionId, lineIdx, wordIdx, clef);
             if (note) sheetState.notes[key] = note; else delete sheetState.notes[key];
-            renderSheetMusic();
+            renderLyrics();
             if (note) {
                 sb.from('sheet_music_notes').upsert({
                     project_id: id, section_id: sectionId, line_index: lineIdx, word_index: wordIdx, clef: clef,
@@ -2521,69 +2543,21 @@
             }).join('') + '</div>';
         }
 
-        function renderSheetSourceSelect() {
-            const opts = [{ id: LYRICS_MAIN_TAB, label: '★ Main Lyrics' }]
-                .concat((members || []).map((m) => ({ id: m.user_id, label: lyricsTabName(m.user_id) + '’s notebook' })));
-            return `<select class="pj-lyrics-toolbar__select" data-sheet-source>${opts.map((o) =>
-                `<option value="${escapeAttr(o.id)}"${o.id === sheetState.activeSource ? ' selected' : ''}>${escapeHtml(o.label)}</option>`
-            ).join('')}</select>`;
-        }
-
-        function renderSheetSections() {
-            const data = sheetSectionsForSource(sheetState.activeSource);
-            const hasAny = data.some((s) => s.lines.some((l) => l.length));
-            if (!hasAny) {
-                return `<p class="pj-lyrics-placeholder">${sheetState.activeSource === LYRICS_MAIN_TAB
-                    ? 'Main Lyrics is empty. Switch Source above to a teammate\'s notebook, or write something in Lyrics Studio first.'
-                    : escapeHtml(sheetSourceDisplayName(sheetState.activeSource)) + ' has no text yet.'}</p>`;
-            }
-            return data.map((sec) => {
-                if (!sec.lines.some((l) => l.length)) return '';
-                let body = '';
-                sec.lines.forEach((line, lineIdx) => {
-                    if (!line.length) return;
-                    body += `<div class="pj-sheet-line">
-                        <div class="pj-sheet-staff-wrap">
-                            ${buildSheetStaff(line, sec.sectionId, lineIdx, 'treble')}
-                            ${buildSheetStaff(line, sec.sectionId, lineIdx, 'bass')}
-                        </div>
-                        ${renderSheetWords(line, sec.sectionId, lineIdx)}
-                    </div>`;
-                });
-                return `<section class="pj-sheet-section"><h5 class="pj-lyrics-section__label">${escapeHtml(sec.label)}</h5>${body}</section>`;
-            }).join('');
-        }
-
-        function renderSheetMusic() {
-            const body = expandEl.querySelector('[data-sheet-body]');
-            if (!body) return;
-            body.innerHTML = `
-                <div class="pj-lyrics-toolbar">
-                    <div class="pj-lyrics-toolbar__group"><span class="pj-lyrics-hint-label">Source</span>${renderSheetSourceSelect()}</div>
-                    <div class="pj-lyrics-toolbar__group"><span class="pj-lyrics-hint-label">Tempo</span>
-                        <input type="number" class="pj-lyrics-toolbar__custom" style="width:64px;" data-sheet-tempo value="${sheetState.tempo}" min="40" max="240"> BPM</div>
-                    <div class="pj-lyrics-toolbar__group"><span class="pj-lyrics-hint-label">Time</span>
-                        <select class="pj-lyrics-toolbar__select" data-sheet-time>${SHEET_TIME_SIGNATURES.map((t) => `<option value="${t}"${t === sheetState.timeSignature ? ' selected' : ''}>${t}</option>`).join('')}</select></div>
-                    <div class="pj-lyrics-toolbar__group"><span class="pj-lyrics-hint-label">Key</span>
-                        <select class="pj-lyrics-toolbar__select" data-sheet-key>${SHEET_KEYS.map((k) => `<option value="${escapeAttr(k)}"${k === sheetState.key ? ' selected' : ''}>${escapeHtml(k)}</option>`).join('')}</select></div>
-                </div>
-                <p class="pj-lyrics-hint">Click a word to set its pitch and duration on the treble or bass staff — a word can carry a note on both at once.</p>
-                <div data-sheet-sections>${renderSheetSections()}</div>
-                <div class="pj-sheet-picker" data-sheet-picker hidden>
-                    <div class="pj-sheet-picker__head">
-                        <span data-sheet-picker-word></span>
-                        <button type="button" class="pj-sheet-picker__close" data-sheet-picker-close aria-label="Close">&times;</button>
+        function renderSheetForSection(section) {
+            const lines = sheetLinesForSection(section);
+            if (!lines.some((l) => l.length)) return '';
+            let body = '';
+            lines.forEach((line, lineIdx) => {
+                if (!line.length) return;
+                body += `<div class="pj-sheet-line">
+                    <div class="pj-sheet-staff-wrap">
+                        ${buildSheetStaff(line, section.id, lineIdx, 'treble')}
+                        ${buildSheetStaff(line, section.id, lineIdx, 'bass')}
                     </div>
-                    <div class="pj-sheet-picker__clefs" data-sheet-clef-row></div>
-                    <div class="pj-sheet-picker__octaves" data-sheet-octave-row></div>
-                    <div class="pj-sheet-picker__pitches" data-sheet-pitch-grid></div>
-                    <div class="pj-sheet-picker__durations" data-sheet-duration-row></div>
-                    <div class="pj-sheet-picker__actions">
-                        <button type="button" class="pj-btn pj-btn--ghost" data-sheet-rest>Rest</button>
-                        <button type="button" class="pj-btn pj-btn--ghost" data-sheet-clear>Clear</button>
-                    </div>
-                </div>
-            `;
+                    ${renderSheetWords(line, section.id, lineIdx)}
+                </div>`;
+            });
+            return `<div class="pj-sheet-block">${body}</div>`;
         }
 
         // ---------- Note picker popover ----------
@@ -2659,13 +2633,9 @@
             expandEl.dataset.sheetWired = '1';
 
             expandEl.addEventListener('change', (e) => {
-                if (activeKey !== 'action:sheet') return;
-                if (e.target.closest('[data-sheet-source]')) { sheetState.activeSource = e.target.value; hideSheetPicker(); renderSheetMusic(); return; }
+                if (activeKey !== 'action:lyrics') return;
                 if (e.target.closest('[data-sheet-time]')) { setSheetHeader('timeSignature', e.target.value); return; }
                 if (e.target.closest('[data-sheet-key]')) { setSheetHeader('key', e.target.value); return; }
-            });
-            expandEl.addEventListener('change', (e) => {
-                if (activeKey !== 'action:sheet') return;
                 const tempoInp = e.target.closest('[data-sheet-tempo]');
                 if (tempoInp) {
                     const v = parseInt(tempoInp.value, 10);
@@ -2674,7 +2644,7 @@
             });
 
             expandEl.addEventListener('click', (e) => {
-                if (activeKey !== 'action:sheet') return;
+                if (activeKey !== 'action:lyrics') return;
 
                 const wordHit = e.target.closest('[data-sheet-word]');
                 if (wordHit) {
@@ -2719,30 +2689,6 @@
                     hideSheetPicker();
                 }
             });
-        }
-
-        async function expandSheetMusic(triggerBtn) {
-            const key = 'action:sheet';
-            if (activeKey === key) { closeExpand(); return; }
-            activeKey = key;
-            markActiveBtn(triggerBtn);
-            expandEl.hidden = false;
-            expandEl.innerHTML = `
-                <div class="pc-expand__head">
-                    <h4 class="pc-expand__title">Sheet Music</h4>
-                    <button type="button" class="pc-expand__close" data-expand-close>Close</button>
-                </div>
-                <div data-sheet-body style="color:#BFD7FF;text-align:center;padding:24px;">Loading…</div>
-            `;
-            expandEl.querySelector('[data-expand-close]').addEventListener('click', () => { stopSheetRealtime(); hideSheetPicker(); closeExpand(); });
-            wireSheetMusicEvents();
-
-            await ensureLyricsStateLoaded(id, false);
-            await ensureSheetMusicSettings(id);
-            sheetState = { tempo: 120, timeSignature: '4/4', key: 'C', notes: {}, activeSource: sheetPickDefaultSource() };
-            applySheetRaw(await fetchSheetMusic(id));
-            startSheetRealtime(id);
-            renderSheetMusic();
         }
 
         async function expandApproval(triggerRow) {
@@ -2830,10 +2776,6 @@
 
         host.querySelectorAll('[data-action="lyrics"]').forEach((btn) => {
             btn.addEventListener('click', () => { expandLyrics(btn); });
-        });
-
-        host.querySelectorAll('[data-action="sheet-music"]').forEach((btn) => {
-            btn.addEventListener('click', () => { expandSheetMusic(btn); });
         });
 
         // Kebab menu toggle (list view only)
