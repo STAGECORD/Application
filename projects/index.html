@@ -729,6 +729,33 @@
         .pj-lyrics-word.is-slant { text-decoration: underline; text-decoration-style: dashed; text-underline-offset: 3px; }
         .pj-lyrics-placeholder { color: rgba(255,255,255,0.5); font-size: 12px; font-style: italic; margin: 4px 0; }
 
+        /* Sheet Music Studio — grand staff notation on top of lyrics */
+        .pj-sheet-section { margin-bottom: 18px; }
+        .pj-sheet-line { margin: 6px 0 16px; }
+        .pj-sheet-staff-wrap { display: flex; flex-direction: column; gap: 2px; background: rgba(0,0,0,0.22); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 4px 0; overflow-x: auto; }
+        .pj-sheet-staff { display: block; width: 100%; min-width: 260px; height: 70px; }
+        .pj-sheet-staff__line { stroke: rgba(255,255,255,0.5); stroke-width: 1; }
+        .pj-sheet-staff__ledger { stroke: rgba(255,255,255,0.5); stroke-width: 1; }
+        .pj-sheet-staff__clef { fill: #BFD7FF; font-size: 26px; }
+        .pj-sheet-staff__signature { fill: rgba(255,255,255,0.55); font-size: 10px; }
+        .pj-sheet-staff__note { fill: #6AA9F0; }
+        .pj-sheet-staff__stem { stroke: #6AA9F0; stroke-width: 1.4; }
+        .pj-sheet-staff__rest { fill: rgba(255,255,255,0.65); font-size: 18px; }
+        .pj-sheet-words { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+        .pj-sheet-word { display: flex; flex-direction: column; align-items: center; gap: 2px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.16); color: #FFFFFF; font-family: inherit; font-size: 12px; padding: 4px 8px; border-radius: 7px; cursor: pointer; min-width: 34px; }
+        .pj-sheet-word:hover { border-color: #6AA9F0; }
+        .pj-sheet-word.has-note { background: rgba(106,169,240,0.14); border-color: rgba(106,169,240,0.5); }
+        .pj-sheet-word__pitch { font-size: 9px; opacity: 0.85; }
+        .pj-sheet-word__pitch--treble { color: #6AA9F0; }
+        .pj-sheet-word__pitch--bass { color: #F0B96A; }
+        .pj-sheet-picker { position: fixed; z-index: 60; width: 260px; background: #101826; border: 1px solid rgba(255,255,255,0.18); border-radius: 12px; padding: 12px; box-shadow: 0 12px 32px rgba(0,0,0,0.5); }
+        .pj-sheet-picker__head { display: flex; align-items: center; justify-content: space-between; font-size: 13px; font-weight: 700; color: #FFFFFF; margin-bottom: 8px; }
+        .pj-sheet-picker__close { background: transparent; border: none; color: rgba(255,255,255,0.6); font-size: 18px; line-height: 1; cursor: pointer; padding: 0 2px; }
+        .pj-sheet-picker__close:hover { color: #FFFFFF; }
+        .pj-sheet-picker__clefs, .pj-sheet-picker__octaves, .pj-sheet-picker__durations { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+        .pj-sheet-picker__pitches > div { display: flex; gap: 5px; margin-bottom: 5px; }
+        .pj-sheet-picker__actions { display: flex; gap: 6px; margin-top: 6px; }
+
         /* Commercial rate card inside the blue expand */
         .pc-commercial-rates { margin-bottom: 16px; }
         .pc-rates__head {

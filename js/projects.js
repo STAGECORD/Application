@@ -481,6 +481,7 @@
                                 ${pillFile('uploads', 'sheet', 'Sheet Music')}
                                 ${pillFile('uploads', 'notes', 'Notes &amp; Lyrics')}
                                 <button type="button" class="pill-btn" data-action="lyrics" data-help="Lyrics Studio: write lyrics together, section by section, with everyone's own notebook plus a shared Main Lyrics. Click a word and pick a color to mark rhyme groups.">Lyrics Studio</button>
+                                <button type="button" class="pill-btn" data-action="sheet-music" data-help="Sheet Music Studio: put a grand staff (treble &amp; bass clef) under the lyrics and click a word to set its pitch and duration for tempo, key and time signature.">Sheet Music Studio</button>
                                 <button type="button" class="pill-btn" data-action="log" data-help="Log: see a timeline of everything that's happened on the project — file uploads, royalty changes and release approvals, newest first.">Log</button>
                             </div>
                         </div>
@@ -671,6 +672,7 @@
 
         function closeExpand() {
             if (activeKey === 'action:lyrics' && typeof stopLyricsRealtime === 'function') stopLyricsRealtime();
+            if (activeKey === 'action:sheet' && typeof stopSheetRealtime === 'function') { stopSheetRealtime(); hideSheetPicker(); }
             activeKey = null;
             expandEl.hidden = true;
             expandEl.innerHTML = '';
@@ -2243,6 +2245,30 @@
             return true;
         }
 
+        // Shared by both Lyrics Studio and Sheet Music (which needs the
+        // same section/line/word data to know what it's annotating).
+        // forceRefresh = true always refetches (Lyrics Studio opening
+        // fresh); false reuses already-loaded state for this project if
+        // present (Sheet Music switching in without Lyrics Studio open).
+        async function ensureLyricsStateLoaded(projectId, forceRefresh) {
+            if (!forceRefresh && lyricsState && lyricsState.__projectId === projectId) return lyricsState;
+            await ensureLyricsBook(projectId);
+            let raw = await fetchLyricsBook(projectId);
+            const myEntry = (members || []).find((m) => m.user_id === user.id);
+            lyricsState = {
+                __projectId: projectId,
+                palette: RHYME_PALETTE_DEFAULT.slice(), mainFinalized: false, mainFinalizedAt: null,
+                sections: [], rhymes: {}, editingIds: new Set(),
+                activeTab: myEntry ? user.id : LYRICS_MAIN_TAB, activeColor: null
+            };
+            applyLyricsRaw(raw);
+            if (await lyricsBackfillLegacyTags(raw)) {
+                raw = await fetchLyricsBook(projectId);
+                applyLyricsRaw(raw);
+            }
+            return lyricsState;
+        }
+
         async function expandLyrics(triggerBtn) {
             const key = 'action:lyrics';
             if (activeKey === key) { closeExpand(); return; }
@@ -2260,21 +2286,463 @@
             expandEl.querySelector('[data-expand-close]').addEventListener('click', () => { stopLyricsRealtime(); closeExpand(); });
             wireLyricsEvents();
 
-            await ensureLyricsBook(id);
-            let raw = await fetchLyricsBook(id);
-            const myEntry = (members || []).find((m) => m.user_id === user.id);
-            lyricsState = {
-                palette: RHYME_PALETTE_DEFAULT.slice(), mainFinalized: false, mainFinalizedAt: null,
-                sections: [], rhymes: {}, editingIds: new Set(),
-                activeTab: myEntry ? user.id : LYRICS_MAIN_TAB, activeColor: null
-            };
-            applyLyricsRaw(raw);
-            if (await lyricsBackfillLegacyTags(raw)) {
-                raw = await fetchLyricsBook(id);
-                applyLyricsRaw(raw);
-            }
+            await ensureLyricsStateLoaded(id, true);
             startLyricsRealtime(id);
             renderLyrics();
+        }
+
+        // ===================================================================
+        // Sheet Music — piano score (grand staff) notation placed on the
+        // project's lyrics. Reads section/line/word data straight from
+        // Lyrics Studio's state (ensureLyricsStateLoaded), so it works
+        // whether or not that panel has been opened yet this session.
+        // Notes are shared across the whole project (like Main Lyrics),
+        // not per-person — any member can place or move a note. Each word
+        // can carry a treble note and/or a bass note at once, rendered as
+        // a real two-staff grand staff.
+        // ===================================================================
+        const SHEET_WHITE_LETTERS = ['C','D','E','F','G','A','B'];
+        const SHEET_BLACK_LETTERS = ['C#','D#','','F#','G#','A#'];
+        const SHEET_OCTAVES = [2, 3, 4, 5, 6];
+        const SHEET_LETTER_STEP = { C: 0, D: 1, E: 2, F: 3, G: 4, A: 5, B: 6 };
+        const SHEET_KEYS = ['C','G','D','A','E','B','F','Bb','Eb','Ab','Am','Em','Bm','F#m','Dm','Gm','Cm'];
+        const SHEET_TIME_SIGNATURES = ['4/4', '3/4', '6/8', '2/4'];
+        const SHEET_DURATIONS = [
+            { id: 'whole',     glyph: '𝅝',  label: 'Whole' },
+            { id: 'half',      glyph: '𝅗𝅥', label: 'Half' },
+            { id: 'quarter',   glyph: '♩',  label: 'Quarter' },
+            { id: 'eighth',    glyph: '♪',  label: 'Eighth' },
+            { id: 'sixteenth', glyph: '𝅘𝅥𝅯', label: 'Sixteenth' }
+        ];
+        const SHEET_DURATION_INDEX = {};
+        SHEET_DURATIONS.forEach((d) => { SHEET_DURATION_INDEX[d.id] = d; });
+
+        // Diatonic step from C4 — clef-independent; the same absolute
+        // pitch space, just displayed at a different vertical anchor per
+        // staff (see sheetStepToY).
+        function sheetPitchToStep(pitchStr) {
+            if (!pitchStr || pitchStr === 'rest') return null;
+            const m = pitchStr.match(/^([A-G])(#|b)?(\d)$/);
+            if (!m) return null;
+            return (parseInt(m[3], 10) - 4) * 7 + SHEET_LETTER_STEP[m[1]];
+        }
+        // Treble: top line (F5, step 10) at y=22, 3px/step, C4 at y=52.
+        // Bass: top line (A3, step -2) at y=22, C4 at y=16 (one ledger
+        // line above the staff — correct real-notation position).
+        function sheetStepToY(step, clef) {
+            return clef === 'bass' ? (16 - step * 3) : (52 - step * 3);
+        }
+        // In-staff diatonic step range per clef, for ledger-line logic.
+        const SHEET_STAFF_RANGE = { treble: [2, 10], bass: [-10, -2] };
+
+        let sheetState = null;
+        let sheetChannel = null;
+        let sheetReloadTimer = null;
+        let sheetPickerKey = null;    // { sectionId, lineIdx, wordIdx }
+        let sheetPickerOctave = 4;
+        let sheetPickerClef = 'treble';
+
+        function sheetNoteKey(sectionId, lineIdx, wordIdx, clef) {
+            return `${sectionId}|${lineIdx}|${wordIdx}|${clef}`;
+        }
+        function getSheetNote(sectionId, lineIdx, wordIdx, clef) {
+            return sheetState.notes[sheetNoteKey(sectionId, lineIdx, wordIdx, clef)] || null;
+        }
+
+        function sheetSectionsForSource(source) {
+            const sections = source === LYRICS_MAIN_TAB ? lyricsMainSections() : lyricsMemberSections(source);
+            return sections.map((s) => {
+                let label = LYRICS_SECTION_TYPES[s.type] || s.type;
+                if (s.type === 'custom') label = s.customName || 'Custom';
+                if (s.type === 'verse' || s.type === 'chorus') {
+                    const sameType = sections.filter((x) => x.type === s.type);
+                    const idx = sameType.indexOf(s) + 1;
+                    if (sameType.length > 1) label += ' ' + idx;
+                }
+                const lines = (s.content || '').split('\n').map((line) => line.trim().split(/\s+/).filter(Boolean));
+                return { sectionId: s.id, label, lines };
+            });
+        }
+
+        function sheetPickDefaultSource() {
+            const mainHasContent = lyricsMainSections().some((s) => (s.content || '').trim().length > 0);
+            if (mainHasContent) return LYRICS_MAIN_TAB;
+            if (lyricsMemberSections(user.id).some((s) => (s.content || '').trim().length > 0)) return user.id;
+            const withContent = (members || []).find((m) => lyricsMemberSections(m.user_id).some((s) => (s.content || '').trim().length > 0));
+            return withContent ? withContent.user_id : LYRICS_MAIN_TAB;
+        }
+
+        function sheetSourceDisplayName(source) {
+            return source === LYRICS_MAIN_TAB ? 'Main Lyrics' : lyricsTabName(source) + '’s notebook';
+        }
+
+        // ---------- Load / sync / realtime ----------
+        async function ensureSheetMusicSettings(projectId) {
+            try { await sb.rpc('ensure_sheet_music_settings', { p_project_id: projectId }); } catch (e) {}
+        }
+        async function fetchSheetMusic(projectId) {
+            const resp = await sb.rpc('get_sheet_music', { p_project_id: projectId });
+            return resp.data || { settings: null, notes: [] };
+        }
+        function applySheetRaw(raw) {
+            const s = raw.settings;
+            sheetState.tempo = (s && s.tempo) || 120;
+            sheetState.timeSignature = (s && s.time_signature) || '4/4';
+            sheetState.key = (s && s.key) || 'C';
+            sheetState.notes = {};
+            (raw.notes || []).forEach((n) => {
+                sheetState.notes[sheetNoteKey(n.section_id, n.line_index, n.word_index, n.clef)] = { pitch: n.pitch, duration: n.duration };
+            });
+        }
+        function stopSheetRealtime() {
+            if (sheetChannel) { sb.removeChannel(sheetChannel); sheetChannel = null; }
+        }
+        function startSheetRealtime(projectId) {
+            stopSheetRealtime();
+            sheetChannel = sb.channel('pj-sheet-' + projectId)
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'sheet_music_notes', filter: 'project_id=eq.' + projectId }, () => reloadSheetMusic(projectId))
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'sheet_music_settings', filter: 'project_id=eq.' + projectId }, () => reloadSheetMusic(projectId))
+                .subscribe();
+        }
+        function reloadSheetMusic(projectId) {
+            clearTimeout(sheetReloadTimer);
+            sheetReloadTimer = setTimeout(async () => {
+                if (activeKey !== 'action:sheet' || !sheetState) return;
+                applySheetRaw(await fetchSheetMusic(projectId));
+                renderSheetMusic();
+            }, 400);
+        }
+
+        // ---------- Mutations ----------
+        function setSheetHeader(field, value) {
+            sheetState[field] = value;
+            renderSheetMusic();
+            const column = field === 'timeSignature' ? 'time_signature' : field;
+            sb.from('sheet_music_settings').update({ [column]: value, updated_at: new Date().toISOString() }).eq('project_id', id).then(() => {});
+        }
+
+        function setSheetNote(sectionId, lineIdx, wordIdx, clef, note) {
+            const key = sheetNoteKey(sectionId, lineIdx, wordIdx, clef);
+            if (note) sheetState.notes[key] = note; else delete sheetState.notes[key];
+            renderSheetMusic();
+            if (note) {
+                sb.from('sheet_music_notes').upsert({
+                    project_id: id, section_id: sectionId, line_index: lineIdx, word_index: wordIdx, clef: clef,
+                    pitch: note.pitch, duration: note.duration, updated_by: user.id, updated_at: new Date().toISOString()
+                }, { onConflict: 'project_id,section_id,line_index,word_index,clef' }).then(({ error }) => { if (error) reloadSheetMusic(id); });
+            } else {
+                sb.from('sheet_music_notes').delete()
+                    .eq('project_id', id).eq('section_id', sectionId).eq('line_index', lineIdx).eq('word_index', wordIdx).eq('clef', clef)
+                    .then(({ error }) => { if (error) reloadSheetMusic(id); });
+            }
+        }
+
+        // ---------- Rendering: staff (SVG), one per clef per line ----------
+        function buildSheetStaff(lineWords, sectionId, lineIdx, clef) {
+            const padLeft = 36, padRight = 12, slotW = 36;
+            const width = padLeft + padRight + Math.max(lineWords.length, 4) * slotW;
+            const height = 70;
+            let lines = '';
+            for (let i = 0; i < 5; i++) {
+                const y = 22 + i * 6;
+                lines += `<line class="pj-sheet-staff__line" x1="${padLeft - 4}" y1="${y}" x2="${width - padRight + 4}" y2="${y}"/>`;
+            }
+            const clefGlyph = clef === 'bass' ? '𝄢' : '𝄞';
+            const clefEl = `<text class="pj-sheet-staff__clef" x="${padLeft - 26}" y="${clef === 'bass' ? 32 : 46}">${clefGlyph}</text>`;
+            const sig = `<text class="pj-sheet-staff__signature" x="${padLeft - 4}" y="14">${escapeHtml(sheetState.key + ' · ' + sheetState.timeSignature)}</text>`;
+
+            const [rangeLo, rangeHi] = SHEET_STAFF_RANGE[clef];
+            let notes = '';
+            for (let i = 0; i < lineWords.length; i++) {
+                const note = getSheetNote(sectionId, lineIdx, i, clef);
+                if (!note) continue;
+                const cx = padLeft + i * slotW + slotW / 2;
+                if (note.pitch === 'rest') {
+                    notes += `<text class="pj-sheet-staff__rest" x="${cx - 4}" y="40">𝄽</text>`;
+                    continue;
+                }
+                const step = sheetPitchToStep(note.pitch);
+                if (step === null) continue;
+                const cy = sheetStepToY(step, clef);
+                const filled = (note.duration === 'quarter' || note.duration === 'eighth' || note.duration === 'sixteenth');
+                const noteHead = filled
+                    ? `<ellipse class="pj-sheet-staff__note" cx="${cx}" cy="${cy}" rx="4.2" ry="3.2"/>`
+                    : `<ellipse class="pj-sheet-staff__note" cx="${cx}" cy="${cy}" rx="4.2" ry="3.2" fill="none" stroke="#6AA9F0" stroke-width="1.4"/>`;
+                let stem = '';
+                if (note.duration !== 'whole') {
+                    const stemUp = step < (rangeLo + rangeHi) / 2;
+                    const stemY2 = stemUp ? cy - 22 : cy + 22;
+                    const stemX = stemUp ? cx + 4 : cx - 4;
+                    stem = `<line class="pj-sheet-staff__stem" x1="${stemX}" y1="${cy}" x2="${stemX}" y2="${stemY2}"/>`;
+                    if (note.duration === 'eighth' || note.duration === 'sixteenth') {
+                        const flagCount = note.duration === 'sixteenth' ? 2 : 1;
+                        for (let f = 0; f < flagCount; f++) {
+                            const fy = stemY2 + (stemUp ? f * 4 : -f * 4);
+                            stem += `<path d="M ${stemX} ${fy} q 7 4 5 12" stroke="#6AA9F0" stroke-width="1.4" fill="none"/>`;
+                        }
+                    }
+                }
+                let ledgers = '';
+                if (step < rangeLo) {
+                    for (let s = rangeLo - 2; s >= step; s -= 2) {
+                        const ly = sheetStepToY(s, clef);
+                        ledgers += `<line class="pj-sheet-staff__ledger" x1="${cx - 7}" y1="${ly}" x2="${cx + 7}" y2="${ly}"/>`;
+                    }
+                } else if (step > rangeHi) {
+                    for (let s = rangeHi + 2; s <= step; s += 2) {
+                        const ly = sheetStepToY(s, clef);
+                        ledgers += `<line class="pj-sheet-staff__ledger" x1="${cx - 7}" y1="${ly}" x2="${cx + 7}" y2="${ly}"/>`;
+                    }
+                }
+                let acc = '';
+                if (/#/.test(note.pitch)) {
+                    acc = `<text x="${cx - 12}" y="${cy + 3}" class="pj-sheet-staff__signature" style="font-size:13px;">♯</text>`;
+                }
+                notes += ledgers + acc + noteHead + stem;
+            }
+            return `<svg class="pj-sheet-staff" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMinYMid meet">${lines}${clefEl}${sig}${notes}</svg>`;
+        }
+
+        function renderSheetWords(line, sectionId, lineIdx) {
+            return '<div class="pj-sheet-words">' + line.map((w, i) => {
+                const treble = getSheetNote(sectionId, lineIdx, i, 'treble');
+                const bass = getSheetNote(sectionId, lineIdx, i, 'bass');
+                let cls = 'pj-sheet-word';
+                let labels = '';
+                if (treble) {
+                    cls += ' has-note';
+                    labels += `<span class="pj-sheet-word__pitch pj-sheet-word__pitch--treble">${treble.pitch === 'rest' ? 'rest' : escapeHtml(treble.pitch)}</span>`;
+                }
+                if (bass) {
+                    cls += ' has-note';
+                    labels += `<span class="pj-sheet-word__pitch pj-sheet-word__pitch--bass">${bass.pitch === 'rest' ? 'rest' : escapeHtml(bass.pitch)}</span>`;
+                }
+                return `<button type="button" class="${cls}" data-sheet-word="${escapeAttr(sectionId)}:${lineIdx}:${i}">${escapeHtml(w)}${labels}</button>`;
+            }).join('') + '</div>';
+        }
+
+        function renderSheetSourceSelect() {
+            const opts = [{ id: LYRICS_MAIN_TAB, label: '★ Main Lyrics' }]
+                .concat((members || []).map((m) => ({ id: m.user_id, label: lyricsTabName(m.user_id) + '’s notebook' })));
+            return `<select class="pj-lyrics-toolbar__select" data-sheet-source>${opts.map((o) =>
+                `<option value="${escapeAttr(o.id)}"${o.id === sheetState.activeSource ? ' selected' : ''}>${escapeHtml(o.label)}</option>`
+            ).join('')}</select>`;
+        }
+
+        function renderSheetSections() {
+            const data = sheetSectionsForSource(sheetState.activeSource);
+            const hasAny = data.some((s) => s.lines.some((l) => l.length));
+            if (!hasAny) {
+                return `<p class="pj-lyrics-placeholder">${sheetState.activeSource === LYRICS_MAIN_TAB
+                    ? 'Main Lyrics is empty. Switch Source above to a teammate\'s notebook, or write something in Lyrics Studio first.'
+                    : escapeHtml(sheetSourceDisplayName(sheetState.activeSource)) + ' has no text yet.'}</p>`;
+            }
+            return data.map((sec) => {
+                if (!sec.lines.some((l) => l.length)) return '';
+                let body = '';
+                sec.lines.forEach((line, lineIdx) => {
+                    if (!line.length) return;
+                    body += `<div class="pj-sheet-line">
+                        <div class="pj-sheet-staff-wrap">
+                            ${buildSheetStaff(line, sec.sectionId, lineIdx, 'treble')}
+                            ${buildSheetStaff(line, sec.sectionId, lineIdx, 'bass')}
+                        </div>
+                        ${renderSheetWords(line, sec.sectionId, lineIdx)}
+                    </div>`;
+                });
+                return `<section class="pj-sheet-section"><h5 class="pj-lyrics-section__label">${escapeHtml(sec.label)}</h5>${body}</section>`;
+            }).join('');
+        }
+
+        function renderSheetMusic() {
+            const body = expandEl.querySelector('[data-sheet-body]');
+            if (!body) return;
+            body.innerHTML = `
+                <div class="pj-lyrics-toolbar">
+                    <div class="pj-lyrics-toolbar__group"><span class="pj-lyrics-hint-label">Source</span>${renderSheetSourceSelect()}</div>
+                    <div class="pj-lyrics-toolbar__group"><span class="pj-lyrics-hint-label">Tempo</span>
+                        <input type="number" class="pj-lyrics-toolbar__custom" style="width:64px;" data-sheet-tempo value="${sheetState.tempo}" min="40" max="240"> BPM</div>
+                    <div class="pj-lyrics-toolbar__group"><span class="pj-lyrics-hint-label">Time</span>
+                        <select class="pj-lyrics-toolbar__select" data-sheet-time>${SHEET_TIME_SIGNATURES.map((t) => `<option value="${t}"${t === sheetState.timeSignature ? ' selected' : ''}>${t}</option>`).join('')}</select></div>
+                    <div class="pj-lyrics-toolbar__group"><span class="pj-lyrics-hint-label">Key</span>
+                        <select class="pj-lyrics-toolbar__select" data-sheet-key>${SHEET_KEYS.map((k) => `<option value="${escapeAttr(k)}"${k === sheetState.key ? ' selected' : ''}>${escapeHtml(k)}</option>`).join('')}</select></div>
+                </div>
+                <p class="pj-lyrics-hint">Click a word to set its pitch and duration on the treble or bass staff — a word can carry a note on both at once.</p>
+                <div data-sheet-sections>${renderSheetSections()}</div>
+                <div class="pj-sheet-picker" data-sheet-picker hidden>
+                    <div class="pj-sheet-picker__head">
+                        <span data-sheet-picker-word></span>
+                        <button type="button" class="pj-sheet-picker__close" data-sheet-picker-close aria-label="Close">&times;</button>
+                    </div>
+                    <div class="pj-sheet-picker__clefs" data-sheet-clef-row></div>
+                    <div class="pj-sheet-picker__octaves" data-sheet-octave-row></div>
+                    <div class="pj-sheet-picker__pitches" data-sheet-pitch-grid></div>
+                    <div class="pj-sheet-picker__durations" data-sheet-duration-row></div>
+                    <div class="pj-sheet-picker__actions">
+                        <button type="button" class="pj-btn pj-btn--ghost" data-sheet-rest>Rest</button>
+                        <button type="button" class="pj-btn pj-btn--ghost" data-sheet-clear>Clear</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ---------- Note picker popover ----------
+        function renderSheetPicker() {
+            const note = sheetPickerKey ? getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef) : null;
+            const clefRow = expandEl.querySelector('[data-sheet-clef-row]');
+            if (clefRow) {
+                clefRow.innerHTML = ['treble', 'bass'].map((c) =>
+                    `<button type="button" class="pj-lyrics-section__action${c === sheetPickerClef ? ' is-active' : ''}" data-sheet-clef="${c}">${c === 'bass' ? '𝄢 Bass' : '𝄞 Treble'}</button>`
+                ).join('');
+            }
+            const octaveRow = expandEl.querySelector('[data-sheet-octave-row]');
+            if (octaveRow) {
+                octaveRow.innerHTML = SHEET_OCTAVES.map((o) =>
+                    `<button type="button" class="pj-lyrics-section__action${o === sheetPickerOctave ? ' is-active' : ''}" data-sheet-octave="${o}">${o}</button>`
+                ).join('');
+            }
+            const pitchGrid = expandEl.querySelector('[data-sheet-pitch-grid]');
+            if (pitchGrid) {
+                const activePitch = note && note.pitch !== 'rest' ? note.pitch : null;
+                const whiteRow = SHEET_WHITE_LETTERS.map((L) => {
+                    const p = L + sheetPickerOctave;
+                    return `<button type="button" class="pj-lyrics-suggest-chip${p === activePitch ? ' is-active' : ''}" data-sheet-pitch="${p}">${L}</button>`;
+                }).join('');
+                const blackRow = SHEET_BLACK_LETTERS.map((L) => {
+                    if (!L) return '<span style="display:inline-block;width:34px;"></span>';
+                    const p = L + sheetPickerOctave;
+                    return `<button type="button" class="pj-lyrics-suggest-chip${p === activePitch ? ' is-active' : ''}" data-sheet-pitch="${p}">${L}</button>`;
+                }).join('');
+                pitchGrid.innerHTML = `<div>${blackRow}</div><div>${whiteRow}</div>`;
+            }
+            const durationRow = expandEl.querySelector('[data-sheet-duration-row]');
+            if (durationRow) {
+                const activeDur = note ? note.duration : 'quarter';
+                durationRow.innerHTML = SHEET_DURATIONS.map((d) =>
+                    `<button type="button" class="pj-lyrics-section__action${d.id === activeDur ? ' is-active' : ''}" data-sheet-duration="${d.id}">${d.glyph} ${d.label}</button>`
+                ).join('');
+            }
+        }
+
+        function showSheetPicker(sectionId, lineIdx, wordIdx, anchorEl, wordText) {
+            sheetPickerKey = { sectionId, lineIdx, wordIdx };
+            const existing = getSheetNote(sectionId, lineIdx, wordIdx, sheetPickerClef);
+            if (existing && existing.pitch && existing.pitch !== 'rest') {
+                const m = existing.pitch.match(/(\d)$/);
+                if (m) sheetPickerOctave = parseInt(m[1], 10);
+            } else {
+                sheetPickerOctave = sheetPickerClef === 'bass' ? 3 : 4;
+            }
+            renderSheetPicker();
+            const pop = expandEl.querySelector('[data-sheet-picker]');
+            const wordEl = expandEl.querySelector('[data-sheet-picker-word]');
+            if (wordEl) wordEl.textContent = wordText;
+            if (!pop) return;
+            pop.hidden = false;
+            const r = anchorEl.getBoundingClientRect();
+            const popRect = pop.getBoundingClientRect();
+            let top = r.bottom + 8, left = r.left;
+            if (left + popRect.width > window.innerWidth - 12) left = window.innerWidth - popRect.width - 12;
+            if (top + popRect.height > window.innerHeight - 12) top = r.top - popRect.height - 8;
+            pop.style.position = 'fixed';
+            pop.style.top = Math.max(12, top) + 'px';
+            pop.style.left = Math.max(12, left) + 'px';
+        }
+        function hideSheetPicker() {
+            const pop = expandEl.querySelector('[data-sheet-picker]');
+            if (pop) pop.hidden = true;
+            sheetPickerKey = null;
+        }
+
+        function wireSheetMusicEvents() {
+            if (expandEl.dataset.sheetWired) return;
+            expandEl.dataset.sheetWired = '1';
+
+            expandEl.addEventListener('change', (e) => {
+                if (activeKey !== 'action:sheet') return;
+                if (e.target.closest('[data-sheet-source]')) { sheetState.activeSource = e.target.value; hideSheetPicker(); renderSheetMusic(); return; }
+                if (e.target.closest('[data-sheet-time]')) { setSheetHeader('timeSignature', e.target.value); return; }
+                if (e.target.closest('[data-sheet-key]')) { setSheetHeader('key', e.target.value); return; }
+            });
+            expandEl.addEventListener('change', (e) => {
+                if (activeKey !== 'action:sheet') return;
+                const tempoInp = e.target.closest('[data-sheet-tempo]');
+                if (tempoInp) {
+                    const v = parseInt(tempoInp.value, 10);
+                    if (!isNaN(v) && v >= 40 && v <= 240) setSheetHeader('tempo', v);
+                }
+            });
+
+            expandEl.addEventListener('click', (e) => {
+                if (activeKey !== 'action:sheet') return;
+
+                const wordHit = e.target.closest('[data-sheet-word]');
+                if (wordHit) {
+                    const [sectionId, lineIdx, wordIdx] = wordHit.dataset.sheetWord.split(':');
+                    showSheetPicker(sectionId, Number(lineIdx), Number(wordIdx), wordHit, wordHit.firstChild ? wordHit.firstChild.textContent : wordHit.textContent.trim());
+                    return;
+                }
+                if (e.target.closest('[data-sheet-picker-close]')) { hideSheetPicker(); return; }
+
+                const clefBtn = e.target.closest('[data-sheet-clef]');
+                if (clefBtn) { sheetPickerClef = clefBtn.dataset.sheetClef; sheetPickerOctave = sheetPickerClef === 'bass' ? 3 : 4; renderSheetPicker(); return; }
+
+                const octBtn = e.target.closest('[data-sheet-octave]');
+                if (octBtn) { sheetPickerOctave = parseInt(octBtn.dataset.sheetOctave, 10); renderSheetPicker(); return; }
+
+                const pitchBtn = e.target.closest('[data-sheet-pitch]');
+                if (pitchBtn && sheetPickerKey) {
+                    const cur = getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef) || { duration: 'quarter' };
+                    setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, { pitch: pitchBtn.dataset.sheetPitch, duration: cur.duration || 'quarter' });
+                    renderSheetPicker();
+                    return;
+                }
+                const durBtn = e.target.closest('[data-sheet-duration]');
+                if (durBtn && sheetPickerKey) {
+                    const cur = getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef);
+                    if (cur) { setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, { pitch: cur.pitch, duration: durBtn.dataset.sheetDuration }); renderSheetPicker(); }
+                    return;
+                }
+                if (e.target.closest('[data-sheet-rest]') && sheetPickerKey) {
+                    setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, { pitch: 'rest', duration: 'quarter' });
+                    renderSheetPicker();
+                    return;
+                }
+                if (e.target.closest('[data-sheet-clear]') && sheetPickerKey) {
+                    setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, null);
+                    renderSheetPicker();
+                    return;
+                }
+
+                const pop = expandEl.querySelector('[data-sheet-picker]');
+                if (pop && !pop.hidden && !e.target.closest('[data-sheet-picker]') && !e.target.closest('[data-sheet-word]')) {
+                    hideSheetPicker();
+                }
+            });
+        }
+
+        async function expandSheetMusic(triggerBtn) {
+            const key = 'action:sheet';
+            if (activeKey === key) { closeExpand(); return; }
+            activeKey = key;
+            markActiveBtn(triggerBtn);
+            expandEl.hidden = false;
+            expandEl.innerHTML = `
+                <div class="pc-expand__head">
+                    <h4 class="pc-expand__title">Sheet Music</h4>
+                    <button type="button" class="pc-expand__close" data-expand-close>Close</button>
+                </div>
+                <div data-sheet-body style="color:#BFD7FF;text-align:center;padding:24px;">Loading…</div>
+            `;
+            expandEl.querySelector('[data-expand-close]').addEventListener('click', () => { stopSheetRealtime(); hideSheetPicker(); closeExpand(); });
+            wireSheetMusicEvents();
+
+            await ensureLyricsStateLoaded(id, false);
+            await ensureSheetMusicSettings(id);
+            sheetState = { tempo: 120, timeSignature: '4/4', key: 'C', notes: {}, activeSource: sheetPickDefaultSource() };
+            applySheetRaw(await fetchSheetMusic(id));
+            startSheetRealtime(id);
+            renderSheetMusic();
         }
 
         async function expandApproval(triggerRow) {
@@ -2362,6 +2830,10 @@
 
         host.querySelectorAll('[data-action="lyrics"]').forEach((btn) => {
             btn.addEventListener('click', () => { expandLyrics(btn); });
+        });
+
+        host.querySelectorAll('[data-action="sheet-music"]').forEach((btn) => {
+            btn.addEventListener('click', () => { expandSheetMusic(btn); });
         });
 
         // Kebab menu toggle (list view only)
