@@ -2163,7 +2163,14 @@
             });
 
             if (inserts.length) {
-                await sb.from('lyrics_rhyme_tags').upsert(inserts, { onConflict: 'project_id,user_id,section_id,line_index,word_index' });
+                const { error } = await sb.from('lyrics_rhyme_tags').upsert(inserts, { onConflict: 'project_id,user_id,section_id,line_index,word_index' });
+                if (error) {
+                    // Don't delete the legacy rows if the backfill didn't
+                    // actually land — better to retry next time than to
+                    // silently lose the colors for good.
+                    console.warn('Lyrics rhyme-tag backfill failed, will retry on next open:', error);
+                    return false;
+                }
             }
             await sb.from('lyrics_rhyme_tags').delete().eq('project_id', id).eq('user_id', user.id).is('section_id', null);
             return true;
