@@ -480,6 +480,7 @@
                                 ${pillFile('uploads', 'wave', 'WAVE')}
                                 ${pillFile('uploads', 'sheet', 'Sheet Music')}
                                 ${pillFile('uploads', 'notes', 'Notes &amp; Lyrics')}
+                                <button type="button" class="pill-btn" data-action="lyrics" data-help="Lyrics Studio: write lyrics together, section by section, with everyone's own notebook plus a shared Main Lyrics. Click a word and pick a color to mark rhyme groups.">Lyrics Studio</button>
                                 <button type="button" class="pill-btn" data-action="log" data-help="Log: see a timeline of everything that's happened on the project — file uploads, royalty changes and release approvals, newest first.">Log</button>
                             </div>
                         </div>
@@ -669,6 +670,7 @@
         let activeKey = null;
 
         function closeExpand() {
+            if (activeKey === 'action:lyrics' && typeof stopLyricsRealtime === 'function') stopLyricsRealtime();
             activeKey = null;
             expandEl.hidden = true;
             expandEl.innerHTML = '';
@@ -1412,6 +1414,534 @@
             }).join('');
         }
 
+        // ===================================================================
+        // Lyrics Studio — collaborative lyric writing + rhyme-group tagging.
+        // One notebook per team member (their own sections), plus a shared
+        // Main Lyrics assembled by copying sections across. Click a word and
+        // pick a color to group it with other words as a rhyme — any number
+        // of words can share a color, including non-obvious/slant rhymes.
+        // Backed by lyrics_books / lyrics_sections / lyrics_rhyme_tags
+        // (see api/lyrics.sql), synced live to every project member.
+        // ===================================================================
+        const RHYME_PALETTE_DEFAULT = ['#FF6A55','#FFB547','#FFE066','#43C47A','#4A90E2','#A370F0','#FF8AC8','#7DD3C0'];
+        const LYRICS_SECTION_TYPES = { intro: 'Intro', verse: 'Verse', 'pre-chorus': 'Pre-Chorus', chorus: 'Chorus', 'post-chorus': 'Post-Chorus', 'middle-8': 'Middle-8', bridge: 'Bridge', hook: 'Hook', refrain: 'Refrain', outro: 'Outro', notes: 'Notes', custom: 'Custom' };
+        const LYRICS_MAIN_TAB = '__main__';
+
+        let lyricsState = null;
+        let lyricsChannel = null;
+        let lyricsReloadTimer = null;
+        let lyricsSyncTimers = {};
+
+        function lyricsBuildLabel(section, sections) {
+            if (section.type === 'custom') return section.custom_name || 'Custom';
+            if (section.type === 'verse' || section.type === 'chorus') {
+                const sameType = sections.filter((s) => s.type === section.type);
+                const idx = sameType.indexOf(section) + 1;
+                return LYRICS_SECTION_TYPES[section.type] + (sameType.length > 1 ? ' ' + idx : '');
+            }
+            return LYRICS_SECTION_TYPES[section.type] || section.type;
+        }
+
+        function lyricsWordsRhyme(a, b) {
+            a = a.toLowerCase(); b = b.toLowerCase();
+            if (a === b) return true;
+            if (a.length >= 2 && b.length >= 2 && a.slice(-2) === b.slice(-2)) return true;
+            if (a.length >= 3 && b.length >= 3 && a.slice(-3) === b.slice(-3)) return true;
+            return false;
+        }
+
+        function lyricsMemberSections(memberId) {
+            return lyricsState.sections.filter((s) => !s.is_main && s.user_id === memberId).sort((a, b) => a.position - b.position);
+        }
+        function lyricsMainSections() {
+            return lyricsState.sections.filter((s) => s.is_main).sort((a, b) => a.position - b.position);
+        }
+        function lyricsCurrentSections() {
+            return lyricsState.activeTab === LYRICS_MAIN_TAB ? lyricsMainSections() : lyricsMemberSections(lyricsState.activeTab);
+        }
+        function lyricsIsMainTab() { return lyricsState.activeTab === LYRICS_MAIN_TAB; }
+        // Only your own notebook, or the shared Main Lyrics, accept writes —
+        // a teammate's tab is read-only (matches RLS: is_main OR user_id =
+        // auth.uid() on lyrics_sections).
+        function lyricsCanEditCurrentTab() { return lyricsIsMainTab() || lyricsState.activeTab === user.id; }
+        function lyricsTabName(memberId) {
+            if (memberId === LYRICS_MAIN_TAB) return 'Main Lyrics';
+            const m = (members || []).find((x) => x.user_id === memberId);
+            return m ? F.plainName(m.forename, m.surname, m.username) : 'Member';
+        }
+        function lyricsTabAvatar(memberId) {
+            const m = (members || []).find((x) => x.user_id === memberId);
+            return (m && m.avatar_url) || '';
+        }
+
+        async function ensureLyricsBook(projectId) {
+            try { await sb.rpc('ensure_lyrics_book', { p_project_id: projectId }); } catch (e) {}
+        }
+
+        function stopLyricsRealtime() {
+            if (lyricsChannel) { sb.removeChannel(lyricsChannel); lyricsChannel = null; }
+        }
+
+        function startLyricsRealtime(projectId) {
+            stopLyricsRealtime();
+            lyricsChannel = sb.channel('pj-lyrics-' + projectId)
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'lyrics_sections', filter: 'project_id=eq.' + projectId }, () => reloadLyrics(projectId))
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'lyrics_rhyme_tags', filter: 'project_id=eq.' + projectId }, () => reloadLyrics(projectId))
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'lyrics_books', filter: 'project_id=eq.' + projectId }, () => reloadLyrics(projectId))
+                .subscribe();
+        }
+
+        async function fetchLyricsBook(projectId) {
+            const bookResp = await sb.rpc('get_lyrics_book', { p_project_id: projectId });
+            return bookResp.data || { book: null, sections: [], rhymes: [] };
+        }
+
+        function applyLyricsRaw(raw) {
+            lyricsState.palette = (raw.book && raw.book.palette && raw.book.palette.length) ? raw.book.palette : RHYME_PALETTE_DEFAULT.slice();
+            lyricsState.mainFinalized = !!(raw.book && raw.book.main_finalized);
+            lyricsState.mainFinalizedAt = raw.book && raw.book.main_finalized_at;
+            lyricsState.sections = raw.sections || [];
+            lyricsState.rhymes = {};
+            (raw.rhymes || []).forEach((r) => { if (r.user_id === user.id) lyricsState.rhymes[r.word] = r.color; });
+        }
+
+        function reloadLyrics(projectId) {
+            clearTimeout(lyricsReloadTimer);
+            lyricsReloadTimer = setTimeout(async () => {
+                if (activeKey !== 'action:lyrics' || !lyricsState) return;
+                const raw = await fetchLyricsBook(projectId);
+                applyLyricsRaw(raw);
+                renderLyrics();
+            }, 400);
+        }
+
+        function tokenizeLyricsLine(text, rhymes) {
+            if (!text) return '';
+            return text.split('\n').map((line) => {
+                if (!line.trim()) return '<p class="pj-lyrics-line">&nbsp;</p>';
+                let html = '';
+                const re = /([\p{L}\p{N}'-]+)|([^\p{L}\p{N}]+)/gu;
+                let match;
+                while ((match = re.exec(line)) !== null) {
+                    if (match[1]) {
+                        const tok = match[1];
+                        const key = tok.toLowerCase();
+                        const color = rhymes[key];
+                        const style = color ? ` style="color:${color};"` : '';
+                        const cls = 'pj-lyrics-word' + (color ? ' has-rhyme' : '');
+                        html += `<span class="${cls}" data-word="${escapeHtml(key)}"${style}>${escapeHtml(tok)}</span>`;
+                    } else {
+                        html += escapeHtml(match[2]);
+                    }
+                }
+                return `<p class="pj-lyrics-line">${html}</p>`;
+            }).join('');
+        }
+
+        function renderLyricsTabs() {
+            const mainCount = lyricsMainSections().length;
+            const mainTab = `<button type="button" class="pj-lyrics-tab${lyricsIsMainTab() ? ' is-active' : ''}" data-lyrics-tab="${LYRICS_MAIN_TAB}">
+                <span>Main Lyrics</span>${mainCount ? `<span class="pj-lyrics-tab__own">${mainCount}</span>` : ''}
+            </button>`;
+            const memberTabs = (members || []).map((m) => {
+                const isOwn = m.user_id === user.id;
+                const isActive = m.user_id === lyricsState.activeTab;
+                const avatar = lyricsTabAvatar(m.user_id);
+                return `<button type="button" class="pj-lyrics-tab${isActive ? ' is-active' : ''}" data-lyrics-tab="${m.user_id}">
+                    ${avatar ? `<span class="pj-lyrics-tab__avatar" style="background-image:url('${escapeHtml(avatar)}');"></span>` : ''}
+                    <span>${escapeHtml(lyricsTabName(m.user_id))}</span>${isOwn ? '<span class="pj-lyrics-tab__own">You</span>' : ''}
+                </button>`;
+            }).join('');
+            return `<div class="pj-lyrics-tabs">${mainTab}${memberTabs}</div>`;
+        }
+
+        function renderLyricsToolbar() {
+            const locked = (lyricsIsMainTab() && lyricsState.mainFinalized) || !lyricsCanEditCurrentTab();
+            const options = Object.keys(LYRICS_SECTION_TYPES).map((k) => `<option value="${k}">${LYRICS_SECTION_TYPES[k]}</option>`).join('');
+            const addGroup = locked ? '' : `
+                <div class="pj-lyrics-toolbar__group">
+                    <select class="pj-lyrics-toolbar__select" data-lyrics-add-select>${options}</select>
+                    <input type="text" class="pj-lyrics-toolbar__custom" data-lyrics-add-custom placeholder="Section name" hidden>
+                    <button type="button" class="pj-btn" data-lyrics-add-btn>Add</button>
+                </div>`;
+            const readOnlyNote = (!lyricsCanEditCurrentTab())
+                ? `<span class="pj-lyrics-hint-label">Read-only — this is ${escapeHtml(lyricsTabName(lyricsState.activeTab))}'s notebook</span>` : '';
+            const swatches = lyricsState.palette.map((c) => `<button type="button" class="pj-lyrics-swatch${c === lyricsState.activeColor ? ' is-active' : ''}" data-lyrics-color="${c}" style="background:${c};" aria-label="Rhyme color ${c}"></button>`).join('');
+            return `<div class="pj-lyrics-toolbar">
+                ${addGroup}
+                ${readOnlyNote}
+                <div class="pj-lyrics-toolbar__group">
+                    <span class="pj-lyrics-hint-label">Rhyme colors:</span>
+                    <div class="pj-lyrics-palette">${swatches}<button type="button" class="pj-lyrics-swatch-add" data-lyrics-add-color aria-label="Add color">+</button></div>
+                </div>
+            </div>
+            <p class="pj-lyrics-hint">${lyricsState.activeColor ? `Paint mode: click a word to mark it with the selected color. Click the same color again to turn it off.` : `Select a rhyme color, then click words to group them as rhymes — any number of words can share a color.`}</p>`;
+        }
+
+        function renderLyricsBanner() {
+            if (!lyricsIsMainTab()) return '';
+            if (lyricsState.mainFinalized) {
+                const dateStr = lyricsState.mainFinalizedAt ? new Date(lyricsState.mainFinalizedAt).toLocaleDateString() : '';
+                return `<div class="pj-lyrics-banner is-finalized">
+                    <span>✓ Main Lyrics finalized${dateStr ? ' · ' + escapeHtml(dateStr) : ''}</span>
+                    <button type="button" class="pj-btn pj-btn--ghost" data-lyrics-unfinalize>Unlock</button>
+                </div>`;
+            }
+            return `<div class="pj-lyrics-banner">
+                <span>Main Lyrics is the shared final text — copy sections in with → Main, then finalize when the team agrees.</span>
+                <button type="button" class="pj-btn" data-lyrics-finalize>Finalize lyrics</button>
+            </div>`;
+        }
+
+        function renderLyricsSection(section, sections) {
+            const label = lyricsBuildLabel(section, sections);
+            const onMain = lyricsIsMainTab();
+            // Locked = can't edit this list right now — either Main is
+            // finalized, or (for a member notebook) it isn't yours.
+            // Copying a teammate's section INTO Main is still allowed
+            // regardless (see toMainBtn below — RLS permits any member).
+            const locked = (onMain && lyricsState.mainFinalized) || !lyricsCanEditCurrentTab();
+            const editing = lyricsState.editingIds.has(section.id);
+            const isCustom = section.type === 'custom';
+            const options = Object.keys(LYRICS_SECTION_TYPES).map((k) => `<option value="${k}"${k === section.type ? ' selected' : ''}>${LYRICS_SECTION_TYPES[k]}</option>`).join('');
+            let sourceChip = '';
+            if (onMain && section.source_user_id) {
+                sourceChip = `<span class="pj-lyrics-section__source">from ${escapeHtml(lyricsTabName(section.source_user_id))}</span>`;
+            }
+            const toMainBtn = (!onMain && section.content && !lyricsState.mainFinalized)
+                ? `<button type="button" class="pj-lyrics-section__action" data-lyrics-to-main="${section.id}">→ Main</button>` : '';
+            const view = tokenizeLyricsLine(section.content || '', lyricsState.rhymes);
+            return `<li class="pj-lyrics-section${locked ? ' is-locked' : ''}" data-section-id="${section.id}" draggable="${locked ? 'false' : 'true'}">
+                <div class="pj-lyrics-section__head">
+                    ${locked ? '' : `<button type="button" class="pj-lyrics-section__drag" data-lyrics-drag="${section.id}" aria-label="Drag to reorder">⋮⋮</button>`}
+                    <select class="pj-lyrics-section__type" data-lyrics-type="${section.id}"${locked ? ' disabled' : ''}>${options}</select>
+                    ${isCustom ? `<input type="text" class="pj-lyrics-toolbar__custom" data-lyrics-custom-name="${section.id}" value="${escapeHtml(section.custom_name || '')}" placeholder="Section name"${locked ? ' disabled' : ''}>` : `<span class="pj-lyrics-section__label">${escapeHtml(label)}</span>`}
+                    ${sourceChip}
+                    <span class="pj-lyrics-section__spacer"></span>
+                    ${toMainBtn}
+                    ${locked ? '' : `<button type="button" class="pj-lyrics-section__action" data-lyrics-edit-toggle="${section.id}">${editing ? 'Done' : 'Edit'}</button>`}
+                    ${locked ? '' : `<button type="button" class="pj-lyrics-section__action pj-lyrics-section__action--delete" data-lyrics-delete="${section.id}">Delete</button>`}
+                </div>
+                <div class="pj-lyrics-section__body">
+                    ${editing
+                        ? `<textarea class="pj-lyrics-editor" data-lyrics-editor="${section.id}" placeholder="Write your lines here — one per line…">${escapeHtml(section.content || '')}</textarea>`
+                        : (section.content ? `<div data-lyrics-view="${section.id}">${view}</div>` : `<p class="pj-lyrics-placeholder">No text yet — click Edit to start writing.</p>`)}
+                </div>
+            </li>`;
+        }
+
+        function renderLyricsSections() {
+            const sections = lyricsCurrentSections();
+            if (!sections.length) {
+                return lyricsIsMainTab()
+                    ? `<p class="pj-lyrics-placeholder">Main Lyrics is empty. Switch to a teammate's tab and click → Main on the sections you want to include.</p>`
+                    : `<p class="pj-lyrics-placeholder">No sections yet — pick a type above and click Add to start writing.</p>`;
+            }
+            return `<ul class="pj-lyrics-sections" data-lyrics-sections>${sections.map((s) => renderLyricsSection(s, sections)).join('')}</ul>`;
+        }
+
+        function renderLyrics() {
+            const body = expandEl.querySelector('[data-lyrics-body]');
+            if (!body) return;
+            body.innerHTML = renderLyricsTabs() + renderLyricsToolbar() + renderLyricsBanner() + renderLyricsSections();
+        }
+
+        // ---------- Mutations (optimistic local update + background sync) ----------
+        function lyricsNewSectionId() {
+            return (window.crypto && window.crypto.randomUUID) ? window.crypto.randomUUID() : ('sec_' + Date.now().toString(36) + Math.random().toString(36).slice(2));
+        }
+
+        function lyricsAddSection(type, customName) {
+            if (!type) return;
+            const onMain = lyricsIsMainTab();
+            const ownerId = onMain ? user.id : lyricsState.activeTab;
+            const list = lyricsCurrentSections();
+            const section = {
+                id: lyricsNewSectionId(), project_id: id, user_id: ownerId, is_main: onMain,
+                type: type, custom_name: type === 'custom' ? (customName || 'Custom') : null,
+                content: '', position: list.length,
+                source_user_id: null, source_section_id: null
+            };
+            lyricsState.sections.push(section);
+            lyricsState.editingIds.add(section.id);
+            renderLyrics();
+            sb.from('lyrics_sections').insert(section).then(({ error }) => { if (error) reloadLyrics(id); });
+        }
+
+        function lyricsDeleteSection(sectionId) {
+            const idx = lyricsState.sections.findIndex((s) => s.id === sectionId);
+            if (idx < 0) return;
+            lyricsState.sections.splice(idx, 1);
+            lyricsState.editingIds.delete(sectionId);
+            renderLyrics();
+            sb.from('lyrics_sections').delete().eq('id', sectionId).then(({ error }) => { if (error) reloadLyrics(id); });
+        }
+
+        function lyricsSyncPositions(list) {
+            list.forEach((s, idx) => {
+                s.position = idx;
+                sb.from('lyrics_sections').update({ position: idx }).eq('id', s.id).then(() => {});
+            });
+        }
+
+        function lyricsReorderSection(fromId, toId) {
+            if (!fromId || !toId || fromId === toId) return;
+            const list = lyricsCurrentSections();
+            const fromIdx = list.findIndex((s) => s.id === fromId);
+            const toIdx = list.findIndex((s) => s.id === toId);
+            if (fromIdx < 0 || toIdx < 0) return;
+            const moved = list.splice(fromIdx, 1)[0];
+            list.splice(toIdx, 0, moved);
+            renderLyrics();
+            lyricsSyncPositions(list);
+        }
+
+        function lyricsSetSectionType(sectionId, type) {
+            const s = lyricsState.sections.find((x) => x.id === sectionId);
+            if (!s) return;
+            s.type = type;
+            if (type !== 'custom') s.custom_name = null;
+            renderLyrics();
+            sb.from('lyrics_sections').update({ type: type, custom_name: s.custom_name }).eq('id', sectionId).then(() => {});
+        }
+
+        function lyricsSetSectionCustomName(sectionId, name) {
+            const s = lyricsState.sections.find((x) => x.id === sectionId);
+            if (!s) return;
+            s.custom_name = name;
+            sb.from('lyrics_sections').update({ custom_name: name }).eq('id', sectionId).then(() => {});
+        }
+
+        function lyricsSetSectionContent(sectionId, content) {
+            const s = lyricsState.sections.find((x) => x.id === sectionId);
+            if (!s) return;
+            s.content = content;
+            clearTimeout(lyricsSyncTimers[sectionId]);
+            lyricsSyncTimers[sectionId] = setTimeout(() => {
+                sb.from('lyrics_sections').update({ content: content }).eq('id', sectionId).then(({ error }) => { if (error) reloadLyrics(id); });
+            }, 500);
+        }
+
+        function lyricsApplyRhymeColor(word, color) {
+            const key = word.toLowerCase();
+            if (lyricsState.rhymes[key] === color) {
+                delete lyricsState.rhymes[key];
+                renderLyrics();
+                sb.from('lyrics_rhyme_tags').delete().eq('project_id', id).eq('user_id', user.id).eq('word', key).then(() => {});
+                return;
+            }
+            const groupWords = Object.keys(lyricsState.rhymes).filter((w) => lyricsState.rhymes[w] === color && w !== key);
+            const isSlant = groupWords.length > 0 && !groupWords.some((w) => lyricsWordsRhyme(key, w));
+            if (isSlant) {
+                const list = groupWords.map((w) => `"${w}"`).join(', ');
+                if (!confirm(`"${word}" doesn't obviously rhyme with ${list}.\n\nAdd it to this rhyme group anyway?`)) return;
+            }
+            lyricsState.rhymes[key] = color;
+            renderLyrics();
+            sb.from('lyrics_rhyme_tags').upsert({
+                project_id: id, user_id: user.id, word: key, color: color, is_slant: isSlant
+            }, { onConflict: 'project_id,user_id,word' }).then(({ error }) => { if (error) reloadLyrics(id); });
+        }
+
+        function lyricsAddPaletteColor() {
+            const usedHues = lyricsState.palette.map((c) => {
+                const m = String(c).replace('#', '').match(/^([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i);
+                if (!m) return 0;
+                const r = parseInt(m[1], 16) / 255, g = parseInt(m[2], 16) / 255, b = parseInt(m[3], 16) / 255;
+                const max = Math.max(r, g, b), min = Math.min(r, g, b);
+                let h = 0;
+                if (max !== min) {
+                    const d = max - min;
+                    if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
+                    else if (max === g) h = (b - r) / d + 2;
+                    else h = (r - g) / d + 4;
+                    h *= 60;
+                }
+                return h;
+            });
+            let bestHue = 0, bestDistance = -1;
+            for (let h = 0; h < 360; h += 5) {
+                let minDist = 360;
+                usedHues.forEach((uh) => { const d = Math.abs(h - uh); minDist = Math.min(minDist, Math.min(d, 360 - d)); });
+                if (minDist > bestDistance) { bestDistance = minDist; bestHue = h; }
+            }
+            const sat = 65 + Math.floor(Math.random() * 15), light = 58 + Math.floor(Math.random() * 8);
+            const s2 = sat / 100, l2 = light / 100;
+            const k = (n) => (n + bestHue / 30) % 12;
+            const a2 = s2 * Math.min(l2, 1 - l2);
+            const f = (n) => { const c = l2 - a2 * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1))); return Math.round(c * 255).toString(16).padStart(2, '0'); };
+            const newColor = '#' + f(0) + f(8) + f(4);
+            lyricsState.palette.push(newColor);
+            renderLyrics();
+            sb.from('lyrics_books').update({ palette: lyricsState.palette }).eq('project_id', id).then(() => {});
+        }
+
+        function lyricsCopySectionToMain(sectionId) {
+            if (lyricsState.mainFinalized) { alert('Main Lyrics is finalized. Unlock it first to add more sections.'); return; }
+            const src = lyricsState.sections.find((s) => s.id === sectionId);
+            if (!src) return;
+            if (lyricsMainSections().some((s) => s.source_section_id === sectionId)) { alert('That section is already in Main Lyrics.'); return; }
+            const mainList = lyricsMainSections();
+            const copy = {
+                id: lyricsNewSectionId(), project_id: id, user_id: user.id, is_main: true,
+                type: src.type, custom_name: src.custom_name, content: src.content,
+                position: mainList.length, source_user_id: src.user_id, source_section_id: src.id
+            };
+            lyricsState.sections.push(copy);
+            lyricsState.activeTab = LYRICS_MAIN_TAB;
+            renderLyrics();
+            sb.from('lyrics_sections').insert(copy).then(({ error }) => { if (error) reloadLyrics(id); });
+        }
+
+        function lyricsFinalizeMain() {
+            if (lyricsState.mainFinalized) return;
+            if (!lyricsMainSections().length) { alert('Main Lyrics is empty — add at least one section before finalizing.'); return; }
+            if (!confirm('Finalize Main Lyrics? Sections become read-only — you can always Unlock to change them again.')) return;
+            lyricsState.mainFinalized = true;
+            lyricsState.mainFinalizedAt = new Date().toISOString();
+            renderLyrics();
+            sb.from('lyrics_books').update({ main_finalized: true, main_finalized_at: lyricsState.mainFinalizedAt }).eq('project_id', id).then(() => {});
+        }
+
+        function lyricsUnfinalizeMain() {
+            if (!lyricsState.mainFinalized) return;
+            lyricsState.mainFinalized = false;
+            lyricsState.mainFinalizedAt = null;
+            renderLyrics();
+            sb.from('lyrics_books').update({ main_finalized: false, main_finalized_at: null }).eq('project_id', id).then(() => {});
+        }
+
+        // ---------- Event wiring (attached once; expandEl content re-renders around it) ----------
+        function wireLyricsEvents() {
+            if (expandEl.dataset.lyricsWired) return;
+            expandEl.dataset.lyricsWired = '1';
+
+            expandEl.addEventListener('click', (e) => {
+                if (activeKey !== 'action:lyrics') return;
+
+                const tab = e.target.closest('[data-lyrics-tab]');
+                if (tab) { lyricsState.activeTab = tab.dataset.lyricsTab; lyricsState.activeColor = null; renderLyrics(); return; }
+
+                const swatch = e.target.closest('[data-lyrics-color]');
+                if (swatch) {
+                    const c = swatch.dataset.lyricsColor;
+                    lyricsState.activeColor = (lyricsState.activeColor === c) ? null : c;
+                    renderLyrics();
+                    return;
+                }
+                if (e.target.closest('[data-lyrics-add-color]')) { lyricsAddPaletteColor(); return; }
+
+                const word = e.target.closest('.pj-lyrics-word');
+                if (word && lyricsState.activeColor) { lyricsApplyRhymeColor(word.dataset.word, lyricsState.activeColor); return; }
+
+                const addBtn = e.target.closest('[data-lyrics-add-btn]');
+                if (addBtn) {
+                    const sel = expandEl.querySelector('[data-lyrics-add-select]');
+                    const custom = expandEl.querySelector('[data-lyrics-add-custom]');
+                    lyricsAddSection(sel && sel.value, custom && custom.value);
+                    return;
+                }
+
+                const delBtn = e.target.closest('[data-lyrics-delete]');
+                if (delBtn) { if (confirm('Delete this section?')) lyricsDeleteSection(delBtn.dataset.lyricsDelete); return; }
+
+                const toggleBtn = e.target.closest('[data-lyrics-edit-toggle]');
+                if (toggleBtn) {
+                    const sid = toggleBtn.dataset.lyricsEditToggle;
+                    if (lyricsState.editingIds.has(sid)) lyricsState.editingIds.delete(sid); else lyricsState.editingIds.add(sid);
+                    renderLyrics();
+                    const ta = expandEl.querySelector(`[data-lyrics-editor="${sid}"]`);
+                    if (ta) ta.focus();
+                    return;
+                }
+
+                const toMainBtn = e.target.closest('[data-lyrics-to-main]');
+                if (toMainBtn) { lyricsCopySectionToMain(toMainBtn.dataset.lyricsToMain); return; }
+
+                if (e.target.closest('[data-lyrics-finalize]')) { lyricsFinalizeMain(); return; }
+                if (e.target.closest('[data-lyrics-unfinalize]')) { lyricsUnfinalizeMain(); return; }
+            });
+
+            expandEl.addEventListener('change', (e) => {
+                if (activeKey !== 'action:lyrics') return;
+                const sel = e.target.closest('[data-lyrics-add-select]');
+                if (sel) {
+                    const custom = expandEl.querySelector('[data-lyrics-add-custom]');
+                    if (custom) custom.hidden = sel.value !== 'custom';
+                    return;
+                }
+                const typeSel = e.target.closest('[data-lyrics-type]');
+                if (typeSel) { lyricsSetSectionType(typeSel.dataset.lyricsType, typeSel.value); return; }
+            });
+
+            expandEl.addEventListener('input', (e) => {
+                if (activeKey !== 'action:lyrics') return;
+                const ta = e.target.closest('[data-lyrics-editor]');
+                if (ta) { lyricsSetSectionContent(ta.dataset.lyricsEditor, ta.value); return; }
+                const nameInp = e.target.closest('[data-lyrics-custom-name]');
+                if (nameInp) { lyricsSetSectionCustomName(nameInp.dataset.lyricsCustomName, nameInp.value); return; }
+            });
+
+            // Drag-to-reorder sections within the active tab's list.
+            let dragId = null;
+            expandEl.addEventListener('dragstart', (e) => {
+                const handle = e.target.closest('[data-lyrics-drag]');
+                const li = e.target.closest('.pj-lyrics-section');
+                if (!li) return;
+                if (!handle && activeKey === 'action:lyrics') { e.preventDefault(); return; }
+                dragId = li.dataset.sectionId;
+                li.classList.add('is-dragging');
+                e.dataTransfer.effectAllowed = 'move';
+            });
+            expandEl.addEventListener('dragend', (e) => {
+                const li = e.target.closest('.pj-lyrics-section');
+                if (li) li.classList.remove('is-dragging');
+                dragId = null;
+            });
+            expandEl.addEventListener('dragover', (e) => {
+                if (activeKey !== 'action:lyrics' || !dragId) return;
+                if (e.target.closest('.pj-lyrics-section')) e.preventDefault();
+            });
+            expandEl.addEventListener('drop', (e) => {
+                if (activeKey !== 'action:lyrics' || !dragId) return;
+                const li = e.target.closest('.pj-lyrics-section');
+                if (!li) return;
+                e.preventDefault();
+                lyricsReorderSection(dragId, li.dataset.sectionId);
+                dragId = null;
+            });
+        }
+
+        async function expandLyrics(triggerBtn) {
+            const key = 'action:lyrics';
+            if (activeKey === key) { closeExpand(); return; }
+            activeKey = key;
+            markActiveBtn(triggerBtn);
+            expandEl.hidden = false;
+            expandEl.innerHTML = `
+                <div class="pc-expand__head">
+                    <h4 class="pc-expand__title">Lyrics Studio</h4>
+                    <button type="button" class="pc-expand__close" data-expand-close>Close</button>
+                </div>
+                <p class="pc-expand__hint">Write lyrics together, section by section. Click a word and pick a color to mark rhymes — any number of words can share a color, even non-obvious ones.</p>
+                <div data-lyrics-body style="color:#BFD7FF;text-align:center;padding:24px;">Loading…</div>
+            `;
+            expandEl.querySelector('[data-expand-close]').addEventListener('click', () => { stopLyricsRealtime(); closeExpand(); });
+            wireLyricsEvents();
+
+            await ensureLyricsBook(id);
+            const raw = await fetchLyricsBook(id);
+            const myEntry = (members || []).find((m) => m.user_id === user.id);
+            lyricsState = {
+                palette: RHYME_PALETTE_DEFAULT.slice(), mainFinalized: false, mainFinalizedAt: null,
+                sections: [], rhymes: {}, editingIds: new Set(),
+                activeTab: myEntry ? user.id : LYRICS_MAIN_TAB, activeColor: null
+            };
+            applyLyricsRaw(raw);
+            startLyricsRealtime(id);
+            renderLyrics();
+        }
+
         async function expandApproval(triggerRow) {
             const key = 'approval:self';
             if (activeKey === key) { closeExpand(); return; }
@@ -1493,6 +2023,10 @@
 
         host.querySelectorAll('[data-action="log"]').forEach((btn) => {
             btn.addEventListener('click', () => { expandLog(btn); });
+        });
+
+        host.querySelectorAll('[data-action="lyrics"]').forEach((btn) => {
+            btn.addEventListener('click', () => { expandLyrics(btn); });
         });
 
         // Kebab menu toggle (list view only)

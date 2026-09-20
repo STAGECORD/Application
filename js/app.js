@@ -4857,18 +4857,37 @@ document.addEventListener('DOMContentLoaded', function() {
             return out.slice(0, 18);
         }
 
-        // ---------- Storage layer ----------
-        const STORAGE_PREFIX = 'stagecord_pro_lyrics_';
+        // ---------- Storage layer (Supabase-backed, in-memory cache) ----------
+        // The whole rendering/mutation layer below (addSection, deleteSection,
+        // applyRhymeColor, finalizeMain, …) was written against a single
+        // synchronous in-memory "book" object. Rather than make every one of
+        // those functions async, readBook/writeBook now read and write an
+        // in-memory cache synchronously (so nothing above has to change),
+        // while writeBook fires a debounced background diff-and-sync against
+        // Supabase, and an incoming realtime event patches the same cache
+        // and re-renders. load() populates the cache before the modal opens.
+        let bookCache = null;
+        let bookCacheProjectId = null;
+        let lastSyncedBook = null;
+        let sessionUser = null;          // { id, name }
+        let activeMembers = [];          // real project_members, not a mock
+        let lyricsChannel = null;
+        let syncTimer = null;
+        let loadPromise = null;
+
+        function emptyBook() { return { members: {}, palette: DEFAULT_PALETTE.slice() }; }
 
         function readBook(projectId) {
-            try {
-                const raw = localStorage.getItem(STORAGE_PREFIX + projectId);
-                return raw ? JSON.parse(raw) : { members: {} };
-            } catch (e) { return { members: {} }; }
+            if (bookCacheProjectId !== projectId || !bookCache) return emptyBook();
+            return bookCache;
         }
 
         function writeBook(projectId, book) {
-            try { localStorage.setItem(STORAGE_PREFIX + projectId, JSON.stringify(book)); } catch (e) {}
+            bookCache = book;
+            bookCacheProjectId = projectId;
+            notifyLyricsChange(projectId);
+            clearTimeout(syncTimer);
+            syncTimer = setTimeout(function() { syncBookToServer(projectId, book); }, 400);
         }
 
         // Special tab ID used for the curated "Main Lyrics" view that's
@@ -4902,6 +4921,221 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         function isMainTab() { return activeMemberId === MAIN_TAB_ID; }
+
+        // ---------- Supabase load / sync / realtime ----------
+        // Converts the flat rows returned by get_lyrics_book() back into the
+        // nested { main, members, palette } shape every render/mutation
+        // function above already expects.
+        function rowsToBook(raw, members, meId) {
+            const book = emptyBook();
+            const b = raw && raw.book;
+            book.palette = (b && b.palette && b.palette.length) ? b.palette : DEFAULT_PALETTE.slice();
+            book.main = {
+                sections: [],
+                rhymes: {},
+                finalized: !!(b && b.main_finalized),
+                finalizedAt: (b && b.main_finalized_at) ? new Date(b.main_finalized_at).getTime() : null
+            };
+            members.forEach(function(m) { book.members[m.id] = { sections: [], rhymes: {} }; });
+            if (!book.members[meId]) book.members[meId] = { sections: [], rhymes: {} };
+
+            const rhymesByUser = {};
+            (raw.rhymes || []).forEach(function(r) {
+                if (!rhymesByUser[r.user_id]) rhymesByUser[r.user_id] = {};
+                rhymesByUser[r.user_id][r.word] = r.color;
+            });
+            // Rhyme tags are per-person, not per-view: the same map is used
+            // whether that person is looking at their own notebook or Main.
+            Object.keys(book.members).forEach(function(uid) {
+                book.members[uid].rhymes = rhymesByUser[uid] || {};
+            });
+            book.main.rhymes = rhymesByUser[meId] || {};
+
+            (raw.sections || []).slice().sort(function(a, b2) { return (a.position || 0) - (b2.position || 0); }).forEach(function(s) {
+                const shaped = {
+                    id: s.id,
+                    type: s.type,
+                    content: s.content || ''
+                };
+                if (s.type === 'custom') shaped.customName = s.custom_name || 'Custom';
+                if (s.is_main) {
+                    if (s.source_user_id) shaped.sourceMemberId = s.source_user_id;
+                    if (s.source_section_id) shaped.sourceSectionId = s.source_section_id;
+                    if (s.source_label) shaped.sourceLabel = s.source_label;
+                    book.main.sections.push(shaped);
+                } else {
+                    if (!book.members[s.user_id]) book.members[s.user_id] = { sections: [], rhymes: {} };
+                    book.members[s.user_id].sections.push(shaped);
+                }
+            });
+            return book;
+        }
+
+        function notifyLyricsChange(projectId) {
+            lyricsChangeListeners.forEach(function(fn) {
+                try { fn(projectId); } catch (e) {}
+            });
+        }
+        const lyricsChangeListeners = [];
+
+        // Loads (or returns already-cached) real member list + book for a
+        // project. Other project-card features (Sheet Music) also call
+        // this before reading, since they share the same cache.
+        function loadLyricsBook(projectId, forceRefresh) {
+            if (!forceRefresh && bookCacheProjectId === projectId && bookCache && loadPromise) return loadPromise;
+            loadPromise = (async function() {
+                const sb = window.supabaseClient;
+                const { data: { session } } = await sb.auth.getSession();
+                const me = session && session.user;
+                if (!me) return emptyBook();
+
+                const [membersResp] = await Promise.all([
+                    sb.rpc('get_project_members', { p_project_id: projectId }),
+                    sb.rpc('ensure_lyrics_book', { p_project_id: projectId })
+                ]);
+                const bookResp = await sb.rpc('get_lyrics_book', { p_project_id: projectId });
+
+                activeMembers = (membersResp.data || []).map(function(m) {
+                    const name = (window.STAGECORD && window.STAGECORD.plainName)
+                        ? window.STAGECORD.plainName(m.forename, m.surname, m.username)
+                        : (m.forename ? (m.forename + (m.surname ? ' ' + m.surname : '')) : (m.username || 'Member'));
+                    return { id: m.user_id, name: name, avatarUrl: m.avatar_url || '' };
+                });
+                const myEntry = activeMembers.find(function(m) { return m.id === me.id; });
+                sessionUser = { id: me.id, name: myEntry ? myEntry.name : 'You' };
+
+                const raw = bookResp.data || { book: null, sections: [], rhymes: [] };
+                const built = rowsToBook(raw, activeMembers, me.id);
+                bookCache = built;
+                bookCacheProjectId = projectId;
+                lastSyncedBook = JSON.parse(JSON.stringify(built));
+                startLyricsRealtime(projectId);
+                return built;
+            })();
+            return loadPromise;
+        }
+
+        function startLyricsRealtime(projectId) {
+            if (lyricsChannel) { window.supabaseClient.removeChannel(lyricsChannel); lyricsChannel = null; }
+            lyricsChannel = window.supabaseClient
+                .channel('lyrics-' + projectId)
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'lyrics_sections', filter: 'project_id=eq.' + projectId }, function() { debouncedReloadFromServer(projectId); })
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'lyrics_rhyme_tags', filter: 'project_id=eq.' + projectId }, function() { debouncedReloadFromServer(projectId); })
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'lyrics_books', filter: 'project_id=eq.' + projectId }, function() { debouncedReloadFromServer(projectId); })
+                .subscribe();
+        }
+
+        // A realtime event (ours or a teammate's) just means "something in
+        // this project's lyrics changed" — simplest correct reaction is to
+        // re-fetch and re-render, debounced so a burst of our own writes
+        // doesn't cause a refetch storm.
+        let reloadTimer = null;
+        function debouncedReloadFromServer(projectId) {
+            clearTimeout(reloadTimer);
+            reloadTimer = setTimeout(async function() {
+                const built = await loadLyricsBook(projectId, true);
+                lastSyncedBook = JSON.parse(JSON.stringify(built));
+                if (bookCacheProjectId === projectId) {
+                    bookCache = built;
+                    if (modal.classList.contains('open') && activeProjectId === projectId) refresh();
+                }
+            }, 500);
+        }
+
+        // Diffs the in-memory book against the last-known-synced snapshot
+        // and pushes only what changed. Called (debounced) from writeBook,
+        // so none of the 20+ mutation functions above need to know Supabase
+        // exists.
+        async function syncBookToServer(projectId, book) {
+            const sb = window.supabaseClient;
+            const prev = lastSyncedBook || emptyBook();
+            const nowIso = new Date().toISOString();
+            const ops = [];
+
+            if (JSON.stringify(book.palette || []) !== JSON.stringify(prev.palette || [])) {
+                ops.push(sb.from('lyrics_books').update({ palette: book.palette, updated_at: nowIso }).eq('project_id', projectId));
+            }
+            const bFin = !!(book.main && book.main.finalized);
+            const pFin = !!(prev.main && prev.main.finalized);
+            if (bFin !== pFin) {
+                ops.push(sb.from('lyrics_books').update({
+                    main_finalized: bFin,
+                    main_finalized_at: bFin ? new Date((book.main && book.main.finalizedAt) || Date.now()).toISOString() : null,
+                    updated_at: nowIso
+                }).eq('project_id', projectId));
+            }
+
+            function diffSectionList(newList, prevList, isMain, ownerId) {
+                newList = newList || []; prevList = prevList || [];
+                const prevById = {};
+                const prevPosById = {};
+                prevList.forEach(function(s, i) { prevById[s.id] = s; prevPosById[s.id] = i; });
+                const newIds = {};
+                newList.forEach(function(s, idx) {
+                    newIds[s.id] = true;
+                    const p = prevById[s.id];
+                    const payload = {
+                        id: s.id, project_id: projectId, user_id: ownerId,
+                        is_main: isMain, type: s.type, custom_name: s.customName || null,
+                        content: s.content || '', position: idx,
+                        source_user_id: s.sourceMemberId || null,
+                        source_section_id: s.sourceSectionId || null,
+                        updated_at: nowIso
+                    };
+                    if (!p) {
+                        ops.push(sb.from('lyrics_sections').insert(payload));
+                    } else if (p.type !== s.type || (p.customName || '') !== (s.customName || '') || p.content !== s.content || prevPosById[s.id] !== idx || (p.sourceMemberId || null) !== (s.sourceMemberId || null)) {
+                        ops.push(sb.from('lyrics_sections').update(payload).eq('id', s.id));
+                    }
+                });
+                prevList.forEach(function(s) {
+                    if (!newIds[s.id]) ops.push(sb.from('lyrics_sections').delete().eq('id', s.id));
+                });
+            }
+            diffSectionList(book.main && book.main.sections, prev.main && prev.main.sections, true, currentUser().id);
+            Object.keys(book.members || {}).forEach(function(uid) {
+                diffSectionList(book.members[uid].sections, prev.members[uid] && prev.members[uid].sections, false, uid);
+            });
+
+            function diffRhymeMap(newMap, prevMap, ownerId) {
+                newMap = newMap || {}; prevMap = prevMap || {};
+                Object.keys(newMap).forEach(function(word) {
+                    if (prevMap[word] !== newMap[word]) {
+                        // Recorded fresh at sync time rather than at the moment
+                        // of assignment: a word is "slant" if it doesn't
+                        // heuristically rhyme with any other word currently in
+                        // its color group — the most useful signal for a future
+                        // suggestion model is "does this still hold up against
+                        // the group as it stands now", not a one-time decision.
+                        const groupMates = Object.keys(newMap).filter(function(w) { return w !== word && newMap[w] === newMap[word]; });
+                        const isSlant = groupMates.length > 0 && !groupMates.some(function(w) { return wordsRhyme(word, w); });
+                        ops.push(sb.from('lyrics_rhyme_tags').upsert({
+                            project_id: projectId, user_id: ownerId, word: word, color: newMap[word], is_slant: isSlant
+                        }, { onConflict: 'project_id,user_id,word' }));
+                    }
+                });
+                Object.keys(prevMap).forEach(function(word) {
+                    if (!(word in newMap)) {
+                        ops.push(sb.from('lyrics_rhyme_tags').delete().eq('project_id', projectId).eq('user_id', ownerId).eq('word', word));
+                    }
+                });
+            }
+            // Rhymes are per-person (see rowsToBook): only sync the current
+            // user's own map, whichever view (own notebook or Main) it came
+            // through — both point at the same object for them.
+            diffRhymeMap(book.members[currentUser().id] && book.members[currentUser().id].rhymes, prev.members[currentUser().id] && prev.members[currentUser().id].rhymes, currentUser().id);
+
+            lastSyncedBook = JSON.parse(JSON.stringify(book));
+            try { await Promise.all(ops); } catch (e) { /* best-effort; next diff will retry anything still out of sync */ }
+        }
+
+        window.LyricsBook = {
+            load: loadLyricsBook,
+            getCached: function(projectId) { return (bookCacheProjectId === projectId && bookCache) ? bookCache : emptyBook(); },
+            getMembers: function(projectId) { return (bookCacheProjectId === projectId) ? activeMembers : []; },
+            getCurrentUser: function() { return sessionUser || { id: '', name: 'You' }; },
+            onChange: function(fn) { lyricsChangeListeners.push(fn); }
+        };
 
         // ---------- Section type catalog ----------
         const SECTION_TYPES = {
@@ -5022,7 +5256,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         function getUserSettings() {
             try {
-                const userId = window.ProjectLog.currentUser().id;
+                const userId = currentUser().id;
                 const raw = localStorage.getItem(SETTINGS_KEY_PREFIX + userId);
                 if (raw) return Object.assign({ confirmNonRhyming: true }, JSON.parse(raw));
             } catch (e) {}
@@ -5031,7 +5265,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         function setUserSettings(s) {
             try {
-                const userId = window.ProjectLog.currentUser().id;
+                const userId = currentUser().id;
                 localStorage.setItem(SETTINGS_KEY_PREFIX + userId, JSON.stringify(s));
             } catch (e) {}
         }
@@ -5287,14 +5521,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
         function newSectionId() {
             sectionSeq += 1;
-            return 'sec_' + Date.now().toString(36) + '_' + sectionSeq;
+            return (window.crypto && window.crypto.randomUUID) ? window.crypto.randomUUID() : ('sec_' + Date.now().toString(36) + '_' + sectionSeq);
         }
 
-        function projectMembers() { return PROJECT_MEMBERS[activeProjectId] || []; }
+        function projectMembers() { return activeMembers; }
 
         function avatarUrl(memberId) {
-            return localAsset('assets/images/artists/' + memberId + '-profile.png');
+            const m = activeMembers.find(function(x) { return x.id === memberId; });
+            return (m && m.avatarUrl) || localAsset('assets/images/artists/placeholder-male-1.png');
         }
+
+        function currentUser() { return sessionUser || { id: '', name: 'You' }; }
 
         function currentMemberBook() {
             if (isMainTab()) return getMainBook(activeProjectId);
@@ -5312,7 +5549,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // ---------- Rendering: tabs ----------
         function renderTabs() {
-            const me = window.ProjectLog.currentUser();
+            const me = currentUser();
             const mainActive = isMainTab() ? ' is-active' : '';
             const memberCount = (getMainBook(activeProjectId).sections || []).length;
             const mainTab = '<button type="button" class="lyrics-tab lyrics-tab--main' + mainActive + '" data-lyrics-tab="' + MAIN_TAB_ID + '" data-help="Main Lyrics: Den endelige tekst sammensat af bidrag fra teamet. Brug → Main-knappen på medlemmernes sektioner for at tilføje. Når I er enige, klik Finalize for at låse versionen.">' +
@@ -5701,7 +5938,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Compute "unused" sections for the current logged-in user — those
         // in their personal notebook that don't appear in Main Lyrics.
         function unusedSectionsForCurrentUser() {
-            const me = window.ProjectLog.currentUser();
+            const me = currentUser();
             const myBook = getMemberBook(activeProjectId, me.id).member;
             const main = getMainBook(activeProjectId);
             const usedIds = {};
@@ -5716,7 +5953,7 @@ document.addEventListener('DOMContentLoaded', function() {
         function openSaveUnusedDialog() {
             if (!window.BookOfRhymes) return;
             const unused = unusedSectionsForCurrentUser();
-            const me = window.ProjectLog.currentUser();
+            const me = currentUser();
             window.BookOfRhymes.openSaveUnused({
                 userId: me.id,
                 projectId: activeProjectId,
@@ -5738,7 +5975,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // in the active member notebook (or Main, if user is on Main).
         function openImportPicker() {
             if (!window.BookOfRhymes) return;
-            const me = window.ProjectLog.currentUser();
+            const me = currentUser();
             window.BookOfRhymes.openPicker({
                 userId: me.id,
                 onPick: function(entry) {
@@ -6085,30 +6322,36 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // ---------- Open / close ----------
-        function open(triggerBtn) {
+        async function open(triggerBtn) {
             const card = triggerBtn && triggerBtn.closest('.project-card');
             activeProjectId   = (triggerBtn && triggerBtn.dataset.projectId)
                               || (card && card.dataset.projectId)
-                              || 'eternaty';
+                              || null;
             activeProjectName = (card && card.dataset.projectName) || '';
-            // Default to the logged-in user's notebook if they're on the team,
-            // else the first member.
-            const me = window.ProjectLog.currentUser();
-            const members = projectMembers();
-            const myEntry = members.find(function(m) { return m.id === me.id; });
-            activeMemberId = (myEntry && myEntry.id) || (members[0] && members[0].id) || null;
+            if (!activeProjectId) return;
+
             activeColor = null;
             editingIds.clear();
             setMasterEditing(false);
-            seedDemoIfEmpty();
             if (titleEl) {
                 titleEl.textContent = activeProjectName
                     ? 'Notes & Lyrics · ' + activeProjectName
                     : 'Notes & Lyrics';
             }
-            refresh();
             modal.classList.add('open');
             modal.setAttribute('aria-hidden', 'false');
+            if (sectionsEl) sectionsEl.innerHTML = '<p class="lyrics-loading" style="padding:24px;color:rgba(255,255,255,0.6);">Loading…</p>';
+            if (tabsEl) tabsEl.innerHTML = '';
+
+            const projectAtOpen = activeProjectId;
+            const book = await loadLyricsBook(projectAtOpen);
+            if (activeProjectId !== projectAtOpen || !modal.classList.contains('open')) return; // closed/switched while loading
+
+            const me = currentUser();
+            const members = projectMembers();
+            const myEntry = members.find(function(m) { return m.id === me.id; });
+            activeMemberId = (myEntry && myEntry.id) || (members[0] && members[0].id) || MAIN_TAB_ID;
+            refresh();
         }
 
         function close() {
@@ -6117,48 +6360,6 @@ document.addEventListener('DOMContentLoaded', function() {
             hideRhymeSuggestions();
             hideSettingsPopover();
         }
-
-        // ---------- One-time demo seed ----------
-        // Pre-populates Jeremy & Maya's notebooks for the Eternaty project
-        // so the modal isn't empty on first open. Only runs if no member
-        // has any sections yet.
-        function seedDemoIfEmpty(projectId) {
-            projectId = projectId || activeProjectId;
-            if (projectId !== 'eternaty') return;
-            const book = readBook(projectId);
-            const hasAny = Object.keys(book.members || {}).some(function(k) {
-                return book.members[k].sections && book.members[k].sections.length;
-            });
-            if (hasAny) return;
-            const seed = {
-                'jeremy-freedom': {
-                    rhymes: { 'rain': PALETTE[0], 'pain': PALETTE[0], 'again': PALETTE[0], 'eyes': PALETTE[3], 'lies': PALETTE[3], 'skies': PALETTE[3] },
-                    sections: [
-                        { id: newSectionId(), type: 'intro',  content: 'Walking through the rain\nThinking of you again' },
-                        { id: newSectionId(), type: 'verse',  content: 'I see it in your eyes\nNo more room for lies\nUnder the open skies\nThis is where the silence dies' },
-                        { id: newSectionId(), type: 'chorus', content: 'Eternity is now\nWe figure out the how\nNo more whispered vow\nJust take a final bow' }
-                    ]
-                },
-                'maya-thompson': {
-                    rhymes: { 'fire': PALETTE[1], 'desire': PALETTE[1], 'higher': PALETTE[1] },
-                    sections: [
-                        { id: newSectionId(), type: 'notes', content: 'Topline ideas — try a half-time feel on the pre-chorus, push the falsetto on the second chorus.' },
-                        { id: newSectionId(), type: 'pre-chorus', content: 'Light another fire\nReach a little higher\nBurning with desire' }
-                    ]
-                }
-            };
-            const updated = Object.assign({}, book, { members: Object.assign({}, book.members) });
-            Object.keys(seed).forEach(function(memberId) {
-                if (!updated.members[memberId] || !(updated.members[memberId].sections || []).length) {
-                    updated.members[memberId] = seed[memberId];
-                }
-            });
-            writeBook(projectId, updated);
-        }
-
-        // Seed once at script load so other features (Sheet Music) can
-        // read content even if the user hasn't opened Notes & Lyrics yet.
-        seedDemoIfEmpty('eternaty');
 
         // Open from any [data-lyrics-notebook] pill on any project card.
         document.addEventListener('click', function(e) {
@@ -6754,22 +6955,17 @@ document.addEventListener('DOMContentLoaded', function() {
             'outro': 'Outro', 'notes': 'Notes', 'custom': 'Custom'
         };
 
-        const PROJECT_MEMBERS = {
-            'eternaty': [
-                { id: 'jeremy-freedom',   name: 'Jeremy Freedom' },
-                { id: 'malik-johnson',    name: 'Malik Johnson' },
-                { id: 'maya-thompson',    name: 'Maya Thompson' },
-                { id: 'winston-sinclair', name: 'Winston Sinclair' }
-            ]
-        };
-
-        function projectMembers() { return PROJECT_MEMBERS[activeProjectId] || []; }
+        // Sheet Music shares the same real lyrics data as the Notes & Lyrics
+        // notebook (window.LyricsBook, populated by that module).
+        function projectMembers() { return (window.LyricsBook && window.LyricsBook.getMembers(activeProjectId)) || []; }
 
         function readLyricsBook(projectId) {
-            try {
-                const raw = localStorage.getItem('stagecord_pro_lyrics_' + projectId);
-                return raw ? JSON.parse(raw) : null;
-            } catch (e) { return null; }
+            if (!window.LyricsBook) return null;
+            // getCached() always returns a shape, but .main only exists once
+            // load() has actually resolved (Sheet Music's open() awaits it
+            // before calling this, but guard anyway for safety).
+            const book = window.LyricsBook.getCached(projectId);
+            return (book && book.main) ? book : null;
         }
 
         function sectionsToLines(sections) {
@@ -6811,7 +7007,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             if (mainHasContent) return 'main';
             if (book && book.members) {
-                const me = window.ProjectLog.currentUser();
+                const me = (window.LyricsBook && window.LyricsBook.getCurrentUser()) || { id: '' };
                 const myBook = book.members[me.id];
                 const myHas = myBook && (myBook.sections || []).some(function(s) {
                     return (s.content || '').trim().length > 0;
@@ -7142,28 +7338,35 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // ---------- Open / close ----------
-        function open(triggerBtn) {
+        async function open(triggerBtn) {
             const card = triggerBtn && triggerBtn.closest('.project-card');
             activeProjectId   = (triggerBtn && triggerBtn.dataset.projectId)
                               || (card && card.dataset.projectId)
-                              || 'eternaty';
+                              || null;
             activeProjectName = (card && card.dataset.projectName) || '';
+            if (!activeProjectId) return;
+
+            modal.classList.add('open');
+            modal.setAttribute('aria-hidden', 'false');
+            if (titleEl) {
+                titleEl.textContent = activeProjectName ? 'Sheet Music · ' + activeProjectName : 'Sheet Music';
+            }
+
+            const projectAtOpen = activeProjectId;
+            if (window.LyricsBook) await window.LyricsBook.load(projectAtOpen);
+            if (activeProjectId !== projectAtOpen || !modal.classList.contains('open')) return;
+
             // Pick the best source: Main if it has content, otherwise the
             // logged-in user's notebook, otherwise the first member with
             // content. This means Sheet Music is always usable, even if
             // Main Lyrics hasn't been built yet.
             activeSource = pickDefaultSource(activeProjectId);
-            if (titleEl) {
-                titleEl.textContent = activeProjectName ? 'Sheet Music · ' + activeProjectName : 'Sheet Music';
-            }
             const data = read(activeProjectId);
             if (tempoInp) tempoInp.value = data.tempo || 120;
             if (timeSel)  timeSel.value  = data.time  || '4/4';
             if (keySel)   keySel.value   = data.key   || 'C';
             renderSourceSelect();
             renderSections();
-            modal.classList.add('open');
-            modal.setAttribute('aria-hidden', 'false');
         }
 
         function close() {

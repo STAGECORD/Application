@@ -677,6 +677,49 @@
             color: #FFFFFF;
         }
 
+        /* Lyrics Studio — collaborative lyric writing + rhyme-group tagging */
+        .pj-lyrics-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.14); padding-bottom: 8px; }
+        .pj-lyrics-tab { display: inline-flex; align-items: center; gap: 6px; background: transparent; border: none; border-bottom: 2px solid transparent; color: rgba(255,255,255,0.6); font-family: inherit; font-size: 12px; font-weight: 600; padding: 6px 8px; cursor: pointer; }
+        .pj-lyrics-tab:hover { color: #FFFFFF; }
+        .pj-lyrics-tab.is-active { color: #FFFFFF; border-bottom-color: #3886FC; }
+        .pj-lyrics-tab__avatar { width: 20px; height: 20px; border-radius: 50%; background-size: cover; background-position: center; background-color: rgba(255,255,255,0.1); flex-shrink: 0; }
+        .pj-lyrics-tab__own { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; background: rgba(56,134,252,0.25); color: #BFD7FF; padding: 1px 5px; border-radius: 4px; margin-left: 2px; }
+
+        .pj-lyrics-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-bottom: 10px; }
+        .pj-lyrics-toolbar__group { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .pj-lyrics-toolbar__select, .pj-lyrics-toolbar__custom { background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.2); color: #FFFFFF; font-family: inherit; font-size: 12px; padding: 5px 8px; border-radius: 6px; }
+        .pj-lyrics-hint-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: rgba(255,255,255,0.55); }
+        .pj-lyrics-palette { display: inline-flex; gap: 6px; align-items: center; }
+        .pj-lyrics-swatch { width: 20px; height: 20px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; padding: 0; box-shadow: 0 0 0 1px rgba(0,0,0,0.35) inset; }
+        .pj-lyrics-swatch:hover { border-color: rgba(255,255,255,0.4); }
+        .pj-lyrics-swatch.is-active { border-color: #FFFFFF; transform: scale(1.12); }
+        .pj-lyrics-swatch-add { width: 20px; height: 20px; border-radius: 50%; border: 1px dashed rgba(255,255,255,0.4); background: transparent; color: rgba(255,255,255,0.7); font-size: 13px; line-height: 1; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0; }
+        .pj-lyrics-swatch-add:hover { border-color: #FFFFFF; color: #FFFFFF; }
+        .pj-lyrics-hint { margin: 0 0 12px; font-size: 12px; line-height: 1.5; color: rgba(255,255,255,0.6); }
+
+        .pj-lyrics-banner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; font-size: 12px; color: #BFD7FF; }
+        .pj-lyrics-banner.is-finalized { background: rgba(67,196,122,0.12); border-color: rgba(67,196,122,0.4); color: #A0F0AE; }
+
+        .pj-lyrics-sections { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+        .pj-lyrics-section { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 10px 12px; }
+        .pj-lyrics-section.is-dragging { opacity: 0.5; }
+        .pj-lyrics-section.is-locked { opacity: 0.85; }
+        .pj-lyrics-section__head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+        .pj-lyrics-section__drag { cursor: grab; color: rgba(255,255,255,0.4); background: none; border: none; padding: 0 4px; font-size: 13px; }
+        .pj-lyrics-section__label { font-weight: 700; font-size: 12px; color: #BFD7FF; }
+        .pj-lyrics-section__type { background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.2); color: #FFFFFF; font-family: inherit; font-size: 11px; padding: 3px 6px; border-radius: 5px; }
+        .pj-lyrics-section__spacer { flex: 1; }
+        .pj-lyrics-section__action { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.75); font-family: inherit; font-size: 11px; padding: 3px 9px; border-radius: 999px; cursor: pointer; }
+        .pj-lyrics-section__action:hover { border-color: #FFFFFF; color: #FFFFFF; }
+        .pj-lyrics-section__action--delete:hover { border-color: #FF6A55; color: #FF6A55; }
+        .pj-lyrics-section__source { font-size: 10px; color: #BFD7FF; opacity: 0.8; }
+        .pj-lyrics-editor { width: 100%; min-height: 80px; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.2); color: #FFFFFF; font-family: inherit; font-size: 13px; line-height: 1.6; padding: 8px; border-radius: 8px; resize: vertical; box-sizing: border-box; }
+        .pj-lyrics-line { margin: 0; font-size: 13px; line-height: 1.8; color: rgba(255,255,255,0.9); }
+        .pj-lyrics-word { cursor: pointer; border-radius: 3px; padding: 0 1px; }
+        .pj-lyrics-word:hover { background: rgba(255,255,255,0.12); }
+        .pj-lyrics-word.has-rhyme { font-weight: 700; }
+        .pj-lyrics-placeholder { color: rgba(255,255,255,0.5); font-size: 12px; font-style: italic; margin: 4px 0; }
+
         /* Commercial rate card inside the blue expand */
         .pc-commercial-rates { margin-bottom: 16px; }
         .pc-rates__head {
