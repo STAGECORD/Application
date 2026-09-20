@@ -26,6 +26,7 @@
     let editingProject = null;
 
     const escapeHtml = F.escapeHtml;
+    const escapeAttr = F.escapeAttr;
 
     // Hardcoded conversion rates from DKK. Update manually as needed.
     // (Each value is "how many of this currency = 1 DKK".)
