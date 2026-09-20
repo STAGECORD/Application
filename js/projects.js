@@ -2109,6 +2109,54 @@
             });
         }
 
+        // One-time recovery for tags created before rhyme tagging moved to
+        // per-occurrence (section_id IS NULL rows): the old scheme only
+        // ever recorded "this word, some color", with no position — there's
+        // no way to know which occurrence was originally meant. Best
+        // faithful recovery: re-apply that color to every current
+        // occurrence of the word in the user's own sections, using the
+        // exact same tokenizer as the display so indices can't drift,
+        // then retire the old rows. Runs automatically, silently, once.
+        async function lyricsBackfillLegacyTags(raw) {
+            const legacy = (raw.rhymes || []).filter((r) => r.user_id === user.id && r.section_id == null);
+            if (!legacy.length) return false;
+
+            const mySections = lyricsState.sections.filter((s) => s.user_id === user.id);
+            const seen = new Set();
+            const inserts = [];
+            legacy.forEach((tag) => {
+                mySections.forEach((sec) => {
+                    (sec.content || '').split('\n').forEach((line, lineIdx) => {
+                        let wordIdx = 0;
+                        const re = /([\p{L}\p{N}'-]+)|([^\p{L}\p{N}]+)/gu;
+                        let match;
+                        while ((match = re.exec(line)) !== null) {
+                            if (match[1]) {
+                                if (match[1].toLowerCase() === tag.word) {
+                                    const occKey = sec.id + '|' + lineIdx + '|' + wordIdx;
+                                    if (!seen.has(occKey)) {
+                                        seen.add(occKey);
+                                        inserts.push({
+                                            project_id: id, user_id: user.id, section_id: sec.id,
+                                            line_index: lineIdx, word_index: wordIdx,
+                                            word: tag.word, color: tag.color, is_slant: tag.is_slant
+                                        });
+                                    }
+                                }
+                                wordIdx++;
+                            }
+                        }
+                    });
+                });
+            });
+
+            if (inserts.length) {
+                await sb.from('lyrics_rhyme_tags').upsert(inserts, { onConflict: 'project_id,user_id,section_id,line_index,word_index' });
+            }
+            await sb.from('lyrics_rhyme_tags').delete().eq('project_id', id).eq('user_id', user.id).is('section_id', null);
+            return true;
+        }
+
         async function expandLyrics(triggerBtn) {
             const key = 'action:lyrics';
             if (activeKey === key) { closeExpand(); return; }
@@ -2127,7 +2175,7 @@
             wireLyricsEvents();
 
             await ensureLyricsBook(id);
-            const raw = await fetchLyricsBook(id);
+            let raw = await fetchLyricsBook(id);
             const myEntry = (members || []).find((m) => m.user_id === user.id);
             lyricsState = {
                 palette: RHYME_PALETTE_DEFAULT.slice(), mainFinalized: false, mainFinalizedAt: null,
@@ -2135,6 +2183,10 @@
                 activeTab: myEntry ? user.id : LYRICS_MAIN_TAB, activeColor: null
             };
             applyLyricsRaw(raw);
+            if (await lyricsBackfillLegacyTags(raw)) {
+                raw = await fetchLyricsBook(id);
+                applyLyricsRaw(raw);
+            }
             startLyricsRealtime(id);
             renderLyrics();
         }
