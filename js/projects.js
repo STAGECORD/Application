@@ -2607,29 +2607,61 @@
                 x += w;
             });
 
+            // Transparent highlight showing exactly which slot + clef a
+            // click will land on, updated live as the mouse moves.
+            const svgNS = 'http://www.w3.org/2000/svg';
+            const hoverRect = document.createElementNS(svgNS, 'rect');
+            hoverRect.setAttribute('fill', 'rgba(106,169,240,0.22)');
+            hoverRect.setAttribute('stroke', 'rgba(106,169,240,0.55)');
+            hoverRect.setAttribute('stroke-width', '1');
+            hoverRect.setAttribute('rx', '3');
+            hoverRect.setAttribute('height', '80');
+            hoverRect.style.pointerEvents = 'none';
+            hoverRect.style.display = 'none';
+            const svgRoot = container.querySelector('svg');
+            if (svgRoot) svgRoot.appendChild(hoverRect);
+
+            const avgGap = clickTargets.length > 1
+                ? (clickTargets[clickTargets.length - 1].x - clickTargets[0].x) / (clickTargets.length - 1)
+                : 60;
+            const hoverWidth = Math.max(26, Math.min(70, avgGap * 0.85));
+
+            function nearestSheetTarget(e) {
+                if (!clickTargets.length) return null;
+                const svgEl = container.querySelector('svg');
+                if (!svgEl) return null;
+                const rect = svgEl.getBoundingClientRect();
+                const scale = rect.width / SHEET_LINE_WIDTH;
+                const px = (e.clientX - rect.left) / scale;
+                const py = (e.clientY - rect.top) / scale;
+                const clef = py < 95 ? 'treble' : 'bass';
+                let best = null, bestDist = Infinity;
+                clickTargets.forEach((t) => {
+                    const d = Math.abs(t.x - px);
+                    if (d < bestDist) { bestDist = d; best = t; }
+                });
+                return best ? { wordIdx: best.wordIdx, x: best.x, clef } : null;
+            }
+
             // Click anywhere on the staff (not just the word button row
             // below) to open the note picker for the nearest word — clef
             // is whichever staff (treble/bass) the click landed in.
             container.onclick = (e) => {
-                if (!clickTargets.length) return;
-                const svgEl = container.querySelector('svg');
-                if (!svgEl) return;
-                const rect = svgEl.getBoundingClientRect();
-                const scale = rect.width / SHEET_LINE_WIDTH;
-                const clickX = (e.clientX - rect.left) / scale;
-                const clickY = (e.clientY - rect.top) / scale;
-                const clef = clickY < 95 ? 'treble' : 'bass';
-                let best = null, bestDist = Infinity;
-                clickTargets.forEach((t) => {
-                    const d = Math.abs(t.x - clickX);
-                    if (d < bestDist) { bestDist = d; best = t; }
-                });
-                if (best) {
-                    sheetPickerClef = clef;
-                    const assignedWordIdx = sheetSlotWordIndex(sectionId, lineIdx, best.wordIdx, words.length);
-                    showSheetPicker(sectionId, lineIdx, best.wordIdx, container, words[assignedWordIdx] || '');
-                }
+                const target = nearestSheetTarget(e);
+                if (!target) return;
+                sheetPickerClef = target.clef;
+                const assignedWordIdx = sheetSlotWordIndex(sectionId, lineIdx, target.wordIdx, words.length);
+                showSheetPicker(sectionId, lineIdx, target.wordIdx, container, words[assignedWordIdx] || '');
             };
+            container.onmousemove = (e) => {
+                const target = nearestSheetTarget(e);
+                if (!target) { hoverRect.style.display = 'none'; return; }
+                hoverRect.setAttribute('x', target.x - hoverWidth / 2);
+                hoverRect.setAttribute('y', target.clef === 'treble' ? 10 : 100);
+                hoverRect.setAttribute('width', hoverWidth);
+                hoverRect.style.display = 'block';
+            };
+            container.onmouseleave = () => { hoverRect.style.display = 'none'; };
         }
 
         function drawAllSheetStaves() {
