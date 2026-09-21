@@ -2494,7 +2494,7 @@
         }
 
         // ---------- Rendering: real engraved grand staff via VexFlow ----------
-        function drawVexStaffLine(container, words, sectionId, lineIdx) {
+        function drawVexStaffLine(container, words, sectionId, lineIdx, showTempo) {
             const VF = window.Vex && window.Vex.Flow;
             if (!VF) { container.textContent = 'Notation engine failed to load.'; return; }
             container.innerHTML = '';
@@ -2508,7 +2508,7 @@
             const staveWidth = width - 20;
             const trebleStave = new VF.Stave(10, 10, staveWidth);
             trebleStave.addClef('treble').addKeySignature(sheetState.key).addTimeSignature(sheetState.timeSignature);
-            trebleStave.setTempo({ duration: 'q', bpm: sheetState.tempo }, 0);
+            if (showTempo) trebleStave.setTempo({ duration: 'q', bpm: sheetState.tempo }, 0);
             trebleStave.setContext(ctx).draw();
 
             const bassStave = new VF.Stave(10, 100, staveWidth);
@@ -2536,12 +2536,16 @@
 
         function drawAllSheetStaves() {
             if (!sheetVisible || !sheetState) return;
+            let first = true;
             expandEl.querySelectorAll('[data-vf-line]').forEach((el) => {
                 const sectionId = el.dataset.vfSection;
                 const lineIdx = Number(el.dataset.vfLine);
                 let words = [];
                 try { words = JSON.parse(el.dataset.vfWords); } catch (e) {}
-                if (words.length) drawVexStaffLine(el, words, sectionId, lineIdx);
+                if (words.length) {
+                    drawVexStaffLine(el, words, sectionId, lineIdx, first);
+                    first = false;
+                }
             });
         }
 
