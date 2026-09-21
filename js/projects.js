@@ -2399,6 +2399,7 @@
         let sheetPickerOctave = 4;
         let sheetPickerClef = 'treble';
         let sheetMoveSelection = []; // [{ addr, sectionId, lineIdx, slotIdx, wordCount }] — one or more slots picked up to move onto another
+        let sheetConnectMode = null; // { type: 'tie'|'slur', sectionId, lineIdx, clef, anchorIdx } — armed by clicking Tie/Slur, extended by clicking notes on the staff
 
         function sheetNoteKey(sectionId, lineIdx, wordIdx, clef) {
             return `${sectionId}|${lineIdx}|${wordIdx}|${clef}`;
@@ -2825,6 +2826,10 @@
             container.onclick = (e) => {
                 const target = nearestSheetTarget(e);
                 if (!target) return;
+                if (sheetConnectMode) {
+                    if (sheetTryExtendConnect(sectionId, lineIdx, target.wordIdx, target.clef)) return;
+                    sheetStopConnectMode(); // clicked a note that doesn't extend the chain — cancel and open the picker normally below
+                }
                 sheetPickerClef = target.clef;
                 const assignedWordIdxs = sheetSlotWordIndices(sectionId, lineIdx, target.wordIdx, words.length);
                 const label = assignedWordIdxs.map((wi) => words[wi]).filter(Boolean).join(' ');
@@ -3016,6 +3021,55 @@
             sheetPickerKey = null;
         }
 
+        // Tie/slur "connect mode" — click Tie or Slur once to arm it
+        // anchored at the currently open note, then click note after note
+        // directly on the staff to chain them together (each click ties
+        // the previous note into the one just clicked and moves the
+        // anchor forward), instead of having to reopen the picker and
+        // toggle a flag on every note in the chain one at a time.
+        function sheetConnectHintEl() {
+            let el = expandEl.querySelector('[data-sheet-connect-hint]');
+            if (!el) {
+                el = document.createElement('div');
+                el.setAttribute('data-sheet-connect-hint', '');
+                el.className = 'pj-sheet-connect-hint';
+                el.innerHTML = '<span data-sheet-connect-hint-text></span><button type="button" data-sheet-connect-stop aria-label="Stop connecting">Done</button>';
+                expandEl.appendChild(el);
+            }
+            return el;
+        }
+        function sheetShowConnectHint() {
+            const el = sheetConnectHintEl();
+            const label = sheetConnectMode.type === 'tie' ? '🔗 Tying' : '⌒ Slurring';
+            el.querySelector('[data-sheet-connect-hint-text]').textContent = label + ' — click the next note to chain it in';
+            el.hidden = false;
+        }
+        function sheetStopConnectMode() {
+            sheetConnectMode = null;
+            const el = expandEl.querySelector('[data-sheet-connect-hint]');
+            if (el) el.hidden = true;
+        }
+        // Called from both the staff-click handler and the word-row
+        // click handler — a click only extends the chain when it lands
+        // on the immediate next slot (same clef as the anchor, real note,
+        // not a rest); anything else (including a non-matching clef, via
+        // clickedClef) falls through so the caller can cancel connect
+        // mode and treat the click as a normal one.
+        function sheetTryExtendConnect(sectionId, lineIdx, wordIdx, clickedClef) {
+            if (!sheetConnectMode) return false;
+            if (sheetConnectMode.sectionId !== sectionId || sheetConnectMode.lineIdx !== lineIdx) return false;
+            if (clickedClef && clickedClef !== sheetConnectMode.clef) return false;
+            if (wordIdx !== sheetConnectMode.anchorIdx + 1) return false;
+            const clef = sheetConnectMode.clef;
+            const anchorNote = getSheetNote(sectionId, lineIdx, sheetConnectMode.anchorIdx, clef);
+            const targetNote = getSheetNote(sectionId, lineIdx, wordIdx, clef);
+            if (!anchorNote || !targetNote || targetNote.pitch === 'rest') return false;
+            setSheetNote(sectionId, lineIdx, sheetConnectMode.anchorIdx, clef, sheetNoteWith(anchorNote, { [sheetConnectMode.type]: true }));
+            sheetConnectMode.anchorIdx = wordIdx;
+            sheetShowConnectHint();
+            return true;
+        }
+
         function wireSheetMusicEvents() {
             if (expandEl.dataset.sheetWired) return;
             expandEl.dataset.sheetWired = '1';
@@ -3034,9 +3088,15 @@
             expandEl.addEventListener('click', (e) => {
                 if (activeKey !== 'action:lyrics') return;
 
+                if (e.target.closest('[data-sheet-connect-stop]')) { sheetStopConnectMode(); return; }
+
                 const wordHit = e.target.closest('[data-sheet-word-click]');
                 if (wordHit) {
                     const [sectionId, lineIdx, wordIdx] = wordHit.dataset.sheetWordClick.split(':');
+                    if (sheetConnectMode) {
+                        if (sheetTryExtendConnect(sectionId, Number(lineIdx), Number(wordIdx))) return;
+                        sheetStopConnectMode(); // clicked something that doesn't extend the chain — cancel and treat as a normal click
+                    }
                     // Read the dedicated text span, not the whole click
                     // target's textContent — that would run the pitch
                     // badge straight into the word with no separator
@@ -3077,8 +3137,19 @@
                 if (tieBtn && sheetPickerKey) {
                     const cur = getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef);
                     if (cur && cur.pitch !== 'rest') {
-                        setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, sheetNoteWith(cur, { tie: !cur.tie }));
-                        renderSheetPicker();
+                        if (cur.tie) {
+                            // Already tied into the next note — one click undoes it.
+                            setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, sheetNoteWith(cur, { tie: false }));
+                            renderSheetPicker();
+                        } else {
+                            // Arm connect mode instead of guessing which
+                            // note to tie into — the next click(s) on the
+                            // staff pick the target(s), and can keep
+                            // chaining through as many notes as needed.
+                            sheetConnectMode = { type: 'tie', sectionId: sheetPickerKey.sectionId, lineIdx: sheetPickerKey.lineIdx, clef: sheetPickerClef, anchorIdx: sheetPickerKey.wordIdx };
+                            hideSheetPicker();
+                            sheetShowConnectHint();
+                        }
                     }
                     return;
                 }
@@ -3086,8 +3157,14 @@
                 if (slurBtn && sheetPickerKey) {
                     const cur = getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef);
                     if (cur && cur.pitch !== 'rest') {
-                        setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, sheetNoteWith(cur, { slur: !cur.slur }));
-                        renderSheetPicker();
+                        if (cur.slur) {
+                            setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, sheetNoteWith(cur, { slur: false }));
+                            renderSheetPicker();
+                        } else {
+                            sheetConnectMode = { type: 'slur', sectionId: sheetPickerKey.sectionId, lineIdx: sheetPickerKey.lineIdx, clef: sheetPickerClef, anchorIdx: sheetPickerKey.wordIdx };
+                            hideSheetPicker();
+                            sheetShowConnectHint();
+                        }
                     }
                     return;
                 }
@@ -3208,6 +3285,9 @@
             // space — expandEl's own listener only sees clicks within it.
             document.addEventListener('click', (e) => {
                 if (sheetMoveSelection.length && !expandEl.contains(e.target)) sheetClearMoveSelection();
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && sheetConnectMode) sheetStopConnectMode();
             });
         }
 
