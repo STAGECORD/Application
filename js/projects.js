@@ -2752,7 +2752,7 @@
                 }
                 const addr = `${escapeAttr(sectionId)}:${lineIdx}:${slotIdx}`;
                 return `<span class="${cls}" data-sheet-word="${addr}">
-                    <span class="pj-sheet-word__drag" draggable="true" data-sheet-word-drag="${addr}" data-sheet-word-count="${n}" title="Drag to sing this word on a different beat">⠿</span>
+                    <span class="pj-sheet-word__drag" data-sheet-word-drag="${addr}" data-sheet-word-count="${n}" title="Press and drag to sing this word on a different beat">⠿</span>
                     <span class="pj-sheet-word__click" data-sheet-word-click="${addr}">${escapeHtml(w)}${labels}</span>
                 </span>`;
             }).join('') + '</div>';
@@ -2945,31 +2945,33 @@
             // Drag a word's small grip handle onto another word in the
             // same line to swap which beat each is sung on. Scoped to a
             // dedicated handle (not the whole chip) so a plain click to
-            // open the note picker still works reliably — making a whole
-            // clickable element draggable can swallow click gestures.
+            // open the note picker still works reliably.
+            //
+            // Tracked via mousedown/mouseup rather than native HTML5
+            // drag — this codebase already found native drag unreliable
+            // for a near-identical interaction (see the rhyme phrase
+            // selection above), so don't repeat that mistake here.
             let sheetDragSource = null;
-            expandEl.addEventListener('dragstart', (e) => {
+            expandEl.addEventListener('mousedown', (e) => {
                 const handle = e.target.closest('[data-sheet-word-drag]');
                 if (!handle) return;
                 const [sectionId, lineIdx, slotIdx] = handle.dataset.sheetWordDrag.split(':');
                 sheetDragSource = { sectionId, lineIdx: Number(lineIdx), slotIdx: Number(slotIdx), wordCount: Number(handle.dataset.sheetWordCount) };
-                if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
+                handle.classList.add('is-dragging');
+                e.preventDefault(); // avoid text-selection while dragging the handle
             });
-            expandEl.addEventListener('dragover', (e) => {
-                if (!sheetDragSource || !e.target.closest('[data-sheet-word]')) return;
-                e.preventDefault();
-            });
-            expandEl.addEventListener('drop', (e) => {
-                const target = e.target.closest('[data-sheet-word]');
-                if (!sheetDragSource || !target) return;
-                e.preventDefault();
-                const [sectionId, lineIdx, slotIdx] = target.dataset.sheetWord.split(':');
-                if (sectionId === sheetDragSource.sectionId && Number(lineIdx) === sheetDragSource.lineIdx) {
-                    sheetSwapWordSlots(sectionId, Number(lineIdx), sheetDragSource.wordCount, sheetDragSource.slotIdx, Number(slotIdx));
-                }
+            expandEl.addEventListener('mouseup', (e) => {
+                if (!sheetDragSource) return;
+                const source = sheetDragSource;
                 sheetDragSource = null;
+                expandEl.querySelectorAll('.pj-sheet-word__drag.is-dragging').forEach((h) => h.classList.remove('is-dragging'));
+                const target = e.target.closest('[data-sheet-word]');
+                if (!target) return;
+                const [sectionId, lineIdx, slotIdx] = target.dataset.sheetWord.split(':');
+                if (sectionId === source.sectionId && Number(lineIdx) === source.lineIdx) {
+                    sheetSwapWordSlots(sectionId, Number(lineIdx), source.wordCount, source.slotIdx, Number(slotIdx));
+                }
             });
-            expandEl.addEventListener('dragend', () => { sheetDragSource = null; });
         }
 
         async function expandApproval(triggerRow) {
