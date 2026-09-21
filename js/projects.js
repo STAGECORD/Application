@@ -2349,7 +2349,7 @@
 
             try {
                 await ensureSheetMusicSettings(id);
-                sheetState = { tempo: 120, timeSignature: '4/4', key: 'C', notes: {} };
+                sheetState = { tempo: 120, timeSignature: '4/4', key: 'C', notes: {}, wordOrder: {} };
                 applySheetRaw(await fetchSheetMusic(id));
                 startSheetRealtime(id);
             } catch (err) {
@@ -2404,6 +2404,19 @@
             return (section.content || '').split('\n').map((line) => line.trim().split(/\s+/).filter(Boolean));
         }
 
+        // Which lyric word sits in a given staff slot — a slot's note
+        // (pitch/duration) is anchored to the slot itself and doesn't
+        // move; dragging a word only changes this slot->word mapping, so
+        // the printed lyric text order above the staff never changes.
+        function sheetWordOrderKey(sectionId, lineIdx) {
+            return sectionId + '|' + lineIdx;
+        }
+        function sheetSlotWordIndex(sectionId, lineIdx, slotIdx, wordCount) {
+            const order = sheetState.wordOrder[sheetWordOrderKey(sectionId, lineIdx)];
+            if (order && order.length === wordCount && order[slotIdx] != null) return order[slotIdx];
+            return slotIdx;
+        }
+
         // ---------- Load / sync / realtime ----------
         async function ensureSheetMusicSettings(projectId) {
             const resp = await sb.rpc('ensure_sheet_music_settings', { p_project_id: projectId });
@@ -2412,7 +2425,7 @@
         async function fetchSheetMusic(projectId) {
             const resp = await sb.rpc('get_sheet_music', { p_project_id: projectId });
             if (resp.error) throw resp.error;
-            return resp.data || { settings: null, notes: [] };
+            return resp.data || { settings: null, notes: [], word_order: [] };
         }
         function applySheetRaw(raw) {
             const s = raw.settings;
@@ -2423,6 +2436,10 @@
             (raw.notes || []).forEach((n) => {
                 sheetState.notes[sheetNoteKey(n.section_id, n.line_index, n.word_index, n.clef)] = { pitch: n.pitch, duration: n.duration };
             });
+            sheetState.wordOrder = {};
+            (raw.word_order || []).forEach((wo) => {
+                sheetState.wordOrder[sheetWordOrderKey(wo.section_id, wo.line_index)] = wo.slot_order || [];
+            });
         }
         function stopSheetRealtime() {
             if (sheetChannel) { sb.removeChannel(sheetChannel); sheetChannel = null; }
@@ -2432,6 +2449,7 @@
             sheetChannel = sb.channel('pj-sheet-' + projectId)
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'sheet_music_notes', filter: 'project_id=eq.' + projectId }, () => reloadSheetMusic(projectId))
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'sheet_music_settings', filter: 'project_id=eq.' + projectId }, () => reloadSheetMusic(projectId))
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'sheet_music_word_order', filter: 'project_id=eq.' + projectId }, () => reloadSheetMusic(projectId))
                 .subscribe();
         }
         function reloadSheetMusic(projectId) {
@@ -2465,6 +2483,24 @@
                     .eq('project_id', id).eq('section_id', sectionId).eq('line_index', lineIdx).eq('word_index', wordIdx).eq('clef', clef)
                     .then(({ error }) => { if (error) reloadSheetMusic(id); });
             }
+        }
+
+        // Swap which word sits in two staff slots on the same line —
+        // notes stay put (still keyed by slot), only the word labels
+        // (and which note editing they open) trade places.
+        function sheetSwapWordSlots(sectionId, lineIdx, wordCount, slotA, slotB) {
+            if (slotA === slotB) return;
+            const key = sheetWordOrderKey(sectionId, lineIdx);
+            let order = sheetState.wordOrder[key];
+            if (!order || order.length !== wordCount) order = Array.from({ length: wordCount }, (_, i) => i);
+            else order = order.slice();
+            const tmp = order[slotA]; order[slotA] = order[slotB]; order[slotB] = tmp;
+            sheetState.wordOrder[key] = order;
+            renderLyrics();
+            sb.from('sheet_music_word_order').upsert({
+                project_id: id, section_id: sectionId, line_index: lineIdx, slot_order: order,
+                updated_by: user.id, updated_at: new Date().toISOString()
+            }, { onConflict: 'project_id,section_id,line_index' }).then(({ error }) => { if (error) reloadSheetMusic(id); });
         }
 
         const SHEET_DURATION_VEX = { whole: 'w', half: 'h', quarter: 'q', eighth: '8', sixteenth: '16' };
@@ -2590,7 +2626,8 @@
                 });
                 if (best) {
                     sheetPickerClef = clef;
-                    showSheetPicker(sectionId, lineIdx, best.wordIdx, container, words[best.wordIdx] || '');
+                    const assignedWordIdx = sheetSlotWordIndex(sectionId, lineIdx, best.wordIdx, words.length);
+                    showSheetPicker(sectionId, lineIdx, best.wordIdx, container, words[assignedWordIdx] || '');
                 }
             };
         }
@@ -2614,10 +2651,18 @@
             return pitch === 'rest' ? 'rest' : escapeHtml(pitch.split(',').join('+'));
         }
 
+        // Slots are addressed by position (notes live on the slot), but
+        // the word TEXT shown in each slot comes from sheetSlotWordIndex
+        // — so dragging (see wireSheetMusicEvents) only ever reassigns
+        // which word's label/notes-badge appears where, never the
+        // printed lyric order above the staff.
         function renderSheetWords(line, sectionId, lineIdx) {
-            return '<div class="pj-sheet-words">' + line.map((w, i) => {
-                const treble = getSheetNote(sectionId, lineIdx, i, 'treble');
-                const bass = getSheetNote(sectionId, lineIdx, i, 'bass');
+            const n = line.length;
+            return '<div class="pj-sheet-words">' + Array.from({ length: n }, (_, slotIdx) => {
+                const wordIdx = sheetSlotWordIndex(sectionId, lineIdx, slotIdx, n);
+                const w = line[wordIdx] != null ? line[wordIdx] : line[slotIdx];
+                const treble = getSheetNote(sectionId, lineIdx, slotIdx, 'treble');
+                const bass = getSheetNote(sectionId, lineIdx, slotIdx, 'bass');
                 let cls = 'pj-sheet-word';
                 let labels = '';
                 if (treble) {
@@ -2628,7 +2673,11 @@
                     cls += ' has-note';
                     labels += `<span class="pj-sheet-word__pitch pj-sheet-word__pitch--bass">${sheetPitchDisplay(bass.pitch)}</span>`;
                 }
-                return `<button type="button" class="${cls}" data-sheet-word="${escapeAttr(sectionId)}:${lineIdx}:${i}">${escapeHtml(w)}${labels}</button>`;
+                const addr = `${escapeAttr(sectionId)}:${lineIdx}:${slotIdx}`;
+                return `<span class="${cls}" data-sheet-word="${addr}">
+                    <span class="pj-sheet-word__drag" draggable="true" data-sheet-word-drag="${addr}" data-sheet-word-count="${n}" title="Drag to sing this word on a different beat">⠿</span>
+                    <span class="pj-sheet-word__click" data-sheet-word-click="${addr}">${escapeHtml(w)}${labels}</span>
+                </span>`;
             }).join('') + '</div>';
         }
 
@@ -2734,10 +2783,10 @@
             expandEl.addEventListener('click', (e) => {
                 if (activeKey !== 'action:lyrics') return;
 
-                const wordHit = e.target.closest('[data-sheet-word]');
+                const wordHit = e.target.closest('[data-sheet-word-click]');
                 if (wordHit) {
-                    const [sectionId, lineIdx, wordIdx] = wordHit.dataset.sheetWord.split(':');
-                    showSheetPicker(sectionId, Number(lineIdx), Number(wordIdx), wordHit, wordHit.firstChild ? wordHit.firstChild.textContent : wordHit.textContent.trim());
+                    const [sectionId, lineIdx, wordIdx] = wordHit.dataset.sheetWordClick.split(':');
+                    showSheetPicker(sectionId, Number(lineIdx), Number(wordIdx), wordHit, wordHit.textContent.trim());
                     return;
                 }
                 if (e.target.closest('[data-sheet-picker-close]')) { hideSheetPicker(); return; }
@@ -2785,6 +2834,35 @@
                     hideSheetPicker();
                 }
             });
+
+            // Drag a word's small grip handle onto another word in the
+            // same line to swap which beat each is sung on. Scoped to a
+            // dedicated handle (not the whole chip) so a plain click to
+            // open the note picker still works reliably — making a whole
+            // clickable element draggable can swallow click gestures.
+            let sheetDragSource = null;
+            expandEl.addEventListener('dragstart', (e) => {
+                const handle = e.target.closest('[data-sheet-word-drag]');
+                if (!handle) return;
+                const [sectionId, lineIdx, slotIdx] = handle.dataset.sheetWordDrag.split(':');
+                sheetDragSource = { sectionId, lineIdx: Number(lineIdx), slotIdx: Number(slotIdx), wordCount: Number(handle.dataset.sheetWordCount) };
+                if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
+            });
+            expandEl.addEventListener('dragover', (e) => {
+                if (!sheetDragSource || !e.target.closest('[data-sheet-word]')) return;
+                e.preventDefault();
+            });
+            expandEl.addEventListener('drop', (e) => {
+                const target = e.target.closest('[data-sheet-word]');
+                if (!sheetDragSource || !target) return;
+                e.preventDefault();
+                const [sectionId, lineIdx, slotIdx] = target.dataset.sheetWord.split(':');
+                if (sectionId === sheetDragSource.sectionId && Number(lineIdx) === sheetDragSource.lineIdx) {
+                    sheetSwapWordSlots(sectionId, Number(lineIdx), sheetDragSource.wordCount, sheetDragSource.slotIdx, Number(slotIdx));
+                }
+                sheetDragSource = null;
+            });
+            expandEl.addEventListener('dragend', () => { sheetDragSource = null; });
         }
 
         async function expandApproval(triggerRow) {
