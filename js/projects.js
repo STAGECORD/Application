@@ -2336,6 +2336,7 @@
                     <div class="pj-sheet-picker__pitches" data-sheet-pitch-grid></div>
                     <div class="pj-sheet-picker__durations" data-sheet-duration-row></div>
                     <div class="pj-sheet-picker__actions">
+                        <button type="button" class="pj-btn pj-btn--ghost" data-sheet-tie title="Hold this note into the next one, same pitch">🔗 Tie to next</button>
                         <button type="button" class="pj-btn pj-btn--ghost" data-sheet-rest>Rest</button>
                         <button type="button" class="pj-btn pj-btn--ghost" data-sheet-clear>Clear</button>
                     </div>
@@ -2376,11 +2377,12 @@
         const SHEET_KEYS = ['C','G','D','A','E','B','F','Bb','Eb','Ab','Am','Em','Bm','F#m','Dm','Gm','Cm'];
         const SHEET_TIME_SIGNATURES = ['4/4', '3/4', '6/8', '2/4'];
         const SHEET_DURATIONS = [
-            { id: 'whole',     glyph: '𝅝',  label: 'Whole' },
-            { id: 'half',      glyph: '𝅗𝅥', label: 'Half' },
-            { id: 'quarter',   glyph: '♩',  label: 'Quarter' },
-            { id: 'eighth',    glyph: '♪',  label: 'Eighth' },
-            { id: 'sixteenth', glyph: '𝅘𝅥𝅯', label: 'Sixteenth' }
+            { id: 'whole',        glyph: '𝅝',  label: 'Whole' },
+            { id: 'half',         glyph: '𝅗𝅥', label: 'Half' },
+            { id: 'quarter',      glyph: '♩',  label: 'Quarter' },
+            { id: 'eighth',       glyph: '♪',  label: 'Eighth' },
+            { id: 'sixteenth',    glyph: '𝅘𝅥𝅯', label: 'Sixteenth' },
+            { id: 'thirtysecond', glyph: '𝅘𝅥𝅰', label: '32nd' }
         ];
         const SHEET_DURATION_INDEX = {};
         SHEET_DURATIONS.forEach((d) => { SHEET_DURATION_INDEX[d.id] = d; });
@@ -2434,7 +2436,7 @@
             sheetState.key = (s && s.key) || 'C';
             sheetState.notes = {};
             (raw.notes || []).forEach((n) => {
-                sheetState.notes[sheetNoteKey(n.section_id, n.line_index, n.word_index, n.clef)] = { pitch: n.pitch, duration: n.duration };
+                sheetState.notes[sheetNoteKey(n.section_id, n.line_index, n.word_index, n.clef)] = { pitch: n.pitch, duration: n.duration, tie: !!n.tie };
             });
             sheetState.wordOrder = {};
             (raw.word_order || []).forEach((wo) => {
@@ -2476,7 +2478,7 @@
             if (note) {
                 sb.from('sheet_music_notes').upsert({
                     project_id: id, section_id: sectionId, line_index: lineIdx, word_index: wordIdx, clef: clef,
-                    pitch: note.pitch, duration: note.duration, updated_by: user.id, updated_at: new Date().toISOString()
+                    pitch: note.pitch, duration: note.duration, tie: !!note.tie, updated_by: user.id, updated_at: new Date().toISOString()
                 }, { onConflict: 'project_id,section_id,line_index,word_index,clef' }).then(({ error }) => { if (error) reloadSheetMusic(id); });
             } else {
                 sb.from('sheet_music_notes').delete()
@@ -2503,7 +2505,7 @@
             }, { onConflict: 'project_id,section_id,line_index' }).then(({ error }) => { if (error) reloadSheetMusic(id); });
         }
 
-        const SHEET_DURATION_VEX = { whole: 'w', half: 'h', quarter: 'q', eighth: '8', sixteenth: '16' };
+        const SHEET_DURATION_VEX = { whole: 'w', half: 'h', quarter: 'q', eighth: '8', sixteenth: '16', thirtysecond: '32' };
 
         function sheetPitchToVexKey(pitchStr) {
             const m = (pitchStr || '').match(/^([A-G])(#|b)?(\d)$/);
@@ -2559,6 +2561,7 @@
             ctx.setStrokeStyle('#BFD7FF');
 
             const clickTargets = []; // { x, wordIdx } — shared x between clefs since voices are joined
+            const allTrebleNotes = [], allBassNotes = []; // flat, indexed by slot, for cross-measure ties
             let x = 10;
 
             measures.forEach((m, mi) => {
@@ -2601,11 +2604,29 @@
 
                     trebleNotes.forEach((n, k) => {
                         clickTargets.push({ x: n.getAbsoluteX(), wordIdx: m.startIdx + k });
+                        allTrebleNotes[m.startIdx + k] = n;
                     });
+                    bassNotes.forEach((n, k) => { allBassNotes[m.startIdx + k] = n; });
                 }
 
                 x += w;
             });
+
+            // Ties: a note marked "tied to next" gets a curve into the
+            // next slot's note, same clef, as long as both are real
+            // (non-rest) pitched notes — works across measures too since
+            // both notes already exist in the same rendering context.
+            function drawTies(allNotes, clef) {
+                for (let i = 0; i < allNotes.length - 1; i++) {
+                    const note = getSheetNote(sectionId, lineIdx, i, clef);
+                    const a = allNotes[i], b = allNotes[i + 1];
+                    if (!note || !note.tie || note.pitch === 'rest' || !a || !b) continue;
+                    if (!(a instanceof VF.StaveNote) || !(b instanceof VF.StaveNote)) continue;
+                    new VF.StaveTie({ first_note: a, last_note: b }).setContext(ctx).draw();
+                }
+            }
+            drawTies(allTrebleNotes, 'treble');
+            drawTies(allBassNotes, 'bass');
 
             // Transparent highlight showing exactly which slot + clef a
             // click will land on, updated live as the mouse moves.
@@ -2765,6 +2786,12 @@
                     `<button type="button" class="pj-lyrics-section__action${d.id === activeDur ? ' is-active' : ''}" data-sheet-duration="${d.id}">${d.glyph} ${d.label}</button>`
                 ).join('');
             }
+            const tieBtn = expandEl.querySelector('[data-sheet-tie]');
+            if (tieBtn) {
+                const canTie = !!(note && note.pitch !== 'rest');
+                tieBtn.classList.toggle('is-active', canTie && !!note.tie);
+                tieBtn.disabled = !canTie;
+            }
         }
 
         function showSheetPicker(sectionId, lineIdx, wordIdx, anchorEl, wordText) {
@@ -2840,14 +2867,23 @@
                     if (idx >= 0) pitches.splice(idx, 1); else pitches.push(clicked);
                     const duration = (cur && cur.duration) || 'quarter';
                     setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef,
-                        pitches.length ? { pitch: pitches.join(','), duration } : null);
+                        pitches.length ? { pitch: pitches.join(','), duration, tie: cur && cur.tie } : null);
                     renderSheetPicker();
                     return;
                 }
                 const durBtn = e.target.closest('[data-sheet-duration]');
                 if (durBtn && sheetPickerKey) {
                     const cur = getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef);
-                    if (cur) { setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, { pitch: cur.pitch, duration: durBtn.dataset.sheetDuration }); renderSheetPicker(); }
+                    if (cur) { setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, { pitch: cur.pitch, duration: durBtn.dataset.sheetDuration, tie: cur.tie }); renderSheetPicker(); }
+                    return;
+                }
+                const tieBtn = e.target.closest('[data-sheet-tie]');
+                if (tieBtn && sheetPickerKey) {
+                    const cur = getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef);
+                    if (cur && cur.pitch !== 'rest') {
+                        setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, { pitch: cur.pitch, duration: cur.duration, tie: !cur.tie });
+                        renderSheetPicker();
+                    }
                     return;
                 }
                 if (e.target.closest('[data-sheet-rest]') && sheetPickerKey) {

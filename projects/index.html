@@ -740,9 +740,13 @@
            music, not as a separate row of pill buttons — still clickable
            to open the note picker, just styled as plain text. */
         .pj-sheet-words { display: flex; flex-wrap: wrap; gap: 2px; margin: 2px 0 4px; padding: 0 8px; }
-        .pj-sheet-word { display: flex; flex-direction: column; align-items: center; gap: 1px; background: none; border: none; color: rgba(255,255,255,0.85); font-family: inherit; font-size: 12px; padding: 2px 6px; cursor: pointer; min-width: 30px; border-bottom: 1px dashed transparent; }
-        .pj-sheet-word:hover { color: #FFFFFF; border-bottom-color: rgba(106,169,240,0.6); }
-        .pj-sheet-word.has-note { color: #FFFFFF; font-weight: 700; }
+        .pj-sheet-word { display: inline-flex; align-items: center; gap: 3px; min-width: 30px; }
+        .pj-sheet-word__drag { cursor: grab; color: rgba(255,255,255,0.3); font-size: 10px; line-height: 1; user-select: none; }
+        .pj-sheet-word__drag:hover { color: rgba(255,255,255,0.7); }
+        .pj-sheet-word__drag:active { cursor: grabbing; }
+        .pj-sheet-word__click { display: flex; flex-direction: column; align-items: center; gap: 1px; color: rgba(255,255,255,0.85); font-family: inherit; font-size: 12px; padding: 2px 4px; cursor: pointer; border-bottom: 1px dashed transparent; }
+        .pj-sheet-word__click:hover { color: #FFFFFF; border-bottom-color: rgba(106,169,240,0.6); }
+        .pj-sheet-word.has-note .pj-sheet-word__click { color: #FFFFFF; font-weight: 700; }
         .pj-sheet-word__pitch { font-size: 9px; opacity: 0.85; }
         .pj-sheet-word__pitch--treble { color: #6AA9F0; }
         .pj-sheet-word__pitch--bass { color: #F0B96A; }
@@ -753,6 +757,7 @@
         .pj-sheet-picker__clefs, .pj-sheet-picker__octaves, .pj-sheet-picker__durations { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
         .pj-sheet-picker__pitches > div { display: flex; gap: 5px; margin-bottom: 5px; }
         .pj-sheet-picker__actions { display: flex; gap: 6px; margin-top: 6px; }
+        .pj-sheet-picker__actions .pj-btn--ghost.is-active { background: rgba(106,169,240,0.25); border-color: #6AA9F0; color: #FFFFFF; }
 
         /* Commercial rate card inside the blue expand */
         .pc-commercial-rates { margin-bottom: 16px; }
