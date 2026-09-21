@@ -2396,6 +2396,7 @@
         let sheetPickerKey = null;    // { sectionId, lineIdx, wordIdx }
         let sheetPickerOctave = 4;
         let sheetPickerClef = 'treble';
+        let sheetMoveSource = null; // { addr, sectionId, lineIdx, slotIdx, wordCount } — word picked up to move to another slot
 
         function sheetNoteKey(sectionId, lineIdx, wordIdx, clef) {
             return `${sectionId}|${lineIdx}|${wordIdx}|${clef}`;
@@ -2612,7 +2613,12 @@
                     // never past the barline on the left, never into the
                     // next note's space on the right — instead of a fixed
                     // width that can drift onto neighboring measures/notes.
-                    const measureNoteStartX = x + (isFirst ? SHEET_FIRST_MEASURE_EXTRA : 0) + 6;
+                    // getNoteStartX() is VexFlow's own real measurement of
+                    // where notes begin on this stave (accounting for its
+                    // clef/keysig/timesig if any); a hand-computed guess
+                    // here previously squeezed the first note's box to a
+                    // sliver whenever it was off by even a few pixels.
+                    const measureNoteStartX = trebleStave.getNoteStartX();
                     const measureNoteEndX = x + w - 4;
                     trebleNotes.forEach((n, k) => {
                         const nx = n.getAbsoluteX();
@@ -2758,8 +2764,8 @@
                     labels += `<span class="pj-sheet-word__pitch pj-sheet-word__pitch--bass">${sheetPitchDisplay(bass.pitch)}</span>`;
                 }
                 const addr = `${escapeAttr(sectionId)}:${lineIdx}:${slotIdx}`;
-                return `<span class="${cls}" data-sheet-word="${addr}" data-sheet-word-count="${n}" title="Press and drag to sing this word on a different beat">
-                    <span class="pj-sheet-word__drag">⠿</span>
+                return `<span class="${cls}" data-sheet-word="${addr}">
+                    <span class="pj-sheet-word__drag" data-sheet-word-drag="${addr}" data-sheet-word-count="${n}" title="Click to pick up, then click another word to swap beats">⠿</span>
                     <span class="pj-sheet-word__click" data-sheet-word-click="${addr}">${escapeHtml(w)}${labels}</span>
                 </span>`;
             }).join('') + '</div>';
@@ -2963,61 +2969,53 @@
                 }
             });
 
-            // Press and hold anywhere on a word chip, drag it onto another
-            // word in the same line, release — swaps which beat each is
-            // sung on. Disambiguated from a plain click (which opens the
-            // note picker) purely by movement distance: a press that
-            // never moves past the threshold is a click, not a drag, so
-            // the existing data-sheet-word-click handler still fires
-            // normally in that case.
+            // Move a word to a different beat: click its grip handle to
+            // pick it up (marks it selected), then click any other word
+            // in the same line to swap them — two ordinary clicks, no
+            // press-and-hold gesture required. Replaced an earlier
+            // drag-based version that relied on mousedown/mousemove/
+            // mouseup, which repeatedly failed to register on at least
+            // one real trackpad despite the handler logic verifying
+            // correct in every simulated test — clicks are the one
+            // interaction already proven reliable throughout this panel.
             //
-            // Tracked via mousedown/mousemove/mouseup rather than native
-            // HTML5 drag — this codebase already found native drag
-            // unreliable for a near-identical interaction (see the rhyme
-            // phrase selection above), so don't repeat that mistake here.
-            const SHEET_DRAG_THRESHOLD = 6;
-            let sheetPress = null; // { sectionId, lineIdx, slotIdx, wordCount, x, y, dragging, el }
-            expandEl.addEventListener('mousedown', (e) => {
-                if (activeKey !== 'action:lyrics') { console.log('[sheet-drag] mousedown ignored: activeKey=', activeKey); return; }
-                const wordEl = e.target.closest('[data-sheet-word]');
-                if (!wordEl) { console.log('[sheet-drag] mousedown on non-word target:', e.target); return; }
-                const [sectionId, lineIdx, slotIdx] = wordEl.dataset.sheetWord.split(':');
-                sheetPress = {
-                    sectionId, lineIdx: Number(lineIdx), slotIdx: Number(slotIdx),
-                    wordCount: Number(wordEl.dataset.sheetWordCount),
-                    x: e.clientX, y: e.clientY, dragging: false, el: wordEl
-                };
-                console.log('[sheet-drag] mousedown started press on slot', slotIdx, sheetPress);
-            });
-            expandEl.addEventListener('mousemove', (e) => {
-                if (!sheetPress || sheetPress.dragging) return;
-                const dist = Math.hypot(e.clientX - sheetPress.x, e.clientY - sheetPress.y);
-                if (dist > SHEET_DRAG_THRESHOLD) {
-                    sheetPress.dragging = true;
-                    sheetPress.el.classList.add('is-dragging');
-                    console.log('[sheet-drag] threshold exceeded (dist=' + dist.toFixed(1) + '), now dragging');
+            // Registered with useCapture=true and stopImmediatePropagation
+            // so a completing/cancelling click never also falls through to
+            // the picker-opening click handler above for the same word.
+            expandEl.addEventListener('click', (e) => {
+                if (activeKey !== 'action:lyrics') return;
+
+                if (sheetMoveSource) {
+                    const target = e.target.closest('[data-sheet-word]');
+                    expandEl.querySelectorAll('.pj-sheet-word.is-move-source').forEach((el) => el.classList.remove('is-move-source'));
+                    const source = sheetMoveSource;
+                    sheetMoveSource = null;
+                    if (!target) return; // clicked away from any word — cancel silently
+                    e.stopImmediatePropagation();
+                    const [sectionId, lineIdx, slotIdx] = target.dataset.sheetWord.split(':');
+                    if (sectionId === source.sectionId && Number(lineIdx) === source.lineIdx && Number(slotIdx) !== source.slotIdx) {
+                        sheetSwapWordSlots(sectionId, Number(lineIdx), source.wordCount, source.slotIdx, Number(slotIdx));
+                    }
+                    return;
                 }
-            });
-            expandEl.addEventListener('mouseup', (e) => {
-                if (!sheetPress) { console.log('[sheet-drag] mouseup with no active press'); return; }
-                const press = sheetPress;
-                sheetPress = null;
-                if (press.el) press.el.classList.remove('is-dragging');
-                if (!press.dragging) { console.log('[sheet-drag] mouseup without exceeding threshold — treated as a click, not a drag'); return; }
-                const target = e.target.closest('[data-sheet-word]');
-                if (!target) { console.log('[sheet-drag] mouseup while dragging landed on non-word target:', e.target); return; }
-                const [sectionId, lineIdx, slotIdx] = target.dataset.sheetWord.split(':');
-                console.log('[sheet-drag] mouseup while dragging on slot', slotIdx, '— attempting swap');
-                if (sectionId === press.sectionId && Number(lineIdx) === press.lineIdx) {
-                    sheetSwapWordSlots(sectionId, Number(lineIdx), press.wordCount, press.slotIdx, Number(slotIdx));
-                    console.log('[sheet-drag] swap called:', press.slotIdx, '<->', slotIdx);
-                } else {
-                    console.log('[sheet-drag] swap skipped — different section/line', { press, sectionId, lineIdx });
+
+                const handle = e.target.closest('[data-sheet-word-drag]');
+                if (handle) {
+                    e.stopImmediatePropagation();
+                    const addr = handle.dataset.sheetWordDrag;
+                    const [sectionId, lineIdx, slotIdx] = addr.split(':');
+                    sheetMoveSource = { addr, sectionId, lineIdx: Number(lineIdx), slotIdx: Number(slotIdx), wordCount: Number(handle.dataset.sheetWordCount) };
+                    handle.closest('[data-sheet-word]').classList.add('is-move-source');
                 }
-            });
-            expandEl.addEventListener('mouseleave', () => {
-                if (sheetPress && sheetPress.el) sheetPress.el.classList.remove('is-dragging');
-                sheetPress = null;
+            }, true);
+            // Clicking fully outside the panel while a move is pending
+            // should cancel it too, not just clicking inside on empty
+            // space — expandEl's own listener only sees clicks within it.
+            document.addEventListener('click', (e) => {
+                if (sheetMoveSource && !expandEl.contains(e.target)) {
+                    expandEl.querySelectorAll('.pj-sheet-word.is-move-source').forEach((el) => el.classList.remove('is-move-source'));
+                    sheetMoveSource = null;
+                }
             });
         }
 
