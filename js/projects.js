@@ -2560,7 +2560,14 @@
             if (!note) return new VF.GhostNote({ duration: 'q' });
             const dur = SHEET_DURATION_VEX[note.duration] || 'q';
             if (note.pitch === 'rest') {
-                return new VF.StaveNote({ keys: [clef === 'bass' ? 'd/3' : 'b/4'], duration: dur + 'r', clef });
+                // The dot button doesn't gate on pitch !== 'rest' (a
+                // dotted rest is valid notation), so this needs the same
+                // dots:1 + buildAndAttach treatment as a real note below —
+                // it was previously dropped here, silently losing both
+                // the dot glyph and its extra duration on a rest.
+                const restNote = new VF.StaveNote({ keys: [clef === 'bass' ? 'd/3' : 'b/4'], duration: dur + 'r', clef, dots: note.dots ? 1 : 0 });
+                if (note.dots) VF.Dot.buildAndAttach([restNote], { all: true });
+                return restNote;
             }
             // A word can carry a chord — pitch is a comma-joined list of
             // one or more pitches sharing the same duration.
@@ -2882,7 +2889,7 @@
                 const addr = `${escapeAttr(sectionId)}:${lineIdx}:${slotIdx}`;
                 return `<span class="${cls}" data-sheet-word="${addr}">
                     <span class="pj-sheet-word__drag" data-sheet-word-drag="${addr}" data-sheet-word-count="${n}" title="Click to select, then click another word (or click again to add more) — click the target note to place the selected words there">⠿</span>
-                    <span class="pj-sheet-word__click" data-sheet-word-click="${addr}">${escapeHtml(w) || '·'}${labels}</span>
+                    <span class="pj-sheet-word__click" data-sheet-word-click="${addr}"><span class="pj-sheet-word__text">${escapeHtml(w) || '·'}</span>${labels}</span>
                 </span>`;
             }).join('') + '</div>';
         }
@@ -3030,7 +3037,12 @@
                 const wordHit = e.target.closest('[data-sheet-word-click]');
                 if (wordHit) {
                     const [sectionId, lineIdx, wordIdx] = wordHit.dataset.sheetWordClick.split(':');
-                    showSheetPicker(sectionId, Number(lineIdx), Number(wordIdx), wordHit, wordHit.textContent.trim());
+                    // Read the dedicated text span, not the whole click
+                    // target's textContent — that would run the pitch
+                    // badge straight into the word with no separator
+                    // (e.g. "DetC5" instead of "Det").
+                    const textEl = wordHit.querySelector('.pj-sheet-word__text');
+                    showSheetPicker(sectionId, Number(lineIdx), Number(wordIdx), wordHit, (textEl || wordHit).textContent.trim());
                     return;
                 }
                 if (e.target.closest('[data-sheet-picker-close]')) { hideSheetPicker(); return; }
@@ -3098,7 +3110,12 @@
                     return;
                 }
                 if (e.target.closest('[data-sheet-rest]') && sheetPickerKey) {
-                    setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, { pitch: 'rest', duration: 'quarter' });
+                    // sheetNoteWith so an existing duration/dots choice
+                    // survives switching to a rest — a raw literal here
+                    // silently reset duration back to quarter every time,
+                    // discarding whatever the user had already picked.
+                    const cur = getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef);
+                    setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, sheetNoteWith(cur, { pitch: 'rest', tie: false, slur: false, tuplet: false }));
                     renderSheetPicker();
                     return;
                 }
