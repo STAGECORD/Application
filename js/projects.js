@@ -2337,6 +2337,7 @@
                     <div class="pj-sheet-picker__pitches" data-sheet-pitch-grid></div>
                     <div class="pj-sheet-picker__durations" data-sheet-duration-row></div>
                     <div class="pj-sheet-picker__actions">
+                        <button type="button" class="pj-btn pj-btn--ghost" data-sheet-dot title="Dotted note (adds half the duration again)">• Dot</button>
                         <button type="button" class="pj-btn pj-btn--ghost" data-sheet-tie title="Hold this note into the next one, same pitch">🔗 Tie to next</button>
                         <button type="button" class="pj-btn pj-btn--ghost" data-sheet-rest>Rest</button>
                         <button type="button" class="pj-btn pj-btn--ghost" data-sheet-clear>Clear</button>
@@ -2437,7 +2438,7 @@
             sheetState.key = (s && s.key) || 'C';
             sheetState.notes = {};
             (raw.notes || []).forEach((n) => {
-                sheetState.notes[sheetNoteKey(n.section_id, n.line_index, n.word_index, n.clef)] = { pitch: n.pitch, duration: n.duration, tie: !!n.tie };
+                sheetState.notes[sheetNoteKey(n.section_id, n.line_index, n.word_index, n.clef)] = { pitch: n.pitch, duration: n.duration, tie: !!n.tie, dots: !!n.dots };
             });
             sheetState.wordOrder = {};
             (raw.word_order || []).forEach((wo) => {
@@ -2479,7 +2480,7 @@
             if (note) {
                 sb.from('sheet_music_notes').upsert({
                     project_id: id, section_id: sectionId, line_index: lineIdx, word_index: wordIdx, clef: clef,
-                    pitch: note.pitch, duration: note.duration, tie: !!note.tie, updated_by: user.id, updated_at: new Date().toISOString()
+                    pitch: note.pitch, duration: note.duration, tie: !!note.tie, dots: !!note.dots, updated_by: user.id, updated_at: new Date().toISOString()
                 }, { onConflict: 'project_id,section_id,line_index,word_index,clef' }).then(({ error }) => { if (error) reloadSheetMusic(id); });
             } else {
                 sb.from('sheet_music_notes').delete()
@@ -2529,7 +2530,11 @@
             // A word can carry a chord — pitch is a comma-joined list of
             // one or more pitches sharing the same duration.
             const keys = note.pitch.split(',').filter(Boolean).map(sheetPitchToVexKey);
-            return new VF.StaveNote({ keys: keys.length ? keys : ['c/4'], duration: dur, clef });
+            const staveNote = new VF.StaveNote({ keys: keys.length ? keys : ['c/4'], duration: dur, clef, dots: note.dots ? 1 : 0 });
+            // dots:1 above only affects duration/ticks — the dot glyph
+            // itself still needs to be explicitly attached to render.
+            if (note.dots) VF.Dot.buildAndAttach([staveNote], { all: true });
+            return staveNote;
         }
 
         // ---------- Rendering: real engraved grand staff via VexFlow ----------
@@ -2811,6 +2816,12 @@
                 tieBtn.classList.toggle('is-active', canTie && !!note.tie);
                 tieBtn.disabled = !canTie;
             }
+            const dotBtn = expandEl.querySelector('[data-sheet-dot]');
+            if (dotBtn) {
+                const canDot = !!note;
+                dotBtn.classList.toggle('is-active', canDot && !!note.dots);
+                dotBtn.disabled = !canDot;
+            }
         }
 
         function showSheetPicker(sectionId, lineIdx, wordIdx, anchorEl, wordText) {
@@ -2886,21 +2897,30 @@
                     if (idx >= 0) pitches.splice(idx, 1); else pitches.push(clicked);
                     const duration = (cur && cur.duration) || 'quarter';
                     setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef,
-                        pitches.length ? { pitch: pitches.join(','), duration, tie: cur && cur.tie } : null);
+                        pitches.length ? { pitch: pitches.join(','), duration, tie: cur && cur.tie, dots: cur && cur.dots } : null);
                     renderSheetPicker();
                     return;
                 }
                 const durBtn = e.target.closest('[data-sheet-duration]');
                 if (durBtn && sheetPickerKey) {
                     const cur = getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef);
-                    if (cur) { setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, { pitch: cur.pitch, duration: durBtn.dataset.sheetDuration, tie: cur.tie }); renderSheetPicker(); }
+                    if (cur) { setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, { pitch: cur.pitch, duration: durBtn.dataset.sheetDuration, tie: cur.tie, dots: cur.dots }); renderSheetPicker(); }
                     return;
                 }
                 const tieBtn = e.target.closest('[data-sheet-tie]');
                 if (tieBtn && sheetPickerKey) {
                     const cur = getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef);
                     if (cur && cur.pitch !== 'rest') {
-                        setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, { pitch: cur.pitch, duration: cur.duration, tie: !cur.tie });
+                        setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, { pitch: cur.pitch, duration: cur.duration, tie: !cur.tie, dots: cur.dots });
+                        renderSheetPicker();
+                    }
+                    return;
+                }
+                const dotBtn = e.target.closest('[data-sheet-dot]');
+                if (dotBtn && sheetPickerKey) {
+                    const cur = getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef);
+                    if (cur) {
+                        setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, { pitch: cur.pitch, duration: cur.duration, tie: cur.tie, dots: !cur.dots });
                         renderSheetPicker();
                     }
                     return;
