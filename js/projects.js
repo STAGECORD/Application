@@ -1778,6 +1778,7 @@
             if (!body) return;
             try {
                 body.innerHTML = renderLyricsTabs() + renderLyricsToolbar() + renderLyricsBanner() + renderLyricsSections();
+                drawAllSheetStaves();
             } catch (err) {
                 console.error('renderLyrics failed:', err);
                 body.innerHTML = `<p class="pj-lyrics-placeholder" style="color:#FF6A55;">Something went wrong rendering Lyrics Studio: ${escapeHtml((err && err.message) || String(err))}</p>`;
@@ -2365,236 +2366,79 @@
         const SHEET_DURATION_INDEX = {};
         SHEET_DURATIONS.forEach((d) => { SHEET_DURATION_INDEX[d.id] = d; });
 
-        // Diatonic step from C4 — clef-independent; the same absolute
-        // pitch space, just displayed at a different vertical anchor per
-        // staff (see sheetStepToY).
-        function sheetPitchToStep(pitchStr) {
-            if (!pitchStr || pitchStr === 'rest') return null;
-            const m = pitchStr.match(/^([A-G])(#|b)?(\d)$/);
-            if (!m) return null;
-            return (parseInt(m[3], 10) - 4) * 7 + SHEET_LETTER_STEP[m[1]];
-        }
-        // Treble: top line (F5, step 10) at y=22, 3px/step, C4 at y=52.
-        // Bass: top line (A3, step -2) at y=22, C4 at y=16 (one ledger
-        // line above the staff — correct real-notation position).
-        function sheetStepToY(step, clef) {
-            return clef === 'bass' ? (16 - step * 3) : (52 - step * 3);
-        }
-        // In-staff diatonic step range per clef, for ledger-line logic.
-        const SHEET_STAFF_RANGE = { treble: [2, 10], bass: [-10, -2] };
+        const SHEET_DURATION_VEX = { whole: 'w', half: 'h', quarter: 'q', eighth: '8', sixteenth: '16' };
 
-        // Real engraved key signature: [count, 'sharp'|'flat'|null] per key,
-        // minor keys mapped to their relative major's signature.
-        const KEY_SIG_TABLE = {
-            C: [0, null], Am: [0, null],
-            G: [1, 'sharp'], Em: [1, 'sharp'],
-            D: [2, 'sharp'], Bm: [2, 'sharp'],
-            A: [3, 'sharp'], 'F#m': [3, 'sharp'],
-            E: [4, 'sharp'],
-            B: [5, 'sharp'],
-            F: [1, 'flat'], Dm: [1, 'flat'],
-            Bb: [2, 'flat'], Gm: [2, 'flat'],
-            Eb: [3, 'flat'], Cm: [3, 'flat'],
-            Ab: [4, 'flat']
-        };
-        const SHARP_ORDER = ['F', 'C', 'G', 'D', 'A', 'E', 'B'];
-        const FLAT_ORDER = ['B', 'E', 'A', 'D', 'G', 'C', 'F'];
-        // Standard engraved staff position (letter + octave) for each
-        // accidental, per clef. Bass sits a fixed third below treble on
-        // the same staff grid, so every bass position is treble's letter
-        // shifted down by exactly 2 diatonic steps — kept as an explicit
-        // table (rather than derived) so it's easy to sanity-check.
-        const TREBLE_ACC_OCTAVE = {
-            sharp: { F: 5, C: 5, G: 5, D: 5, A: 4, E: 5, B: 4 },
-            flat: { B: 4, E: 5, A: 4, D: 5, G: 4, C: 5, F: 4 }
-        };
-        const BASS_ACC_OCTAVE = {
-            sharp: { F: 3, C: 3, G: 3, D: 3, A: 2, E: 3, B: 2 },
-            flat: { B: 2, E: 3, A: 2, D: 3, G: 2, C: 3, F: 2 }
-        };
+        function sheetPitchToVexKey(pitchStr) {
+            const m = (pitchStr || '').match(/^([A-G])(#|b)?(\d)$/);
+            if (!m) return 'c/4';
+            return m[1].toLowerCase() + (m[2] || '') + '/' + m[3];
+        }
 
-        function sheetKeySignatureGlyphs(clef, x) {
-            const conf = KEY_SIG_TABLE[sheetState.key] || [0, null];
-            const [count, type] = conf;
-            if (!count) return { svg: '', width: 0 };
-            const order = type === 'sharp' ? SHARP_ORDER : FLAT_ORDER;
-            const octTable = (clef === 'bass' ? BASS_ACC_OCTAVE : TREBLE_ACC_OCTAVE)[type];
-            const glyph = type === 'sharp' ? '♯' : '♭';
-            let svg = '';
-            let cx = x;
-            for (let i = 0; i < count; i++) {
-                const letter = order[i];
-                const step = (octTable[letter] - 4) * 7 + SHEET_LETTER_STEP[letter];
-                const y = sheetStepToY(step, clef);
-                svg += `<text class="pj-sheet-staff__accidental" x="${cx}" y="${y + 3}">${glyph}</text>`;
-                cx += 9;
+        // Builds one VexFlow tickable for a given word slot: a real note
+        // if one's been placed, a visible rest if marked as a rest, or an
+        // invisible GhostNote (still occupies a beat) if nothing's been
+        // placed there yet — keeps every word's column width consistent
+        // whether or not it carries a note.
+        function sheetBuildVexNote(VF, sectionId, lineIdx, wordIdx, clef) {
+            const note = getSheetNote(sectionId, lineIdx, wordIdx, clef);
+            if (!note) return new VF.GhostNote({ duration: 'q' });
+            const dur = SHEET_DURATION_VEX[note.duration] || 'q';
+            if (note.pitch === 'rest') {
+                return new VF.StaveNote({ keys: [clef === 'bass' ? 'd/3' : 'b/4'], duration: dur + 'r', clef });
             }
-            return { svg, width: count * 9 + 4 };
+            return new VF.StaveNote({ keys: [sheetPitchToVexKey(note.pitch)], duration: dur, clef });
         }
 
-        function sheetTimeSignatureGlyphs(x) {
-            const parts = (sheetState.timeSignature || '4/4').split('/');
-            return `<text class="pj-sheet-staff__timesig" x="${x}" y="31">${escapeHtml(parts[0] || '4')}</text><text class="pj-sheet-staff__timesig" x="${x}" y="47">${escapeHtml(parts[1] || '4')}</text>`;
+        // ---------- Rendering: real engraved grand staff via VexFlow ----------
+        function drawVexStaffLine(container, words, sectionId, lineIdx) {
+            const VF = window.Vex && window.Vex.Flow;
+            if (!VF) { container.textContent = 'Notation engine failed to load.'; return; }
+            container.innerHTML = '';
+            const width = Math.max(340, 70 + words.length * 85);
+            const renderer = new VF.Renderer(container, VF.Renderer.Backends.SVG);
+            renderer.resize(width, 200);
+            const ctx = renderer.getContext();
+            ctx.setFillStyle('#BFD7FF');
+            ctx.setStrokeStyle('#BFD7FF');
+
+            const staveWidth = width - 20;
+            const trebleStave = new VF.Stave(10, 10, staveWidth);
+            trebleStave.addClef('treble').addKeySignature(sheetState.key).addTimeSignature(sheetState.timeSignature);
+            trebleStave.setTempo({ duration: 'q', bpm: sheetState.tempo }, 0);
+            trebleStave.setContext(ctx).draw();
+
+            const bassStave = new VF.Stave(10, 100, staveWidth);
+            bassStave.addClef('bass').addKeySignature(sheetState.key).addTimeSignature(sheetState.timeSignature);
+            bassStave.setContext(ctx).draw();
+
+            new VF.StaveConnector(trebleStave, bassStave).setType(VF.StaveConnector.type.BRACE).setContext(ctx).draw();
+            new VF.StaveConnector(trebleStave, bassStave).setType(VF.StaveConnector.type.SINGLE_LEFT).setContext(ctx).draw();
+            new VF.StaveConnector(trebleStave, bassStave).setType(VF.StaveConnector.type.SINGLE_RIGHT).setContext(ctx).draw();
+
+            const trebleNotes = words.map((w, i) => sheetBuildVexNote(VF, sectionId, lineIdx, i, 'treble'));
+            const bassNotes = words.map((w, i) => sheetBuildVexNote(VF, sectionId, lineIdx, i, 'bass'));
+
+            const trebleVoice = new VF.Voice({ num_beats: words.length, beat_value: 4 }).setStrict(false);
+            trebleVoice.addTickables(trebleNotes);
+            const bassVoice = new VF.Voice({ num_beats: words.length, beat_value: 4 }).setStrict(false);
+            bassVoice.addTickables(bassNotes);
+
+            new VF.Formatter().joinVoices([trebleVoice]).joinVoices([bassVoice]).format([trebleVoice, bassVoice], staveWidth - 90);
+            trebleVoice.draw(ctx, trebleStave);
+            bassVoice.draw(ctx, bassStave);
+            VF.Beam.generateBeams(trebleNotes).forEach((b) => b.setContext(ctx).draw());
+            VF.Beam.generateBeams(bassNotes).forEach((b) => b.setContext(ctx).draw());
         }
 
-        let sheetState = null;
-        let sheetVisible = false;
-        let sheetChannel = null;
-        let sheetReloadTimer = null;
-        let sheetPickerKey = null;    // { sectionId, lineIdx, wordIdx }
-        let sheetPickerOctave = 4;
-        let sheetPickerClef = 'treble';
-
-        function sheetNoteKey(sectionId, lineIdx, wordIdx, clef) {
-            return `${sectionId}|${lineIdx}|${wordIdx}|${clef}`;
-        }
-        function getSheetNote(sectionId, lineIdx, wordIdx, clef) {
-            return sheetState.notes[sheetNoteKey(sectionId, lineIdx, wordIdx, clef)] || null;
-        }
-
-        function sheetLinesForSection(section) {
-            return (section.content || '').split('\n').map((line) => line.trim().split(/\s+/).filter(Boolean));
-        }
-
-        // ---------- Load / sync / realtime ----------
-        async function ensureSheetMusicSettings(projectId) {
-            const resp = await sb.rpc('ensure_sheet_music_settings', { p_project_id: projectId });
-            if (resp.error) throw resp.error;
-        }
-        async function fetchSheetMusic(projectId) {
-            const resp = await sb.rpc('get_sheet_music', { p_project_id: projectId });
-            if (resp.error) throw resp.error;
-            return resp.data || { settings: null, notes: [] };
-        }
-        function applySheetRaw(raw) {
-            const s = raw.settings;
-            sheetState.tempo = (s && s.tempo) || 120;
-            sheetState.timeSignature = (s && s.time_signature) || '4/4';
-            sheetState.key = (s && s.key) || 'C';
-            sheetState.notes = {};
-            (raw.notes || []).forEach((n) => {
-                sheetState.notes[sheetNoteKey(n.section_id, n.line_index, n.word_index, n.clef)] = { pitch: n.pitch, duration: n.duration };
+        function drawAllSheetStaves() {
+            if (!sheetVisible || !sheetState) return;
+            expandEl.querySelectorAll('[data-vf-line]').forEach((el) => {
+                const sectionId = el.dataset.vfSection;
+                const lineIdx = Number(el.dataset.vfLine);
+                let words = [];
+                try { words = JSON.parse(el.dataset.vfWords); } catch (e) {}
+                if (words.length) drawVexStaffLine(el, words, sectionId, lineIdx);
             });
-        }
-        function stopSheetRealtime() {
-            if (sheetChannel) { sb.removeChannel(sheetChannel); sheetChannel = null; }
-        }
-        function startSheetRealtime(projectId) {
-            stopSheetRealtime();
-            sheetChannel = sb.channel('pj-sheet-' + projectId)
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'sheet_music_notes', filter: 'project_id=eq.' + projectId }, () => reloadSheetMusic(projectId))
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'sheet_music_settings', filter: 'project_id=eq.' + projectId }, () => reloadSheetMusic(projectId))
-                .subscribe();
-        }
-        function reloadSheetMusic(projectId) {
-            clearTimeout(sheetReloadTimer);
-            sheetReloadTimer = setTimeout(async () => {
-                if (activeKey !== 'action:lyrics' || !sheetState) return;
-                applySheetRaw(await fetchSheetMusic(projectId));
-                if (lyricsEditorFocused()) { lyricsRenderPending = true; } else { renderLyrics(); }
-            }, 400);
-        }
-
-        // ---------- Mutations ----------
-        function setSheetHeader(field, value) {
-            sheetState[field] = value;
-            renderLyrics();
-            const column = field === 'timeSignature' ? 'time_signature' : field;
-            sb.from('sheet_music_settings').update({ [column]: value, updated_at: new Date().toISOString() }).eq('project_id', id).then(() => {});
-        }
-
-        function setSheetNote(sectionId, lineIdx, wordIdx, clef, note) {
-            const key = sheetNoteKey(sectionId, lineIdx, wordIdx, clef);
-            if (note) sheetState.notes[key] = note; else delete sheetState.notes[key];
-            renderLyrics();
-            if (note) {
-                sb.from('sheet_music_notes').upsert({
-                    project_id: id, section_id: sectionId, line_index: lineIdx, word_index: wordIdx, clef: clef,
-                    pitch: note.pitch, duration: note.duration, updated_by: user.id, updated_at: new Date().toISOString()
-                }, { onConflict: 'project_id,section_id,line_index,word_index,clef' }).then(({ error }) => { if (error) reloadSheetMusic(id); });
-            } else {
-                sb.from('sheet_music_notes').delete()
-                    .eq('project_id', id).eq('section_id', sectionId).eq('line_index', lineIdx).eq('word_index', wordIdx).eq('clef', clef)
-                    .then(({ error }) => { if (error) reloadSheetMusic(id); });
-            }
-        }
-
-        // ---------- Rendering: staff (SVG), one per clef per line ----------
-        function buildSheetStaff(lineWords, sectionId, lineIdx, clef) {
-            const clefW = 30;
-            const [accCount] = KEY_SIG_TABLE[sheetState.key] || [0, null];
-            const keySigWidth = accCount ? accCount * 9 + 4 : 0;
-            const padLeft = clefW + keySigWidth + 24, padRight = 12, slotW = 36;
-            const width = padLeft + padRight + Math.max(lineWords.length, 4) * slotW;
-            const height = 70;
-            let lines = '';
-            for (let i = 0; i < 5; i++) {
-                const y = 22 + i * 6;
-                lines += `<line class="pj-sheet-staff__line" x1="${clefW - 4}" y1="${y}" x2="${width - padRight + 4}" y2="${y}"/>`;
-            }
-            // Font-size/baseline pairs below were chosen by rendering the
-            // glyphs against real staff-line guides and checking pixel
-            // alignment directly (not guessed): the treble spiral lands
-            // on G4 (2nd line from bottom) and the bass dots straddle F3
-            // (2nd line from top).
-            const clefGlyph = clef === 'bass' ? '𝄢' : '𝄞';
-            const clefEl = clef === 'bass'
-                ? `<text class="pj-sheet-staff__clef pj-sheet-staff__clef--bass" x="${clefW - 22}" y="46" font-size="38">${clefGlyph}</text>`
-                : `<text class="pj-sheet-staff__clef pj-sheet-staff__clef--treble" x="${clefW - 22}" y="51" font-size="44">${clefGlyph}</text>`;
-            const keySigEl = sheetKeySignatureGlyphs(clef, clefW + 6).svg;
-            const timeSigEl = sheetTimeSignatureGlyphs(clefW + keySigWidth + 14);
-            const tempoEl = clef === 'treble' ? `<text class="pj-sheet-staff__tempo" x="${clefW - 22}" y="10">♩ = ${sheetState.tempo}</text>` : '';
-
-            const [rangeLo, rangeHi] = SHEET_STAFF_RANGE[clef];
-            let notes = '';
-            for (let i = 0; i < lineWords.length; i++) {
-                const note = getSheetNote(sectionId, lineIdx, i, clef);
-                if (!note) continue;
-                const cx = padLeft + i * slotW + slotW / 2;
-                if (note.pitch === 'rest') {
-                    notes += `<text class="pj-sheet-staff__rest" x="${cx - 4}" y="40">𝄽</text>`;
-                    continue;
-                }
-                const step = sheetPitchToStep(note.pitch);
-                if (step === null) continue;
-                const cy = sheetStepToY(step, clef);
-                const filled = (note.duration === 'quarter' || note.duration === 'eighth' || note.duration === 'sixteenth');
-                const noteHead = filled
-                    ? `<ellipse class="pj-sheet-staff__note" cx="${cx}" cy="${cy}" rx="4.2" ry="3.2"/>`
-                    : `<ellipse class="pj-sheet-staff__note" cx="${cx}" cy="${cy}" rx="4.2" ry="3.2" fill="none" stroke="#6AA9F0" stroke-width="1.4"/>`;
-                let stem = '';
-                if (note.duration !== 'whole') {
-                    const stemUp = step < (rangeLo + rangeHi) / 2;
-                    const stemY2 = stemUp ? cy - 22 : cy + 22;
-                    const stemX = stemUp ? cx + 4 : cx - 4;
-                    stem = `<line class="pj-sheet-staff__stem" x1="${stemX}" y1="${cy}" x2="${stemX}" y2="${stemY2}"/>`;
-                    if (note.duration === 'eighth' || note.duration === 'sixteenth') {
-                        const flagCount = note.duration === 'sixteenth' ? 2 : 1;
-                        for (let f = 0; f < flagCount; f++) {
-                            const fy = stemY2 + (stemUp ? f * 4 : -f * 4);
-                            stem += `<path d="M ${stemX} ${fy} q 7 4 5 12" stroke="#6AA9F0" stroke-width="1.4" fill="none"/>`;
-                        }
-                    }
-                }
-                let ledgers = '';
-                if (step < rangeLo) {
-                    for (let s = rangeLo - 2; s >= step; s -= 2) {
-                        const ly = sheetStepToY(s, clef);
-                        ledgers += `<line class="pj-sheet-staff__ledger" x1="${cx - 7}" y1="${ly}" x2="${cx + 7}" y2="${ly}"/>`;
-                    }
-                } else if (step > rangeHi) {
-                    for (let s = rangeHi + 2; s <= step; s += 2) {
-                        const ly = sheetStepToY(s, clef);
-                        ledgers += `<line class="pj-sheet-staff__ledger" x1="${cx - 7}" y1="${ly}" x2="${cx + 7}" y2="${ly}"/>`;
-                    }
-                }
-                let acc = '';
-                if (/#/.test(note.pitch)) {
-                    acc = `<text x="${cx - 12}" y="${cy + 3}" class="pj-sheet-staff__signature" style="font-size:13px;">♯</text>`;
-                }
-                notes += ledgers + acc + noteHead + stem;
-            }
-            return `<svg class="pj-sheet-staff" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMinYMid meet">${tempoEl}${lines}${clefEl}${keySigEl}${timeSigEl}${notes}</svg>`;
         }
 
         function renderSheetWords(line, sectionId, lineIdx) {
@@ -2623,8 +2467,7 @@
                 if (!line.length) return;
                 body += `<div class="pj-sheet-line">
                     <div class="pj-sheet-staff-wrap">
-                        ${buildSheetStaff(line, section.id, lineIdx, 'treble')}
-                        ${buildSheetStaff(line, section.id, lineIdx, 'bass')}
+                        <div class="pj-sheet-vf-line" data-vf-section="${escapeAttr(section.id)}" data-vf-line="${lineIdx}" data-vf-words="${escapeAttr(JSON.stringify(line))}"></div>
                         ${renderSheetWords(line, section.id, lineIdx)}
                     </div>
                 </div>`;
