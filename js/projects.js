@@ -2701,6 +2701,11 @@
             const allTrebleNotes = [], allBassNotes = []; // flat, indexed by slot, for cross-measure ties
             const tuplets = [];
             let x = 10;
+            // The clef+key+time-signature glyphs only get drawn on the
+            // first measure — clicking that region opens the time
+            // signature dropdown directly from the notation instead of
+            // making it discoverable only via the toolbar select above.
+            let firstPreambleBounds = null;
 
             measures.forEach((m, mi) => {
                 const isFirst = mi === 0;
@@ -2714,6 +2719,7 @@
                 }
                 trebleStave.setContext(ctx).draw();
                 bassStave.setContext(ctx).draw();
+                if (isFirst) firstPreambleBounds = { left: x, right: trebleStave.getNoteStartX(), top: 5, bottom: 185 };
 
                 if (isFirst) {
                     new VF.StaveConnector(trebleStave, bassStave).setType(VF.StaveConnector.type.BRACE).setContext(ctx).draw();
@@ -2843,6 +2849,18 @@
                     // in the slot opens the picker for the whole word,
                     // runs included.
                     const measureNoteEndX = x + w - 4;
+                    // Count numbers (1, 2, 3... up to the time
+                    // signature's beat count, repeating every measure)
+                    // printed above each slot — this is what actually
+                    // answers "which word is beat 1" instead of making
+                    // the user infer it from the time signature alone.
+                    ctx.save();
+                    ctx.setFont('Arial', 9, '');
+                    trebleCols.forEach((col, k) => {
+                        const cx = measureNoteStartX + slotWidth * k + slotWidth / 2;
+                        ctx.fillText(String(k + 1), cx - 3, 7);
+                    });
+                    ctx.restore();
                     trebleCols.forEach((col, k) => {
                         const nx = measureNoteStartX + slotWidth * k + slotWidth / 2;
                         const leftBound = Math.max(measureNoteStartX, measureNoteStartX + slotWidth * k);
@@ -2948,6 +2966,30 @@
             // below) to open the note picker for the nearest word — clef
             // is whichever staff (treble/bass) the click landed in.
             container.onclick = (e) => {
+                // Clicking the clef/key/time-signature glyphs (only
+                // drawn on the first measure) opens the existing time
+                // signature dropdown directly, instead of that control
+                // only being reachable from the toolbar above — the
+                // glyph itself is the more natural place to expect it.
+                if (firstPreambleBounds) {
+                    const svgEl = container.querySelector('svg');
+                    if (svgEl) {
+                        const rect = svgEl.getBoundingClientRect();
+                        const scale = rect.width / SHEET_LINE_WIDTH;
+                        const px = (e.clientX - rect.left) / scale;
+                        const py = (e.clientY - rect.top) / scale;
+                        if (px >= firstPreambleBounds.left && px <= firstPreambleBounds.right && py >= firstPreambleBounds.top && py <= firstPreambleBounds.bottom) {
+                            const sel = expandEl.querySelector('[data-sheet-time]');
+                            if (sel) {
+                                sel.focus();
+                                if (typeof sel.showPicker === 'function') {
+                                    try { sel.showPicker(); } catch (err) {}
+                                }
+                            }
+                            return;
+                        }
+                    }
+                }
                 const target = nearestSheetTarget(e);
                 if (!target) return;
                 if (sheetConnectMode) {
