@@ -2338,7 +2338,9 @@
                     <div class="pj-sheet-picker__durations" data-sheet-duration-row></div>
                     <div class="pj-sheet-picker__actions">
                         <button type="button" class="pj-btn pj-btn--ghost" data-sheet-dot title="Dotted note (adds half the duration again)">• Dot</button>
-                        <button type="button" class="pj-btn pj-btn--ghost" data-sheet-tie title="Hold this note into the next one, same pitch">🔗 Tie to next</button>
+                        <button type="button" class="pj-btn pj-btn--ghost" data-sheet-tie title="Hold this note into the next one, same pitch">🔗 Tie</button>
+                        <button type="button" class="pj-btn pj-btn--ghost" data-sheet-slur title="Curved phrasing line into the next note, any pitch">⌒ Slur</button>
+                        <button type="button" class="pj-btn pj-btn--ghost" data-sheet-tuplet title="Triplet: this note plus the next 2 fit in the time of 2 notes">3 Triplet</button>
                         <button type="button" class="pj-btn pj-btn--ghost" data-sheet-rest>Rest</button>
                         <button type="button" class="pj-btn pj-btn--ghost" data-sheet-clear>Clear</button>
                     </div>
@@ -2404,6 +2406,14 @@
         function getSheetNote(sectionId, lineIdx, wordIdx, clef) {
             return sheetState.notes[sheetNoteKey(sectionId, lineIdx, wordIdx, clef)] || null;
         }
+        // Merges a partial change onto the current note, defaulting any
+        // field neither present nor patched — keeps every mutation site
+        // from having to spell out every field (tie/dots/slur/tuplet) by
+        // hand each time, which is exactly how tie/dots got silently
+        // dropped by other handlers before.
+        function sheetNoteWith(cur, patch) {
+            return Object.assign({ pitch: '', duration: 'quarter', tie: false, dots: false, slur: false, tuplet: false }, cur || {}, patch);
+        }
 
         function sheetLinesForSection(section) {
             return (section.content || '').split('\n').map((line) => line.trim().split(/\s+/).filter(Boolean));
@@ -2448,7 +2458,7 @@
             sheetState.key = (s && s.key) || 'C';
             sheetState.notes = {};
             (raw.notes || []).forEach((n) => {
-                sheetState.notes[sheetNoteKey(n.section_id, n.line_index, n.word_index, n.clef)] = { pitch: n.pitch, duration: n.duration, tie: !!n.tie, dots: !!n.dots };
+                sheetState.notes[sheetNoteKey(n.section_id, n.line_index, n.word_index, n.clef)] = { pitch: n.pitch, duration: n.duration, tie: !!n.tie, dots: !!n.dots, slur: !!n.slur, tuplet: !!n.tuplet_start };
             });
             sheetState.wordOrder = {};
             (raw.word_order || []).forEach((wo) => {
@@ -2490,7 +2500,7 @@
             if (note) {
                 sb.from('sheet_music_notes').upsert({
                     project_id: id, section_id: sectionId, line_index: lineIdx, word_index: wordIdx, clef: clef,
-                    pitch: note.pitch, duration: note.duration, tie: !!note.tie, dots: !!note.dots, updated_by: user.id, updated_at: new Date().toISOString()
+                    pitch: note.pitch, duration: note.duration, tie: !!note.tie, dots: !!note.dots, slur: !!note.slur, tuplet_start: !!note.tuplet, updated_by: user.id, updated_at: new Date().toISOString()
                 }, { onConflict: 'project_id,section_id,line_index,word_index,clef' }).then(({ error }) => { if (error) reloadSheetMusic(id); });
             } else {
                 sb.from('sheet_music_notes').delete()
@@ -2614,6 +2624,7 @@
 
             const clickTargets = []; // { x, wordIdx } — shared x between clefs since voices are joined
             const allTrebleNotes = [], allBassNotes = []; // flat, indexed by slot, for cross-measure ties
+            const tuplets = [];
             let x = 10;
 
             measures.forEach((m, mi) => {
@@ -2642,6 +2653,23 @@
                         trebleNotes.push(sheetBuildVexNote(VF, sectionId, lineIdx, wordIdx, 'treble'));
                         bassNotes.push(sheetBuildVexNote(VF, sectionId, lineIdx, wordIdx, 'bass'));
                     }
+                    // Triplets: a note marked "starts a triplet" groups
+                    // with the next 2 notes in this SAME measure. Must
+                    // happen before Formatter.format() — VF.Tuplet
+                    // rescales the group's combined duration to fit the
+                    // time of 2 notes, and the formatter needs that
+                    // rescaled tick value to lay out x-positions.
+                    function applyTuplets(notes, clef) {
+                        for (let k = 0; k <= notes.length - 3; k++) {
+                            const note = getSheetNote(sectionId, lineIdx, m.startIdx + k, clef);
+                            if (!note || !note.tuplet || note.pitch === 'rest') continue;
+                            const trio = [notes[k], notes[k + 1], notes[k + 2]];
+                            if (trio.every((n) => n instanceof VF.StaveNote)) tuplets.push(new VF.Tuplet(trio));
+                        }
+                    }
+                    applyTuplets(trebleNotes, 'treble');
+                    applyTuplets(bassNotes, 'bass');
+
                     const trebleVoice = new VF.Voice({ num_beats: m.count, beat_value: 4 }).setStrict(false);
                     trebleVoice.addTickables(trebleNotes);
                     const bassVoice = new VF.Voice({ num_beats: m.count, beat_value: 4 }).setStrict(false);
@@ -2693,6 +2721,22 @@
             }
             drawTies(allTrebleNotes, 'treble');
             drawTies(allBassNotes, 'bass');
+
+            // Slurs: a curved phrasing line into the next slot's note,
+            // same clef — unlike a tie, the two notes don't need to share
+            // a pitch (a slur just means "play these connected/legato").
+            function drawSlurs(allNotes, clef) {
+                for (let i = 0; i < allNotes.length - 1; i++) {
+                    const note = getSheetNote(sectionId, lineIdx, i, clef);
+                    const a = allNotes[i], b = allNotes[i + 1];
+                    if (!note || !note.slur || note.pitch === 'rest' || !a || !b) continue;
+                    if (!(a instanceof VF.StaveNote) || !(b instanceof VF.StaveNote)) continue;
+                    new VF.Curve(a, b, {}).setContext(ctx).draw();
+                }
+            }
+            drawSlurs(allTrebleNotes, 'treble');
+            drawSlurs(allBassNotes, 'bass');
+            tuplets.forEach((t) => t.setContext(ctx).draw());
 
             // Position each lyric word directly under the note it's
             // sung on (like a real vocal/piano score), instead of an
@@ -2876,6 +2920,18 @@
                 tieBtn.classList.toggle('is-active', canTie && !!note.tie);
                 tieBtn.disabled = !canTie;
             }
+            const slurBtn = expandEl.querySelector('[data-sheet-slur]');
+            if (slurBtn) {
+                const canSlur = !!(note && note.pitch !== 'rest');
+                slurBtn.classList.toggle('is-active', canSlur && !!note.slur);
+                slurBtn.disabled = !canSlur;
+            }
+            const tupletBtn = expandEl.querySelector('[data-sheet-tuplet]');
+            if (tupletBtn) {
+                const canTuplet = !!(note && note.pitch !== 'rest');
+                tupletBtn.classList.toggle('is-active', canTuplet && !!note.tuplet);
+                tupletBtn.disabled = !canTuplet;
+            }
             const dotBtn = expandEl.querySelector('[data-sheet-dot]');
             if (dotBtn) {
                 const canDot = !!note;
@@ -2969,23 +3025,40 @@
                     const clicked = pitchBtn.dataset.sheetPitch;
                     const idx = pitches.indexOf(clicked);
                     if (idx >= 0) pitches.splice(idx, 1); else pitches.push(clicked);
-                    const duration = (cur && cur.duration) || 'quarter';
                     setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef,
-                        pitches.length ? { pitch: pitches.join(','), duration, tie: cur && cur.tie, dots: cur && cur.dots } : null);
+                        pitches.length ? sheetNoteWith(cur, { pitch: pitches.join(',') }) : null);
                     renderSheetPicker();
                     return;
                 }
                 const durBtn = e.target.closest('[data-sheet-duration]');
                 if (durBtn && sheetPickerKey) {
                     const cur = getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef);
-                    if (cur) { setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, { pitch: cur.pitch, duration: durBtn.dataset.sheetDuration, tie: cur.tie, dots: cur.dots }); renderSheetPicker(); }
+                    if (cur) { setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, sheetNoteWith(cur, { duration: durBtn.dataset.sheetDuration })); renderSheetPicker(); }
                     return;
                 }
                 const tieBtn = e.target.closest('[data-sheet-tie]');
                 if (tieBtn && sheetPickerKey) {
                     const cur = getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef);
                     if (cur && cur.pitch !== 'rest') {
-                        setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, { pitch: cur.pitch, duration: cur.duration, tie: !cur.tie, dots: cur.dots });
+                        setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, sheetNoteWith(cur, { tie: !cur.tie }));
+                        renderSheetPicker();
+                    }
+                    return;
+                }
+                const slurBtn = e.target.closest('[data-sheet-slur]');
+                if (slurBtn && sheetPickerKey) {
+                    const cur = getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef);
+                    if (cur && cur.pitch !== 'rest') {
+                        setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, sheetNoteWith(cur, { slur: !cur.slur }));
+                        renderSheetPicker();
+                    }
+                    return;
+                }
+                const tupletBtn = e.target.closest('[data-sheet-tuplet]');
+                if (tupletBtn && sheetPickerKey) {
+                    const cur = getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef);
+                    if (cur && cur.pitch !== 'rest') {
+                        setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, sheetNoteWith(cur, { tuplet: !cur.tuplet }));
                         renderSheetPicker();
                     }
                     return;
@@ -2994,7 +3067,7 @@
                 if (dotBtn && sheetPickerKey) {
                     const cur = getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef);
                     if (cur) {
-                        setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, { pitch: cur.pitch, duration: cur.duration, tie: cur.tie, dots: !cur.dots });
+                        setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, sheetNoteWith(cur, { dots: !cur.dots }));
                         renderSheetPicker();
                     }
                     return;
