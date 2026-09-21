@@ -2628,6 +2628,24 @@
             drawTies(allTrebleNotes, 'treble');
             drawTies(allBassNotes, 'bass');
 
+            // Position each lyric word directly under the note it's
+            // sung on (like a real vocal/piano score), instead of an
+            // evenly spaced row — the word row is a sibling of this
+            // staff container, rendered by renderSheetWords.
+            const wordsRow = container.parentElement && container.parentElement.querySelector('.pj-sheet-words');
+            if (wordsRow) {
+                const wordEls = wordsRow.querySelectorAll('[data-sheet-word]');
+                const bySlot = {};
+                wordEls.forEach((el) => {
+                    const parts = el.dataset.sheetWord.split(':');
+                    bySlot[parts[2]] = el;
+                });
+                clickTargets.forEach((t) => {
+                    const el = bySlot[String(t.wordIdx)];
+                    if (el) el.style.left = t.x + 'px';
+                });
+            }
+
             // Transparent highlight showing exactly which slot + clef a
             // click will land on, updated live as the mouse moves.
             const svgNS = 'http://www.w3.org/2000/svg';
