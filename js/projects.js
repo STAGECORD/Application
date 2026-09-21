@@ -2964,15 +2964,16 @@
             const SHEET_DRAG_THRESHOLD = 6;
             let sheetPress = null; // { sectionId, lineIdx, slotIdx, wordCount, x, y, dragging, el }
             expandEl.addEventListener('mousedown', (e) => {
-                if (activeKey !== 'action:lyrics') return;
+                if (activeKey !== 'action:lyrics') { console.log('[sheet-drag] mousedown ignored: activeKey=', activeKey); return; }
                 const wordEl = e.target.closest('[data-sheet-word]');
-                if (!wordEl) return;
+                if (!wordEl) { console.log('[sheet-drag] mousedown on non-word target:', e.target); return; }
                 const [sectionId, lineIdx, slotIdx] = wordEl.dataset.sheetWord.split(':');
                 sheetPress = {
                     sectionId, lineIdx: Number(lineIdx), slotIdx: Number(slotIdx),
                     wordCount: Number(wordEl.dataset.sheetWordCount),
                     x: e.clientX, y: e.clientY, dragging: false, el: wordEl
                 };
+                console.log('[sheet-drag] mousedown started press on slot', slotIdx, sheetPress);
             });
             expandEl.addEventListener('mousemove', (e) => {
                 if (!sheetPress || sheetPress.dragging) return;
@@ -2980,19 +2981,24 @@
                 if (dist > SHEET_DRAG_THRESHOLD) {
                     sheetPress.dragging = true;
                     sheetPress.el.classList.add('is-dragging');
+                    console.log('[sheet-drag] threshold exceeded (dist=' + dist.toFixed(1) + '), now dragging');
                 }
             });
             expandEl.addEventListener('mouseup', (e) => {
-                if (!sheetPress) return;
+                if (!sheetPress) { console.log('[sheet-drag] mouseup with no active press'); return; }
                 const press = sheetPress;
                 sheetPress = null;
                 if (press.el) press.el.classList.remove('is-dragging');
-                if (!press.dragging) return; // a plain click — let data-sheet-word-click's own handler open the picker
+                if (!press.dragging) { console.log('[sheet-drag] mouseup without exceeding threshold — treated as a click, not a drag'); return; }
                 const target = e.target.closest('[data-sheet-word]');
-                if (!target) return;
+                if (!target) { console.log('[sheet-drag] mouseup while dragging landed on non-word target:', e.target); return; }
                 const [sectionId, lineIdx, slotIdx] = target.dataset.sheetWord.split(':');
+                console.log('[sheet-drag] mouseup while dragging on slot', slotIdx, '— attempting swap');
                 if (sectionId === press.sectionId && Number(lineIdx) === press.lineIdx) {
                     sheetSwapWordSlots(sectionId, Number(lineIdx), press.wordCount, press.slotIdx, Number(slotIdx));
+                    console.log('[sheet-drag] swap called:', press.slotIdx, '<->', slotIdx);
+                } else {
+                    console.log('[sheet-drag] swap skipped — different section/line', { press, sectionId, lineIdx });
                 }
             });
             expandEl.addEventListener('mouseleave', () => {
