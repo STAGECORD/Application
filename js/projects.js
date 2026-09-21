@@ -3135,8 +3135,61 @@
                 dotBtn.classList.toggle('is-active', canDot && !!note.dots);
                 dotBtn.disabled = !canDot;
             }
+            // Every mutation (pitch/duration/run/tie/... click) runs
+            // setSheetNote() -> renderLyrics(), which rebuilds the WHOLE
+            // lyrics body — the word this picker is anchored to is a
+            // brand new DOM node afterward, possibly at a different
+            // page position if anything above it changed height. Re-
+            // anchoring here, every render, is what keeps the popup
+            // sitting next to the word actually being edited instead of
+            // drifting to wherever it happened to be when first opened.
+            const openPop = expandEl.querySelector('[data-sheet-picker]');
+            if (openPop && !openPop.hidden) {
+                const anchorEl = sheetLocateAnchorEl();
+                if (anchorEl) sheetPositionPicker(anchorEl);
+            }
         }
 
+        // Re-finds the DOM element for whatever word the picker is
+        // currently open on. Needed because renderLyrics() rebuilds the
+        // ENTIRE lyrics body (every staff, every word span) from scratch
+        // on every single note edit — the original anchor element handed
+        // to showSheetPicker() gets thrown away and replaced by a new
+        // one with the same address, so holding onto that original
+        // reference goes stale the moment the user picks a pitch,
+        // changes a duration, anything. Re-querying by address instead
+        // of trusting the old node is what lets the popup keep following
+        // the word it's actually editing.
+        function sheetLocateAnchorEl() {
+            if (!sheetPickerKey) return null;
+            const addr = `${sheetPickerKey.sectionId}:${sheetPickerKey.lineIdx}:${sheetPickerKey.wordIdx}`;
+            return Array.from(expandEl.querySelectorAll('[data-sheet-word]')).find((el) => el.dataset.sheetWord === addr) || null;
+        }
+        // Always place below the anchor, never above. "Above" was
+        // measured as distance to the viewport edge, but that space
+        // usually isn't actually empty — for the very first staff
+        // line it's the toolbar immediately above it, so flipping up
+        // there just traded a viewport overflow for overlapping the
+        // toolbar. Capping height to whatever room remains below
+        // (scrollable via CSS overflow-y if tight) can never overlap
+        // preceding content, which matters more than avoiding scroll.
+        function sheetPositionPicker(anchorEl) {
+            const pop = expandEl.querySelector('[data-sheet-picker]');
+            if (!pop || !anchorEl) return;
+            pop.style.maxHeight = ''; // reset before measuring natural size
+            const r = anchorEl.getBoundingClientRect();
+            const popRect = pop.getBoundingClientRect();
+            let left = r.left;
+            if (left + popRect.width > window.innerWidth - 12) left = window.innerWidth - popRect.width - 12;
+            left = Math.max(12, left);
+            const margin = 12;
+            const top = r.bottom + 8;
+            const maxHeight = Math.max(120, window.innerHeight - top - margin);
+            pop.style.position = 'fixed';
+            pop.style.top = top + 'px';
+            pop.style.left = left + 'px';
+            pop.style.maxHeight = maxHeight + 'px';
+        }
         function showSheetPicker(sectionId, lineIdx, wordIdx, anchorEl, wordText) {
             sheetPickerKey = { sectionId, lineIdx, wordIdx };
             sheetPickerRunIndex = 0;
@@ -3153,28 +3206,7 @@
             if (wordEl) wordEl.textContent = wordText;
             if (!pop) return;
             pop.hidden = false;
-            pop.style.maxHeight = ''; // reset before measuring natural size
-            const r = anchorEl.getBoundingClientRect();
-            const popRect = pop.getBoundingClientRect();
-            let left = r.left;
-            if (left + popRect.width > window.innerWidth - 12) left = window.innerWidth - popRect.width - 12;
-            left = Math.max(12, left);
-
-            // Always place below the anchor, never above. "Above" was
-            // measured as distance to the viewport edge, but that space
-            // usually isn't actually empty — for the very first staff
-            // line it's the toolbar immediately above it, so flipping up
-            // there just traded a viewport overflow for overlapping the
-            // toolbar. Capping height to whatever room remains below
-            // (scrollable via CSS overflow-y if tight) can never overlap
-            // preceding content, which matters more than avoiding scroll.
-            const margin = 12;
-            const top = r.bottom + 8;
-            const maxHeight = Math.max(120, window.innerHeight - top - margin);
-            pop.style.position = 'fixed';
-            pop.style.top = top + 'px';
-            pop.style.left = left + 'px';
-            pop.style.maxHeight = maxHeight + 'px';
+            sheetPositionPicker(anchorEl);
         }
         function hideSheetPicker() {
             const pop = expandEl.querySelector('[data-sheet-picker]');
@@ -3494,6 +3526,21 @@
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape' && sheetConnectMode) sheetStopConnectMode();
             });
+            // The popup is position:fixed (viewport-relative), so it
+            // deliberately doesn't scroll away with the page content —
+            // but that means a manual scroll while it's open leaves it
+            // sitting still while the word it's editing moves underneath
+            // it. Re-anchoring on scroll/resize (capture:true to catch
+            // scrolling inside any nested scroll container, not just
+            // the window) keeps it following the word instead.
+            const sheetRepositionOnScroll = () => {
+                const pop = expandEl.querySelector('[data-sheet-picker]');
+                if (!pop || pop.hidden) return;
+                const anchorEl = sheetLocateAnchorEl();
+                if (anchorEl) sheetPositionPicker(anchorEl);
+            };
+            window.addEventListener('scroll', sheetRepositionOnScroll, true);
+            window.addEventListener('resize', sheetRepositionOnScroll);
         }
 
         async function expandApproval(triggerRow) {
