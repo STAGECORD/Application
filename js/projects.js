@@ -2336,11 +2336,11 @@
                     <div class="pj-sheet-picker__octaves" data-sheet-octave-row></div>
                     <div class="pj-sheet-picker__pitches" data-sheet-pitch-grid></div>
                     <div class="pj-sheet-picker__durations" data-sheet-duration-row></div>
+                    <div class="pj-sheet-picker__tuplets" data-sheet-tuplet-row></div>
                     <div class="pj-sheet-picker__actions">
                         <button type="button" class="pj-btn pj-btn--ghost" data-sheet-dot title="Dotted note (adds half the duration again)">• Dot</button>
                         <button type="button" class="pj-btn pj-btn--ghost" data-sheet-tie title="Hold this note into the next one, same pitch">🔗 Tie</button>
                         <button type="button" class="pj-btn pj-btn--ghost" data-sheet-slur title="Curved phrasing line into the next note, any pitch">⌒ Slur</button>
-                        <button type="button" class="pj-btn pj-btn--ghost" data-sheet-tuplet title="Triplet: this note plus the next 2 fit in the time of 2 notes">3 Triplet</button>
                         <button type="button" class="pj-btn pj-btn--ghost" data-sheet-rest>Rest</button>
                         <button type="button" class="pj-btn pj-btn--ghost" data-sheet-clear>Clear</button>
                     </div>
@@ -2390,6 +2390,20 @@
         ];
         const SHEET_DURATION_INDEX = {};
         SHEET_DURATIONS.forEach((d) => { SHEET_DURATION_INDEX[d.id] = d; });
+        // A tuplet must fit entirely within one measure's word-slots (a
+        // measure here is exactly as many slots as the time signature's
+        // numerator) -- so quintuplets/septuplets only fit in 6/8 (6
+        // slots) or bigger, and septuplets don't fit any current time
+        // signature at all. notes_occupied is the "in the time of N"
+        // half of the ratio; VexFlow defaults it to 2 for every size,
+        // which is only correct for a triplet.
+        const SHEET_TUPLET_SIZES = [
+            { n: 3, title: 'Triplet: 3 notes in the time of 2' },
+            { n: 5, title: 'Quintuplet: 5 notes in the time of 4 — only fits in 6/8' },
+            { n: 6, title: 'Sextuplet: 6 notes in the time of 4 — only fits in 6/8' },
+            { n: 7, title: "Septuplet: 7 notes in the time of 4 — doesn't fit any current time signature" }
+        ];
+        const SHEET_TUPLET_RATIOS = { 3: 2, 5: 4, 6: 4, 7: 4 };
 
         let sheetState = null;
         let sheetVisible = false;
@@ -2413,7 +2427,7 @@
         // hand each time, which is exactly how tie/dots got silently
         // dropped by other handlers before.
         function sheetNoteWith(cur, patch) {
-            return Object.assign({ pitch: '', duration: 'quarter', tie: false, dots: false, slur: false, tuplet: false }, cur || {}, patch);
+            return Object.assign({ pitch: '', duration: 'quarter', tie: false, dots: false, slur: false, tuplet: 0 }, cur || {}, patch);
         }
 
         function sheetLinesForSection(section) {
@@ -2459,7 +2473,7 @@
             sheetState.key = (s && s.key) || 'C';
             sheetState.notes = {};
             (raw.notes || []).forEach((n) => {
-                sheetState.notes[sheetNoteKey(n.section_id, n.line_index, n.word_index, n.clef)] = { pitch: n.pitch, duration: n.duration, tie: !!n.tie, dots: !!n.dots, slur: !!n.slur, tuplet: !!n.tuplet_start };
+                sheetState.notes[sheetNoteKey(n.section_id, n.line_index, n.word_index, n.clef)] = { pitch: n.pitch, duration: n.duration, tie: !!n.tie, dots: !!n.dots, slur: !!n.slur, tuplet: n.tuplet_size || 0 };
             });
             sheetState.wordOrder = {};
             (raw.word_order || []).forEach((wo) => {
@@ -2501,7 +2515,7 @@
             if (note) {
                 sb.from('sheet_music_notes').upsert({
                     project_id: id, section_id: sectionId, line_index: lineIdx, word_index: wordIdx, clef: clef,
-                    pitch: note.pitch, duration: note.duration, tie: !!note.tie, dots: !!note.dots, slur: !!note.slur, tuplet_start: !!note.tuplet, updated_by: user.id, updated_at: new Date().toISOString()
+                    pitch: note.pitch, duration: note.duration, tie: !!note.tie, dots: !!note.dots, slur: !!note.slur, tuplet_size: note.tuplet || 0, updated_by: user.id, updated_at: new Date().toISOString()
                 }, { onConflict: 'project_id,section_id,line_index,word_index,clef' }).then(({ error }) => { if (error) reloadSheetMusic(id); });
             } else {
                 sb.from('sheet_music_notes').delete()
@@ -2661,18 +2675,28 @@
                         trebleNotes.push(sheetBuildVexNote(VF, sectionId, lineIdx, wordIdx, 'treble'));
                         bassNotes.push(sheetBuildVexNote(VF, sectionId, lineIdx, wordIdx, 'bass'));
                     }
-                    // Triplets: a note marked "starts a triplet" groups
-                    // with the next 2 notes in this SAME measure. Must
-                    // happen before Formatter.format() — VF.Tuplet
-                    // rescales the group's combined duration to fit the
-                    // time of 2 notes, and the formatter needs that
-                    // rescaled tick value to lay out x-positions.
+                    // Tuplets: a note marked "starts an N-tuplet" groups
+                    // with the next N-1 notes in this SAME measure (a
+                    // group that doesn't fully fit before the measure
+                    // ends is silently skipped — there's no note to
+                    // complete it with). Must happen before
+                    // Formatter.format() — VF.Tuplet rescales the
+                    // group's combined duration to fit notes_occupied,
+                    // and the formatter needs that rescaled tick value
+                    // to lay out x-positions. notes_occupied must be
+                    // passed explicitly — VexFlow defaults it to 2
+                    // regardless of group size, which is only correct
+                    // for a triplet.
                     function applyTuplets(notes, clef) {
-                        for (let k = 0; k <= notes.length - 3; k++) {
+                        for (let k = 0; k < notes.length; k++) {
                             const note = getSheetNote(sectionId, lineIdx, m.startIdx + k, clef);
-                            if (!note || !note.tuplet || note.pitch === 'rest') continue;
-                            const trio = [notes[k], notes[k + 1], notes[k + 2]];
-                            if (trio.every((n) => n instanceof VF.StaveNote)) tuplets.push(new VF.Tuplet(trio));
+                            const n = note && note.tuplet;
+                            if (!n || note.pitch === 'rest') continue;
+                            if (k + n > notes.length) continue;
+                            const group = notes.slice(k, k + n);
+                            if (group.every((nt) => nt instanceof VF.StaveNote)) {
+                                tuplets.push(new VF.Tuplet(group, { notes_occupied: SHEET_TUPLET_RATIOS[n] || 2, ratioed: false }));
+                            }
                         }
                     }
                     applyTuplets(trebleNotes, 'treble');
@@ -2981,11 +3005,13 @@
                 slurBtn.classList.toggle('is-active', canSlur && !!note.slur);
                 slurBtn.disabled = !canSlur;
             }
-            const tupletBtn = expandEl.querySelector('[data-sheet-tuplet]');
-            if (tupletBtn) {
+            const tupletRow = expandEl.querySelector('[data-sheet-tuplet-row]');
+            if (tupletRow) {
                 const canTuplet = !!(note && note.pitch !== 'rest');
-                tupletBtn.classList.toggle('is-active', canTuplet && !!note.tuplet);
-                tupletBtn.disabled = !canTuplet;
+                const activeTuplet = note ? (note.tuplet || 0) : 0;
+                tupletRow.innerHTML = SHEET_TUPLET_SIZES.map((t) =>
+                    `<button type="button" class="pj-lyrics-section__action${t.n === activeTuplet ? ' is-active' : ''}" data-sheet-tuplet="${t.n}" title="${escapeAttr(t.title)}"${canTuplet ? '' : ' disabled'}>${t.n}</button>`
+                ).join('');
             }
             const dotBtn = expandEl.querySelector('[data-sheet-dot]');
             if (dotBtn) {
@@ -3190,7 +3216,9 @@
                 if (tupletBtn && sheetPickerKey) {
                     const cur = getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef);
                     if (cur && cur.pitch !== 'rest') {
-                        setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, sheetNoteWith(cur, { tuplet: !cur.tuplet }));
+                        const n = parseInt(tupletBtn.dataset.sheetTuplet, 10);
+                        const next = cur.tuplet === n ? 0 : n; // clicking the active size again turns it off
+                        setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, sheetNoteWith(cur, { tuplet: next }));
                         renderSheetPicker();
                     }
                     return;
@@ -3210,7 +3238,7 @@
                     // silently reset duration back to quarter every time,
                     // discarding whatever the user had already picked.
                     const cur = getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef);
-                    setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, sheetNoteWith(cur, { pitch: 'rest', tie: false, slur: false, tuplet: false }));
+                    setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, sheetNoteWith(cur, { pitch: 'rest', tie: false, slur: false, tuplet: 0 }));
                     renderSheetPicker();
                     return;
                 }
