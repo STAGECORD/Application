@@ -2494,44 +2494,105 @@
         }
 
         // ---------- Rendering: real engraved grand staff via VexFlow ----------
+        // Every line renders at this same total width regardless of word
+        // count, split into measures (barred every N words, N = the time
+        // signature's beat count) so all lines look uniform and match the
+        // 4/4 (or whatever meter) bar divisions.
+        const SHEET_LINE_WIDTH = 1100;
+        const SHEET_FIRST_MEASURE_EXTRA = 100;
+
         function drawVexStaffLine(container, words, sectionId, lineIdx, showTempo) {
             const VF = window.Vex && window.Vex.Flow;
             if (!VF) { container.textContent = 'Notation engine failed to load.'; return; }
             container.innerHTML = '';
-            const width = Math.max(340, 70 + words.length * 85);
+
+            const beatsPerMeasure = parseInt((sheetState.timeSignature || '4/4').split('/')[0], 10) || 4;
+            const measures = [];
+            for (let i = 0; i < words.length; i += beatsPerMeasure) {
+                measures.push({ startIdx: i, count: Math.min(beatsPerMeasure, words.length - i) });
+            }
+            if (!measures.length) measures.push({ startIdx: 0, count: 0 });
+
+            const usableWidth = SHEET_LINE_WIDTH - 20 - SHEET_FIRST_MEASURE_EXTRA;
+            const baseMeasureWidth = Math.max(70, usableWidth / measures.length);
+
             const renderer = new VF.Renderer(container, VF.Renderer.Backends.SVG);
-            renderer.resize(width, 200);
+            renderer.resize(SHEET_LINE_WIDTH, 200);
             const ctx = renderer.getContext();
             ctx.setFillStyle('#BFD7FF');
             ctx.setStrokeStyle('#BFD7FF');
 
-            const staveWidth = width - 20;
-            const trebleStave = new VF.Stave(10, 10, staveWidth);
-            trebleStave.addClef('treble').addKeySignature(sheetState.key).addTimeSignature(sheetState.timeSignature);
-            if (showTempo) trebleStave.setTempo({ duration: 'q', bpm: sheetState.tempo }, 0);
-            trebleStave.setContext(ctx).draw();
+            const clickTargets = []; // { x, wordIdx } — shared x between clefs since voices are joined
+            let x = 10;
 
-            const bassStave = new VF.Stave(10, 100, staveWidth);
-            bassStave.addClef('bass').addKeySignature(sheetState.key).addTimeSignature(sheetState.timeSignature);
-            bassStave.setContext(ctx).draw();
+            measures.forEach((m, mi) => {
+                const isFirst = mi === 0;
+                const w = baseMeasureWidth + (isFirst ? SHEET_FIRST_MEASURE_EXTRA : 0);
+                const trebleStave = new VF.Stave(x, 10, w);
+                const bassStave = new VF.Stave(x, 100, w);
+                if (isFirst) {
+                    trebleStave.addClef('treble').addKeySignature(sheetState.key).addTimeSignature(sheetState.timeSignature);
+                    bassStave.addClef('bass').addKeySignature(sheetState.key).addTimeSignature(sheetState.timeSignature);
+                    if (showTempo) trebleStave.setTempo({ duration: 'q', bpm: sheetState.tempo }, 0);
+                }
+                trebleStave.setContext(ctx).draw();
+                bassStave.setContext(ctx).draw();
 
-            new VF.StaveConnector(trebleStave, bassStave).setType(VF.StaveConnector.type.BRACE).setContext(ctx).draw();
-            new VF.StaveConnector(trebleStave, bassStave).setType(VF.StaveConnector.type.SINGLE_LEFT).setContext(ctx).draw();
-            new VF.StaveConnector(trebleStave, bassStave).setType(VF.StaveConnector.type.SINGLE_RIGHT).setContext(ctx).draw();
+                if (isFirst) {
+                    new VF.StaveConnector(trebleStave, bassStave).setType(VF.StaveConnector.type.BRACE).setContext(ctx).draw();
+                    new VF.StaveConnector(trebleStave, bassStave).setType(VF.StaveConnector.type.SINGLE_LEFT).setContext(ctx).draw();
+                }
+                new VF.StaveConnector(trebleStave, bassStave).setType(VF.StaveConnector.type.SINGLE_RIGHT).setContext(ctx).draw();
 
-            const trebleNotes = words.map((w, i) => sheetBuildVexNote(VF, sectionId, lineIdx, i, 'treble'));
-            const bassNotes = words.map((w, i) => sheetBuildVexNote(VF, sectionId, lineIdx, i, 'bass'));
+                if (m.count > 0) {
+                    const trebleNotes = [], bassNotes = [];
+                    for (let k = 0; k < m.count; k++) {
+                        const wordIdx = m.startIdx + k;
+                        trebleNotes.push(sheetBuildVexNote(VF, sectionId, lineIdx, wordIdx, 'treble'));
+                        bassNotes.push(sheetBuildVexNote(VF, sectionId, lineIdx, wordIdx, 'bass'));
+                    }
+                    const trebleVoice = new VF.Voice({ num_beats: m.count, beat_value: 4 }).setStrict(false);
+                    trebleVoice.addTickables(trebleNotes);
+                    const bassVoice = new VF.Voice({ num_beats: m.count, beat_value: 4 }).setStrict(false);
+                    bassVoice.addTickables(bassNotes);
 
-            const trebleVoice = new VF.Voice({ num_beats: words.length, beat_value: 4 }).setStrict(false);
-            trebleVoice.addTickables(trebleNotes);
-            const bassVoice = new VF.Voice({ num_beats: words.length, beat_value: 4 }).setStrict(false);
-            bassVoice.addTickables(bassNotes);
+                    const noteAreaWidth = Math.max(40, w - (isFirst ? SHEET_FIRST_MEASURE_EXTRA + 20 : 20));
+                    new VF.Formatter().joinVoices([trebleVoice]).joinVoices([bassVoice]).format([trebleVoice, bassVoice], noteAreaWidth);
+                    trebleVoice.draw(ctx, trebleStave);
+                    bassVoice.draw(ctx, bassStave);
+                    VF.Beam.generateBeams(trebleNotes).forEach((b) => b.setContext(ctx).draw());
+                    VF.Beam.generateBeams(bassNotes).forEach((b) => b.setContext(ctx).draw());
 
-            new VF.Formatter().joinVoices([trebleVoice]).joinVoices([bassVoice]).format([trebleVoice, bassVoice], staveWidth - 90);
-            trebleVoice.draw(ctx, trebleStave);
-            bassVoice.draw(ctx, bassStave);
-            VF.Beam.generateBeams(trebleNotes).forEach((b) => b.setContext(ctx).draw());
-            VF.Beam.generateBeams(bassNotes).forEach((b) => b.setContext(ctx).draw());
+                    trebleNotes.forEach((n, k) => {
+                        clickTargets.push({ x: n.getAbsoluteX(), wordIdx: m.startIdx + k });
+                    });
+                }
+
+                x += w;
+            });
+
+            // Click anywhere on the staff (not just the word button row
+            // below) to open the note picker for the nearest word — clef
+            // is whichever staff (treble/bass) the click landed in.
+            container.onclick = (e) => {
+                if (!clickTargets.length) return;
+                const svgEl = container.querySelector('svg');
+                if (!svgEl) return;
+                const rect = svgEl.getBoundingClientRect();
+                const scale = rect.width / SHEET_LINE_WIDTH;
+                const clickX = (e.clientX - rect.left) / scale;
+                const clickY = (e.clientY - rect.top) / scale;
+                const clef = clickY < 95 ? 'treble' : 'bass';
+                let best = null, bestDist = Infinity;
+                clickTargets.forEach((t) => {
+                    const d = Math.abs(t.x - clickX);
+                    if (d < bestDist) { bestDist = d; best = t; }
+                });
+                if (best) {
+                    sheetPickerClef = clef;
+                    showSheetPicker(sectionId, lineIdx, best.wordIdx, container, words[best.wordIdx] || '');
+                }
+            };
         }
 
         function drawAllSheetStaves() {
