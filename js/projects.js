@@ -3009,8 +3009,26 @@
             // so a selecting/completing click never also falls through to
             // the picker-opening click handler above for the same word.
             function sheetClearMoveSelection() {
-                expandEl.querySelectorAll('.pj-sheet-word.is-move-source').forEach((el) => el.classList.remove('is-move-source'));
+                expandEl.querySelectorAll('.pj-sheet-word.is-move-source, .pj-sheet-word.is-move-target').forEach((el) => {
+                    el.classList.remove('is-move-source', 'is-move-target');
+                });
                 sheetMoveSelection = [];
+            }
+            // Highlights every other word in the same line as a valid
+            // place to drop the current selection, so it's visible where
+            // a click will actually go instead of only seeing the
+            // selected word itself.
+            function sheetHighlightMoveTargets() {
+                expandEl.querySelectorAll('.pj-sheet-word.is-move-target').forEach((el) => el.classList.remove('is-move-target'));
+                if (!sheetMoveSelection.length) return;
+                const { sectionId, lineIdx } = sheetMoveSelection[0];
+                const selectedAddrs = new Set(sheetMoveSelection.map((s) => s.addr));
+                expandEl.querySelectorAll('[data-sheet-word]').forEach((el) => {
+                    const [sId, lIdx] = el.dataset.sheetWord.split(':');
+                    if (sId === sectionId && Number(lIdx) === lineIdx && !selectedAddrs.has(el.dataset.sheetWord)) {
+                        el.classList.add('is-move-target');
+                    }
+                });
             }
             expandEl.addEventListener('click', (e) => {
                 if (activeKey !== 'action:lyrics') return;
@@ -3024,6 +3042,7 @@
                     if (existingIdx >= 0) {
                         sheetMoveSelection.splice(existingIdx, 1);
                         wordEl.classList.remove('is-move-source');
+                        sheetHighlightMoveTargets();
                         return;
                     }
                     const [sectionId, lineIdx, slotIdx] = addr.split(':');
@@ -3032,6 +3051,7 @@
                     }
                     sheetMoveSelection.push({ addr, sectionId, lineIdx: Number(lineIdx), slotIdx: Number(slotIdx), wordCount: Number(handle.dataset.sheetWordCount) });
                     wordEl.classList.add('is-move-source');
+                    sheetHighlightMoveTargets();
                     return;
                 }
 
