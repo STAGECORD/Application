@@ -2539,8 +2539,8 @@
             // (2nd line from top).
             const clefGlyph = clef === 'bass' ? '𝄢' : '𝄞';
             const clefEl = clef === 'bass'
-                ? `<text class="pj-sheet-staff__clef pj-sheet-staff__clef--bass" x="${clefW - 22}" y="40" font-size="38">${clefGlyph}</text>`
-                : `<text class="pj-sheet-staff__clef pj-sheet-staff__clef--treble" x="${clefW - 22}" y="62" font-size="44">${clefGlyph}</text>`;
+                ? `<text class="pj-sheet-staff__clef pj-sheet-staff__clef--bass" x="${clefW - 22}" y="46" font-size="38">${clefGlyph}</text>`
+                : `<text class="pj-sheet-staff__clef pj-sheet-staff__clef--treble" x="${clefW - 22}" y="51" font-size="44">${clefGlyph}</text>`;
             const keySigEl = sheetKeySignatureGlyphs(clef, clefW + 6).svg;
             const timeSigEl = sheetTimeSignatureGlyphs(clefW + keySigWidth + 14);
             const tempoEl = clef === 'treble' ? `<text class="pj-sheet-staff__tempo" x="${clefW - 22}" y="10">♩ = ${sheetState.tempo}</text>` : '';
