@@ -2846,14 +2846,28 @@
             if (wordEl) wordEl.textContent = wordText;
             if (!pop) return;
             pop.hidden = false;
+            pop.style.maxHeight = ''; // reset before measuring natural size
             const r = anchorEl.getBoundingClientRect();
             const popRect = pop.getBoundingClientRect();
-            let top = r.bottom + 8, left = r.left;
+            let left = r.left;
             if (left + popRect.width > window.innerWidth - 12) left = window.innerWidth - popRect.width - 12;
-            if (top + popRect.height > window.innerHeight - 12) top = r.top - popRect.height - 8;
+            left = Math.max(12, left);
+
+            // Always place below the anchor, never above. "Above" was
+            // measured as distance to the viewport edge, but that space
+            // usually isn't actually empty — for the very first staff
+            // line it's the toolbar immediately above it, so flipping up
+            // there just traded a viewport overflow for overlapping the
+            // toolbar. Capping height to whatever room remains below
+            // (scrollable via CSS overflow-y if tight) can never overlap
+            // preceding content, which matters more than avoiding scroll.
+            const margin = 12;
+            const top = r.bottom + 8;
+            const maxHeight = Math.max(120, window.innerHeight - top - margin);
             pop.style.position = 'fixed';
-            pop.style.top = Math.max(12, top) + 'px';
-            pop.style.left = Math.max(12, left) + 'px';
+            pop.style.top = top + 'px';
+            pop.style.left = left + 'px';
+            pop.style.maxHeight = maxHeight + 'px';
         }
         function hideSheetPicker() {
             const pop = expandEl.querySelector('[data-sheet-picker]');
