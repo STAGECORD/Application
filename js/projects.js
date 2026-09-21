@@ -2334,9 +2334,11 @@
                     </div>
                     <div class="pj-sheet-picker__clefs" data-sheet-clef-row></div>
                     <div class="pj-sheet-picker__octaves" data-sheet-octave-row></div>
+                    <div class="pj-sheet-picker__runindex" data-sheet-run-index-row></div>
                     <div class="pj-sheet-picker__pitches" data-sheet-pitch-grid></div>
                     <div class="pj-sheet-picker__durations" data-sheet-duration-row></div>
                     <div class="pj-sheet-picker__tuplets" data-sheet-tuplet-row></div>
+                    <div class="pj-sheet-picker__runs" data-sheet-run-row></div>
                     <div class="pj-sheet-picker__actions">
                         <button type="button" class="pj-btn pj-btn--ghost" data-sheet-dot title="Dotted note (adds half the duration again)">• Dot</button>
                         <button type="button" class="pj-btn pj-btn--ghost" data-sheet-tie title="Hold this note into the next one, same pitch">🔗 Tie</button>
@@ -2405,6 +2407,26 @@
         ];
         const SHEET_TUPLET_RATIOS = { 3: 2, 5: 4, 6: 4, 7: 4 };
 
+        // ---------- "Runs": 2/3/4 fast notes packed under one word/beat ----------
+        // A run splits ONE word's slot into evenly-timed sub-notes,
+        // independent of lyric word count (unlike a Tuplet, which spans
+        // several EXISTING word-slots). Run sizes 2 and 4 are ordinary
+        // binary subdivision (two eighths, four sixteenths — no bracket
+        // needed, it's just normal rhythm); a run of 3 genuinely is a
+        // triplet against the beat, so it still needs a bracket, using
+        // the exact same Tuplet notes_occupied:2 mechanism as the
+        // regular Tuplet feature, just wrapping the run's own sub-notes
+        // instead of neighboring words.
+        const SHEET_RUN_SIZES = [2, 3, 4];
+        const SHEET_DURATION_ORDER = ['whole', 'half', 'quarter', 'eighth', 'sixteenth', 'thirtysecond'];
+        function sheetRunSubDuration(parentDuration, runSize) {
+            const idx = SHEET_DURATION_ORDER.indexOf(parentDuration);
+            if (idx < 0) return null;
+            const steps = runSize === 4 ? 2 : 1; // 2 or 3 -> one duration step down; 4 -> two steps down
+            const subIdx = idx + steps;
+            return subIdx < SHEET_DURATION_ORDER.length ? SHEET_DURATION_ORDER[subIdx] : null;
+        }
+
         let sheetState = null;
         let sheetVisible = false;
         let sheetChannel = null;
@@ -2412,6 +2434,7 @@
         let sheetPickerKey = null;    // { sectionId, lineIdx, wordIdx }
         let sheetPickerOctave = 4;
         let sheetPickerClef = 'treble';
+        let sheetPickerRunIndex = 0; // which sub-note of an active run the main pitch grid is currently editing
         let sheetMoveSelection = []; // [{ addr, sectionId, lineIdx, slotIdx, wordCount }] — one or more slots picked up to move onto another
         let sheetConnectMode = null; // { type: 'tie'|'slur', sectionId, lineIdx, clef, anchorIdx } — armed by clicking Tie/Slur, extended by clicking notes on the staff
 
@@ -2427,7 +2450,7 @@
         // hand each time, which is exactly how tie/dots got silently
         // dropped by other handlers before.
         function sheetNoteWith(cur, patch) {
-            return Object.assign({ pitch: '', duration: 'quarter', tie: false, dots: false, slur: false, tuplet: 0 }, cur || {}, patch);
+            return Object.assign({ pitch: '', duration: 'quarter', tie: false, dots: false, slur: false, tuplet: 0, run: null }, cur || {}, patch);
         }
 
         function sheetLinesForSection(section) {
@@ -2473,7 +2496,7 @@
             sheetState.key = (s && s.key) || 'C';
             sheetState.notes = {};
             (raw.notes || []).forEach((n) => {
-                sheetState.notes[sheetNoteKey(n.section_id, n.line_index, n.word_index, n.clef)] = { pitch: n.pitch, duration: n.duration, tie: !!n.tie, dots: !!n.dots, slur: !!n.slur, tuplet: n.tuplet_size || 0 };
+                sheetState.notes[sheetNoteKey(n.section_id, n.line_index, n.word_index, n.clef)] = { pitch: n.pitch, duration: n.duration, tie: !!n.tie, dots: !!n.dots, slur: !!n.slur, tuplet: n.tuplet_size || 0, run: n.run ? n.run.split(',').filter(Boolean) : null };
             });
             sheetState.wordOrder = {};
             (raw.word_order || []).forEach((wo) => {
@@ -2515,7 +2538,7 @@
             if (note) {
                 sb.from('sheet_music_notes').upsert({
                     project_id: id, section_id: sectionId, line_index: lineIdx, word_index: wordIdx, clef: clef,
-                    pitch: note.pitch, duration: note.duration, tie: !!note.tie, dots: !!note.dots, slur: !!note.slur, tuplet_size: note.tuplet || 0, updated_by: user.id, updated_at: new Date().toISOString()
+                    pitch: note.pitch, duration: note.duration, tie: !!note.tie, dots: !!note.dots, slur: !!note.slur, tuplet_size: note.tuplet || 0, run: (note.run && note.run.length) ? note.run.join(',') : null, updated_by: user.id, updated_at: new Date().toISOString()
                 }, { onConflict: 'project_id,section_id,line_index,word_index,clef' }).then(({ error }) => { if (error) reloadSheetMusic(id); });
             } else {
                 sb.from('sheet_music_notes').delete()
@@ -2565,14 +2588,20 @@
             return m[1].toLowerCase() + (m[2] || '') + '/' + m[3];
         }
 
-        // Builds one VexFlow tickable for a given word slot: a real note
-        // if one's been placed, a visible rest if marked as a rest, or an
-        // invisible GhostNote (still occupies a beat) if nothing's been
-        // placed there yet — keeps every word's column width consistent
-        // whether or not it carries a note.
-        function sheetBuildVexNote(VF, sectionId, lineIdx, wordIdx, clef) {
+        // Builds the VexFlow tickable(s) for a given word slot: normally
+        // exactly one (a real note, a visible rest, or an invisible
+        // GhostNote if nothing's placed there yet — keeps every word's
+        // column width consistent whether or not it carries a note), but
+        // several if the word holds a "run" (2/3/4 fast notes packed
+        // into this one beat). A run of 3 genuinely is a triplet against
+        // the beat, so its sub-notes get wrapped in a VF.Tuplet right
+        // here (pushed into the shared tuplets accumulator) — same
+        // notes_occupied:2 mechanism as the regular Tuplet feature.
+        // Always returns an array so every caller treats "one note" and
+        // "a run of several" the same way.
+        function sheetBuildVexNotes(VF, sectionId, lineIdx, wordIdx, clef, tuplets) {
             const note = getSheetNote(sectionId, lineIdx, wordIdx, clef);
-            if (!note) return new VF.GhostNote({ duration: 'q' });
+            if (!note) return [new VF.GhostNote({ duration: 'q' })];
             const dur = SHEET_DURATION_VEX[note.duration] || 'q';
             if (note.pitch === 'rest') {
                 // The dot button doesn't gate on pitch !== 'rest' (a
@@ -2582,7 +2611,23 @@
                 // the dot glyph and its extra duration on a rest.
                 const restNote = new VF.StaveNote({ keys: [clef === 'bass' ? 'd/3' : 'b/4'], duration: dur + 'r', clef, dots: note.dots ? 1 : 0 });
                 if (note.dots) VF.Dot.buildAndAttach([restNote], { all: true });
-                return restNote;
+                return [restNote];
+            }
+            if (note.run && note.run.length >= 2 && note.run.every(Boolean)) {
+                const subDur = sheetRunSubDuration(note.duration, note.run.length);
+                const subVexDur = subDur && SHEET_DURATION_VEX[subDur];
+                if (subVexDur) {
+                    const subNotes = note.run.map((p) => new VF.StaveNote({ keys: [sheetPitchToVexKey(p)], duration: subVexDur, clef }));
+                    if (note.run.length === 3 && tuplets) {
+                        tuplets.push(new VF.Tuplet(subNotes, { notes_occupied: 2, ratioed: false }));
+                    }
+                    return subNotes;
+                }
+                // subDuration not computable (e.g. a run of 4 on an
+                // already-tiny sixteenth note would need 64th notes,
+                // which this app doesn't support) — fall through and
+                // render the word as its plain single note instead of
+                // silently dropping it.
             }
             // A word can carry a chord — pitch is a comma-joined list of
             // one or more pitches sharing the same duration.
@@ -2591,7 +2636,7 @@
             // dots:1 above only affects duration/ticks — the dot glyph
             // itself still needs to be explicitly attached to render.
             if (note.dots) VF.Dot.buildAndAttach([staveNote], { all: true });
-            return staveNote;
+            return [staveNote];
         }
 
         // VF.Beam.generateBeams(notes) returns ZERO beam groups for the
@@ -2669,38 +2714,52 @@
                 new VF.StaveConnector(trebleStave, bassStave).setType(VF.StaveConnector.type.SINGLE_RIGHT).setContext(ctx).draw();
 
                 if (m.count > 0) {
-                    const trebleNotes = [], bassNotes = [];
+                    // One "column" per word — normally exactly one
+                    // tickable, but several if that word holds a run
+                    // (see sheetBuildVexNotes). Keeping this column
+                    // structure (rather than a flat 1-per-word array)
+                    // lets everything below stay indexed by WORD even
+                    // though the underlying tickable count per word can
+                    // now vary.
+                    const trebleCols = [], bassCols = [];
                     for (let k = 0; k < m.count; k++) {
                         const wordIdx = m.startIdx + k;
-                        trebleNotes.push(sheetBuildVexNote(VF, sectionId, lineIdx, wordIdx, 'treble'));
-                        bassNotes.push(sheetBuildVexNote(VF, sectionId, lineIdx, wordIdx, 'bass'));
+                        trebleCols.push({ wordIdx, tickables: sheetBuildVexNotes(VF, sectionId, lineIdx, wordIdx, 'treble', tuplets) });
+                        bassCols.push({ wordIdx, tickables: sheetBuildVexNotes(VF, sectionId, lineIdx, wordIdx, 'bass', tuplets) });
                     }
+                    const trebleNotes = trebleCols.flatMap((c) => c.tickables);
+                    const bassNotes = bassCols.flatMap((c) => c.tickables);
+
                     // Tuplets: a note marked "starts an N-tuplet" groups
-                    // with the next N-1 notes in this SAME measure (a
+                    // with the next N-1 WORDS in this SAME measure (a
                     // group that doesn't fully fit before the measure
-                    // ends is silently skipped — there's no note to
-                    // complete it with). Must happen before
-                    // Formatter.format() — VF.Tuplet rescales the
-                    // group's combined duration to fit notes_occupied,
-                    // and the formatter needs that rescaled tick value
-                    // to lay out x-positions. notes_occupied must be
-                    // passed explicitly — VexFlow defaults it to 2
-                    // regardless of group size, which is only correct
-                    // for a triplet.
-                    function applyTuplets(notes, clef) {
-                        for (let k = 0; k < notes.length; k++) {
-                            const note = getSheetNote(sectionId, lineIdx, m.startIdx + k, clef);
+                    // ends is silently skipped, as is any group spanning
+                    // a word that itself holds a run — a run already has
+                    // its own timing carved out of its single word and
+                    // can't also be folded into a word-level tuplet).
+                    // Must happen before Formatter.format() — VF.Tuplet
+                    // rescales the group's combined duration to fit
+                    // notes_occupied, and the formatter needs that
+                    // rescaled tick value to lay out x-positions.
+                    // notes_occupied must be passed explicitly —
+                    // VexFlow defaults it to 2 regardless of group size,
+                    // which is only correct for a triplet.
+                    function applyTuplets(cols, clef) {
+                        for (let k = 0; k < cols.length; k++) {
+                            const note = getSheetNote(sectionId, lineIdx, cols[k].wordIdx, clef);
                             const n = note && note.tuplet;
                             if (!n || note.pitch === 'rest') continue;
-                            if (k + n > notes.length) continue;
-                            const group = notes.slice(k, k + n);
-                            if (group.every((nt) => nt instanceof VF.StaveNote)) {
-                                tuplets.push(new VF.Tuplet(group, { notes_occupied: SHEET_TUPLET_RATIOS[n] || 2, ratioed: false }));
+                            if (k + n > cols.length) continue;
+                            const group = cols.slice(k, k + n);
+                            if (group.some((c) => c.tickables.length !== 1)) continue;
+                            const notesGroup = group.map((c) => c.tickables[0]);
+                            if (notesGroup.every((nt) => nt instanceof VF.StaveNote)) {
+                                tuplets.push(new VF.Tuplet(notesGroup, { notes_occupied: SHEET_TUPLET_RATIOS[n] || 2, ratioed: false }));
                             }
                         }
                     }
-                    applyTuplets(trebleNotes, 'treble');
-                    applyTuplets(bassNotes, 'bass');
+                    applyTuplets(trebleCols, 'treble');
+                    applyTuplets(bassCols, 'bass');
 
                     const trebleVoice = new VF.Voice({ num_beats: m.count, beat_value: 4 }).setStrict(false);
                     trebleVoice.addTickables(trebleNotes);
@@ -2725,17 +2784,26 @@
                     // against VexFlow's source directly — a bare
                     // getAbsoluteX() baseline read before attaching a
                     // stave silently omits ~40-50px and produces wrong
-                    // shifts.
+                    // shifts. A column with a run divides its OWN slot
+                    // width evenly across its sub-notes, so a 4-note run
+                    // fits in exactly the same horizontal space a single
+                    // note would have used.
                     const measureNoteStartX = trebleStave.getNoteStartX();
                     const slotWidth = noteAreaWidth / m.count;
-                    trebleNotes.forEach((n, k) => n.setStave(trebleStave));
-                    bassNotes.forEach((n, k) => n.setStave(bassStave));
-                    for (let k = 0; k < m.count; k++) {
-                        const targetX = measureNoteStartX + slotWidth * k + slotWidth / 2;
-                        const tn = trebleNotes[k], bn = bassNotes[k];
-                        if (tn) tn.setXShift(targetX - tn.getAbsoluteX());
-                        if (bn) bn.setXShift(targetX - bn.getAbsoluteX());
+                    trebleNotes.forEach((n) => n.setStave(trebleStave));
+                    bassNotes.forEach((n) => n.setStave(bassStave));
+                    function shiftCols(cols) {
+                        cols.forEach((col, k) => {
+                            const subN = col.tickables.length;
+                            const subWidth = slotWidth / subN;
+                            col.tickables.forEach((tk, si) => {
+                                const targetX = measureNoteStartX + slotWidth * k + subWidth * si + subWidth / 2;
+                                tk.setXShift(targetX - tk.getAbsoluteX());
+                            });
+                        });
                     }
+                    shiftCols(trebleCols);
+                    shiftCols(bassCols);
 
                     // Beams must be generated before the voice is drawn —
                     // a note only skips drawing its OWN individual flag
@@ -2760,22 +2828,28 @@
                     trebleBeams.forEach((b) => b.setContext(ctx).draw());
                     bassBeams.forEach((b) => b.setContext(ctx).draw());
 
-                    // Bounds clamp the hover box to this note's own slot —
-                    // now that slots are equal-width, this is just the
-                    // slot's own boundaries. getAbsoluteX() still excludes
-                    // x_shift (see above), so it must be added back in to
-                    // get the note's true rendered position — using the
-                    // un-shifted value here would silently misalign every
-                    // hover/click target from the notes actually drawn.
+                    // Bounds clamp the hover box to this WORD's own slot
+                    // (now that slots are equal-width, that's just the
+                    // slot's own boundaries) regardless of how many
+                    // sub-notes it holds internally — clicking anywhere
+                    // in the slot opens the picker for the whole word,
+                    // runs included.
                     const measureNoteEndX = x + w - 4;
-                    trebleNotes.forEach((n, k) => {
-                        const nx = n.getAbsoluteX() + n.getXShift();
+                    trebleCols.forEach((col, k) => {
+                        const nx = measureNoteStartX + slotWidth * k + slotWidth / 2;
                         const leftBound = Math.max(measureNoteStartX, measureNoteStartX + slotWidth * k);
                         const rightBound = Math.min(measureNoteEndX, measureNoteStartX + slotWidth * (k + 1));
-                        clickTargets.push({ x: nx, wordIdx: m.startIdx + k, leftBound, rightBound });
-                        allTrebleNotes[m.startIdx + k] = n;
+                        clickTargets.push({ x: nx, wordIdx: col.wordIdx, leftBound, rightBound });
+                        // Ties/slurs connect single notes only — a run
+                        // already spends this word's whole beat on its
+                        // own sub-notes, so it can't also carry a tie or
+                        // slur into/out of the neighboring word. Storing
+                        // null here means drawTies/drawSlurs' existing
+                        // "!a || !b" guards silently skip it, same as any
+                        // other empty slot.
+                        allTrebleNotes[col.wordIdx] = col.tickables.length === 1 ? col.tickables[0] : null;
                     });
-                    bassNotes.forEach((n, k) => { allBassNotes[m.startIdx + k] = n; });
+                    bassCols.forEach((col) => { allBassNotes[col.wordIdx] = col.tickables.length === 1 ? col.tickables[0] : null; });
                 }
 
                 x += w;
@@ -2906,8 +2980,14 @@
             });
         }
 
-        function sheetPitchDisplay(pitch) {
-            return pitch === 'rest' ? 'rest' : escapeHtml(pitch.split(',').join('+'));
+        function sheetPitchDisplay(note) {
+            if (note.pitch === 'rest') return 'rest';
+            // A run's pitches live in note.run, not note.pitch (which
+            // stays empty/unused once a run is active) -- show them
+            // joined by a middle dot so a run badge reads visibly
+            // differently from a chord's "+".
+            if (note.run && note.run.length >= 2) return escapeHtml(note.run.filter(Boolean).join('·'));
+            return escapeHtml(note.pitch.split(',').join('+'));
         }
 
         // Slots are addressed by position (notes live on the slot), but
@@ -2927,11 +3007,11 @@
                 let labels = '';
                 if (treble) {
                     cls += ' has-note';
-                    labels += `<span class="pj-sheet-word__pitch pj-sheet-word__pitch--treble">${sheetPitchDisplay(treble.pitch)}</span>`;
+                    labels += `<span class="pj-sheet-word__pitch pj-sheet-word__pitch--treble">${sheetPitchDisplay(treble)}</span>`;
                 }
                 if (bass) {
                     cls += ' has-note';
-                    labels += `<span class="pj-sheet-word__pitch pj-sheet-word__pitch--bass">${sheetPitchDisplay(bass.pitch)}</span>`;
+                    labels += `<span class="pj-sheet-word__pitch pj-sheet-word__pitch--bass">${sheetPitchDisplay(bass)}</span>`;
                 }
                 const addr = `${escapeAttr(sectionId)}:${lineIdx}:${slotIdx}`;
                 return `<span class="${cls}" data-sheet-word="${addr}">
@@ -2972,9 +3052,22 @@
                     `<button type="button" class="pj-lyrics-section__action${o === sheetPickerOctave ? ' is-active' : ''}" data-sheet-octave="${o}">${o}</button>`
                 ).join('');
             }
+            // A run replaces this word's single pitch with 2-4 sequential
+            // sub-notes sharing its beat — while one's active, the shared
+            // pitch grid below edits whichever sub-note is selected here
+            // instead of toggling a chord.
+            const activeRun = (note && note.run && note.run.length >= 2) ? note.run : null;
+            const runIndexRow = expandEl.querySelector('[data-sheet-run-index-row]');
+            if (runIndexRow) {
+                runIndexRow.innerHTML = activeRun ? activeRun.map((p, i) =>
+                    `<button type="button" class="pj-lyrics-section__action${i === sheetPickerRunIndex ? ' is-active' : ''}" data-sheet-run-index="${i}">${i + 1}${p ? ' ' + escapeHtml(p) : ''}</button>`
+                ).join('') : '';
+            }
             const pitchGrid = expandEl.querySelector('[data-sheet-pitch-grid]');
             if (pitchGrid) {
-                const activePitches = (note && note.pitch !== 'rest') ? note.pitch.split(',').filter(Boolean) : [];
+                const activePitches = activeRun
+                    ? [activeRun[sheetPickerRunIndex]].filter(Boolean)
+                    : ((note && note.pitch !== 'rest') ? note.pitch.split(',').filter(Boolean) : []);
                 const whiteRow = SHEET_WHITE_LETTERS.map((L) => {
                     const p = L + sheetPickerOctave;
                     return `<button type="button" class="pj-lyrics-suggest-chip${activePitches.includes(p) ? ' is-active' : ''}" data-sheet-pitch="${p}">${L}</button>`;
@@ -2984,7 +3077,10 @@
                     const p = L + sheetPickerOctave;
                     return `<button type="button" class="pj-lyrics-suggest-chip${activePitches.includes(p) ? ' is-active' : ''}" data-sheet-pitch="${p}">${L}</button>`;
                 }).join('');
-                pitchGrid.innerHTML = `<div>${blackRow}</div><div>${whiteRow}</div><p class="pj-lyrics-hint" style="margin:4px 0 0;font-size:10px;">Click more than one note to build a chord.</p>`;
+                const hint = activeRun
+                    ? `Picking sub-note ${sheetPickerRunIndex + 1} of ${activeRun.length} — click a letter to set it.`
+                    : 'Click more than one note to build a chord.';
+                pitchGrid.innerHTML = `<div>${blackRow}</div><div>${whiteRow}</div><p class="pj-lyrics-hint" style="margin:4px 0 0;font-size:10px;">${hint}</p>`;
             }
             const durationRow = expandEl.querySelector('[data-sheet-duration-row]');
             if (durationRow) {
@@ -2995,27 +3091,37 @@
             }
             const tieBtn = expandEl.querySelector('[data-sheet-tie]');
             if (tieBtn) {
-                const canTie = !!(note && note.pitch !== 'rest');
+                const canTie = !!(note && note.pitch !== 'rest' && !activeRun);
                 tieBtn.classList.toggle('is-active', canTie && !!note.tie);
                 tieBtn.disabled = !canTie;
             }
             const slurBtn = expandEl.querySelector('[data-sheet-slur]');
             if (slurBtn) {
-                const canSlur = !!(note && note.pitch !== 'rest');
+                const canSlur = !!(note && note.pitch !== 'rest' && !activeRun);
                 slurBtn.classList.toggle('is-active', canSlur && !!note.slur);
                 slurBtn.disabled = !canSlur;
             }
             const tupletRow = expandEl.querySelector('[data-sheet-tuplet-row]');
             if (tupletRow) {
-                const canTuplet = !!(note && note.pitch !== 'rest');
+                const canTuplet = !!(note && note.pitch !== 'rest' && !activeRun);
                 const activeTuplet = note ? (note.tuplet || 0) : 0;
                 tupletRow.innerHTML = SHEET_TUPLET_SIZES.map((t) =>
                     `<button type="button" class="pj-lyrics-section__action${t.n === activeTuplet ? ' is-active' : ''}" data-sheet-tuplet="${t.n}" title="${escapeAttr(t.title)}"${canTuplet ? '' : ' disabled'}>${t.n}</button>`
                 ).join('');
             }
+            const runRow = expandEl.querySelector('[data-sheet-run-row]');
+            if (runRow) {
+                const canRun = !(note && (note.pitch === 'rest' || note.tuplet));
+                const parentDur = note ? note.duration : 'quarter';
+                const activeSize = activeRun ? activeRun.length : 0;
+                runRow.innerHTML = SHEET_RUN_SIZES.map((n) => {
+                    const fits = !!sheetRunSubDuration(parentDur, n);
+                    return `<button type="button" class="pj-lyrics-section__action${n === activeSize ? ' is-active' : ''}" data-sheet-run="${n}" title="${n} notes packed evenly into this word's beat"${(canRun && fits) ? '' : ' disabled'}>${n}-run</button>`;
+                }).join('');
+            }
             const dotBtn = expandEl.querySelector('[data-sheet-dot]');
             if (dotBtn) {
-                const canDot = !!note;
+                const canDot = !!(note && !activeRun);
                 dotBtn.classList.toggle('is-active', canDot && !!note.dots);
                 dotBtn.disabled = !canDot;
             }
@@ -3023,6 +3129,7 @@
 
         function showSheetPicker(sectionId, lineIdx, wordIdx, anchorEl, wordText) {
             sheetPickerKey = { sectionId, lineIdx, wordIdx };
+            sheetPickerRunIndex = 0;
             const existing = getSheetNote(sectionId, lineIdx, wordIdx, sheetPickerClef);
             if (existing && existing.pitch && existing.pitch !== 'rest') {
                 const m = existing.pitch.match(/(\d)$/);
@@ -3152,18 +3259,37 @@
                 if (e.target.closest('[data-sheet-picker-close]')) { hideSheetPicker(); return; }
 
                 const clefBtn = e.target.closest('[data-sheet-clef]');
-                if (clefBtn) { sheetPickerClef = clefBtn.dataset.sheetClef; sheetPickerOctave = sheetPickerClef === 'bass' ? 3 : 4; renderSheetPicker(); return; }
+                if (clefBtn) { sheetPickerClef = clefBtn.dataset.sheetClef; sheetPickerOctave = sheetPickerClef === 'bass' ? 3 : 4; sheetPickerRunIndex = 0; renderSheetPicker(); return; }
 
                 const octBtn = e.target.closest('[data-sheet-octave]');
                 if (octBtn) { sheetPickerOctave = parseInt(octBtn.dataset.sheetOctave, 10); renderSheetPicker(); return; }
 
+                const runIdxBtn = e.target.closest('[data-sheet-run-index]');
+                if (runIdxBtn && sheetPickerKey) {
+                    sheetPickerRunIndex = parseInt(runIdxBtn.dataset.sheetRunIndex, 10);
+                    renderSheetPicker();
+                    return;
+                }
                 const pitchBtn = e.target.closest('[data-sheet-pitch]');
                 if (pitchBtn && sheetPickerKey) {
+                    const cur = getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef);
+                    const clicked = pitchBtn.dataset.sheetPitch;
+                    if (cur && cur.run && cur.run.length >= 2) {
+                        // Editing one sub-note of a run: replace, not
+                        // toggle — a run's sub-notes are a sequence of
+                        // single pitches, not a chord. Auto-advance to
+                        // the next sub-note so picking a run is a quick
+                        // click-click-click through the letters.
+                        const run = cur.run.slice();
+                        run[sheetPickerRunIndex] = clicked;
+                        setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, sheetNoteWith(cur, { run }));
+                        if (sheetPickerRunIndex < run.length - 1) sheetPickerRunIndex++;
+                        renderSheetPicker();
+                        return;
+                    }
                     // Toggle the clicked pitch in/out of the chord — click
                     // more than one to stack notes on the same beat.
-                    const cur = getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef);
                     const pitches = (cur && cur.pitch !== 'rest') ? cur.pitch.split(',').filter(Boolean) : [];
-                    const clicked = pitchBtn.dataset.sheetPitch;
                     const idx = pitches.indexOf(clicked);
                     if (idx >= 0) pitches.splice(idx, 1); else pitches.push(clicked);
                     setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef,
@@ -3177,10 +3303,33 @@
                     if (cur) { setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, sheetNoteWith(cur, { duration: durBtn.dataset.sheetDuration })); renderSheetPicker(); }
                     return;
                 }
+                const runBtn = e.target.closest('[data-sheet-run]');
+                if (runBtn && sheetPickerKey) {
+                    const cur = getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef);
+                    // No note yet is fine — Run can create one directly,
+                    // same as picking a pitch does; only a rest or an
+                    // active tuplet blocks it (matches canRun above).
+                    if (!(cur && (cur.pitch === 'rest' || cur.tuplet))) {
+                        const n = parseInt(runBtn.dataset.sheetRun, 10);
+                        const isActive = cur && cur.run && cur.run.length === n;
+                        // Turning a size on always starts that sub-note
+                        // set fresh (empty pitches) rather than trying to
+                        // carry over a differently-sized previous run —
+                        // clearing tie/slur/tuplet/dots, which don't
+                        // apply once a word's beat is split into a run.
+                        const patch = isActive
+                            ? { run: null }
+                            : { run: new Array(n).fill(''), tie: false, slur: false, tuplet: 0, dots: false };
+                        setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, sheetNoteWith(cur, patch));
+                        sheetPickerRunIndex = 0;
+                        renderSheetPicker();
+                    }
+                    return;
+                }
                 const tieBtn = e.target.closest('[data-sheet-tie]');
                 if (tieBtn && sheetPickerKey) {
                     const cur = getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef);
-                    if (cur && cur.pitch !== 'rest') {
+                    if (cur && cur.pitch !== 'rest' && !(cur.run && cur.run.length >= 2)) {
                         if (cur.tie) {
                             // Already tied into the next note — one click undoes it.
                             setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, sheetNoteWith(cur, { tie: false }));
@@ -3200,7 +3349,7 @@
                 const slurBtn = e.target.closest('[data-sheet-slur]');
                 if (slurBtn && sheetPickerKey) {
                     const cur = getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef);
-                    if (cur && cur.pitch !== 'rest') {
+                    if (cur && cur.pitch !== 'rest' && !(cur.run && cur.run.length >= 2)) {
                         if (cur.slur) {
                             setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, sheetNoteWith(cur, { slur: false }));
                             renderSheetPicker();
@@ -3215,7 +3364,7 @@
                 const tupletBtn = e.target.closest('[data-sheet-tuplet]');
                 if (tupletBtn && sheetPickerKey) {
                     const cur = getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef);
-                    if (cur && cur.pitch !== 'rest') {
+                    if (cur && cur.pitch !== 'rest' && !(cur.run && cur.run.length >= 2)) {
                         const n = parseInt(tupletBtn.dataset.sheetTuplet, 10);
                         const next = cur.tuplet === n ? 0 : n; // clicking the active size again turns it off
                         setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, sheetNoteWith(cur, { tuplet: next }));
@@ -3226,7 +3375,7 @@
                 const dotBtn = e.target.closest('[data-sheet-dot]');
                 if (dotBtn && sheetPickerKey) {
                     const cur = getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef);
-                    if (cur) {
+                    if (cur && !(cur.run && cur.run.length >= 2)) {
                         setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, sheetNoteWith(cur, { dots: !cur.dots }));
                         renderSheetPicker();
                     }
@@ -3238,7 +3387,7 @@
                     // silently reset duration back to quarter every time,
                     // discarding whatever the user had already picked.
                     const cur = getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef);
-                    setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, sheetNoteWith(cur, { pitch: 'rest', tie: false, slur: false, tuplet: 0 }));
+                    setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, sheetNoteWith(cur, { pitch: 'rest', tie: false, slur: false, tuplet: 0, run: null }));
                     renderSheetPicker();
                     return;
                 }
