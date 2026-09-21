@@ -2608,8 +2608,17 @@
                     VF.Beam.generateBeams(trebleNotes).forEach((b) => b.setContext(ctx).draw());
                     VF.Beam.generateBeams(bassNotes).forEach((b) => b.setContext(ctx).draw());
 
+                    // Bounds clamp the hover box to this note's own slot —
+                    // never past the barline on the left, never into the
+                    // next note's space on the right — instead of a fixed
+                    // width that can drift onto neighboring measures/notes.
+                    const measureNoteStartX = x + (isFirst ? SHEET_FIRST_MEASURE_EXTRA : 0) + 6;
+                    const measureNoteEndX = x + w - 4;
                     trebleNotes.forEach((n, k) => {
-                        clickTargets.push({ x: n.getAbsoluteX(), wordIdx: m.startIdx + k });
+                        const nx = n.getAbsoluteX();
+                        const leftBound = k === 0 ? measureNoteStartX : (trebleNotes[k - 1].getAbsoluteX() + nx) / 2;
+                        const rightBound = k === trebleNotes.length - 1 ? measureNoteEndX : (nx + trebleNotes[k + 1].getAbsoluteX()) / 2;
+                        clickTargets.push({ x: nx, wordIdx: m.startIdx + k, leftBound, rightBound });
                         allTrebleNotes[m.startIdx + k] = n;
                     });
                     bassNotes.forEach((n, k) => { allBassNotes[m.startIdx + k] = n; });
@@ -2666,11 +2675,6 @@
             const svgRoot = container.querySelector('svg');
             if (svgRoot) svgRoot.appendChild(hoverRect);
 
-            const avgGap = clickTargets.length > 1
-                ? (clickTargets[clickTargets.length - 1].x - clickTargets[0].x) / (clickTargets.length - 1)
-                : 60;
-            const hoverWidth = Math.max(26, Math.min(70, avgGap * 0.85));
-
             function nearestSheetTarget(e) {
                 if (!clickTargets.length) return null;
                 const svgEl = container.querySelector('svg');
@@ -2685,7 +2689,7 @@
                     const d = Math.abs(t.x - px);
                     if (d < bestDist) { bestDist = d; best = t; }
                 });
-                return best ? { wordIdx: best.wordIdx, x: best.x, clef } : null;
+                return best ? { wordIdx: best.wordIdx, x: best.x, leftBound: best.leftBound, rightBound: best.rightBound, clef } : null;
             }
 
             // Click anywhere on the staff (not just the word button row
@@ -2701,9 +2705,12 @@
             container.onmousemove = (e) => {
                 const target = nearestSheetTarget(e);
                 if (!target) { hoverRect.style.display = 'none'; return; }
-                hoverRect.setAttribute('x', target.x - hoverWidth / 2);
+                const idealHalf = 32;
+                const left = Math.max(target.leftBound, target.x - idealHalf);
+                const right = Math.min(target.rightBound, target.x + idealHalf);
+                hoverRect.setAttribute('x', left);
                 hoverRect.setAttribute('y', target.clef === 'treble' ? 10 : 100);
-                hoverRect.setAttribute('width', hoverWidth);
+                hoverRect.setAttribute('width', Math.max(4, right - left));
                 hoverRect.style.display = 'block';
             };
             container.onmouseleave = () => { hoverRect.style.display = 'none'; };
@@ -2751,8 +2758,8 @@
                     labels += `<span class="pj-sheet-word__pitch pj-sheet-word__pitch--bass">${sheetPitchDisplay(bass.pitch)}</span>`;
                 }
                 const addr = `${escapeAttr(sectionId)}:${lineIdx}:${slotIdx}`;
-                return `<span class="${cls}" data-sheet-word="${addr}">
-                    <span class="pj-sheet-word__drag" data-sheet-word-drag="${addr}" data-sheet-word-count="${n}" title="Press and drag to sing this word on a different beat">⠿</span>
+                return `<span class="${cls}" data-sheet-word="${addr}" data-sheet-word-count="${n}" title="Press and drag to sing this word on a different beat">
+                    <span class="pj-sheet-word__drag">⠿</span>
                     <span class="pj-sheet-word__click" data-sheet-word-click="${addr}">${escapeHtml(w)}${labels}</span>
                 </span>`;
             }).join('') + '</div>';
@@ -2942,35 +2949,55 @@
                 }
             });
 
-            // Drag a word's small grip handle onto another word in the
-            // same line to swap which beat each is sung on. Scoped to a
-            // dedicated handle (not the whole chip) so a plain click to
-            // open the note picker still works reliably.
+            // Press and hold anywhere on a word chip, drag it onto another
+            // word in the same line, release — swaps which beat each is
+            // sung on. Disambiguated from a plain click (which opens the
+            // note picker) purely by movement distance: a press that
+            // never moves past the threshold is a click, not a drag, so
+            // the existing data-sheet-word-click handler still fires
+            // normally in that case.
             //
-            // Tracked via mousedown/mouseup rather than native HTML5
-            // drag — this codebase already found native drag unreliable
-            // for a near-identical interaction (see the rhyme phrase
-            // selection above), so don't repeat that mistake here.
-            let sheetDragSource = null;
+            // Tracked via mousedown/mousemove/mouseup rather than native
+            // HTML5 drag — this codebase already found native drag
+            // unreliable for a near-identical interaction (see the rhyme
+            // phrase selection above), so don't repeat that mistake here.
+            const SHEET_DRAG_THRESHOLD = 6;
+            let sheetPress = null; // { sectionId, lineIdx, slotIdx, wordCount, x, y, dragging, el }
             expandEl.addEventListener('mousedown', (e) => {
-                const handle = e.target.closest('[data-sheet-word-drag]');
-                if (!handle) return;
-                const [sectionId, lineIdx, slotIdx] = handle.dataset.sheetWordDrag.split(':');
-                sheetDragSource = { sectionId, lineIdx: Number(lineIdx), slotIdx: Number(slotIdx), wordCount: Number(handle.dataset.sheetWordCount) };
-                handle.classList.add('is-dragging');
-                e.preventDefault(); // avoid text-selection while dragging the handle
+                if (activeKey !== 'action:lyrics') return;
+                const wordEl = e.target.closest('[data-sheet-word]');
+                if (!wordEl) return;
+                const [sectionId, lineIdx, slotIdx] = wordEl.dataset.sheetWord.split(':');
+                sheetPress = {
+                    sectionId, lineIdx: Number(lineIdx), slotIdx: Number(slotIdx),
+                    wordCount: Number(wordEl.dataset.sheetWordCount),
+                    x: e.clientX, y: e.clientY, dragging: false, el: wordEl
+                };
+            });
+            expandEl.addEventListener('mousemove', (e) => {
+                if (!sheetPress || sheetPress.dragging) return;
+                const dist = Math.hypot(e.clientX - sheetPress.x, e.clientY - sheetPress.y);
+                if (dist > SHEET_DRAG_THRESHOLD) {
+                    sheetPress.dragging = true;
+                    sheetPress.el.classList.add('is-dragging');
+                }
             });
             expandEl.addEventListener('mouseup', (e) => {
-                if (!sheetDragSource) return;
-                const source = sheetDragSource;
-                sheetDragSource = null;
-                expandEl.querySelectorAll('.pj-sheet-word__drag.is-dragging').forEach((h) => h.classList.remove('is-dragging'));
+                if (!sheetPress) return;
+                const press = sheetPress;
+                sheetPress = null;
+                if (press.el) press.el.classList.remove('is-dragging');
+                if (!press.dragging) return; // a plain click — let data-sheet-word-click's own handler open the picker
                 const target = e.target.closest('[data-sheet-word]');
                 if (!target) return;
                 const [sectionId, lineIdx, slotIdx] = target.dataset.sheetWord.split(':');
-                if (sectionId === source.sectionId && Number(lineIdx) === source.lineIdx) {
-                    sheetSwapWordSlots(sectionId, Number(lineIdx), source.wordCount, source.slotIdx, Number(slotIdx));
+                if (sectionId === press.sectionId && Number(lineIdx) === press.lineIdx) {
+                    sheetSwapWordSlots(sectionId, Number(lineIdx), press.wordCount, press.slotIdx, Number(slotIdx));
                 }
+            });
+            expandEl.addEventListener('mouseleave', () => {
+                if (sheetPress && sheetPress.el) sheetPress.el.classList.remove('is-dragging');
+                sheetPress = null;
             });
         }
 
