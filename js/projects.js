@@ -3117,20 +3117,37 @@
             }
             const pitchGrid = expandEl.querySelector('[data-sheet-pitch-grid]');
             if (pitchGrid) {
+                // In run mode, show every sub-note the run already has
+                // (not just whichever tab is currently selected) so the
+                // whole run's makeup stays visible while you're picking
+                // the others -- with only the current tab's letter
+                // shown, a freshly-clicked pitch appeared to vanish the
+                // instant it auto-advanced, which read as "did that not
+                // register" and made repeating the same note across
+                // several sub-notes feel broken even though it always
+                // worked. currentPitch gets an extra ring so you can
+                // still tell which one you're actively editing.
                 const activePitches = activeRun
-                    ? [activeRun[sheetPickerRunIndex]].filter(Boolean)
+                    ? activeRun.filter(Boolean)
                     : ((note && note.pitch !== 'rest') ? note.pitch.split(',').filter(Boolean) : []);
+                const currentPitch = activeRun ? activeRun[sheetPickerRunIndex] : null;
+                const chipClass = (p) => {
+                    let cls = 'pj-lyrics-suggest-chip';
+                    if (activePitches.includes(p)) cls += ' is-active';
+                    if (p === currentPitch) cls += ' is-current';
+                    return cls;
+                };
                 const whiteRow = SHEET_WHITE_LETTERS.map((L) => {
                     const p = L + sheetPickerOctave;
-                    return `<button type="button" class="pj-lyrics-suggest-chip${activePitches.includes(p) ? ' is-active' : ''}" data-sheet-pitch="${p}">${L}</button>`;
+                    return `<button type="button" class="${chipClass(p)}" data-sheet-pitch="${p}">${L}</button>`;
                 }).join('');
                 const blackRow = SHEET_BLACK_LETTERS.map((L) => {
                     if (!L) return '<span style="display:inline-block;width:34px;"></span>';
                     const p = L + sheetPickerOctave;
-                    return `<button type="button" class="pj-lyrics-suggest-chip${activePitches.includes(p) ? ' is-active' : ''}" data-sheet-pitch="${p}">${L}</button>`;
+                    return `<button type="button" class="${chipClass(p)}" data-sheet-pitch="${p}">${L}</button>`;
                 }).join('');
                 const hint = activeRun
-                    ? `Picking sub-note ${sheetPickerRunIndex + 1} of ${activeRun.length} — click a letter to set it.`
+                    ? `Picking sub-note ${sheetPickerRunIndex + 1} of ${activeRun.length} — click a letter to set it (the same note can be picked more than once).`
                     : 'Click more than one note to build a chord.';
                 pitchGrid.innerHTML = `<div>${blackRow}</div><div>${whiteRow}</div><p class="pj-lyrics-hint" style="margin:4px 0 0;font-size:10px;">${hint}</p>`;
             }
