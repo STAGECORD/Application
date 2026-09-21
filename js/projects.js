@@ -2366,6 +2366,88 @@
         const SHEET_DURATION_INDEX = {};
         SHEET_DURATIONS.forEach((d) => { SHEET_DURATION_INDEX[d.id] = d; });
 
+        let sheetState = null;
+        let sheetVisible = false;
+        let sheetChannel = null;
+        let sheetReloadTimer = null;
+        let sheetPickerKey = null;    // { sectionId, lineIdx, wordIdx }
+        let sheetPickerOctave = 4;
+        let sheetPickerClef = 'treble';
+
+        function sheetNoteKey(sectionId, lineIdx, wordIdx, clef) {
+            return `${sectionId}|${lineIdx}|${wordIdx}|${clef}`;
+        }
+        function getSheetNote(sectionId, lineIdx, wordIdx, clef) {
+            return sheetState.notes[sheetNoteKey(sectionId, lineIdx, wordIdx, clef)] || null;
+        }
+
+        function sheetLinesForSection(section) {
+            return (section.content || '').split('\n').map((line) => line.trim().split(/\s+/).filter(Boolean));
+        }
+
+        // ---------- Load / sync / realtime ----------
+        async function ensureSheetMusicSettings(projectId) {
+            const resp = await sb.rpc('ensure_sheet_music_settings', { p_project_id: projectId });
+            if (resp.error) throw resp.error;
+        }
+        async function fetchSheetMusic(projectId) {
+            const resp = await sb.rpc('get_sheet_music', { p_project_id: projectId });
+            if (resp.error) throw resp.error;
+            return resp.data || { settings: null, notes: [] };
+        }
+        function applySheetRaw(raw) {
+            const s = raw.settings;
+            sheetState.tempo = (s && s.tempo) || 120;
+            sheetState.timeSignature = (s && s.time_signature) || '4/4';
+            sheetState.key = (s && s.key) || 'C';
+            sheetState.notes = {};
+            (raw.notes || []).forEach((n) => {
+                sheetState.notes[sheetNoteKey(n.section_id, n.line_index, n.word_index, n.clef)] = { pitch: n.pitch, duration: n.duration };
+            });
+        }
+        function stopSheetRealtime() {
+            if (sheetChannel) { sb.removeChannel(sheetChannel); sheetChannel = null; }
+        }
+        function startSheetRealtime(projectId) {
+            stopSheetRealtime();
+            sheetChannel = sb.channel('pj-sheet-' + projectId)
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'sheet_music_notes', filter: 'project_id=eq.' + projectId }, () => reloadSheetMusic(projectId))
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'sheet_music_settings', filter: 'project_id=eq.' + projectId }, () => reloadSheetMusic(projectId))
+                .subscribe();
+        }
+        function reloadSheetMusic(projectId) {
+            clearTimeout(sheetReloadTimer);
+            sheetReloadTimer = setTimeout(async () => {
+                if (activeKey !== 'action:lyrics' || !sheetState) return;
+                applySheetRaw(await fetchSheetMusic(projectId));
+                if (lyricsEditorFocused()) { lyricsRenderPending = true; } else { renderLyrics(); }
+            }, 400);
+        }
+
+        // ---------- Mutations ----------
+        function setSheetHeader(field, value) {
+            sheetState[field] = value;
+            renderLyrics();
+            const column = field === 'timeSignature' ? 'time_signature' : field;
+            sb.from('sheet_music_settings').update({ [column]: value, updated_at: new Date().toISOString() }).eq('project_id', id).then(() => {});
+        }
+
+        function setSheetNote(sectionId, lineIdx, wordIdx, clef, note) {
+            const key = sheetNoteKey(sectionId, lineIdx, wordIdx, clef);
+            if (note) sheetState.notes[key] = note; else delete sheetState.notes[key];
+            renderLyrics();
+            if (note) {
+                sb.from('sheet_music_notes').upsert({
+                    project_id: id, section_id: sectionId, line_index: lineIdx, word_index: wordIdx, clef: clef,
+                    pitch: note.pitch, duration: note.duration, updated_by: user.id, updated_at: new Date().toISOString()
+                }, { onConflict: 'project_id,section_id,line_index,word_index,clef' }).then(({ error }) => { if (error) reloadSheetMusic(id); });
+            } else {
+                sb.from('sheet_music_notes').delete()
+                    .eq('project_id', id).eq('section_id', sectionId).eq('line_index', lineIdx).eq('word_index', wordIdx).eq('clef', clef)
+                    .then(({ error }) => { if (error) reloadSheetMusic(id); });
+            }
+        }
+
         const SHEET_DURATION_VEX = { whole: 'w', half: 'h', quarter: 'q', eighth: '8', sixteenth: '16' };
 
         function sheetPitchToVexKey(pitchStr) {
