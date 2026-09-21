@@ -2713,10 +2713,28 @@
                         if (bn) bn.setXShift(targetX - bn.getAbsoluteX());
                     }
 
+                    // Beams must be generated before the voice is drawn —
+                    // a note only skips drawing its OWN individual flag
+                    // when it already has a beam attached at the moment
+                    // .draw() runs (VexFlow's hasFlag() checks
+                    // this.beam === undefined). Generating beams after
+                    // voice.draw(), as this used to, meant every note had
+                    // already drawn its own flag with its own
+                    // independently-computed stem length by the time the
+                    // beam existed — the beam bar then drew on top at its
+                    // own (correctly recalculated, often different) stem
+                    // position, leaving a stray flag plus a
+                    // mismatched-looking beam. Small pitch intervals hid
+                    // this (the two overlapped closely enough to look
+                    // fine); a wide interval between notes exposes it
+                    // clearly as two disconnected marks.
+                    const trebleBeams = sheetGenerateBeams(VF, trebleNotes);
+                    const bassBeams = sheetGenerateBeams(VF, bassNotes);
+
                     trebleVoice.draw(ctx, trebleStave);
                     bassVoice.draw(ctx, bassStave);
-                    sheetGenerateBeams(VF, trebleNotes).forEach((b) => b.setContext(ctx).draw());
-                    sheetGenerateBeams(VF, bassNotes).forEach((b) => b.setContext(ctx).draw());
+                    trebleBeams.forEach((b) => b.setContext(ctx).draw());
+                    bassBeams.forEach((b) => b.setContext(ctx).draw());
 
                     // Bounds clamp the hover box to this note's own slot —
                     // now that slots are equal-width, this is just the
