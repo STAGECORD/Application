@@ -2830,7 +2830,7 @@
                 }
 
                 const pop = expandEl.querySelector('[data-sheet-picker]');
-                if (pop && !pop.hidden && !e.target.closest('[data-sheet-picker]') && !e.target.closest('[data-sheet-word]')) {
+                if (pop && !pop.hidden && !e.target.closest('[data-sheet-picker]') && !e.target.closest('[data-sheet-word]') && !e.target.closest('[data-vf-line]')) {
                     hideSheetPicker();
                 }
             });
