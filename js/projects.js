@@ -2487,7 +2487,10 @@
             if (note.pitch === 'rest') {
                 return new VF.StaveNote({ keys: [clef === 'bass' ? 'd/3' : 'b/4'], duration: dur + 'r', clef });
             }
-            return new VF.StaveNote({ keys: [sheetPitchToVexKey(note.pitch)], duration: dur, clef });
+            // A word can carry a chord — pitch is a comma-joined list of
+            // one or more pitches sharing the same duration.
+            const keys = note.pitch.split(',').filter(Boolean).map(sheetPitchToVexKey);
+            return new VF.StaveNote({ keys: keys.length ? keys : ['c/4'], duration: dur, clef });
         }
 
         // ---------- Rendering: real engraved grand staff via VexFlow ----------
@@ -2542,6 +2545,10 @@
             });
         }
 
+        function sheetPitchDisplay(pitch) {
+            return pitch === 'rest' ? 'rest' : escapeHtml(pitch.split(',').join('+'));
+        }
+
         function renderSheetWords(line, sectionId, lineIdx) {
             return '<div class="pj-sheet-words">' + line.map((w, i) => {
                 const treble = getSheetNote(sectionId, lineIdx, i, 'treble');
@@ -2550,11 +2557,11 @@
                 let labels = '';
                 if (treble) {
                     cls += ' has-note';
-                    labels += `<span class="pj-sheet-word__pitch pj-sheet-word__pitch--treble">${treble.pitch === 'rest' ? 'rest' : escapeHtml(treble.pitch)}</span>`;
+                    labels += `<span class="pj-sheet-word__pitch pj-sheet-word__pitch--treble">${sheetPitchDisplay(treble.pitch)}</span>`;
                 }
                 if (bass) {
                     cls += ' has-note';
-                    labels += `<span class="pj-sheet-word__pitch pj-sheet-word__pitch--bass">${bass.pitch === 'rest' ? 'rest' : escapeHtml(bass.pitch)}</span>`;
+                    labels += `<span class="pj-sheet-word__pitch pj-sheet-word__pitch--bass">${sheetPitchDisplay(bass.pitch)}</span>`;
                 }
                 return `<button type="button" class="${cls}" data-sheet-word="${escapeAttr(sectionId)}:${lineIdx}:${i}">${escapeHtml(w)}${labels}</button>`;
             }).join('') + '</div>';
@@ -2593,17 +2600,17 @@
             }
             const pitchGrid = expandEl.querySelector('[data-sheet-pitch-grid]');
             if (pitchGrid) {
-                const activePitch = note && note.pitch !== 'rest' ? note.pitch : null;
+                const activePitches = (note && note.pitch !== 'rest') ? note.pitch.split(',').filter(Boolean) : [];
                 const whiteRow = SHEET_WHITE_LETTERS.map((L) => {
                     const p = L + sheetPickerOctave;
-                    return `<button type="button" class="pj-lyrics-suggest-chip${p === activePitch ? ' is-active' : ''}" data-sheet-pitch="${p}">${L}</button>`;
+                    return `<button type="button" class="pj-lyrics-suggest-chip${activePitches.includes(p) ? ' is-active' : ''}" data-sheet-pitch="${p}">${L}</button>`;
                 }).join('');
                 const blackRow = SHEET_BLACK_LETTERS.map((L) => {
                     if (!L) return '<span style="display:inline-block;width:34px;"></span>';
                     const p = L + sheetPickerOctave;
-                    return `<button type="button" class="pj-lyrics-suggest-chip${p === activePitch ? ' is-active' : ''}" data-sheet-pitch="${p}">${L}</button>`;
+                    return `<button type="button" class="pj-lyrics-suggest-chip${activePitches.includes(p) ? ' is-active' : ''}" data-sheet-pitch="${p}">${L}</button>`;
                 }).join('');
-                pitchGrid.innerHTML = `<div>${blackRow}</div><div>${whiteRow}</div>`;
+                pitchGrid.innerHTML = `<div>${blackRow}</div><div>${whiteRow}</div><p class="pj-lyrics-hint" style="margin:4px 0 0;font-size:10px;">Click more than one note to build a chord.</p>`;
             }
             const durationRow = expandEl.querySelector('[data-sheet-duration-row]');
             if (durationRow) {
@@ -2678,8 +2685,16 @@
 
                 const pitchBtn = e.target.closest('[data-sheet-pitch]');
                 if (pitchBtn && sheetPickerKey) {
-                    const cur = getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef) || { duration: 'quarter' };
-                    setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, { pitch: pitchBtn.dataset.sheetPitch, duration: cur.duration || 'quarter' });
+                    // Toggle the clicked pitch in/out of the chord — click
+                    // more than one to stack notes on the same beat.
+                    const cur = getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef);
+                    const pitches = (cur && cur.pitch !== 'rest') ? cur.pitch.split(',').filter(Boolean) : [];
+                    const clicked = pitchBtn.dataset.sheetPitch;
+                    const idx = pitches.indexOf(clicked);
+                    if (idx >= 0) pitches.splice(idx, 1); else pitches.push(clicked);
+                    const duration = (cur && cur.duration) || 'quarter';
+                    setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef,
+                        pitches.length ? { pitch: pitches.join(','), duration } : null);
                     renderSheetPicker();
                     return;
                 }
