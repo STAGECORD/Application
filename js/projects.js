@@ -2562,6 +2562,27 @@
             return staveNote;
         }
 
+        // VF.Beam.generateBeams(notes) returns ZERO beam groups for the
+        // whole array — not just skipping the gap, silently giving up
+        // entirely — whenever a beamable run doesn't start on a "clean"
+        // beat boundary by its own reckoning (e.g. eighth, empty slot,
+        // eighth, eighth: the trailing pair should beam but nothing
+        // does). Splitting into contiguous beamable runs first and
+        // calling it separately per run sidesteps that: each run always
+        // starts its own reckoning at zero. Verified against VexFlow
+        // directly before relying on it here.
+        function sheetGenerateBeams(VF, notes) {
+            const isBeamable = (n) => n instanceof VF.StaveNote && !n.isRest() && ['8', '16', '32'].includes(n.getDuration());
+            let beams = [], run = [];
+            notes.forEach((n) => {
+                if (isBeamable(n)) { run.push(n); return; }
+                if (run.length > 1) beams = beams.concat(VF.Beam.generateBeams(run));
+                run = [];
+            });
+            if (run.length > 1) beams = beams.concat(VF.Beam.generateBeams(run));
+            return beams;
+        }
+
         // ---------- Rendering: real engraved grand staff via VexFlow ----------
         // Every line renders at this same total width regardless of word
         // count, split into measures (barred every N words, N = the time
@@ -2630,8 +2651,8 @@
                     new VF.Formatter().joinVoices([trebleVoice]).joinVoices([bassVoice]).format([trebleVoice, bassVoice], noteAreaWidth);
                     trebleVoice.draw(ctx, trebleStave);
                     bassVoice.draw(ctx, bassStave);
-                    VF.Beam.generateBeams(trebleNotes).forEach((b) => b.setContext(ctx).draw());
-                    VF.Beam.generateBeams(bassNotes).forEach((b) => b.setContext(ctx).draw());
+                    sheetGenerateBeams(VF, trebleNotes).forEach((b) => b.setContext(ctx).draw());
+                    sheetGenerateBeams(VF, bassNotes).forEach((b) => b.setContext(ctx).draw());
 
                     // Bounds clamp the hover box to this note's own slot —
                     // never past the barline on the left, never into the
