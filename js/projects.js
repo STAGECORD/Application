@@ -2204,6 +2204,7 @@
             // Drag-to-reorder sections within the active tab's list.
             let dragId = null;
             expandEl.addEventListener('dragstart', (e) => {
+                if (e.target.closest('[data-sheet-word-drag]')) return; // handled by wireSheetMusicEvents
                 const handle = e.target.closest('[data-lyrics-drag]');
                 const li = e.target.closest('.pj-lyrics-section');
                 if (!li) return;
