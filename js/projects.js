@@ -2677,26 +2677,51 @@
 
                     const noteAreaWidth = Math.max(40, w - (isFirst ? SHEET_FIRST_MEASURE_EXTRA + 20 : 20));
                     new VF.Formatter().joinVoices([trebleVoice]).joinVoices([bassVoice]).format([trebleVoice, bassVoice], noteAreaWidth);
+
+                    // Force equal-width slots instead of VexFlow's natural
+                    // proportional (duration-based) spacing — one note per
+                    // lyric word reads better as a uniform grid here than
+                    // packed tight next to short notes and stretched next
+                    // to long ones. getAbsoluteX() by VexFlow's own design
+                    // always EXCLUDES x_shift, and only folds in the
+                    // stave's own noteStartX offset once a stave is
+                    // actually attached — so attach the stave first (via
+                    // setStave, same call Voice.draw() makes internally;
+                    // harmless to call early), measure the true untouched
+                    // baseline, then compute the shift needed to land each
+                    // note in the center of its own equal slot. Verified
+                    // against VexFlow's source directly — a bare
+                    // getAbsoluteX() baseline read before attaching a
+                    // stave silently omits ~40-50px and produces wrong
+                    // shifts.
+                    const measureNoteStartX = trebleStave.getNoteStartX();
+                    const slotWidth = noteAreaWidth / m.count;
+                    trebleNotes.forEach((n, k) => n.setStave(trebleStave));
+                    bassNotes.forEach((n, k) => n.setStave(bassStave));
+                    for (let k = 0; k < m.count; k++) {
+                        const targetX = measureNoteStartX + slotWidth * k + slotWidth / 2;
+                        const tn = trebleNotes[k], bn = bassNotes[k];
+                        if (tn) tn.setXShift(targetX - tn.getAbsoluteX());
+                        if (bn) bn.setXShift(targetX - bn.getAbsoluteX());
+                    }
+
                     trebleVoice.draw(ctx, trebleStave);
                     bassVoice.draw(ctx, bassStave);
                     sheetGenerateBeams(VF, trebleNotes).forEach((b) => b.setContext(ctx).draw());
                     sheetGenerateBeams(VF, bassNotes).forEach((b) => b.setContext(ctx).draw());
 
                     // Bounds clamp the hover box to this note's own slot —
-                    // never past the barline on the left, never into the
-                    // next note's space on the right — instead of a fixed
-                    // width that can drift onto neighboring measures/notes.
-                    // getNoteStartX() is VexFlow's own real measurement of
-                    // where notes begin on this stave (accounting for its
-                    // clef/keysig/timesig if any); a hand-computed guess
-                    // here previously squeezed the first note's box to a
-                    // sliver whenever it was off by even a few pixels.
-                    const measureNoteStartX = trebleStave.getNoteStartX();
+                    // now that slots are equal-width, this is just the
+                    // slot's own boundaries. getAbsoluteX() still excludes
+                    // x_shift (see above), so it must be added back in to
+                    // get the note's true rendered position — using the
+                    // un-shifted value here would silently misalign every
+                    // hover/click target from the notes actually drawn.
                     const measureNoteEndX = x + w - 4;
                     trebleNotes.forEach((n, k) => {
-                        const nx = n.getAbsoluteX();
-                        const leftBound = k === 0 ? measureNoteStartX : (trebleNotes[k - 1].getAbsoluteX() + nx) / 2;
-                        const rightBound = k === trebleNotes.length - 1 ? measureNoteEndX : (nx + trebleNotes[k + 1].getAbsoluteX()) / 2;
+                        const nx = n.getAbsoluteX() + n.getXShift();
+                        const leftBound = Math.max(measureNoteStartX, measureNoteStartX + slotWidth * k);
+                        const rightBound = Math.min(measureNoteEndX, measureNoteStartX + slotWidth * (k + 1));
                         clickTargets.push({ x: nx, wordIdx: m.startIdx + k, leftBound, rightBound });
                         allTrebleNotes[m.startIdx + k] = n;
                     });
