@@ -1626,30 +1626,49 @@
             }, 400);
         }
 
+        function tokenizeLyricsSingleLine(sectionId, lineIdx, line, rhymes) {
+            if (!line.trim()) return '<p class="pj-lyrics-line">&nbsp;</p>';
+            let html = '';
+            let wordIdx = 0;
+            const re = /([\p{L}\p{N}'-]+)|([^\p{L}\p{N}]+)/gu;
+            let match;
+            while ((match = re.exec(line)) !== null) {
+                if (match[1]) {
+                    const tok = match[1];
+                    const occKey = sectionId + '|' + lineIdx + '|' + wordIdx;
+                    const tag = rhymes[occKey];
+                    const color = tag && tag.color;
+                    const style = color ? ` style="color:${color};"` : '';
+                    const cls = 'pj-lyrics-word' + (color ? ' has-rhyme' : '') + (tag && tag.isSlant ? ' is-slant' : '');
+                    const title = (tag && tag.isSlant) ? ' title="Marked as a rhyme even though it\'s not a direct match — still counts when pronounced/sung."' : '';
+                    html += `<span class="${cls}" data-occurrence="${escapeHtml(occKey)}" data-word="${escapeHtml(tok.toLowerCase())}"${style}${title}>${escapeHtml(tok)}</span>`;
+                    wordIdx++;
+                } else {
+                    html += escapeHtml(match[2]);
+                }
+            }
+            return `<p class="pj-lyrics-line">${html}</p>`;
+        }
+
         function tokenizeLyricsLine(sectionId, text, rhymes) {
             if (!text) return '';
+            return text.split('\n').map((line, lineIdx) => tokenizeLyricsSingleLine(sectionId, lineIdx, line, rhymes)).join('');
+        }
+
+        // Interleaved view: each colored lyric line immediately followed
+        // by its own grand staff (when Sheet Music is toggled on), rather
+        // than all lyric lines then all staves in separate blocks.
+        function tokenizeLyricsLineWithSheet(sectionId, text, rhymes) {
+            if (!text) return '';
             return text.split('\n').map((line, lineIdx) => {
-                if (!line.trim()) return '<p class="pj-lyrics-line">&nbsp;</p>';
-                let html = '';
-                let wordIdx = 0;
-                const re = /([\p{L}\p{N}'-]+)|([^\p{L}\p{N}]+)/gu;
-                let match;
-                while ((match = re.exec(line)) !== null) {
-                    if (match[1]) {
-                        const tok = match[1];
-                        const occKey = sectionId + '|' + lineIdx + '|' + wordIdx;
-                        const tag = rhymes[occKey];
-                        const color = tag && tag.color;
-                        const style = color ? ` style="color:${color};"` : '';
-                        const cls = 'pj-lyrics-word' + (color ? ' has-rhyme' : '') + (tag && tag.isSlant ? ' is-slant' : '');
-                        const title = (tag && tag.isSlant) ? ' title="Marked as a rhyme even though it\'s not a direct match — still counts when pronounced/sung."' : '';
-                        html += `<span class="${cls}" data-occurrence="${escapeHtml(occKey)}" data-word="${escapeHtml(tok.toLowerCase())}"${style}${title}>${escapeHtml(tok)}</span>`;
-                        wordIdx++;
-                    } else {
-                        html += escapeHtml(match[2]);
-                    }
-                }
-                return `<p class="pj-lyrics-line">${html}</p>`;
+                const lineHtml = tokenizeLyricsSingleLine(sectionId, lineIdx, line, rhymes);
+                const words = line.trim().split(/\s+/).filter(Boolean);
+                if (!sheetVisible || !sheetState || !words.length) return lineHtml;
+                const staffHtml = `<div class="pj-sheet-staff-wrap pj-sheet-inline">
+                    <div class="pj-sheet-vf-line" data-vf-section="${escapeAttr(sectionId)}" data-vf-line="${lineIdx}" data-vf-words="${escapeAttr(JSON.stringify(words))}"></div>
+                    ${renderSheetWords(words, sectionId, lineIdx)}
+                </div>`;
+                return lineHtml + staffHtml;
             }).join('');
         }
 
@@ -1741,7 +1760,7 @@
                 ? `<span class="pj-lyrics-section__source pj-lyrics-section__source--done">✓ In Main Lyrics</span>`
                 : ((!onMain && section.content && !lyricsState.mainFinalized)
                     ? `<button type="button" class="pj-lyrics-section__action" data-lyrics-to-main="${section.id}">→ Main</button>` : '');
-            const view = tokenizeLyricsLine(section.id, section.content || '', lyricsState.rhymes);
+            const view = tokenizeLyricsLineWithSheet(section.id, section.content || '', lyricsState.rhymes);
             return `<li class="pj-lyrics-section${locked ? ' is-locked' : ''}" data-section-id="${section.id}">
                 <div class="pj-lyrics-section__head">
                     ${locked ? '' : `<button type="button" class="pj-lyrics-section__drag" data-lyrics-drag="${section.id}" draggable="true" aria-label="Drag to reorder">⋮⋮</button>`}
@@ -1756,9 +1775,9 @@
                 <div class="pj-lyrics-section__body">
                     ${editing
                         ? `<textarea class="pj-lyrics-editor" data-lyrics-editor="${section.id}" placeholder="Write your lines here — one per line…">${escapeHtml(section.content || '')}</textarea>
-                           <div class="pj-lyrics-suggest-bar" data-lyrics-suggest="${section.id}"></div>`
+                           <div class="pj-lyrics-suggest-bar" data-lyrics-suggest="${section.id}"></div>
+                           ${(sheetVisible && sheetState) ? renderSheetForSection(section) : ''}`
                         : (section.content ? `<div data-lyrics-view="${section.id}">${view}</div>` : `<p class="pj-lyrics-placeholder">No text yet — click Edit to start writing.</p>`)}
-                    ${(sheetVisible && sheetState) ? renderSheetForSection(section) : ''}
                 </div>
             </li>`;
         }
