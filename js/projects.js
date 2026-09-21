@@ -2396,7 +2396,7 @@
         let sheetPickerKey = null;    // { sectionId, lineIdx, wordIdx }
         let sheetPickerOctave = 4;
         let sheetPickerClef = 'treble';
-        let sheetMoveSource = null; // { addr, sectionId, lineIdx, slotIdx, wordCount } — word picked up to move to another slot
+        let sheetMoveSelection = []; // [{ addr, sectionId, lineIdx, slotIdx, wordCount }] — one or more slots picked up to move onto another
 
         function sheetNoteKey(sectionId, lineIdx, wordIdx, clef) {
             return `${sectionId}|${lineIdx}|${wordIdx}|${clef}`;
@@ -2409,17 +2409,26 @@
             return (section.content || '').split('\n').map((line) => line.trim().split(/\s+/).filter(Boolean));
         }
 
-        // Which lyric word sits in a given staff slot — a slot's note
+        // Which lyric word(s) sit in a given staff slot — a slot's note
         // (pitch/duration) is anchored to the slot itself and doesn't
-        // move; dragging a word only changes this slot->word mapping, so
+        // move; moving words only changes this slot->word(s) mapping, so
         // the printed lyric text order above the staff never changes.
+        // A slot can hold zero, one, or several words (e.g. a fast
+        // phrase sung on one sustained note); stored per line as an
+        // array of arrays. Also reads the older one-word-per-slot format
+        // (a flat array of numbers) for data saved before multi-word
+        // slots existed.
         function sheetWordOrderKey(sectionId, lineIdx) {
             return sectionId + '|' + lineIdx;
         }
-        function sheetSlotWordIndex(sectionId, lineIdx, slotIdx, wordCount) {
+        function sheetSlotWordIndices(sectionId, lineIdx, slotIdx, wordCount) {
             const order = sheetState.wordOrder[sheetWordOrderKey(sectionId, lineIdx)];
-            if (order && order.length === wordCount && order[slotIdx] != null) return order[slotIdx];
-            return slotIdx;
+            if (order && order.length === wordCount) {
+                const entry = order[slotIdx];
+                if (Array.isArray(entry)) return entry;
+                if (entry != null) return [entry]; // legacy flat-number format
+            }
+            return [slotIdx];
         }
 
         // ---------- Load / sync / realtime ----------
@@ -2490,17 +2499,32 @@
             }
         }
 
-        // Swap which word sits in two staff slots on the same line —
-        // notes stay put (still keyed by slot), only the word labels
-        // (and which note editing they open) trade places.
-        function sheetSwapWordSlots(sectionId, lineIdx, wordCount, slotA, slotB) {
-            if (slotA === slotB) return;
-            const key = sheetWordOrderKey(sectionId, lineIdx);
-            let order = sheetState.wordOrder[key];
-            if (!order || order.length !== wordCount) order = Array.from({ length: wordCount }, (_, i) => i);
-            else order = order.slice();
-            const tmp = order[slotA]; order[slotA] = order[slotB]; order[slotB] = tmp;
-            sheetState.wordOrder[key] = order;
+        // Array-of-arrays form of a line's word order, upgrading the
+        // older one-word-per-slot flat-number format transparently.
+        function sheetNormalizedOrder(sectionId, lineIdx, wordCount) {
+            const order = sheetState.wordOrder[sheetWordOrderKey(sectionId, lineIdx)];
+            if (order && order.length === wordCount) {
+                return order.map((entry) => Array.isArray(entry) ? entry.slice() : (entry != null ? [entry] : []));
+            }
+            return Array.from({ length: wordCount }, (_, i) => [i]);
+        }
+
+        // Move every word currently in sourceSlots onto targetSlot,
+        // merging with whatever's already there (reading order
+        // preserved) and leaving the source slots empty. Notes stay put
+        // — they're keyed by slot, not by word — only which word
+        // label(s) appear at each slot change.
+        function sheetMoveWordsToSlot(sectionId, lineIdx, wordCount, sourceSlots, targetSlot) {
+            const order = sheetNormalizedOrder(sectionId, lineIdx, wordCount);
+            let moved = [];
+            sourceSlots.forEach((slotIdx) => {
+                if (slotIdx === targetSlot) return;
+                moved = moved.concat(order[slotIdx]);
+                order[slotIdx] = [];
+            });
+            if (!moved.length) return;
+            order[targetSlot] = order[targetSlot].concat(moved).sort((a, b) => a - b);
+            sheetState.wordOrder[sheetWordOrderKey(sectionId, lineIdx)] = order;
             renderLyrics();
             sb.from('sheet_music_word_order').upsert({
                 project_id: id, section_id: sectionId, line_index: lineIdx, slot_order: order,
@@ -2705,8 +2729,9 @@
                 const target = nearestSheetTarget(e);
                 if (!target) return;
                 sheetPickerClef = target.clef;
-                const assignedWordIdx = sheetSlotWordIndex(sectionId, lineIdx, target.wordIdx, words.length);
-                showSheetPicker(sectionId, lineIdx, target.wordIdx, container, words[assignedWordIdx] || '');
+                const assignedWordIdxs = sheetSlotWordIndices(sectionId, lineIdx, target.wordIdx, words.length);
+                const label = assignedWordIdxs.map((wi) => words[wi]).filter(Boolean).join(' ');
+                showSheetPicker(sectionId, lineIdx, target.wordIdx, container, label);
             };
             container.onmousemove = (e) => {
                 const target = nearestSheetTarget(e);
@@ -2742,15 +2767,16 @@
         }
 
         // Slots are addressed by position (notes live on the slot), but
-        // the word TEXT shown in each slot comes from sheetSlotWordIndex
-        // — so dragging (see wireSheetMusicEvents) only ever reassigns
-        // which word's label/notes-badge appears where, never the
-        // printed lyric order above the staff.
+        // the word TEXT shown in each slot comes from sheetSlotWordIndices
+        // — so moving words (see wireSheetMusicEvents) only ever
+        // reassigns which word(s)' label/notes-badge appears where, never
+        // the printed lyric order above the staff. A slot can hold
+        // several words (e.g. a quick phrase sung on one note).
         function renderSheetWords(line, sectionId, lineIdx) {
             const n = line.length;
             return '<div class="pj-sheet-words">' + Array.from({ length: n }, (_, slotIdx) => {
-                const wordIdx = sheetSlotWordIndex(sectionId, lineIdx, slotIdx, n);
-                const w = line[wordIdx] != null ? line[wordIdx] : line[slotIdx];
+                const wordIdxs = sheetSlotWordIndices(sectionId, lineIdx, slotIdx, n);
+                const w = wordIdxs.map((wi) => line[wi]).filter((s) => s != null).join(' ');
                 const treble = getSheetNote(sectionId, lineIdx, slotIdx, 'treble');
                 const bass = getSheetNote(sectionId, lineIdx, slotIdx, 'bass');
                 let cls = 'pj-sheet-word';
@@ -2765,8 +2791,8 @@
                 }
                 const addr = `${escapeAttr(sectionId)}:${lineIdx}:${slotIdx}`;
                 return `<span class="${cls}" data-sheet-word="${addr}">
-                    <span class="pj-sheet-word__drag" data-sheet-word-drag="${addr}" data-sheet-word-count="${n}" title="Click to pick up, then click another word to swap beats">⠿</span>
-                    <span class="pj-sheet-word__click" data-sheet-word-click="${addr}">${escapeHtml(w)}${labels}</span>
+                    <span class="pj-sheet-word__drag" data-sheet-word-drag="${addr}" data-sheet-word-count="${n}" title="Click to select, then click another word (or click again to add more) — click the target note to place the selected words there">⠿</span>
+                    <span class="pj-sheet-word__click" data-sheet-word-click="${addr}">${escapeHtml(w) || '·'}${labels}</span>
                 </span>`;
             }).join('') + '</div>';
         }
@@ -2969,53 +2995,63 @@
                 }
             });
 
-            // Move a word to a different beat: click its grip handle to
-            // pick it up (marks it selected), then click any other word
-            // in the same line to swap them — two ordinary clicks, no
-            // press-and-hold gesture required. Replaced an earlier
-            // drag-based version that relied on mousedown/mousemove/
-            // mouseup, which repeatedly failed to register on at least
-            // one real trackpad despite the handler logic verifying
-            // correct in every simulated test — clicks are the one
-            // interaction already proven reliable throughout this panel.
+            // Move one or more words onto a different beat: click a
+            // word's grip handle to select it (click other handles to
+            // select more — e.g. a whole phrase to gather under one
+            // note), then click any word's TEXT to place all selected
+            // words there. Two kinds of ordinary clicks, no press-and-
+            // hold gesture — replaced an earlier drag-based version that
+            // repeatedly failed to register on at least one real
+            // trackpad despite the handler logic verifying correct in
+            // every simulated test.
             //
             // Registered with useCapture=true and stopImmediatePropagation
-            // so a completing/cancelling click never also falls through to
+            // so a selecting/completing click never also falls through to
             // the picker-opening click handler above for the same word.
+            function sheetClearMoveSelection() {
+                expandEl.querySelectorAll('.pj-sheet-word.is-move-source').forEach((el) => el.classList.remove('is-move-source'));
+                sheetMoveSelection = [];
+            }
             expandEl.addEventListener('click', (e) => {
                 if (activeKey !== 'action:lyrics') return;
-
-                if (sheetMoveSource) {
-                    const target = e.target.closest('[data-sheet-word]');
-                    expandEl.querySelectorAll('.pj-sheet-word.is-move-source').forEach((el) => el.classList.remove('is-move-source'));
-                    const source = sheetMoveSource;
-                    sheetMoveSource = null;
-                    if (!target) return; // clicked away from any word — cancel silently
-                    e.stopImmediatePropagation();
-                    const [sectionId, lineIdx, slotIdx] = target.dataset.sheetWord.split(':');
-                    if (sectionId === source.sectionId && Number(lineIdx) === source.lineIdx && Number(slotIdx) !== source.slotIdx) {
-                        sheetSwapWordSlots(sectionId, Number(lineIdx), source.wordCount, source.slotIdx, Number(slotIdx));
-                    }
-                    return;
-                }
 
                 const handle = e.target.closest('[data-sheet-word-drag]');
                 if (handle) {
                     e.stopImmediatePropagation();
                     const addr = handle.dataset.sheetWordDrag;
+                    const wordEl = handle.closest('[data-sheet-word]');
+                    const existingIdx = sheetMoveSelection.findIndex((s) => s.addr === addr);
+                    if (existingIdx >= 0) {
+                        sheetMoveSelection.splice(existingIdx, 1);
+                        wordEl.classList.remove('is-move-source');
+                        return;
+                    }
                     const [sectionId, lineIdx, slotIdx] = addr.split(':');
-                    sheetMoveSource = { addr, sectionId, lineIdx: Number(lineIdx), slotIdx: Number(slotIdx), wordCount: Number(handle.dataset.sheetWordCount) };
-                    handle.closest('[data-sheet-word]').classList.add('is-move-source');
+                    if (sheetMoveSelection.length && (sheetMoveSelection[0].sectionId !== sectionId || sheetMoveSelection[0].lineIdx !== Number(lineIdx))) {
+                        sheetClearMoveSelection(); // switching to a different line — start fresh
+                    }
+                    sheetMoveSelection.push({ addr, sectionId, lineIdx: Number(lineIdx), slotIdx: Number(slotIdx), wordCount: Number(handle.dataset.sheetWordCount) });
+                    wordEl.classList.add('is-move-source');
+                    return;
+                }
+
+                if (sheetMoveSelection.length) {
+                    const target = e.target.closest('[data-sheet-word]');
+                    if (!target) return; // clicked away from any word — leave the selection as-is
+                    e.stopImmediatePropagation();
+                    const [sectionId, lineIdx, slotIdx] = target.dataset.sheetWord.split(':');
+                    const selection = sheetMoveSelection;
+                    sheetClearMoveSelection();
+                    if (sectionId === selection[0].sectionId && Number(lineIdx) === selection[0].lineIdx) {
+                        sheetMoveWordsToSlot(sectionId, Number(lineIdx), selection[0].wordCount, selection.map((s) => s.slotIdx), Number(slotIdx));
+                    }
                 }
             }, true);
             // Clicking fully outside the panel while a move is pending
             // should cancel it too, not just clicking inside on empty
             // space — expandEl's own listener only sees clicks within it.
             document.addEventListener('click', (e) => {
-                if (sheetMoveSource && !expandEl.contains(e.target)) {
-                    expandEl.querySelectorAll('.pj-sheet-word.is-move-source').forEach((el) => el.classList.remove('is-move-source'));
-                    sheetMoveSource = null;
-                }
+                if (sheetMoveSelection.length && !expandEl.contains(e.target)) sheetClearMoveSelection();
             });
         }
 
