@@ -2526,6 +2526,19 @@
             clearTimeout(sheetReloadTimer);
             sheetReloadTimer = setTimeout(async () => {
                 if (activeKey !== 'action:lyrics' || !sheetState) return;
+                // Every picker click writes to the DB asynchronously and
+                // that write's own realtime echo schedules a reload —
+                // so several rapid clicks (e.g. picking the same note
+                // for 3 of 4 run slots) can have an EARLIER click's
+                // reload land and overwrite local state AFTER a LATER
+                // click already applied its own change, silently
+                // rolling that one back. Skipping reloads entirely
+                // while the picker is open sidesteps that: the user's
+                // own edits are already reflected optimistically in
+                // local state, and hideSheetPicker() triggers a
+                // catch-up reload once they're done, so collaborators'
+                // concurrent changes still arrive, just not mid-edit.
+                if (sheetPickerKey) return;
                 applySheetRaw(await fetchSheetMusic(projectId));
                 if (lyricsEditorFocused()) { lyricsRenderPending = true; } else { renderLyrics(); }
             }, 400);
@@ -3271,6 +3284,11 @@
             const pop = expandEl.querySelector('[data-sheet-picker]');
             if (pop) pop.hidden = true;
             sheetPickerKey = null;
+            // reloadSheetMusic() skips applying data while a picker is
+            // open (see its comment) — catch up on anything that came
+            // in from a collaborator during that window now that it's
+            // closed.
+            if (sheetState) reloadSheetMusic(id);
         }
 
         // Tie/slur "connect mode" — click Tie or Slur once to arm it
