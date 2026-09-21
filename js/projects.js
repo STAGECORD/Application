@@ -3396,14 +3396,23 @@
                     if (!(cur && (cur.pitch === 'rest' || cur.tuplet))) {
                         const n = parseInt(runBtn.dataset.sheetRun, 10);
                         const isActive = cur && cur.run && cur.run.length === n;
-                        // Turning a size on always starts that sub-note
-                        // set fresh (empty pitches) rather than trying to
-                        // carry over a differently-sized previous run —
-                        // clearing tie/slur/tuplet/dots, which don't
-                        // apply once a word's beat is split into a run.
-                        const patch = isActive
-                            ? { run: null }
-                            : { run: new Array(n).fill(''), tie: false, slur: false, tuplet: 0, dots: false };
+                        let patch;
+                        if (isActive) {
+                            patch = { run: null };
+                        } else {
+                            // If pitches were already picked as a chord
+                            // (the natural first instinct — click the
+                            // notes you want, THEN notice Run) before
+                            // Run was clicked, seed the run from those
+                            // instead of discarding them and starting
+                            // blank. Makes the two possible click orders
+                            // (pitches-then-Run, Run-then-pitches) both
+                            // work instead of only one silently doing
+                            // the wrong thing (leaving a chord behind).
+                            const existingPitches = (cur && cur.pitch && cur.pitch !== 'rest') ? cur.pitch.split(',').filter(Boolean) : [];
+                            const seeded = Array.from({ length: n }, (_, i) => existingPitches[i] || '');
+                            patch = { run: seeded, pitch: '', tie: false, slur: false, tuplet: 0, dots: false };
+                        }
                         setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, sheetNoteWith(cur, patch));
                         sheetPickerRunIndex = 0;
                         renderSheetPicker();
