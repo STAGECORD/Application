@@ -2332,13 +2332,21 @@
                         <span data-sheet-picker-word></span>
                         <button type="button" class="pj-sheet-picker__close" data-sheet-picker-close aria-label="Close">&times;</button>
                     </div>
+                    <div class="pj-lyrics-hint-label" style="margin:0 0 4px;">Staff</div>
                     <div class="pj-sheet-picker__clefs" data-sheet-clef-row></div>
+                    <div class="pj-lyrics-hint-label" style="margin:0 0 4px;">Octave</div>
                     <div class="pj-sheet-picker__octaves" data-sheet-octave-row></div>
+                    <div class="pj-lyrics-hint-label" data-sheet-run-index-label style="margin:0 0 4px;display:none;">Editing which note of the run</div>
                     <div class="pj-sheet-picker__runindex" data-sheet-run-index-row></div>
+                    <div class="pj-lyrics-hint-label" style="margin:0 0 4px;">Pitch</div>
                     <div class="pj-sheet-picker__pitches" data-sheet-pitch-grid></div>
+                    <div class="pj-lyrics-hint-label" style="margin:6px 0 4px;">Duration</div>
                     <div class="pj-sheet-picker__durations" data-sheet-duration-row></div>
+                    <div class="pj-lyrics-hint-label" style="margin:6px 0 4px;" title="Spreads one note's time across several existing words — e.g. a triplet plays 3 notes in the space 2 would normally take.">Tuplet — stretch notes across several words</div>
                     <div class="pj-sheet-picker__tuplets" data-sheet-tuplet-row></div>
+                    <div class="pj-lyrics-hint-label" style="margin:6px 0 4px;" title="Packs several fast notes into THIS one word's beat, without needing extra words — e.g. a 4-run plays 4 notes in the time this one word would normally take.">Run — pack fast notes into this one word</div>
                     <div class="pj-sheet-picker__runs" data-sheet-run-row></div>
+                    <div class="pj-lyrics-hint-label" style="margin:6px 0 4px;">Note shape</div>
                     <div class="pj-sheet-picker__actions">
                         <button type="button" class="pj-btn pj-btn--ghost" data-sheet-dot title="Dotted note (adds half the duration again)">• Dot</button>
                         <button type="button" class="pj-btn pj-btn--ghost" data-sheet-tie title="Hold this note into the next one, same pitch">🔗 Tie</button>
@@ -3057,6 +3065,8 @@
             // pitch grid below edits whichever sub-note is selected here
             // instead of toggling a chord.
             const activeRun = (note && note.run && note.run.length >= 2) ? note.run : null;
+            const runIndexLabel = expandEl.querySelector('[data-sheet-run-index-label]');
+            if (runIndexLabel) runIndexLabel.style.display = activeRun ? '' : 'none';
             const runIndexRow = expandEl.querySelector('[data-sheet-run-index-row]');
             if (runIndexRow) {
                 runIndexRow.innerHTML = activeRun ? activeRun.map((p, i) =>
@@ -3106,7 +3116,7 @@
                 const canTuplet = !!(note && note.pitch !== 'rest' && !activeRun);
                 const activeTuplet = note ? (note.tuplet || 0) : 0;
                 tupletRow.innerHTML = SHEET_TUPLET_SIZES.map((t) =>
-                    `<button type="button" class="pj-lyrics-section__action${t.n === activeTuplet ? ' is-active' : ''}" data-sheet-tuplet="${t.n}" title="${escapeAttr(t.title)}"${canTuplet ? '' : ' disabled'}>${t.n}</button>`
+                    `<button type="button" class="pj-lyrics-section__action${t.n === activeTuplet ? ' is-active' : ''}" data-sheet-tuplet="${t.n}" title="${escapeAttr(t.title)}"${canTuplet ? '' : ' disabled'}>${t.n}-tuplet</button>`
                 ).join('');
             }
             const runRow = expandEl.querySelector('[data-sheet-run-row]');
