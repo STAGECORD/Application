@@ -2965,6 +2965,33 @@
             const svgRoot = container.querySelector('svg');
             if (svgRoot) svgRoot.appendChild(hoverRect);
 
+            // Persistent highlight on whichever note the picker is
+            // currently open for — the picker itself is docked at a
+            // fixed screen position now (not anchored to this element),
+            // so this is what shows which note it's actually editing.
+            // Unlike hoverRect, this doesn't hide on mouseleave; it only
+            // changes when the selection itself changes (showSheetPicker/
+            // hideSheetPicker both call renderLyrics(), which redraws it).
+            if (sheetPickerKey && sheetPickerKey.sectionId === sectionId && sheetPickerKey.lineIdx === lineIdx) {
+                const sel = clickTargets.find((t) => t.wordIdx === sheetPickerKey.wordIdx);
+                if (sel && svgRoot) {
+                    const selectedRect = document.createElementNS(svgNS, 'rect');
+                    selectedRect.setAttribute('fill', 'rgba(106,169,240,0.12)');
+                    selectedRect.setAttribute('stroke', '#6AA9F0');
+                    selectedRect.setAttribute('stroke-width', '2');
+                    selectedRect.setAttribute('rx', '3');
+                    selectedRect.setAttribute('height', '80');
+                    selectedRect.style.pointerEvents = 'none';
+                    const idealHalf = 32;
+                    const left = Math.max(sel.leftBound, sel.x - idealHalf);
+                    const right = Math.min(sel.rightBound, sel.x + idealHalf);
+                    selectedRect.setAttribute('x', left);
+                    selectedRect.setAttribute('y', sheetPickerClef === 'treble' ? 10 : 100);
+                    selectedRect.setAttribute('width', Math.max(4, right - left));
+                    svgRoot.appendChild(selectedRect);
+                }
+            }
+
             function nearestSheetTarget(e) {
                 if (!clickTargets.length) return null;
                 const svgEl = container.querySelector('svg');
@@ -3019,7 +3046,7 @@
                 sheetPickerClef = target.clef;
                 const assignedWordIdxs = sheetSlotWordIndices(sectionId, lineIdx, target.wordIdx, words.length);
                 const label = assignedWordIdxs.map((wi) => words[wi]).filter(Boolean).join(' ');
-                showSheetPicker(sectionId, lineIdx, target.wordIdx, container, label);
+                showSheetPicker(sectionId, lineIdx, target.wordIdx, label);
             };
             container.onmousemove = (e) => {
                 const target = nearestSheetTarget(e);
@@ -3212,62 +3239,19 @@
                 dotBtn.classList.toggle('is-active', canDot && !!note.dots);
                 dotBtn.disabled = !canDot;
             }
-            // Every mutation (pitch/duration/run/tie/... click) runs
-            // setSheetNote() -> renderLyrics(), which rebuilds the WHOLE
-            // lyrics body — the word this picker is anchored to is a
-            // brand new DOM node afterward, possibly at a different
-            // page position if anything above it changed height. Re-
-            // anchoring here, every render, is what keeps the popup
-            // sitting next to the word actually being edited instead of
-            // drifting to wherever it happened to be when first opened.
-            const openPop = expandEl.querySelector('[data-sheet-picker]');
-            if (openPop && !openPop.hidden) {
-                const anchorEl = sheetLocateAnchorEl();
-                if (anchorEl) sheetPositionPicker(anchorEl);
-            }
         }
 
-        // Re-finds the DOM element for whatever word the picker is
-        // currently open on. Needed because renderLyrics() rebuilds the
-        // ENTIRE lyrics body (every staff, every word span) from scratch
-        // on every single note edit — the original anchor element handed
-        // to showSheetPicker() gets thrown away and replaced by a new
-        // one with the same address, so holding onto that original
-        // reference goes stale the moment the user picks a pitch,
-        // changes a duration, anything. Re-querying by address instead
-        // of trusting the old node is what lets the popup keep following
-        // the word it's actually editing.
-        function sheetLocateAnchorEl() {
-            if (!sheetPickerKey) return null;
-            const addr = `${sheetPickerKey.sectionId}:${sheetPickerKey.lineIdx}:${sheetPickerKey.wordIdx}`;
-            return Array.from(expandEl.querySelectorAll('[data-sheet-word]')).find((el) => el.dataset.sheetWord === addr) || null;
-        }
-        // Always place below the anchor, never above. "Above" was
-        // measured as distance to the viewport edge, but that space
-        // usually isn't actually empty — for the very first staff
-        // line it's the toolbar immediately above it, so flipping up
-        // there just traded a viewport overflow for overlapping the
-        // toolbar. Capping height to whatever room remains below
-        // (scrollable via CSS overflow-y if tight) can never overlap
-        // preceding content, which matters more than avoiding scroll.
-        function sheetPositionPicker(anchorEl) {
-            const pop = expandEl.querySelector('[data-sheet-picker]');
-            if (!pop || !anchorEl) return;
-            pop.style.maxHeight = ''; // reset before measuring natural size
-            const r = anchorEl.getBoundingClientRect();
-            const popRect = pop.getBoundingClientRect();
-            let left = r.left;
-            if (left + popRect.width > window.innerWidth - 12) left = window.innerWidth - popRect.width - 12;
-            left = Math.max(12, left);
-            const margin = 12;
-            const top = r.bottom + 8;
-            const maxHeight = Math.max(120, window.innerHeight - top - margin);
-            pop.style.position = 'fixed';
-            pop.style.top = top + 'px';
-            pop.style.left = left + 'px';
-            pop.style.maxHeight = maxHeight + 'px';
-        }
-        function showSheetPicker(sectionId, lineIdx, wordIdx, anchorEl, wordText) {
+        // The picker is docked at a constant screen position (see CSS)
+        // instead of being anchored to whatever word was clicked — it
+        // used to reposition itself every render and on scroll to track
+        // the clicked word, which kept drifting or landing in the wrong
+        // place whenever the page reflowed (which happens on every
+        // single edit, since renderLyrics() rebuilds the whole lyrics
+        // body). A fixed dock removes that whole class of bug outright.
+        // drawVexStaffLine() draws a persistent highlight on the actual
+        // selected note/word so it's still clear what the docked panel
+        // is editing.
+        function showSheetPicker(sectionId, lineIdx, wordIdx, wordText) {
             sheetPickerKey = { sectionId, lineIdx, wordIdx };
             const existing = getSheetNote(sectionId, lineIdx, wordIdx, sheetPickerClef);
             if (existing && existing.pitch && existing.pitch !== 'rest') {
@@ -3282,7 +3266,7 @@
             if (wordEl) wordEl.textContent = wordText;
             if (!pop) return;
             pop.hidden = false;
-            sheetPositionPicker(anchorEl);
+            renderLyrics(); // refresh the persistent selection highlight
         }
         function hideSheetPicker() {
             const pop = expandEl.querySelector('[data-sheet-picker]');
@@ -3293,6 +3277,7 @@
             // in from a collaborator during that window now that it's
             // closed.
             if (sheetState) reloadSheetMusic(id);
+            renderLyrics(); // clear the persistent selection highlight
         }
 
         // Tie/slur "connect mode" — click Tie or Slur once to arm it
@@ -3376,13 +3361,13 @@
                     // badge straight into the word with no separator
                     // (e.g. "DetC5" instead of "Det").
                     const textEl = wordHit.querySelector('.pj-sheet-word__text');
-                    showSheetPicker(sectionId, Number(lineIdx), Number(wordIdx), wordHit, (textEl || wordHit).textContent.trim());
+                    showSheetPicker(sectionId, Number(lineIdx), Number(wordIdx), (textEl || wordHit).textContent.trim());
                     return;
                 }
                 if (e.target.closest('[data-sheet-picker-close]')) { hideSheetPicker(); return; }
 
                 const clefBtn = e.target.closest('[data-sheet-clef]');
-                if (clefBtn) { sheetPickerClef = clefBtn.dataset.sheetClef; sheetPickerOctave = sheetPickerClef === 'bass' ? 3 : 4; renderSheetPicker(); return; }
+                if (clefBtn) { sheetPickerClef = clefBtn.dataset.sheetClef; sheetPickerOctave = sheetPickerClef === 'bass' ? 3 : 4; renderSheetPicker(); renderLyrics(); return; }
 
                 const octBtn = e.target.closest('[data-sheet-octave]');
                 if (octBtn) { sheetPickerOctave = parseInt(octBtn.dataset.sheetOctave, 10); renderSheetPicker(); return; }
@@ -3625,21 +3610,6 @@
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape' && sheetConnectMode) sheetStopConnectMode();
             });
-            // The popup is position:fixed (viewport-relative), so it
-            // deliberately doesn't scroll away with the page content —
-            // but that means a manual scroll while it's open leaves it
-            // sitting still while the word it's editing moves underneath
-            // it. Re-anchoring on scroll/resize (capture:true to catch
-            // scrolling inside any nested scroll container, not just
-            // the window) keeps it following the word instead.
-            const sheetRepositionOnScroll = () => {
-                const pop = expandEl.querySelector('[data-sheet-picker]');
-                if (!pop || pop.hidden) return;
-                const anchorEl = sheetLocateAnchorEl();
-                if (anchorEl) sheetPositionPicker(anchorEl);
-            };
-            window.addEventListener('scroll', sheetRepositionOnScroll, true);
-            window.addEventListener('resize', sheetRepositionOnScroll);
         }
 
         async function expandApproval(triggerRow) {
