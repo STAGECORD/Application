@@ -2443,6 +2443,22 @@
             return (section.content || '').split('\n').map((line) => line.trim().split(/\s+/).filter(Boolean));
         }
 
+        // Rounds a line's real word count up to a whole number of
+        // measures, so the LAST measure always shows a full set of
+        // clickable beats (e.g. 4 in 4/4) instead of stopping wherever
+        // the lyric text happens to run out. Without this, placing a
+        // note on beat 2 of a partial trailing measure required first
+        // typing more lyric words just to create the slot -- notes are
+        // anchored to slot position, not to having an actual word there
+        // (see sheetSlotWordIndices), so the extra slots work exactly
+        // like any other: empty until you give them a note, blank label
+        // until there's a real word to show.
+        function sheetPaddedSlotCount(realCount) {
+            if (!realCount) return 0;
+            const beatsPerMeasure = parseInt((sheetState.timeSignature || '4/4').split('/')[0], 10) || 4;
+            return Math.ceil(realCount / beatsPerMeasure) * beatsPerMeasure;
+        }
+
         // Which lyric word(s) sit in a given staff slot — a slot's note
         // (pitch/duration) is anchored to the slot itself and doesn't
         // move; moving words only changes this slot->word(s) mapping, so
@@ -2674,9 +2690,14 @@
             container.innerHTML = '';
 
             const beatsPerMeasure = parseInt((sheetState.timeSignature || '4/4').split('/')[0], 10) || 4;
+            // Padded, not words.length -- the trailing measure always
+            // shows a full set of beats to click on, even past however
+            // many real lyric words exist so far (see
+            // sheetPaddedSlotCount's comment).
+            const renderCount = sheetPaddedSlotCount(words.length);
             const measures = [];
-            for (let i = 0; i < words.length; i += beatsPerMeasure) {
-                measures.push({ startIdx: i, count: Math.min(beatsPerMeasure, words.length - i) });
+            for (let i = 0; i < renderCount; i += beatsPerMeasure) {
+                measures.push({ startIdx: i, count: Math.min(beatsPerMeasure, renderCount - i) });
             }
             if (!measures.length) measures.push({ startIdx: 0, count: 0 });
 
@@ -3064,9 +3085,16 @@
         // the printed lyric order above the staff. A slot can hold
         // several words (e.g. a quick phrase sung on one note).
         function renderSheetWords(line, sectionId, lineIdx) {
-            const n = line.length;
+            const realCount = line.length;
+            // Render out to a full trailing measure (see
+            // sheetPaddedSlotCount), but data-sheet-word-count and the
+            // sheetSlotWordIndices call below both stay on realCount —
+            // that's what sheetNormalizedOrder/the move-words feature
+            // validate saved reorderings against, and padding slots
+            // never have a real word to reorder in the first place.
+            const n = sheetPaddedSlotCount(realCount);
             return '<div class="pj-sheet-words">' + Array.from({ length: n }, (_, slotIdx) => {
-                const wordIdxs = sheetSlotWordIndices(sectionId, lineIdx, slotIdx, n);
+                const wordIdxs = sheetSlotWordIndices(sectionId, lineIdx, slotIdx, realCount);
                 const w = wordIdxs.map((wi) => line[wi]).filter((s) => s != null).join(' ');
                 const treble = getSheetNote(sectionId, lineIdx, slotIdx, 'treble');
                 const bass = getSheetNote(sectionId, lineIdx, slotIdx, 'bass');
@@ -3082,7 +3110,7 @@
                 }
                 const addr = `${escapeAttr(sectionId)}:${lineIdx}:${slotIdx}`;
                 return `<span class="${cls}" data-sheet-word="${addr}">
-                    <span class="pj-sheet-word__drag" data-sheet-word-drag="${addr}" data-sheet-word-count="${n}" title="Click to select, then click another word (or click again to add more) — click the target note to place the selected words there">⠿</span>
+                    <span class="pj-sheet-word__drag" data-sheet-word-drag="${addr}" data-sheet-word-count="${realCount}" title="Click to select, then click another word (or click again to add more) — click the target note to place the selected words there">⠿</span>
                     <span class="pj-sheet-word__click" data-sheet-word-click="${addr}"><span class="pj-sheet-word__text">${escapeHtml(w) || '·'}</span>${labels}</span>
                 </span>`;
             }).join('') + '</div>';
