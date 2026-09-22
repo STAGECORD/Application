@@ -2336,7 +2336,7 @@
                     <div class="pj-sheet-picker__clefs" data-sheet-clef-row></div>
                     <div class="pj-lyrics-hint-label" style="margin:0 0 4px;">Octave</div>
                     <div class="pj-sheet-picker__octaves" data-sheet-octave-row></div>
-                    <div class="pj-lyrics-hint-label" data-sheet-run-index-label style="margin:0 0 4px;display:none;">Editing which note of the run</div>
+                    <div class="pj-lyrics-hint-label" data-sheet-run-index-label style="margin:0 0 4px;display:none;">Notes in this run (click one to remove it)</div>
                     <div class="pj-sheet-picker__runindex" data-sheet-run-index-row></div>
                     <div class="pj-lyrics-hint-label" style="margin:0 0 4px;">Pitch</div>
                     <div class="pj-sheet-picker__pitches" data-sheet-pitch-grid></div>
@@ -2415,22 +2415,29 @@
         ];
         const SHEET_TUPLET_RATIOS = { 3: 2, 5: 4, 6: 4, 7: 4 };
 
-        // ---------- "Runs": 2/3/4 fast notes packed under one word/beat ----------
+        // ---------- "Runs": fast notes packed under one word/beat ----------
         // A run splits ONE word's slot into evenly-timed sub-notes,
         // independent of lyric word count (unlike a Tuplet, which spans
-        // several EXISTING word-slots). Run sizes 2 and 4 are ordinary
-        // binary subdivision (two eighths, four sixteenths — no bracket
-        // needed, it's just normal rhythm); a run of 3 genuinely is a
-        // triplet against the beat, so it still needs a bracket, using
-        // the exact same Tuplet notes_occupied:2 mechanism as the
-        // regular Tuplet feature, just wrapping the run's own sub-notes
-        // instead of neighboring words.
-        const SHEET_RUN_SIZES = [2, 3, 4];
+        // several EXISTING word-slots) — you don't pick a size upfront,
+        // you just click pitches and the run grows by one each time.
+        //
+        // notesOccupied is the nearest power of 2 at or below the run's
+        // actual length: a run whose length IS a power of 2 (2, 4, 8...)
+        // is ordinary binary subdivision (two eighths, four sixteenths —
+        // no bracket, just normal rhythm); any other length is a genuine
+        // tuplet against the beat (3 in the time of 2, 5/6/7 in the time
+        // of 4, etc.) and needs the bracket, using the same
+        // notes_occupied mechanism as the regular Tuplet feature.
+        function sheetRunNotesOccupied(n) {
+            let p = 2;
+            while (p * 2 <= n) p *= 2;
+            return p;
+        }
         const SHEET_DURATION_ORDER = ['whole', 'half', 'quarter', 'eighth', 'sixteenth', 'thirtysecond'];
         function sheetRunSubDuration(parentDuration, runSize) {
             const idx = SHEET_DURATION_ORDER.indexOf(parentDuration);
-            if (idx < 0) return null;
-            const steps = runSize === 4 ? 2 : 1; // 2 or 3 -> one duration step down; 4 -> two steps down
+            if (idx < 0 || runSize < 2) return null;
+            const steps = Math.log2(sheetRunNotesOccupied(runSize));
             const subIdx = idx + steps;
             return subIdx < SHEET_DURATION_ORDER.length ? SHEET_DURATION_ORDER[subIdx] : null;
         }
@@ -2442,7 +2449,6 @@
         let sheetPickerKey = null;    // { sectionId, lineIdx, wordIdx }
         let sheetPickerOctave = 4;
         let sheetPickerClef = 'treble';
-        let sheetPickerRunIndex = 0; // which sub-note of an active run the main pitch grid is currently editing
         let sheetMoveSelection = []; // [{ addr, sectionId, lineIdx, slotIdx, wordCount }] — one or more slots picked up to move onto another
         let sheetConnectMode = null; // { type: 'tie'|'slur', sectionId, lineIdx, clef, anchorIdx } — armed by clicking Tie/Slur, extended by clicking notes on the staff
 
@@ -2639,8 +2645,9 @@
                 const subVexDur = subDur && SHEET_DURATION_VEX[subDur];
                 if (subVexDur) {
                     const subNotes = note.run.map((p) => new VF.StaveNote({ keys: [sheetPitchToVexKey(p)], duration: subVexDur, clef }));
-                    if (note.run.length === 3 && tuplets) {
-                        tuplets.push(new VF.Tuplet(subNotes, { notes_occupied: 2, ratioed: false }));
+                    const notesOccupied = sheetRunNotesOccupied(note.run.length);
+                    if (note.run.length !== notesOccupied && tuplets) {
+                        tuplets.push(new VF.Tuplet(subNotes, { notes_occupied: notesOccupied, ratioed: false }));
                     }
                     return subNotes;
                 }
@@ -3115,35 +3122,37 @@
                     `<button type="button" class="pj-lyrics-section__action${o === sheetPickerOctave ? ' is-active' : ''}" data-sheet-octave="${o}">${o}</button>`
                 ).join('');
             }
-            // A run replaces this word's single pitch with 2-4 sequential
-            // sub-notes sharing its beat — while one's active, the shared
-            // pitch grid below edits whichever sub-note is selected here
-            // instead of toggling a chord.
-            const activeRun = (note && note.run && note.run.length >= 2) ? note.run : null;
+            // A run replaces this word's single pitch with several
+            // sequential sub-notes sharing its beat. Run mode is "on"
+            // whenever note.run is an array at all (even empty/length 1,
+            // mid-build) -- while it's on, the shared pitch grid below
+            // APPENDS a new sub-note on every click instead of toggling
+            // a chord, so the run's length is just "however many
+            // letters you clicked," never declared upfront.
+            const runMode = !!(note && Array.isArray(note.run));
+            const activeRun = runMode ? note.run : null;
             const runIndexLabel = expandEl.querySelector('[data-sheet-run-index-label]');
-            if (runIndexLabel) runIndexLabel.style.display = activeRun ? '' : 'none';
+            if (runIndexLabel) runIndexLabel.style.display = runMode ? '' : 'none';
             const runIndexRow = expandEl.querySelector('[data-sheet-run-index-row]');
             if (runIndexRow) {
-                runIndexRow.innerHTML = activeRun ? activeRun.map((p, i) =>
-                    `<button type="button" class="pj-lyrics-section__action${i === sheetPickerRunIndex ? ' is-active' : ''}" data-sheet-run-index="${i}">${i + 1}${p ? ' ' + escapeHtml(p) : ''}</button>`
+                // Each entry is click-to-remove (not click-to-select —
+                // there's nothing to "select" anymore since new pitches
+                // always append at the end) so a mis-click can be undone
+                // without clearing the whole run and starting over.
+                runIndexRow.innerHTML = runMode ? activeRun.map((p, i) =>
+                    `<button type="button" class="pj-lyrics-section__action" data-sheet-run-index="${i}" title="Remove this note from the run">${i + 1} ${escapeHtml(p || '?')} ✕</button>`
                 ).join('') : '';
             }
             const pitchGrid = expandEl.querySelector('[data-sheet-pitch-grid]');
             if (pitchGrid) {
-                // In run mode, show every sub-note the run already has
-                // (not just whichever tab is currently selected) so the
-                // whole run's makeup stays visible while you're picking
-                // the others -- with only the current tab's letter
-                // shown, a freshly-clicked pitch appeared to vanish the
-                // instant it auto-advanced, which read as "did that not
-                // register" and made repeating the same note across
-                // several sub-notes feel broken even though it always
-                // worked. currentPitch gets an extra ring so you can
-                // still tell which one you're actively editing.
-                const activePitches = activeRun
+                // In run mode, highlight every pitch the run already has
+                // (is-active) with the most-recently-added one getting
+                // an extra ring (is-current) so there's visible
+                // confirmation each click registered, including repeats.
+                const activePitches = runMode
                     ? activeRun.filter(Boolean)
                     : ((note && note.pitch !== 'rest') ? note.pitch.split(',').filter(Boolean) : []);
-                const currentPitch = activeRun ? activeRun[sheetPickerRunIndex] : null;
+                const currentPitch = runMode && activeRun.length ? activeRun[activeRun.length - 1] : null;
                 const chipClass = (p) => {
                     let cls = 'pj-lyrics-suggest-chip';
                     if (activePitches.includes(p)) cls += ' is-active';
@@ -3159,8 +3168,8 @@
                     const p = L + sheetPickerOctave;
                     return `<button type="button" class="${chipClass(p)}" data-sheet-pitch="${p}">${L}</button>`;
                 }).join('');
-                const hint = activeRun
-                    ? `Picking sub-note ${sheetPickerRunIndex + 1} of ${activeRun.length} — click a letter to set it (the same note can be picked more than once).`
+                const hint = runMode
+                    ? `Click letters to add notes to the run (${activeRun.length} so far) — the same note can be picked more than once.`
                     : 'Click more than one note to build a chord.';
                 pitchGrid.innerHTML = `<div>${blackRow}</div><div>${whiteRow}</div><p class="pj-lyrics-hint" style="margin:4px 0 0;font-size:10px;">${hint}</p>`;
             }
@@ -3173,19 +3182,19 @@
             }
             const tieBtn = expandEl.querySelector('[data-sheet-tie]');
             if (tieBtn) {
-                const canTie = !!(note && note.pitch !== 'rest' && !activeRun);
+                const canTie = !!(note && note.pitch !== 'rest' && !runMode);
                 tieBtn.classList.toggle('is-active', canTie && !!note.tie);
                 tieBtn.disabled = !canTie;
             }
             const slurBtn = expandEl.querySelector('[data-sheet-slur]');
             if (slurBtn) {
-                const canSlur = !!(note && note.pitch !== 'rest' && !activeRun);
+                const canSlur = !!(note && note.pitch !== 'rest' && !runMode);
                 slurBtn.classList.toggle('is-active', canSlur && !!note.slur);
                 slurBtn.disabled = !canSlur;
             }
             const tupletRow = expandEl.querySelector('[data-sheet-tuplet-row]');
             if (tupletRow) {
-                const canTuplet = !!(note && note.pitch !== 'rest' && !activeRun);
+                const canTuplet = !!(note && note.pitch !== 'rest' && !runMode);
                 const activeTuplet = note ? (note.tuplet || 0) : 0;
                 tupletRow.innerHTML = SHEET_TUPLET_SIZES.map((t) =>
                     `<button type="button" class="pj-lyrics-section__action${t.n === activeTuplet ? ' is-active' : ''}" data-sheet-tuplet="${t.n}" title="${escapeAttr(t.title)}"${canTuplet ? '' : ' disabled'}>${t.n}-tuplet</button>`
@@ -3194,16 +3203,12 @@
             const runRow = expandEl.querySelector('[data-sheet-run-row]');
             if (runRow) {
                 const canRun = !(note && (note.pitch === 'rest' || note.tuplet));
-                const parentDur = note ? note.duration : 'quarter';
-                const activeSize = activeRun ? activeRun.length : 0;
-                runRow.innerHTML = SHEET_RUN_SIZES.map((n) => {
-                    const fits = !!sheetRunSubDuration(parentDur, n);
-                    return `<button type="button" class="pj-lyrics-section__action${n === activeSize ? ' is-active' : ''}" data-sheet-run="${n}" title="${n} notes packed evenly into this word's beat"${(canRun && fits) ? '' : ' disabled'}>${n}-run</button>`;
-                }).join('');
+                const label = runMode ? `Run active (${activeRun.length} note${activeRun.length === 1 ? '' : 's'}) — click to clear` : 'Start a run';
+                runRow.innerHTML = `<button type="button" class="pj-lyrics-section__action${runMode ? ' is-active' : ''}" data-sheet-run title="Click letters in the Pitch grid to add fast notes to this word's beat — the run's length is just however many you click, no need to decide upfront"${canRun ? '' : ' disabled'}>${label}</button>`;
             }
             const dotBtn = expandEl.querySelector('[data-sheet-dot]');
             if (dotBtn) {
-                const canDot = !!(note && !activeRun);
+                const canDot = !!(note && !runMode);
                 dotBtn.classList.toggle('is-active', canDot && !!note.dots);
                 dotBtn.disabled = !canDot;
             }
@@ -3264,7 +3269,6 @@
         }
         function showSheetPicker(sectionId, lineIdx, wordIdx, anchorEl, wordText) {
             sheetPickerKey = { sectionId, lineIdx, wordIdx };
-            sheetPickerRunIndex = 0;
             const existing = getSheetNote(sectionId, lineIdx, wordIdx, sheetPickerClef);
             if (existing && existing.pitch && existing.pitch !== 'rest') {
                 const m = existing.pitch.match(/(\d)$/);
@@ -3378,31 +3382,45 @@
                 if (e.target.closest('[data-sheet-picker-close]')) { hideSheetPicker(); return; }
 
                 const clefBtn = e.target.closest('[data-sheet-clef]');
-                if (clefBtn) { sheetPickerClef = clefBtn.dataset.sheetClef; sheetPickerOctave = sheetPickerClef === 'bass' ? 3 : 4; sheetPickerRunIndex = 0; renderSheetPicker(); return; }
+                if (clefBtn) { sheetPickerClef = clefBtn.dataset.sheetClef; sheetPickerOctave = sheetPickerClef === 'bass' ? 3 : 4; renderSheetPicker(); return; }
 
                 const octBtn = e.target.closest('[data-sheet-octave]');
                 if (octBtn) { sheetPickerOctave = parseInt(octBtn.dataset.sheetOctave, 10); renderSheetPicker(); return; }
 
                 const runIdxBtn = e.target.closest('[data-sheet-run-index]');
                 if (runIdxBtn && sheetPickerKey) {
-                    sheetPickerRunIndex = parseInt(runIdxBtn.dataset.sheetRunIndex, 10);
-                    renderSheetPicker();
+                    // Every entry is a remove button — nothing to
+                    // "select," since new pitches always append at the
+                    // end now.
+                    const cur = getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef);
+                    if (cur && Array.isArray(cur.run)) {
+                        const i = parseInt(runIdxBtn.dataset.sheetRunIndex, 10);
+                        const run = cur.run.slice();
+                        run.splice(i, 1);
+                        setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, sheetNoteWith(cur, { run }));
+                        renderSheetPicker();
+                    }
                     return;
                 }
                 const pitchBtn = e.target.closest('[data-sheet-pitch]');
                 if (pitchBtn && sheetPickerKey) {
                     const cur = getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef);
                     const clicked = pitchBtn.dataset.sheetPitch;
-                    if (cur && cur.run && cur.run.length >= 2) {
-                        // Editing one sub-note of a run: replace, not
-                        // toggle — a run's sub-notes are a sequence of
-                        // single pitches, not a chord. Auto-advance to
-                        // the next sub-note so picking a run is a quick
-                        // click-click-click through the letters.
-                        const run = cur.run.slice();
-                        run[sheetPickerRunIndex] = clicked;
+                    if (cur && Array.isArray(cur.run)) {
+                        // Run mode: every click just appends another
+                        // sub-note — the run's length is whatever you've
+                        // clicked so far, never declared upfront. Capped
+                        // by whether there's still a shorter duration
+                        // left to render the next sub-note as (e.g. you
+                        // can't subdivide a sixteenth note forever) —
+                        // but that check only means anything once there
+                        // are 2+ notes to actually subdivide with; the
+                        // first note in a run has nothing to compute a
+                        // ratio against yet and must always be allowed.
+                        const nextLen = cur.run.length + 1;
+                        if (nextLen >= 2 && !sheetRunSubDuration(cur.duration, nextLen)) return;
+                        const run = cur.run.concat([clicked]);
                         setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, sheetNoteWith(cur, { run }));
-                        if (sheetPickerRunIndex < run.length - 1) sheetPickerRunIndex++;
                         renderSheetPicker();
                         return;
                     }
@@ -3429,8 +3447,7 @@
                     // same as picking a pitch does; only a rest or an
                     // active tuplet blocks it (matches canRun above).
                     if (!(cur && (cur.pitch === 'rest' || cur.tuplet))) {
-                        const n = parseInt(runBtn.dataset.sheetRun, 10);
-                        const isActive = cur && cur.run && cur.run.length === n;
+                        const isActive = !!(cur && Array.isArray(cur.run));
                         let patch;
                         if (isActive) {
                             patch = { run: null };
@@ -3440,16 +3457,12 @@
                             // notes you want, THEN notice Run) before
                             // Run was clicked, seed the run from those
                             // instead of discarding them and starting
-                            // blank. Makes the two possible click orders
-                            // (pitches-then-Run, Run-then-pitches) both
-                            // work instead of only one silently doing
-                            // the wrong thing (leaving a chord behind).
+                            // blank. Makes both click orders work instead
+                            // of one silently leaving a chord behind.
                             const existingPitches = (cur && cur.pitch && cur.pitch !== 'rest') ? cur.pitch.split(',').filter(Boolean) : [];
-                            const seeded = Array.from({ length: n }, (_, i) => existingPitches[i] || '');
-                            patch = { run: seeded, pitch: '', tie: false, slur: false, tuplet: 0, dots: false };
+                            patch = { run: existingPitches, pitch: '', tie: false, slur: false, tuplet: 0, dots: false };
                         }
                         setSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef, sheetNoteWith(cur, patch));
-                        sheetPickerRunIndex = 0;
                         renderSheetPicker();
                     }
                     return;
