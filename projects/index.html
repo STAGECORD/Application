@@ -771,8 +771,13 @@
            width in a balanced way, instead of stacking every section as
            its own full-width row (which just leaves dead space next to
            short button rows). */
+        /* flex:1 so the 5 groups actually split the full row width
+           between them (equal shares) instead of sitting left-aligned
+           at their own content width with a large dead gap on the
+           right; min-width lets them wrap to a second line instead of
+           squeezing unreadable on narrow screens. */
         .pj-sheet-picker__compactrow { display: flex; flex-wrap: wrap; gap: 18px; margin-bottom: 6px; }
-        .pj-sheet-picker__group { display: flex; flex-direction: column; gap: 4px; }
+        .pj-sheet-picker__group { display: flex; flex-direction: column; gap: 4px; flex: 1 1 130px; min-width: 130px; }
         .pj-sheet-picker__group .pj-lyrics-hint-label { margin: 0; }
         .pj-sheet-connect-hint { position: fixed; z-index: 61; left: 50%; bottom: 24px; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; background: #101826; border: 1px solid rgba(106,169,240,0.5); border-radius: 999px; padding: 8px 8px 8px 16px; box-shadow: 0 12px 32px rgba(0,0,0,0.5); color: #FFFFFF; font-size: 13px; font-weight: 600; }
         .pj-sheet-connect-hint[hidden] { display: none; }
@@ -784,8 +789,12 @@
         .pj-sheet-picker__clefs, .pj-sheet-picker__octaves, .pj-sheet-picker__durations, .pj-sheet-picker__tuplets, .pj-sheet-picker__runs, .pj-sheet-picker__runindex { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
         .pj-sheet-picker__runindex:empty, .pj-sheet-picker__runs:empty { margin-bottom: 0; }
         .pj-sheet-picker__pitches > div { display: flex; gap: 5px; margin-bottom: 5px; }
-        .pj-sheet-picker__actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-top: 6px; }
-        .pj-sheet-picker__actions .pj-btn { padding: 6px 4px; font-size: 12px; white-space: nowrap; }
+        .pj-sheet-picker__pitches .pj-lyrics-suggest-chip { flex: 1; text-align: center; }
+        /* One row, buttons splitting the width evenly, instead of a
+           fixed 3-column grid that left a dead cell whenever the
+           button count (5) didn't divide evenly into it. */
+        .pj-sheet-picker__actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+        .pj-sheet-picker__actions .pj-btn { flex: 1 1 100px; padding: 6px 4px; font-size: 12px; white-space: nowrap; text-align: center; justify-content: center; }
         .pj-sheet-picker__actions .pj-btn--ghost.is-active { background: rgba(106,169,240,0.25); border-color: #6AA9F0; color: #FFFFFF; }
 
         /* Commercial rate card inside the blue expand */
