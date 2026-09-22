@@ -2546,10 +2546,13 @@
             sb.from('sheet_music_settings').update({ [column]: value, updated_at: new Date().toISOString() }).eq('project_id', id).then(() => {});
         }
 
-        function setSheetNote(sectionId, lineIdx, wordIdx, clef, note) {
+        // Local state + DB write, no render -- lets callers that touch
+        // many slots at once (e.g. cross-line word moves, which have to
+        // re-index every note after the moved word in both lines) batch
+        // everything and render once at the end instead of once per slot.
+        function sheetWriteNoteRaw(sectionId, lineIdx, wordIdx, clef, note) {
             const key = sheetNoteKey(sectionId, lineIdx, wordIdx, clef);
             if (note) sheetState.notes[key] = note; else delete sheetState.notes[key];
-            renderLyrics();
             if (note) {
                 sb.from('sheet_music_notes').upsert({
                     project_id: id, section_id: sectionId, line_index: lineIdx, word_index: wordIdx, clef: clef,
@@ -2560,6 +2563,10 @@
                     .eq('project_id', id).eq('section_id', sectionId).eq('line_index', lineIdx).eq('word_index', wordIdx).eq('clef', clef)
                     .then(({ error }) => { if (error) reloadSheetMusic(id); });
             }
+        }
+        function setSheetNote(sectionId, lineIdx, wordIdx, clef, note) {
+            sheetWriteNoteRaw(sectionId, lineIdx, wordIdx, clef, note);
+            renderLyrics();
         }
 
         // Array-of-arrays form of a line's word order, upgrading the
@@ -2593,6 +2600,99 @@
                 project_id: id, section_id: sectionId, line_index: lineIdx, slot_order: order,
                 updated_by: user.id, updated_at: new Date().toISOString()
             }, { onConflict: 'project_id,section_id,line_index' }).then(({ error }) => { if (error) reloadSheetMusic(id); });
+        }
+
+        // Resets a line's word-order to the default 1:1 mapping — used
+        // after a cross-line move, where word POSITIONS in that line
+        // actually changed (unlike the same-line move above), so any
+        // custom slot grouping that existed is no longer meaningful.
+        function sheetResetWordOrder(sectionId, lineIdx, wordCount) {
+            const order = Array.from({ length: wordCount }, (_, i) => [i]);
+            sheetState.wordOrder[sheetWordOrderKey(sectionId, lineIdx)] = order;
+            sb.from('sheet_music_word_order').upsert({
+                project_id: id, section_id: sectionId, line_index: lineIdx, slot_order: order,
+                updated_by: user.id, updated_at: new Date().toISOString()
+            }, { onConflict: 'project_id,section_id,line_index' }).then(({ error }) => { if (error) reloadSheetMusic(id); });
+        }
+
+        // Moves word(s) from one LINE to a slot on a DIFFERENT line —
+        // unlike sheetMoveWordsToSlot (which only changes which word
+        // LABEL shows at a slot, notes stay put), this actually edits
+        // the lyric text: the word(s) leave the source line's raw text
+        // and get inserted into the destination line's, so every word
+        // after the removed position in the source line shifts down one
+        // slot, and every word at/after the insertion point in the
+        // destination line shifts up. Notes (and each line's word-order,
+        // which is no longer meaningful once positions shift) follow
+        // along: the moved word's own note travels with it, and every
+        // other note in both lines is re-indexed to stay attached to the
+        // same semantic word it was on before the move.
+        function sheetMoveWordsAcrossLines(sectionId, sourceLineIdx, sourceSlotIdxs, destLineIdx, destSlotIdx) {
+            if (sourceLineIdx === destLineIdx) return; // same-line moves go through sheetMoveWordsToSlot instead
+            const section = (lyricsState.sections || []).find((s) => s.id === sectionId);
+            if (!section) return;
+            const lines = (section.content || '').split('\n');
+            if (sourceLineIdx >= lines.length || destLineIdx >= lines.length) return;
+            const sourceWords = lines[sourceLineIdx].trim().split(/\s+/).filter(Boolean);
+            const destWords = lines[destLineIdx].trim().split(/\s+/).filter(Boolean);
+
+            // Resolve slot indices (post-reorder) to real word indices
+            // in the underlying text array, so this works correctly
+            // whether or not the source line has a custom word order.
+            const realRemoveIdxs = Array.from(new Set(
+                sourceSlotIdxs.flatMap((slotIdx) => sheetSlotWordIndices(sectionId, sourceLineIdx, slotIdx, sourceWords.length))
+            )).filter((i) => i >= 0 && i < sourceWords.length).sort((a, b) => a - b);
+            if (!realRemoveIdxs.length) return;
+            const movedWords = realRemoveIdxs.map((i) => sourceWords[i]);
+
+            const insertAt = destSlotIdx >= destWords.length
+                ? destWords.length // padding slot -> append at the end
+                : Math.min(...sheetSlotWordIndices(sectionId, destLineIdx, destSlotIdx, destWords.length).filter((i) => i >= 0 && i < destWords.length).concat([destWords.length]));
+
+            const newSourceWords = sourceWords.filter((_, i) => !realRemoveIdxs.includes(i));
+            const newDestWords = destWords.slice(0, insertAt).concat(movedWords, destWords.slice(insertAt));
+
+            // Re-index notes: for the source line, everything after a
+            // removed word shifts down by however many words before it
+            // were removed; the removed words' own notes travel to the
+            // destination instead of being discarded. For the
+            // destination line, everything at/after the insertion point
+            // shifts up by however many words are being inserted there.
+            ['treble', 'bass'].forEach((clef) => {
+                const oldSourceNotes = sourceWords.map((_, i) => getSheetNote(sectionId, sourceLineIdx, i, clef));
+                const oldDestNotes = destWords.map((_, i) => getSheetNote(sectionId, destLineIdx, i, clef));
+                const movedNotes = realRemoveIdxs.map((i) => oldSourceNotes[i]);
+
+                // Clear every slot that's about to be rewritten in both
+                // lines first, so a shift can never collide with a
+                // not-yet-moved note sitting at its target index.
+                for (let i = 0; i < sourceWords.length; i++) sheetWriteNoteRaw(sectionId, sourceLineIdx, i, clef, null);
+                for (let i = 0; i < destWords.length; i++) sheetWriteNoteRaw(sectionId, destLineIdx, i, clef, null);
+
+                let w = 0;
+                for (let i = 0; i < sourceWords.length; i++) {
+                    if (realRemoveIdxs.includes(i)) continue;
+                    if (oldSourceNotes[i]) sheetWriteNoteRaw(sectionId, sourceLineIdx, w, clef, oldSourceNotes[i]);
+                    w++;
+                }
+                for (let i = 0; i < insertAt; i++) {
+                    if (oldDestNotes[i]) sheetWriteNoteRaw(sectionId, destLineIdx, i, clef, oldDestNotes[i]);
+                }
+                movedNotes.forEach((note, k) => {
+                    if (note) sheetWriteNoteRaw(sectionId, destLineIdx, insertAt + k, clef, note);
+                });
+                for (let i = insertAt; i < destWords.length; i++) {
+                    if (oldDestNotes[i]) sheetWriteNoteRaw(sectionId, destLineIdx, insertAt + movedWords.length + (i - insertAt), clef, oldDestNotes[i]);
+                }
+            });
+
+            sheetResetWordOrder(sectionId, sourceLineIdx, newSourceWords.length);
+            sheetResetWordOrder(sectionId, destLineIdx, newDestWords.length);
+
+            lines[sourceLineIdx] = newSourceWords.join(' ');
+            lines[destLineIdx] = newDestWords.join(' ');
+            lyricsSetSectionContent(sectionId, lines.join('\n'));
+            renderLyrics();
         }
 
         const SHEET_DURATION_VEX = { whole: 'w', half: 'h', quarter: 'q', eighth: '8', sixteenth: '16', thirtysecond: '32' };
@@ -3600,18 +3700,20 @@
                 });
                 sheetMoveSelection = [];
             }
-            // Highlights every other word in the same line as a valid
-            // place to drop the current selection, so it's visible where
-            // a click will actually go instead of only seeing the
-            // selected word itself.
+            // Highlights every other word in the same SECTION (any
+            // line, not just the one the selection started on) as a
+            // valid place to drop the current selection — dropping on a
+            // different line does a real cross-line move (see
+            // sheetMoveWordsAcrossLines), dropping within the same line
+            // just relabels slots (sheetMoveWordsToSlot).
             function sheetHighlightMoveTargets() {
                 expandEl.querySelectorAll('.pj-sheet-word.is-move-target').forEach((el) => el.classList.remove('is-move-target'));
                 if (!sheetMoveSelection.length) return;
-                const { sectionId, lineIdx } = sheetMoveSelection[0];
+                const { sectionId } = sheetMoveSelection[0];
                 const selectedAddrs = new Set(sheetMoveSelection.map((s) => s.addr));
                 expandEl.querySelectorAll('[data-sheet-word]').forEach((el) => {
-                    const [sId, lIdx] = el.dataset.sheetWord.split(':');
-                    if (sId === sectionId && Number(lIdx) === lineIdx && !selectedAddrs.has(el.dataset.sheetWord)) {
+                    const [sId] = el.dataset.sheetWord.split(':');
+                    if (sId === sectionId && !selectedAddrs.has(el.dataset.sheetWord)) {
                         el.classList.add('is-move-target');
                     }
                 });
@@ -3650,6 +3752,8 @@
                     sheetClearMoveSelection();
                     if (sectionId === selection[0].sectionId && Number(lineIdx) === selection[0].lineIdx) {
                         sheetMoveWordsToSlot(sectionId, Number(lineIdx), selection[0].wordCount, selection.map((s) => s.slotIdx), Number(slotIdx));
+                    } else if (sectionId === selection[0].sectionId) {
+                        sheetMoveWordsAcrossLines(sectionId, selection[0].lineIdx, selection.map((s) => s.slotIdx), Number(lineIdx), Number(slotIdx));
                     }
                 }
             }, true);
