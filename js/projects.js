@@ -3117,25 +3117,45 @@
         // positioning problem entirely: it's just another element in the
         // document, so it naturally sits exactly where it's written.
         function sheetPickerSkeletonHtml(wordText) {
+            // Full width of the sheet music, but compact in height: the
+            // short-content sections (Staff/Octave/Duration/Tuplet/Run)
+            // sit side by side in one wrapping row instead of stacked as
+            // separate full-width rows -- that's what makes it fill the
+            // available width in practice, not just a width: 100% that
+            // leaves most rows sparse with dead space on the right.
+            // Pitch and Note shape stay as their own full-width rows
+            // since they naturally use more horizontal space anyway.
             return `<div class="pj-sheet-picker" data-sheet-picker>
                 <div class="pj-sheet-picker__head">
                     <span data-sheet-picker-word>${escapeHtml(wordText || '')}</span>
                     <button type="button" class="pj-sheet-picker__close" data-sheet-picker-close aria-label="Close">&times;</button>
                 </div>
-                <div class="pj-lyrics-hint-label" style="margin:0 0 4px;">Staff</div>
-                <div class="pj-sheet-picker__clefs" data-sheet-clef-row></div>
-                <div class="pj-lyrics-hint-label" style="margin:0 0 4px;">Octave</div>
-                <div class="pj-sheet-picker__octaves" data-sheet-octave-row></div>
-                <div class="pj-lyrics-hint-label" data-sheet-run-index-label style="margin:0 0 4px;display:none;">Notes in this run (click one to remove it)</div>
+                <div class="pj-sheet-picker__compactrow">
+                    <div class="pj-sheet-picker__group">
+                        <div class="pj-lyrics-hint-label">Staff</div>
+                        <div class="pj-sheet-picker__clefs" data-sheet-clef-row></div>
+                    </div>
+                    <div class="pj-sheet-picker__group">
+                        <div class="pj-lyrics-hint-label">Octave</div>
+                        <div class="pj-sheet-picker__octaves" data-sheet-octave-row></div>
+                    </div>
+                    <div class="pj-sheet-picker__group">
+                        <div class="pj-lyrics-hint-label">Duration</div>
+                        <div class="pj-sheet-picker__durations" data-sheet-duration-row></div>
+                    </div>
+                    <div class="pj-sheet-picker__group">
+                        <div class="pj-lyrics-hint-label" title="Spreads one note's time across several existing words — e.g. a triplet plays 3 notes in the space 2 would normally take.">Tuplet</div>
+                        <div class="pj-sheet-picker__tuplets" data-sheet-tuplet-row></div>
+                    </div>
+                    <div class="pj-sheet-picker__group">
+                        <div class="pj-lyrics-hint-label" title="Packs several fast notes into THIS one word's beat, without needing extra words — e.g. a 4-run plays 4 notes in the time this one word would normally take.">Run</div>
+                        <div class="pj-sheet-picker__runs" data-sheet-run-row></div>
+                    </div>
+                </div>
+                <div class="pj-lyrics-hint-label" data-sheet-run-index-label style="margin:4px 0;display:none;">Notes in this run (click one to remove it)</div>
                 <div class="pj-sheet-picker__runindex" data-sheet-run-index-row></div>
-                <div class="pj-lyrics-hint-label" style="margin:0 0 4px;">Pitch</div>
+                <div class="pj-lyrics-hint-label" style="margin:4px 0;">Pitch</div>
                 <div class="pj-sheet-picker__pitches" data-sheet-pitch-grid></div>
-                <div class="pj-lyrics-hint-label" style="margin:6px 0 4px;">Duration</div>
-                <div class="pj-sheet-picker__durations" data-sheet-duration-row></div>
-                <div class="pj-lyrics-hint-label" style="margin:6px 0 4px;" title="Spreads one note's time across several existing words — e.g. a triplet plays 3 notes in the space 2 would normally take.">Tuplet — stretch notes across several words</div>
-                <div class="pj-sheet-picker__tuplets" data-sheet-tuplet-row></div>
-                <div class="pj-lyrics-hint-label" style="margin:6px 0 4px;" title="Packs several fast notes into THIS one word's beat, without needing extra words — e.g. a 4-run plays 4 notes in the time this one word would normally take.">Run — pack fast notes into this one word</div>
-                <div class="pj-sheet-picker__runs" data-sheet-run-row></div>
                 <div class="pj-lyrics-hint-label" style="margin:6px 0 4px;">Note shape</div>
                 <div class="pj-sheet-picker__actions">
                     <button type="button" class="pj-btn pj-btn--ghost" data-sheet-dot title="Dotted note (adds half the duration again)">• Dot</button>
