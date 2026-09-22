@@ -1664,7 +1664,7 @@
                 const lineHtml = tokenizeLyricsSingleLine(sectionId, lineIdx, line, rhymes);
                 const words = line.trim().split(/\s+/).filter(Boolean);
                 if (!sheetVisible || !sheetState || !words.length) return lineHtml;
-                const staffHtml = `<div class="pj-sheet-staff-wrap pj-sheet-inline">
+                const staffHtml = `${sheetPickerInlineHtml(sectionId, lineIdx, words)}<div class="pj-sheet-staff-wrap pj-sheet-inline">
                     <div class="pj-sheet-vf-line" data-vf-section="${escapeAttr(sectionId)}" data-vf-line="${lineIdx}" data-vf-words="${escapeAttr(JSON.stringify(words))}"></div>
                     ${renderSheetWords(words, sectionId, lineIdx)}
                 </div>`;
@@ -2327,34 +2327,6 @@
                 </div>
                 <p class="pc-expand__hint">Write lyrics together, section by section. Click a word and pick a color to mark rhymes — any number of words can share a color, even non-obvious ones.</p>
                 <div data-lyrics-body style="color:#BFD7FF;text-align:center;padding:24px;">Loading…</div>
-                <div class="pj-sheet-picker" data-sheet-picker hidden>
-                    <div class="pj-sheet-picker__head">
-                        <span data-sheet-picker-word></span>
-                        <button type="button" class="pj-sheet-picker__close" data-sheet-picker-close aria-label="Close">&times;</button>
-                    </div>
-                    <div class="pj-lyrics-hint-label" style="margin:0 0 4px;">Staff</div>
-                    <div class="pj-sheet-picker__clefs" data-sheet-clef-row></div>
-                    <div class="pj-lyrics-hint-label" style="margin:0 0 4px;">Octave</div>
-                    <div class="pj-sheet-picker__octaves" data-sheet-octave-row></div>
-                    <div class="pj-lyrics-hint-label" data-sheet-run-index-label style="margin:0 0 4px;display:none;">Notes in this run (click one to remove it)</div>
-                    <div class="pj-sheet-picker__runindex" data-sheet-run-index-row></div>
-                    <div class="pj-lyrics-hint-label" style="margin:0 0 4px;">Pitch</div>
-                    <div class="pj-sheet-picker__pitches" data-sheet-pitch-grid></div>
-                    <div class="pj-lyrics-hint-label" style="margin:6px 0 4px;">Duration</div>
-                    <div class="pj-sheet-picker__durations" data-sheet-duration-row></div>
-                    <div class="pj-lyrics-hint-label" style="margin:6px 0 4px;" title="Spreads one note's time across several existing words — e.g. a triplet plays 3 notes in the space 2 would normally take.">Tuplet — stretch notes across several words</div>
-                    <div class="pj-sheet-picker__tuplets" data-sheet-tuplet-row></div>
-                    <div class="pj-lyrics-hint-label" style="margin:6px 0 4px;" title="Packs several fast notes into THIS one word's beat, without needing extra words — e.g. a 4-run plays 4 notes in the time this one word would normally take.">Run — pack fast notes into this one word</div>
-                    <div class="pj-sheet-picker__runs" data-sheet-run-row></div>
-                    <div class="pj-lyrics-hint-label" style="margin:6px 0 4px;">Note shape</div>
-                    <div class="pj-sheet-picker__actions">
-                        <button type="button" class="pj-btn pj-btn--ghost" data-sheet-dot title="Dotted note (adds half the duration again)">• Dot</button>
-                        <button type="button" class="pj-btn pj-btn--ghost" data-sheet-tie title="Hold this note into the next one, same pitch">🔗 Tie</button>
-                        <button type="button" class="pj-btn pj-btn--ghost" data-sheet-slur title="Curved phrasing line into the next note, any pitch">⌒ Slur</button>
-                        <button type="button" class="pj-btn pj-btn--ghost" data-sheet-rest>Rest</button>
-                        <button type="button" class="pj-btn pj-btn--ghost" data-sheet-clear>Clear</button>
-                    </div>
-                </div>
             `;
             expandEl.querySelector('[data-expand-close]').addEventListener('click', () => { stopLyricsRealtime(); stopSheetRealtime(); hideSheetPicker(); closeExpand(); });
             wireLyricsEvents();
@@ -2878,7 +2850,7 @@
                     ctx.setFont('Arial', 9, '');
                     trebleCols.forEach((col, k) => {
                         const cx = measureNoteStartX + slotWidth * k + slotWidth / 2;
-                        ctx.fillText(String(k + 1), cx - 3, 7);
+                        ctx.fillText(String(k + 1), cx - 3, 9);
                     });
                     ctx.restore();
                     trebleCols.forEach((col, k) => {
@@ -3044,9 +3016,7 @@
                     sheetStopConnectMode(); // clicked a note that doesn't extend the chain — cancel and open the picker normally below
                 }
                 sheetPickerClef = target.clef;
-                const assignedWordIdxs = sheetSlotWordIndices(sectionId, lineIdx, target.wordIdx, words.length);
-                const label = assignedWordIdxs.map((wi) => words[wi]).filter(Boolean).join(' ');
-                showSheetPicker(sectionId, lineIdx, target.wordIdx, label);
+                showSheetPicker(sectionId, lineIdx, target.wordIdx);
             };
             container.onmousemove = (e) => {
                 const target = nearestSheetTarget(e);
@@ -3125,6 +3095,7 @@
             lines.forEach((line, lineIdx) => {
                 if (!line.length) return;
                 body += `<div class="pj-sheet-line">
+                    ${sheetPickerInlineHtml(section.id, lineIdx, line)}
                     <div class="pj-sheet-staff-wrap">
                         <div class="pj-sheet-vf-line" data-vf-section="${escapeAttr(section.id)}" data-vf-line="${lineIdx}" data-vf-words="${escapeAttr(JSON.stringify(line))}"></div>
                         ${renderSheetWords(line, section.id, lineIdx)}
@@ -3134,7 +3105,55 @@
             return `<div class="pj-sheet-block">${body}</div>`;
         }
 
-        // ---------- Note picker popover ----------
+        // ---------- Note picker card ----------
+        // Lives inline in the page, right above whichever line's staff
+        // holds the selected word — not a floating/fixed popup. It used
+        // to be position:fixed, first anchored to the clicked word (kept
+        // drifting since every edit rebuilds the whole lyrics body) and
+        // later docked at a constant screen position (worked, but the
+        // user wanted it to feel like part of the sheet music card
+        // itself, not a separate overlay). Being generated as part of
+        // the normal render — like everything else here — sidesteps the
+        // positioning problem entirely: it's just another element in the
+        // document, so it naturally sits exactly where it's written.
+        function sheetPickerSkeletonHtml(wordText) {
+            return `<div class="pj-sheet-picker" data-sheet-picker>
+                <div class="pj-sheet-picker__head">
+                    <span data-sheet-picker-word>${escapeHtml(wordText || '')}</span>
+                    <button type="button" class="pj-sheet-picker__close" data-sheet-picker-close aria-label="Close">&times;</button>
+                </div>
+                <div class="pj-lyrics-hint-label" style="margin:0 0 4px;">Staff</div>
+                <div class="pj-sheet-picker__clefs" data-sheet-clef-row></div>
+                <div class="pj-lyrics-hint-label" style="margin:0 0 4px;">Octave</div>
+                <div class="pj-sheet-picker__octaves" data-sheet-octave-row></div>
+                <div class="pj-lyrics-hint-label" data-sheet-run-index-label style="margin:0 0 4px;display:none;">Notes in this run (click one to remove it)</div>
+                <div class="pj-sheet-picker__runindex" data-sheet-run-index-row></div>
+                <div class="pj-lyrics-hint-label" style="margin:0 0 4px;">Pitch</div>
+                <div class="pj-sheet-picker__pitches" data-sheet-pitch-grid></div>
+                <div class="pj-lyrics-hint-label" style="margin:6px 0 4px;">Duration</div>
+                <div class="pj-sheet-picker__durations" data-sheet-duration-row></div>
+                <div class="pj-lyrics-hint-label" style="margin:6px 0 4px;" title="Spreads one note's time across several existing words — e.g. a triplet plays 3 notes in the space 2 would normally take.">Tuplet — stretch notes across several words</div>
+                <div class="pj-sheet-picker__tuplets" data-sheet-tuplet-row></div>
+                <div class="pj-lyrics-hint-label" style="margin:6px 0 4px;" title="Packs several fast notes into THIS one word's beat, without needing extra words — e.g. a 4-run plays 4 notes in the time this one word would normally take.">Run — pack fast notes into this one word</div>
+                <div class="pj-sheet-picker__runs" data-sheet-run-row></div>
+                <div class="pj-lyrics-hint-label" style="margin:6px 0 4px;">Note shape</div>
+                <div class="pj-sheet-picker__actions">
+                    <button type="button" class="pj-btn pj-btn--ghost" data-sheet-dot title="Dotted note (adds half the duration again)">• Dot</button>
+                    <button type="button" class="pj-btn pj-btn--ghost" data-sheet-tie title="Hold this note into the next one, same pitch">🔗 Tie</button>
+                    <button type="button" class="pj-btn pj-btn--ghost" data-sheet-slur title="Curved phrasing line into the next note, any pitch">⌒ Slur</button>
+                    <button type="button" class="pj-btn pj-btn--ghost" data-sheet-rest>Rest</button>
+                    <button type="button" class="pj-btn pj-btn--ghost" data-sheet-clear>Clear</button>
+                </div>
+            </div>`;
+        }
+        // Only the line the current selection is actually on renders
+        // the card — every other line's call returns ''.
+        function sheetPickerInlineHtml(sectionId, lineIdx, words) {
+            if (!sheetPickerKey || sheetPickerKey.sectionId !== sectionId || sheetPickerKey.lineIdx !== lineIdx) return '';
+            const assignedWordIdxs = sheetSlotWordIndices(sectionId, lineIdx, sheetPickerKey.wordIdx, words.length);
+            const wordText = assignedWordIdxs.map((wi) => words[wi]).filter(Boolean).join(' ');
+            return sheetPickerSkeletonHtml(wordText);
+        }
         function renderSheetPicker() {
             const note = sheetPickerKey ? getSheetNote(sheetPickerKey.sectionId, sheetPickerKey.lineIdx, sheetPickerKey.wordIdx, sheetPickerClef) : null;
             const clefRow = expandEl.querySelector('[data-sheet-clef-row]');
@@ -3241,17 +3260,7 @@
             }
         }
 
-        // The picker is docked at a constant screen position (see CSS)
-        // instead of being anchored to whatever word was clicked — it
-        // used to reposition itself every render and on scroll to track
-        // the clicked word, which kept drifting or landing in the wrong
-        // place whenever the page reflowed (which happens on every
-        // single edit, since renderLyrics() rebuilds the whole lyrics
-        // body). A fixed dock removes that whole class of bug outright.
-        // drawVexStaffLine() draws a persistent highlight on the actual
-        // selected note/word so it's still clear what the docked panel
-        // is editing.
-        function showSheetPicker(sectionId, lineIdx, wordIdx, wordText) {
+        function showSheetPicker(sectionId, lineIdx, wordIdx) {
             sheetPickerKey = { sectionId, lineIdx, wordIdx };
             const existing = getSheetNote(sectionId, lineIdx, wordIdx, sheetPickerClef);
             if (existing && existing.pitch && existing.pitch !== 'rest') {
@@ -3260,24 +3269,25 @@
             } else {
                 sheetPickerOctave = sheetPickerClef === 'bass' ? 3 : 4;
             }
+            // renderLyrics() rebuilds the section HTML, which is what
+            // actually inserts the picker card (sheetPickerInlineHtml)
+            // right above the selected line's staff, plus the
+            // persistent selection highlight — sheetPickerKey has to be
+            // set before this runs. renderSheetPicker() then populates
+            // the card's rows now that it exists in the DOM.
+            renderLyrics();
             renderSheetPicker();
             const pop = expandEl.querySelector('[data-sheet-picker]');
-            const wordEl = expandEl.querySelector('[data-sheet-picker-word]');
-            if (wordEl) wordEl.textContent = wordText;
-            if (!pop) return;
-            pop.hidden = false;
-            renderLyrics(); // refresh the persistent selection highlight
+            if (pop) pop.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
         function hideSheetPicker() {
-            const pop = expandEl.querySelector('[data-sheet-picker]');
-            if (pop) pop.hidden = true;
             sheetPickerKey = null;
             // reloadSheetMusic() skips applying data while a picker is
             // open (see its comment) — catch up on anything that came
             // in from a collaborator during that window now that it's
             // closed.
             if (sheetState) reloadSheetMusic(id);
-            renderLyrics(); // clear the persistent selection highlight
+            renderLyrics(); // removes the card (no line matches sheetPickerKey now) and clears the selection highlight
         }
 
         // Tie/slur "connect mode" — click Tie or Slur once to arm it
@@ -3356,12 +3366,7 @@
                         if (sheetTryExtendConnect(sectionId, Number(lineIdx), Number(wordIdx))) return;
                         sheetStopConnectMode(); // clicked something that doesn't extend the chain — cancel and treat as a normal click
                     }
-                    // Read the dedicated text span, not the whole click
-                    // target's textContent — that would run the pitch
-                    // badge straight into the word with no separator
-                    // (e.g. "DetC5" instead of "Det").
-                    const textEl = wordHit.querySelector('.pj-sheet-word__text');
-                    showSheetPicker(sectionId, Number(lineIdx), Number(wordIdx), (textEl || wordHit).textContent.trim());
+                    showSheetPicker(sectionId, Number(lineIdx), Number(wordIdx));
                     return;
                 }
                 if (e.target.closest('[data-sheet-picker-close]')) { hideSheetPicker(); return; }
@@ -3523,8 +3528,7 @@
                     return;
                 }
 
-                const pop = expandEl.querySelector('[data-sheet-picker]');
-                if (pop && !pop.hidden && !e.target.closest('[data-sheet-picker]') && !e.target.closest('[data-sheet-word]') && !e.target.closest('[data-vf-line]')) {
+                if (sheetPickerKey && !e.target.closest('[data-sheet-picker]') && !e.target.closest('[data-sheet-word]') && !e.target.closest('[data-vf-line]')) {
                     hideSheetPicker();
                 }
             });

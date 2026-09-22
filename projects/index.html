@@ -759,17 +759,13 @@
         .pj-sheet-word__pitch { font-size: 9px; opacity: 0.85; }
         .pj-sheet-word__pitch--treble { color: #6AA9F0; }
         .pj-sheet-word__pitch--bass { color: #F0B96A; }
-        /* Fixed dock, always in the same spot regardless of which note
-           was clicked -- the picker used to be anchored (position:
-           fixed but repositioned to track the clicked word every
-           render/scroll), which kept drifting or overlapping content
-           whenever the page reflowed. A constant dock location removes
-           that whole class of bug; sheetSelectedRect (drawn on the
-           staff itself) shows which note it's currently editing. */
-        .pj-sheet-picker { position: fixed; z-index: 60; top: 96px; right: 16px; width: 340px; max-height: calc(100vh - 112px); overflow-y: auto; background: #101826; border: 1px solid rgba(255,255,255,0.18); border-radius: 12px; padding: 12px; box-shadow: 0 12px 32px rgba(0,0,0,0.5); }
-        @media (max-width: 760px) {
-            .pj-sheet-picker { top: auto; bottom: 0; right: 0; left: 0; width: auto; max-height: min(70vh, calc(100vh - 96px)); border-radius: 12px 12px 0 0; }
-        }
+        /* Lives inline as part of the sheet music card, right above the
+           staff line holding the selected word -- not a floating/fixed
+           popup. Positioning it dynamically (anchored, then later a
+           fixed screen dock) kept being a source of bugs or just didn't
+           feel like part of the card; being a normal element in the
+           page's own flow means it can't drift or overlap anything. */
+        .pj-sheet-picker { position: relative; z-index: 5; width: 100%; max-width: 480px; max-height: 70vh; overflow-y: auto; background: #101826; border: 1px solid rgba(106,169,240,0.4); border-radius: 12px; padding: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); margin-bottom: 10px; }
         .pj-sheet-connect-hint { position: fixed; z-index: 61; left: 50%; bottom: 24px; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; background: #101826; border: 1px solid rgba(106,169,240,0.5); border-radius: 999px; padding: 8px 8px 8px 16px; box-shadow: 0 12px 32px rgba(0,0,0,0.5); color: #FFFFFF; font-size: 13px; font-weight: 600; }
         .pj-sheet-connect-hint[hidden] { display: none; }
         .pj-sheet-connect-hint [data-sheet-connect-stop] { background: #6AA9F0; color: #06101F; border: none; border-radius: 999px; padding: 6px 14px; font-size: 12px; font-weight: 700; cursor: pointer; }
